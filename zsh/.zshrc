@@ -12,7 +12,7 @@ source $ZSH/oh-my-zsh.sh
 # unbind ctrl g in terminal
 bindkey -r "^G"
 
-# Starship 
+# Starship
 bindkey -v
 if [[ "${widgets[zle-keymap-select]#user:}" == "starship_zle-keymap-select" || \
       "${widgets[zle-keymap-select]#user:}" == "starship_zle-keymap-select-wrapped" ]]; then
@@ -38,7 +38,7 @@ bindkey '^r' atuin-up-search-viins
 #User configuration
 # export MANPATH="/usr/local/man:$MANPATH"
 
-#----- Vim Editing modes & keymaps ------ 
+#----- Vim Editing modes & keymaps ------
 set -o vi
 
 export EDITOR=nvim
@@ -51,7 +51,7 @@ bindkey -M viins '^N' down-line-or-history
 
 # zsh plugins
 plugins=(
-    git 
+    git
     ## with oh-my-zsh and not homebrew
     # zsh-autosuggestions ( git clone <find link in the repo> and uncomment  )
     # zsh-syntax-highlighting ( git clone <find link in the repo> and uncomment )
@@ -68,13 +68,13 @@ alias c="clear"
 alias e="exit"
 alias vim="nvim"
 
-# Tmux 
+# Tmux
 alias tmux="tmux -f $TMUX_CONF"
 alias a="attach"
 # calls the tmux new session script
 alias tns="~/scripts/tmux-sessionizer"
 
-# fzf 
+# fzf
 # called from ~/scripts/
 alias nlof="~/scripts/fzf_listoldfiles.sh"
 # opens documentation through fzf (eg: git,zsh etc.)
@@ -83,9 +83,9 @@ alias fman="compgen -c | fzf | xargs man"
 # zoxide (called from ~/scripts/)
 alias nzo="~/scripts/zoxide_openfiles_nvim.sh"
 
-# Next level of an ls 
-# options :  --no-filesize --no-time --no-permissions 
-alias ls="eza --no-filesize --long --color=always --icons=always --no-user" 
+# Next level of an ls
+# options :  --no-filesize --no-time --no-permissions
+alias ls="eza --no-filesize --long --color=always --icons=always --no-user"
 
 # tree
 alias tree="tree -L 3 -a -I '.git' --charset X "
