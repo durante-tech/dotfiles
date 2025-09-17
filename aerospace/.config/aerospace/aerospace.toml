@@ -115,6 +115,12 @@ outer.top = [
 # See: https://nikitabobko.github.io/AeroSpace/commands#layout
 alt-slash = 'layout tiles horizontal vertical'
 alt-comma = 'layout accordion horizontal vertical'
+alt-period = 'layout floating tiling'
+alt-shift-space = 'fullscreen'
+alt-r = 'reload-config'
+alt-0 = 'workspace-back-and-forth'
+alt-shift-c = 'close'
+alt-enter = '''exec-and-forget open -na /Applications/Ghostty.app'''
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#focus
 alt-h = 'focus left'
