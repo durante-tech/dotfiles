@@ -6,6 +6,9 @@ export LANG=en_US.UTF-8
 # GNU coreutils
 export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
 
+# uv (Python package manager)
+export PATH="/Users/lgertel/.local/bin:$PATH"
+
 # Add local ~/scripts to the PATH
 export PATH="$HOME/scripts:$PATH"
 
@@ -14,6 +17,10 @@ export PATH="$HOME/.local/share/nvim/mason/bin:$PATH"
 
 # Tmux
 export TMUX_CONF=~/.config/tmux/tmux.conf
+
+# 1Password SSH Agent
+# Use 1Password for SSH key management
+export SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 
 # Starship PATH
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
@@ -52,7 +59,7 @@ export PATH=~/.console-ninja/.bin:$PATH
 
 # bun
 # bun completions
-[ -s "/Users/personal/.bun/_bun" ] && source "/Users/personal/.bun/_bun"
+[ -s "/Users/lgertel/.bun/_bun" ] && source "/Users/lgertel/.bun/_bun"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
@@ -65,6 +72,9 @@ export PATH="$PATH:/Applications/010 Editor.app/Contents/CmdLine" #ADDED BY 010 
 export GOPATH=$HOME/go
 export PATH=$GOPATH/bin:$PATH
 export PATH=$PATH:$(go env GOPATH)/bin
+
+# Fabric AI
+export FABRIC_ROOT="$HOME/.config/fabric"
 
 # Setting PATH for Python 3.11
 # The original version is saved in .zprofile.pysave
