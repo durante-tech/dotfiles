@@ -256,3 +256,106 @@ run = "move-node-to-workspace N"
 [[on-window-detected]]
 if.app-id = 'md.obsidian'
 run = "move-node-to-workspace N"
+
+[[on-window-detected]]
+if.app-id = 'com.apple.Notes'
+run = "move-node-to-workspace N"
+
+[[on-window-detected]]
+if.app-id = 'com.openai.chat'
+run = "move-node-to-workspace N"
+
+[[on-window-detected]]
+if.app-id = 'com.anthropic.claudefordesktop'
+run = "move-node-to-workspace N"
+
+[[on-window-detected]]
+if.app-id = 'ai.perplexity.mac'
+run = "move-node-to-workspace N"
+
+[[on-window-detected]]
+if.app-id = 'com.electron.wispr-flow'
+run = "move-node-to-workspace N"
+
+# Terminals → T
+[[on-window-detected]]
+if.app-id = 'com.googlecode.iterm2'
+run = "move-node-to-workspace T"
+
+[[on-window-detected]]
+if.app-id = 'org.alacritty'
+run = "move-node-to-workspace T"
+
+[[on-window-detected]]
+if.app-id = 'com.github.wez.wezterm'
+run = "move-node-to-workspace T"
+
+# Messaging → M
+[[on-window-detected]]
+if.app-name-regex-substring = 'slack|discord|telegram|teams'
+run = "move-node-to-workspace M"
+
+# Float small utility apps
+[[on-window-detected]]
+if.app-id = 'com.1password.1password'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'pro.betterdisplay.BetterDisplay'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.logi.cp-dev-mgr'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.elgato.StreamDeck'
+run = 'layout floating'
+
+# Explicit WhatsApp → M
+[[on-window-detected]]
+if.app-id = 'net.whatsapp.WhatsApp'
+run = "move-node-to-workspace M"
+
+# IDEs → Development workspace (D) on DEV-MAIN
+[[on-window-detected]]
+if.app-id = 'com.microsoft.VSCode'
+run = ['layout tiling', 'move-node-to-workspace D']
+
+[[on-window-detected]]
+if.app-id = 'com.cursor.cursor'
+run = ['layout tiling', 'move-node-to-workspace D']
+
+[[on-window-detected]]
+if.app-id = 'com.todesktop.230313mzl4w4u4'
+run = ['layout tiling', 'move-node-to-workspace D']
+
+[[on-window-detected]]
+if.app-id = 'com.todesktop.230313mzl4w4u92'
+run = ['layout tiling', 'move-node-to-workspace D']
+
+[[on-window-detected]]
+if.app-id = 'com.google.android.studio'
+run = ['layout tiling', 'move-node-to-workspace D']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.dt.Xcode'
+run = ['layout tiling', 'move-node-to-workspace D']
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'intellij|clion|pycharm|webstorm|rider|goland|datagrip|rubymine|phpstorm|fleet'
+run = ['layout tiling', 'move-node-to-workspace D']
+
+# Docker Desktop → D
+[[on-window-detected]]
+if.app-id = 'com.electron.dockerdesktop'
+run = ['layout tiling', 'move-node-to-workspace D']
+
+# Email → E
+[[on-window-detected]]
+if.app-id = 'com.readdle.SparkDesktop-setapp'
+run = ['layout tiling', 'move-node-to-workspace E']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.mail'
+run = ['layout tiling', 'move-node-to-workspace E']
