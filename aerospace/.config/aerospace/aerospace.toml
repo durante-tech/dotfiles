@@ -216,8 +216,8 @@ alt-shift-k = ['join-with up', 'mode main']
 alt-shift-l = ['join-with right', 'mode main']
 
 [[on-window-detected]]
-if.app-name-regex-substring = 'finder'
-run = 'layout floating'
+if.app-id = 'com.apple.finder'
+run = ['layout floating', 'move-node-to-workspace F']
 
 [[on-window-detected]]
 if.app-name-regex-substring = 'Shottr'
@@ -236,8 +236,18 @@ if.app-id = 'app.zen-browser.zen'
 run = "move-node-to-workspace B"
 
 [[on-window-detected]]
-if.app-id = 'com.apple.finder'
-run = "move-node-to-workspace F"
+if.app-id = 'company.thebrowser.Browser'
+run = "move-node-to-workspace B"
+
+[[on-window-detected]]
+if.app-id = 'com.apple.Safari'
+run = "move-node-to-workspace B"
+
+[[on-window-detected]]
+if.app-id = 'org.mozilla.firefox'
+run = "move-node-to-workspace B"
+
+# Duplicate fallback Finder mapping removed (handled above with float + move)
 
 [[on-window-detected]]
 if.app-id = 'notion.id'
