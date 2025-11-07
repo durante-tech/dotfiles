@@ -28,7 +28,7 @@ eval "$(fzf --zsh)"
 
 # FZF with Git right in the shell by Junegunn : check out his github below
 # Keymaps for this is available at https://github.com/junegunn/fzf-git.sh
-source ~/scripts/fzf-git.sh
+[ -f "$HOME/scripts/fzf-git.sh" ] && source "$HOME/scripts/fzf-git.sh"
 
 # Atuin Configs
 export ATUIN_NOBIND="true"
@@ -72,16 +72,16 @@ alias vim="nvim"
 alias tmux="tmux -f $TMUX_CONF"
 alias a="attach"
 # calls the tmux new session script
-alias tns="~/scripts/tmux-sessionizer"
+alias tns="$HOME/scripts/tmux-sessionizer"
 
 # fzf
 # called from ~/scripts/
-alias nlof="~/scripts/fzf_listoldfiles.sh"
+alias nlof="$HOME/scripts/fzf_listoldfiles.sh"
 # opens documentation through fzf (eg: git,zsh etc.)
 alias fman="compgen -c | fzf | xargs man"
 
 # zoxide (called from ~/scripts/)
-alias nzo="~/scripts/zoxide_openfiles_nvim.sh"
+alias nzo="$HOME/scripts/zoxide_openfiles_nvim.sh"
 
 # Next level of an ls
 # options :  --no-filesize --no-time --no-permissions
@@ -110,8 +110,8 @@ alias lg="lazygit"
 # mpd start alias
 alias mpds="mpd ~/.config/mpd/mpd.conf"
 
-# obsidian icloud path
-alias sethvault="cd ~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/sethVault/"
+# obsidian icloud path (customize for your vault)
+# alias vault="cd ~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/YourVaultName/"
 
 # Fabric AI aliases
 alias fb="fabric"
@@ -156,6 +156,10 @@ yt() {
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-. "/Users/lgertel/.deno/env"
+[ -s "$HOME/.deno/env" ] && . "$HOME/.deno/env"
 
-alias claude="/Users/lgertel/.claude/local/claude"
+if [[ -x "$HOME/.claude/local/claude" ]]; then
+    alias claude="$HOME/.claude/local/claude"
+elif command -v claude >/dev/null 2>&1; then
+    alias claude="$(command -v claude)"
+fi
