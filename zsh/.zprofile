@@ -7,7 +7,7 @@ export LANG=en_US.UTF-8
 export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
 
 # uv (Python package manager)
-export PATH="/Users/lgertel/.local/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 
 # Add local ~/scripts to the PATH
 export PATH="$HOME/scripts:$PATH"
@@ -59,7 +59,7 @@ export PATH=~/.console-ninja/.bin:$PATH
 
 # bun
 # bun completions
-[ -s "/Users/lgertel/.bun/_bun" ] && source "/Users/lgertel/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 

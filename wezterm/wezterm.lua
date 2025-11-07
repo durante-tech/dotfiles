@@ -52,23 +52,19 @@ config.keys = {
         mods = "OPT",
         action = wezterm.action({ SendString = "\x1bf" }),
     },
-    -- programming workspace with leader v
-    {
-        key = "v",
-        mods = "LEADER",
-        action = wezterm.action.SwitchToWorkspace {
-            name = "main-cs",
-            spawn = {
-                cwd = "~/Desktop/main-cs",
-                args = {
-                    "/opt/homebrew/bin/nvim",
-                    "~/Desktop/main-cs",
-                    "-c",
-                    "lua vim.api.nvim_set_current_dir(\"~/Desktop/main-cs\")"
-                },
-            },
-        },
-    },
+    -- Example: programming workspace with leader v
+    -- Customize with your own project path
+    -- {
+    --     key = "v",
+    --     mods = "LEADER",
+    --     action = wezterm.action.SwitchToWorkspace {
+    --         name = "coding",
+    --         spawn = {
+    --             cwd = wezterm.home_dir .. "/Projects",
+    --             args = { "nvim" },
+    --         },
+    --     },
+    -- },
 }
 
 
