@@ -15,6 +15,7 @@ return {
 
 		telescope.load_extension("fzf")
 		telescope.load_extension("themes")
+		-- Project extension will auto-load if project.nvim is installed
 
 		telescope.setup({
 			defaults = {
@@ -46,5 +47,6 @@ return {
 		end, { desc = "Find Connected Words under cursor" })
 
 		vim.keymap.set("n", "<leader>ths", "<cmd>Telescope themes<CR>", { noremap = true, silent = true, desc = "Theme Switcher" })
+		vim.keymap.set("n", "<leader>pp", "<cmd>Telescope projects<CR>", { desc = "Switch project" })
     end,
 }

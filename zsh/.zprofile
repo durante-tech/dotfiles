@@ -68,6 +68,11 @@ export PATH="$PATH:/Applications/010 Editor.app/Contents/CmdLine" #ADDED BY 010 
 
 #------------Langs------------
 
+# Pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init --path)"
+
 # Golang
 export GOPATH=$HOME/go
 export PATH=$GOPATH/bin:$PATH

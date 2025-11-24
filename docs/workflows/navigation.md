@@ -1,0 +1,396 @@
+# Navigation Workflows
+
+Move through your code with speed and precision.
+
+## Philosophy
+
+Good navigation is about:
+1. **Jumping, not moving** - Go directly to your target
+2. **Search, don't scroll** - Let the computer find it
+3. **Marks and tags** - Bookmark important locations
+
+## Within-File Navigation
+
+### Basic Movement
+
+| Keys | Movement | Speed |
+|------|----------|-------|
+| `h` `j` `k` `l` | Left, Down, Up, Right | Slow |
+| `w` / `b` | Next/previous word | Medium |
+| `W` / `B` | Next/previous WORD (punctuation included) | Medium |
+| `e` / `ge` | End of word forward/backward | Medium |
+| `0` / `^` | Start of line / first non-blank | Fast |
+| `$` | End of line | Fast |
+| `gg` / `G` | Top / bottom of file | Fast |
+| `{` / `}` | Previous / next paragraph | Fast |
+| `(` / `)` | Previous / next sentence | Medium |
+| `%` | Jump to matching bracket/paren | Fast |
+
+**Pro Tip:** Never hold down `j` or `k`. If you need to go far, use better motions!
+
+### Line-Specific Jumps
+
+| Keys | Action |
+|------|--------|
+| `:N` | Go to line N (e.g., `:42`) |
+| `Ngg` | Go to line N (e.g., `42gg`) |
+| `NG` | Go to line N (e.g., `42G`) |
+| `:$` | Go to last line |
+| `50%` | Go to 50% through file |
+
+### Screen-Based Movement
+
+| Keys | Action |
+|------|--------|
+| `H` | High - top of screen |
+| `M` | Middle of screen |
+| `L` | Low - bottom of screen |
+| `Ctrl-u` | Scroll up half page |
+| `Ctrl-d` | Scroll down half page |
+| `Ctrl-b` | Scroll up full page |
+| `Ctrl-f` | Scroll forward full page |
+| `Ctrl-e` | Scroll down one line |
+| `Ctrl-y` | Scroll up one line |
+| `zz` | Center cursor on screen |
+| `zt` | Put cursor at top |
+| `zb` | Put cursor at bottom |
+
+### Character-Based Search
+
+Fast horizontal movement within a line:
+
+| Keys | Action | Example |
+|------|--------|---------|
+| `f{char}` | Find next char | `fa` finds next 'a' |
+| `F{char}` | Find previous char | `FA` finds previous 'A' |
+| `t{char}` | Till next char | `t,` moves before next ',' |
+| `T{char}` | Till previous char | `T,` moves after previous ',' |
+| `;` | Repeat last f/F/t/T | Move to next match |
+| `,` | Reverse last f/F/t/T | Move to previous match |
+
+**Practical Examples:**
+```javascript
+// Cursor at start: change text inside quotes
+const msg = "Hello World";
+    ^
+cf"     // Change till quote
+ct"     // Change till quote (keeps quote)
+```
+
+### Word and Pattern Search
+
+| Keys | Action |
+|------|--------|
+| `/pattern` | Search forward |
+| `?pattern` | Search backward |
+| `n` | Next match |
+| `N` | Previous match |
+| `*` | Search word under cursor (forward) |
+| `#` | Search word under cursor (backward) |
+| `g*` | Search partial word forward |
+| `g#` | Search partial word backward |
+
+**Pro Tips:**
+- Use `*` then `n` to navigate through usages of a variable
+- Use `/` with regex: `/function.*User` finds "function getUser"
+- Case-insensitive search: `/pattern\c`
+
+## Across-File Navigation
+
+### Fuzzy Finding with Telescope
+
+| Keys | Action | Use Case |
+|------|--------|----------|
+| `<leader>ff` | Find files | Open file by name |
+| `<leader>fg` | Grep in files | Find text across project |
+| `<leader>pr` | Recent files | Reopen recent files |
+| `<leader>pWs` | Search word under cursor | Find all usages |
+
+**Telescope Navigation:**
+- `Ctrl-j` / `Ctrl-k` - Move down/up in results
+- `Ctrl-n` / `Ctrl-p` - Move down/up (alternative)
+- `Enter` - Open file
+- `Ctrl-x` - Open in horizontal split
+- `Ctrl-v` - Open in vertical split
+- `Ctrl-t` - Open in new tab
+- `Esc` - Close
+
+### Project & Session Management
+
+| Keys | Action |
+|------|--------|
+| `<leader>pp` | Switch project |
+| `<leader>wf` | Find session |
+| `<leader>wl` | List sessions |
+
+### File Explorer (Oil)
+
+| Keys | Action |
+|------|--------|
+| `-` | Open file explorer |
+| `Enter` | Open file/directory |
+| `-` | Go to parent directory |
+| `g.` | Toggle hidden files |
+| `_` | Open in horizontal split |
+| `<C-v>` | Open in vertical split |
+
+## Code Navigation (LSP)
+
+Language Server Protocol provides intelligent navigation:
+
+| Keys | Action | Use Case |
+|------|--------|----------|
+| `gd` | Go to definition | Jump to where symbol is defined |
+| `gD` | Go to declaration | Jump to declaration |
+| `gR` | Show references | Find all usages via Telescope |
+| `gi` | Go to implementation | Jump to implementation |
+| `gt` | Go to type definition | Jump to type definition |
+| `K` | Hover documentation | Read docs without leaving |
+| `Ctrl-h` (insert) | Signature help | See function parameters |
+
+### LSP Navigation Workflow
+
+```javascript
+// Scenario: Understanding a function call
+doSomething(user, config);
+          ^
+// 1. Cursor on "user"
+gd          // Jump to definition: const user = {...}
+
+// 2. See it's a parameter
+K           // Read hover docs
+
+// 3. Find where else it's used
+gR          // Telescope shows all references
+
+// 4. Check type definition
+gt          // Jump to type/interface
+```
+
+## Jump List
+
+Neovim remembers where you've been:
+
+| Keys | Action |
+|------|--------|
+| `Ctrl-o` | Jump to older position |
+| `Ctrl-i` | Jump to newer position |
+| `:jumps` | Show jump list |
+
+**How it works:**
+1. Open file and navigate
+2. Use `gd` to jump to definition
+3. Press `Ctrl-o` to jump back
+4. Press `Ctrl-i` to jump forward again
+
+**Pro Tip:** Think of `Ctrl-o` as "undo" for navigation!
+
+## Change List
+
+Remember where you've edited:
+
+| Keys | Action |
+|------|--------|
+| `g;` | Jump to older change |
+| `g,` | Jump to newer change |
+| `:changes` | Show change list |
+| `gi` | Jump to last insert and enter INSERT mode |
+
+## Marks
+
+Set bookmarks in your code:
+
+### Setting Marks
+
+| Keys | Action |
+|------|--------|
+| `m{a-z}` | Set local mark (file-specific) |
+| `m{A-Z}` | Set global mark (across files) |
+| `m'` | Set mark for return |
+
+### Jumping to Marks
+
+| Keys | Action |
+|------|--------|
+| `'{mark}` | Jump to mark line |
+| `` `{mark} `` | Jump to exact mark position |
+| `''` | Jump to last jump position |
+| ``` `` ``` | Jump to last exact position |
+| `:marks` | List all marks |
+
+**Example Workflow:**
+```javascript
+// File: user.js
+function getUser() {
+    ma        // Set mark 'a' here
+    // ...lots of code...
+}
+
+// Later, anywhere in file:
+'a        // Jump back to that line
+```
+
+**Global Marks:**
+```javascript
+// In user.js
+mU        // Set global mark U (capital)
+
+// In different file (admin.js):
+'U        // Jump back to user.js at mark U
+```
+
+## Buffer & Window Navigation
+
+### Buffer Navigation
+
+| Keys | Action |
+|------|--------|
+| `:bn` | Next buffer |
+| `:bp` | Previous buffer |
+| `:b{name}` | Switch to buffer by name |
+| `:b#` | Switch to alternate buffer |
+| `:ls` | List buffers |
+
+### Window Navigation
+
+| Keys | Action |
+|------|--------|
+| `Ctrl-h` | Move to left window |
+| `Ctrl-j` | Move to bottom window |
+| `Ctrl-k` | Move to top window |
+| `Ctrl-l` | Move to right window |
+| `Ctrl-w w` | Cycle through windows |
+| `Ctrl-w p` | Go to previous window |
+
+**Pro Tip:** These also work with tmux thanks to vim-tmux-navigator!
+
+## Search Patterns
+
+### Basic Search
+
+```vim
+/searchterm       " Forward search
+?searchterm       " Backward search
+/\csearchterm     " Case-insensitive
+/\Csearchterm     " Case-sensitive
+```
+
+### Regex Search
+
+```vim
+/function.*User           " Find "function" followed by "User"
+/\<word\>                 " Exact word match
+/user\|admin              " Match "user" OR "admin"
+/^import                  " Lines starting with "import"
+/;$                       " Lines ending with semicolon
+```
+
+### Search and Replace
+
+See [Search & Replace Workflow](search-replace.md) for detailed patterns.
+
+## Navigation Workflows
+
+### Workflow 1: Exploring Unknown Codebase
+
+```
+1. <leader>pp       // Open project
+2. <leader>fg       // Grep for main function/class
+3. Enter            // Open file
+4. /className       // Search for class
+5. n n n            // Jump through matches
+6. gd               // Go to definition
+7. K                // Read documentation
+8. gR               // See all usages
+9. Ctrl-o           // Jump back through history
+```
+
+### Workflow 2: Bug Hunting
+
+```
+1. <leader>fg       // Grep for error message
+2. Enter            // Open file with error
+3. *                // Search for variable under cursor
+4. n n              // Jump through usages
+5. gd               // Go to definition
+6. ma               // Mark this location
+7. gR               // Find all references
+8. Review each      // Check each usage
+9. 'a               // Jump back to mark
+```
+
+### Workflow 3: Refactoring
+
+```
+1. gd               // Go to definition
+2. gR               // Show all references in Telescope
+3. Review list      // See everywhere it's used
+4. <leader>rn       // LSP rename
+5. Type new name
+6. Enter            // Renames everywhere
+```
+
+### Workflow 4: Learning a New API
+
+```
+1. <leader>ff       // Find file
+2. /import          // Find imports
+3. gd               // Jump to import source
+4. K                // Read docs
+5. / (search)       // Search for examples
+6. mA               // Set global mark
+7. (explore)
+8. 'A               // Return to mark
+```
+
+## Quick Reference: Speed vs. Distance
+
+| Distance | Best Method |
+|----------|-------------|
+| Same line, visible | `f{char}` or `t{char}` |
+| Same line, far | `0` or `$` |
+| Few lines away | `3j` or `{` / `}` |
+| Screen away | `Ctrl-d` / `Ctrl-u` |
+| Know line number | `:42` or `42gg` |
+| Know text content | `/pattern` |
+| Different file, know name | `<leader>ff` |
+| Different file, know content | `<leader>fg` |
+| Was there before | `Ctrl-o` |
+| Symbol definition | `gd` |
+| All usages | `gR` |
+
+## Pro Tips
+
+### Use Relative Line Numbers
+Already enabled in this config! Jump 5 lines down with just `5j`.
+
+### Combine with Operators
+Navigation motions work with operators:
+- `d/pattern` - Delete until pattern
+- `y/pattern` - Yank until pattern
+- `c/pattern` - Change until pattern
+
+### Screen Positioning
+After a jump, reposition with:
+- `zz` - Center screen
+- `zt` - Top of screen
+- `zb` - Bottom of screen
+
+### Incremental Search
+As you type `/pattern`, Neovim highlights matches in real-time!
+
+### Case-Insensitive by Default
+Set in config, but you can override:
+- `/\cPattern` - Case insensitive
+- `/\CPattern` - Case sensitive
+
+---
+
+**Practice Challenge:**
+1. Open a file you know well
+2. Set marks at 3 key functions
+3. Jump between them using marks
+4. Use `*` to find variable usages
+5. Practice `Ctrl-o` and `Ctrl-i` to navigate history
+
+**Next:** [File Management Workflows](file-management.md)

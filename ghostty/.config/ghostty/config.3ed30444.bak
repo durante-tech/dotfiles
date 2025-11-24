@@ -4,12 +4,11 @@ background = #000000
 background-opacity = 0.75
 background-blur-radius = 23
 
-font-family = JetBrainsMonoNL Nerd Font
+font-family = JetBrainsMonoNL Nerd Font 
 font-size = 20
 cursor-style = block
 cursor-style-blink = false
 cursor-invert-fg-bg = true
-cursor-color = ffff00
 
 macos-titlebar-style = hidden
 macos-option-as-alt = true
@@ -25,8 +24,9 @@ auto-update = check
 auto-update-channel = stable
 
 # extras
-shell-integration-features = no-cursor 
+shell-integration-features = no-cursor
 copy-on-select = clipboard
+keyboard-protocol = disambiguate
 
 # Custom Keybinds & Config (super represents cmd key on mac)
 # For Simple Keybinds
@@ -58,9 +58,6 @@ keybind = super+b>9=goto_tab:9
 keybind = super+b>\=new_split:right
 keybind = super+b>-=new_split:down
 keybind = super+b>e=equalize_splits
-# iTerm-style splits (optional - uncomment if you want these)
-# keybind = super+d=new_split:right
-# keybind = super+shift+d=new_split:down
 
 # split nav (setting this to control will not work if tmux already uses it)
 keybind = super+b>h=goto_split:left
@@ -71,4 +68,3 @@ keybind = super+b>l=goto_split:right
 #Shaders
 # custom-shader = shaders/bettercrt.glsl
 # custom-shader = shaders/retro-terminal.glsl
-keybind = shift+enter=text:\x1b\x0d

@@ -14,7 +14,13 @@ vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 vim.opt.smartindent = true
-vim.opt.wrap = false
+
+-- wrapping (soft wrap - visual only, no line breaks)
+vim.opt.wrap = true              -- Enable visual line wrapping
+vim.opt.linebreak = true         -- Wrap at word boundaries (nicer)
+vim.opt.breakindent = true       -- Maintain indentation on wrapped lines
+vim.opt.showbreak = "↪ "         -- Symbol for wrapped lines (optional, can remove)
+-- vim.opt.textwidth = 0         -- Don't insert actual line breaks (0 = disabled)
 
 -- backup and undo
 vim.opt.swapfile = false
@@ -46,3 +52,25 @@ vim.opt.updatetime = 50
 vim.opt.colorcolumn = "80"
 vim.opt.clipboard:append("unnamedplus")
 vim.opt.mouse = "a"
+
+-- cursor customization (yellow cursor)
+vim.opt.guicursor = "n-v-c:block-Cursor/lCursor,i-ci-ve:ver25-Cursor/lCursor,r-cr:hor20,o:hor50"
+vim.opt.cursorline = true  -- Highlight the line where cursor is
+
+-- Set cursor highlight colors (bright yellow with rose-pine compatibility)
+vim.api.nvim_create_autocmd("ColorScheme", {
+  pattern = "*",
+  callback = function()
+    -- Use rose-pine base for contrast with yellow cursor
+    vim.api.nvim_set_hl(0, "Cursor", { fg = "#191724", bg = "#ffff00" })  -- Yellow cursor with rose-pine base
+    vim.api.nvim_set_hl(0, "lCursor", { fg = "#191724", bg = "#ffff00" }) -- Yellow cursor (for language-specific)
+    vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#ffff00", bold = true }) -- Yellow line number
+    vim.api.nvim_set_hl(0, "CursorLine", { bg = "#1f1d2e" }) -- Subtle rose-pine surface for cursor line
+  end,
+})
+
+-- Apply immediately for current session
+vim.api.nvim_set_hl(0, "Cursor", { fg = "#191724", bg = "#ffff00" })
+vim.api.nvim_set_hl(0, "lCursor", { fg = "#191724", bg = "#ffff00" })
+vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#ffff00", bold = true })
+vim.api.nvim_set_hl(0, "CursorLine", { bg = "#1f1d2e" })

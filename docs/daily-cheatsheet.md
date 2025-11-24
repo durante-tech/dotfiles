@@ -1,0 +1,314 @@
+# Daily Cheatsheet
+
+Quick reference for the most common operations. Print this or keep it open!
+
+## 🎯 Quick Actions (Top 10)
+
+| Action | Keys | Notes |
+|--------|------|-------|
+| Find files | `<leader>ff` | Fuzzy find by name |
+| Search in files | `<leader>fg` | Grep across project |
+| Recent files | `<leader>pr` | Quick access to recent |
+| Go to definition | `gd` | Jump to where it's defined |
+| Show documentation | `K` | Hover docs for symbol |
+| Code actions | `<leader>vca` | Fix/refactor suggestions |
+| Rename symbol | `<leader>rn` | Refactor rename |
+| Comment line | `gcc` | Toggle comment |
+| Save file | `:w` | Write to disk |
+| Save & quit | `:wq` | Exit and save |
+
+## 📂 File & Project Management
+
+### Finding & Opening Files
+| Action | Keys |
+|--------|------|
+| Find files by name | `<leader>ff` |
+| Search text in files | `<leader>fg` |
+| Recent files | `<leader>pr` |
+| File explorer | `-` |
+| Switch project | `<leader>pp` |
+| Search word under cursor | `<leader>pWs` |
+
+### Workspace & Sessions
+| Action | Keys |
+|--------|------|
+| Switch project | `<leader>pp` |
+| Find session | `<leader>wf` |
+| List all sessions | `<leader>wl` |
+| Save session | `<leader>ws` |
+| Restore session | `<leader>wr` |
+| Delete session | `<leader>wd` |
+
+## ✏️ Editing
+
+### Insert Mode Entry
+| Action | Keys | Description |
+|--------|------|-------------|
+| Insert before cursor | `i` | Most common |
+| Insert after cursor | `a` | Append |
+| Insert at line start | `I` | Start of line |
+| Insert at line end | `A` | End of line |
+| New line below | `o` | Open below |
+| New line above | `O` | Open above |
+
+### Basic Editing
+| Action | Keys |
+|--------|------|
+| Delete line | `dd` |
+| Delete word | `dw` |
+| Delete to end of line | `d$` or `D` |
+| Change word | `cw` |
+| Change line | `cc` |
+| Copy line | `yy` |
+| Copy word | `yw` |
+| Paste after | `p` |
+| Paste before | `P` |
+| Undo | `u` |
+| Redo | `Ctrl-r` |
+
+### Visual Mode Selection
+| Action | Keys |
+|--------|------|
+| Select characters | `v` |
+| Select lines | `V` |
+| Select block | `Ctrl-v` |
+| Delete selection | (visual) `d` |
+| Copy selection | (visual) `y` |
+| Comment selection | (visual) `gc` |
+
+### Commenting
+| Action | Keys |
+|--------|------|
+| Toggle line comment | `gcc` |
+| Comment selection | (visual) `gc` |
+
+## 🧭 Navigation
+
+### Basic Movement
+| Action | Keys |
+|--------|------|
+| Left/Down/Up/Right | `h` `j` `k` `l` |
+| Next word | `w` |
+| Previous word | `b` |
+| End of word | `e` |
+| Start of line | `0` |
+| First non-blank | `^` |
+| End of line | `$` |
+| Top of file | `gg` |
+| Bottom of file | `G` |
+| Go to line N | `:N` or `Ngg` |
+| Next paragraph | `}` |
+| Previous paragraph | `{` |
+
+### Search & Jump
+| Action | Keys |
+|--------|------|
+| Search forward | `/text` Enter |
+| Search backward | `?text` Enter |
+| Next match | `n` |
+| Previous match | `N` |
+| Find character forward | `f{char}` |
+| Find character backward | `F{char}` |
+| Till character forward | `t{char}` |
+| Till character backward | `T{char}` |
+| Repeat f/t/F/T | `;` |
+| Reverse f/t/F/T | `,` |
+
+### Code Navigation
+| Action | Keys |
+|--------|------|
+| Go to definition | `gd` |
+| Go to declaration | `gD` |
+| Show references | `gR` |
+| Show implementations | `gi` |
+| Show type definition | `gt` |
+| Show documentation | `K` |
+| Jump back | `Ctrl-o` |
+| Jump forward | `Ctrl-i` |
+| Signature help (INSERT mode) | `Ctrl-h` |
+
+## 🪟 Windows & Buffers
+
+### Window Management
+| Action | Keys |
+|--------|------|
+| Move to left window | `Ctrl-h` |
+| Move to bottom window | `Ctrl-j` |
+| Move to top window | `Ctrl-k` |
+| Move to right window | `Ctrl-l` |
+| Split horizontal | `:split` or `:sp` |
+| Split vertical | `:vsplit` or `:vs` |
+| Close window | `:q` or `Ctrl-w q` |
+| Close other windows | `:only` |
+| Maximize window | `<leader>sm` |
+
+### Buffer Management
+| Action | Keys |
+|--------|------|
+| Next buffer | `:bnext` or `:bn` |
+| Previous buffer | `:bprev` or `:bp` |
+| Close buffer | `:bd` |
+| List buffers | `:ls` or `:buffers` |
+| Switch to buffer N | `:bN` |
+
+## 🔍 LSP & Diagnostics
+
+### Code Intelligence
+| Action | Keys |
+|--------|------|
+| Go to definition | `gd` |
+| Show references | `gR` |
+| Show implementations | `gi` |
+| Type definition | `gt` |
+| Hover documentation | `K` |
+| Signature help (insert) | `Ctrl-h` |
+| Code actions | `<leader>vca` |
+| Rename symbol | `<leader>rn` |
+
+### Diagnostics (Errors/Warnings)
+| Action | Keys |
+|--------|------|
+| Show line diagnostic | `<leader>d` |
+| Show buffer diagnostics | `<leader>D` |
+| Open diagnostics list | `<leader>xw` |
+| Restart LSP | `<leader>rs` |
+
+## 🔁 Commands & Ex Mode
+
+### File Operations
+| Command | Action |
+|---------|--------|
+| `:w` | Save current file |
+| `:w filename` | Save as filename |
+| `:wa` | Save all files |
+| `:q` | Quit current window |
+| `:qa` | Quit all windows |
+| `:wq` or `:x` | Save and quit |
+| `:q!` | Quit without saving |
+| `:qa!` | Quit all without saving |
+| `:e filename` | Open file |
+| `:e!` | Reload current file (discard changes) |
+
+### Search & Replace
+| Command | Action |
+|---------|--------|
+| `:s/old/new/` | Replace first in line |
+| `:s/old/new/g` | Replace all in line |
+| `:%s/old/new/g` | Replace all in file |
+| `:%s/old/new/gc` | Replace with confirmation |
+| `:10,20s/old/new/g` | Replace in lines 10-20 |
+
+### Useful Commands
+| Command | Action |
+|---------|--------|
+| `:help topic` | Get help on topic |
+| `:checkhealth` | Check Neovim health |
+| `:Lazy` | Open plugin manager |
+| `:Mason` | Open LSP installer |
+| `:LspInfo` | Show LSP info |
+| `:messages` | Show message history |
+
+## 🎨 Modes Quick Reference
+
+| Mode | Enter | Exit | Purpose |
+|------|-------|------|---------|
+| NORMAL | `Esc` | - | Navigation, commands (default) |
+| INSERT | `i` `a` `o` | `Esc` | Type text |
+| VISUAL | `v` `V` `Ctrl-v` | `Esc` | Select text |
+| COMMAND | `:` | `Esc` or `Enter` | Run commands |
+
+## 🚀 Power User Tips
+
+### Operators + Motions
+Combine operators with motions for powerful editing:
+
+**Pattern:** `[operator][motion]`
+
+| Operator | Motion | Result |
+|----------|--------|--------|
+| `d` | `w` | Delete word |
+| `c` | `iw` | Change inner word |
+| `y` | `ap` | Yank a paragraph |
+| `d` | `$` | Delete to end of line |
+| `c` | `i"` | Change inside quotes |
+| `y` | `i{` | Yank inside braces |
+| `d` | `3j` | Delete 3 lines down |
+
+### Text Objects
+Use with operators (`d`, `c`, `y`):
+
+| Text Object | Meaning |
+|-------------|---------|
+| `iw` / `aw` | inner/around word |
+| `i"` / `a"` | inside/around quotes |
+| `i'` / `a'` | inside/around single quotes |
+| `i(` / `a(` | inside/around parentheses |
+| `i{` / `a{` | inside/around braces |
+| `it` / `at` | inside/around HTML tag |
+| `ip` / `ap` | inner/around paragraph |
+
+**Examples:**
+- `ci"` - Change text inside quotes
+- `da(` - Delete around parentheses (including parens)
+- `yit` - Yank inside HTML tag
+- `dap` - Delete around paragraph
+
+### Repeating
+| Action | Keys |
+|--------|------|
+| Repeat last change | `.` |
+| Repeat last command | `@:` |
+| Repeat count times | `N{command}` (e.g., `3dd`) |
+
+## 📋 Common Workflows
+
+### Quick File Edit Flow
+```
+<leader>ff → find file
+i → insert mode
+(make changes)
+Esc → normal mode
+:w → save
+:q → quit
+```
+
+### Search and Replace Flow
+```
+<leader>fg → search text
+(review results)
+:%s/old/new/gc → replace with confirm
+```
+
+### Code Navigation Flow
+```
+<leader>fg → find usage
+gd → go to definition
+K → read docs
+Ctrl-o → jump back
+```
+
+### Multi-file Edit Flow
+```
+<leader>ff → open file 1
+<leader>ff → open file 2
+:bnext → switch between buffers
+(edit in each)
+:wa → save all
+```
+
+## 🆘 Emergency Commands
+
+| Situation | Solution |
+|-----------|----------|
+| Stuck in INSERT mode | `Esc` |
+| Weird screen/frozen | `Ctrl-c` then `:q!` |
+| Want to discard changes | `:q!` |
+| Accidentally changed something | `u` (undo) |
+| Need to exit immediately | `:qa!` |
+| Made a mistake in command | `Ctrl-c` or `Esc` |
+
+---
+
+**Pro Tip:** Don't try to memorize everything! Focus on 5-10 commands you use daily. The rest will come naturally.
+
+**Print this page** or keep it on a second monitor while you work!
