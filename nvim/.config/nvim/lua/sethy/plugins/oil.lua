@@ -4,7 +4,7 @@ return {
 	dependencies = { "nvim-tree/nvim-web-devicons" },
 	config = function()
 		require("oil").setup({
-            default_file_explorer = true, -- start up nvim with oil instead of netrw
+            default_file_explorer = false,
 			columns = { },
 			keymaps = {
 				["<C-h>"] = false,
@@ -17,6 +17,11 @@ return {
 				show_hidden = true,
 			},
             skip_confirm_for_simple_edits = true,
+			-- Add buffer validation to prevent errors
+			buf_options = {
+				buflisted = false,
+				bufhidden = "hide",
+			},
 		})
 
 		-- opens parent dir over current active window
