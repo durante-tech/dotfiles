@@ -13,7 +13,6 @@ return {
 		{ "<leader>pr", desc = "Fuzzy find recent files" },
 		{ "<leader>pWs", desc = "Find Connected Words under cursor" },
 		{ "<leader>ths", desc = "Theme Switcher" },
-		{ "<leader>pp", desc = "Switch project" },
 	},
 	config = function()
 		local telescope = require("telescope")
@@ -62,6 +61,6 @@ return {
 		end, { desc = "Find Connected Words under cursor" })
 
 		vim.keymap.set("n", "<leader>ths", "<cmd>Telescope themes<CR>", { noremap = true, silent = true, desc = "Theme Switcher" })
-		vim.keymap.set("n", "<leader>pp", "<cmd>Telescope projects<CR>", { desc = "Switch project" })
+		-- Note: <leader>pp keymap is set in project.lua after extension loads
     end,
 }
