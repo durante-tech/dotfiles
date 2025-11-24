@@ -3,7 +3,7 @@ local wezterm = require("wezterm")
 local config = wezterm.config_builder()
 
 -- appearance
-config.font = wezterm.font("JetBrainsMonoNL Nerd Font")
+config.font = wezterm.font("Codelia Ligatures")
 config.font_size = 17
 config.color_scheme = "rose-pine"
 config.colors = {
@@ -31,7 +31,7 @@ config.window_close_confirmation = "NeverPrompt"
 config.automatically_reload_config = true
 config.audible_bell = "Disabled"
 config.adjust_window_size_when_changing_font_size = false
-config.harfbuzz_features = { "calt=0" }
+config.harfbuzz_features = { "calt=1", "liga=1", "dlig=1" }  -- Enable ligatures
 
 -- mapping ctrl a to leader similar to tmux prefix
 config.leader = { key = "a" , mods = "CTRL" , timeout_milliseconds = 1000 }
