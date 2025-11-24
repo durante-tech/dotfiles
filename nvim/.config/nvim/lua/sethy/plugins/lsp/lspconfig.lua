@@ -80,17 +80,16 @@ return {
 
 
         -- NOTE :
-        -- Moved back from mason_lspconfig.setup_handlers from mason.lua file
-        -- as mason setup_handlers is deprecated & its causing issues with lsp settings
+        -- Updated to use vim.lsp.config API (Neovim 0.11+)
+        -- The old lspconfig.setup() pattern is deprecated
         --
         -- Setup servers
-        local lspconfig = require("lspconfig")
         local cmp_nvim_lsp = require("cmp_nvim_lsp")
         local capabilities = cmp_nvim_lsp.default_capabilities()
 
-        -- Config lsp servers here
+        -- Config lsp servers here using the new vim.lsp.config API
         -- lua_ls
-        lspconfig.lua_ls.setup({
+        vim.lsp.config.lua_ls = {
             capabilities = capabilities,
             settings = {
                 Lua = {
@@ -108,9 +107,11 @@ return {
                     },
                 },
             },
-        })
+        }
+        vim.lsp.enable("lua_ls")
+
         -- emmet_ls
-        lspconfig.emmet_ls.setup({
+        vim.lsp.config.emmet_ls = {
             capabilities = capabilities,
             filetypes = {
                 "html",
@@ -122,10 +123,11 @@ return {
                 "less",
                 "svelte",
             },
-        })
+        }
+        vim.lsp.enable("emmet_ls")
 
         -- emmet_language_server
-        lspconfig.emmet_language_server.setup({
+        vim.lsp.config.emmet_language_server = {
             capabilities = capabilities,
             filetypes = {
                 "css",
@@ -150,31 +152,18 @@ return {
                 syntaxProfiles = {},
                 variables = {},
             },
-        })
+        }
+        vim.lsp.enable("emmet_language_server")
 
-        -- denols
-        lspconfig.denols.setup({
+        -- denols (for Deno projects)
+        vim.lsp.config.denols = {
             capabilities = capabilities,
-            root_dir = lspconfig.util.root_pattern("deno.json", "deno.jsonc"),
-        })
+            root_markers = { "deno.json", "deno.jsonc" },
+        }
+        vim.lsp.enable("denols")
 
-        -- ts_ls (replaces tsserver)
-        -- lspconfig.ts_ls.setup({
-        --     capabilities = capabilities,
-        --     root_dir = function(fname)
-        --         local util = lspconfig.util
-        --         return not util.root_pattern("deno.json", "deno.jsonc")(fname)
-        --             and util.root_pattern("tsconfig.json", "package.json", "jsconfig.json", ".git")(fname)
-        --     end,
-        --     single_file_support = false,
-        --     init_options = {
-        --         preferences = {
-        --             includeCompletionsWithSnippetText = true,
-        --             includeCompletionsForImportStatements = true,
-        --         },
-        --     },
-        -- })
-        lspconfig.ts_ls.setup({
+        -- ts_ls (replaces tsserver) - excludes Deno projects
+        vim.lsp.config.ts_ls = {
             capabilities = capabilities,
             filetypes = {
                 "javascript",
@@ -182,22 +171,32 @@ return {
                 "typescript",
                 "typescriptreact",
             },
+            -- Exclude Deno projects (prefer denols for those)
             root_dir = function(fname)
-                local util = lspconfig.util
-                return not util.root_pattern("deno.json", "deno.jsonc")(fname)
-                    and util.root_pattern("tsconfig.json", "package.json", "jsconfig.json", ".git")(fname)
+                -- Check if this is NOT a Deno project
+                local function has_deno_config(path)
+                    return vim.fn.filereadable(path .. "/deno.json") == 1
+                        or vim.fn.filereadable(path .. "/deno.jsonc") == 1
+                end
+
+                -- Find project root
+                local root = vim.fs.root(fname, { "tsconfig.json", "package.json", "jsconfig.json", ".git" })
+                if root and not has_deno_config(root) then
+                    return root
+                end
+                return nil
             end,
-            single_file_support = false,
             init_options = {
                 preferences = {
                     includeCompletionsForModuleExports = true,
                     includeCompletionsForImportStatements = true,
                 },
             },
-        })
+        }
+        vim.lsp.enable("ts_ls")
 
         -- gopls
-        lspconfig.gopls.setup({
+        vim.lsp.config.gopls = {
             capabilities = capabilities,
             settings = {
                 gopls = {
@@ -208,7 +207,8 @@ return {
                     gofumpt = true,
                 },
             },
-        })
+        }
+        vim.lsp.enable("gopls")
 
         -- HACK: If using Blink.cmp Configure all LSPs here
 

@@ -21,10 +21,13 @@ return {
 
                     local modified = vim.bo[props.buf].modified
 
+                    -- Use Rose Pine theme colors
+                    local modified_color = "#f6c177"  -- Rose Pine gold for modifications
+
                     return {
                         { " ", icon, " ", guifg = icon_color },
                         { filename, gui = modified and "bold" or "none" },
-                        modified and { " [+]", guifg = "#ff9e64" } or "",
+                        modified and { " [+]", guifg = modified_color } or "",
                         " ",
                     }
                 end,

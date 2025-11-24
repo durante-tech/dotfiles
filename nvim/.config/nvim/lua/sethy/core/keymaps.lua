@@ -91,3 +91,19 @@ vim.keymap.set("n", "<leader>lx", function()
     })
 end, { desc = "Toggle LSP diagnostics" })
 
+-- Wrapped lines navigation (move by visual line, not actual line)
+vim.keymap.set("n", "j", "gj", { desc = "Move down by visual line" })
+vim.keymap.set("n", "k", "gk", { desc = "Move up by visual line" })
+vim.keymap.set("n", "gj", "j", { desc = "Move down by actual line" })
+vim.keymap.set("n", "gk", "k", { desc = "Move up by actual line" })
+
+-- Toggle wrapping on/off
+vim.keymap.set("n", "<leader>tw", function()
+    vim.opt.wrap = not vim.opt.wrap:get()
+    print("Wrap: " .. (vim.opt.wrap:get() and "ON" or "OFF"))
+end, { desc = "Toggle line wrapping" })
+
+-- Snacks picker keybindings (documented in docs/)
+vim.keymap.set("n", "<leader>ff", function() require("snacks").picker.files() end, { desc = "Find files" })
+vim.keymap.set("n", "<leader>fg", function() require("snacks").picker.grep() end, { desc = "Live grep (search in files)" })
+

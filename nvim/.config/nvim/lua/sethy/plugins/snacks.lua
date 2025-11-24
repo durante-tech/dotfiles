@@ -25,6 +25,7 @@ return {
             -- HACK: read picker docs @ https://github.com/folke/snacks.nvim/blob/main/docs/picker.md
             picker = {
                 enabled = true,
+                hidden = true,
                 matchers = {
                     frecency = true,
                     cwd_bonus = false,
@@ -103,7 +104,7 @@ return {
                 }
             },
             image = {
-                enabled = true,
+                enabled = false, -- Disabled to prevent errors with invalid image files
                 doc = {
                     float = true, -- show image on cursor hover
                     inline = false, -- show image inline

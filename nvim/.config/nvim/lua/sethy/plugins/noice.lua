@@ -36,7 +36,7 @@ return {
                             col = "50%",
                         },
                         win_options = {
-                            winhighlight = { Normal = "Normal", FloatBorder = "DiagnosticInfo" },
+                            winhighlight = { Normal = "Normal", FloatBorder = "FloatBorder" },
                         },
                     },
                     mini = {

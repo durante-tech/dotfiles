@@ -1,0 +1,84 @@
+# w3m configuration
+# Generated for dotfiles setup
+
+# Display settings
+tabstop 8
+indent_incr 4
+pixel_per_char 7
+pixel_per_line 14
+frame 1
+target_self 0
+open_tab_blank 0
+open_tab_dl_list 0
+display_link 1
+display_link_number 1
+decode_url 0
+display_lineinfo 1
+ext_dirlist 1
+dirlist_cmd file:///$LIB/dirlist.cgi
+
+# Color settings (matches Catppuccin Mocha theme)
+color 1
+basic_color terminal
+anchor_color cyan
+image_color green
+form_color red
+mark_color bright yellow
+bg_color terminal
+active_style 1
+active_color bright cyan
+active_bg_color terminal
+
+# Display image
+display_image 1
+auto_image 1
+
+# Proxy settings
+use_proxy 0
+
+# Navigation
+keymap_file ~/.w3m/keymap
+
+# User-Agent
+user_agent Mozilla/5.0 (compatible; w3m/0.5.3+git20230121)
+
+# Editor
+editor nvim
+
+# File type associations
+use_external_dirlist 0
+
+# Security
+ssl_verify_server 1
+
+# Cookie settings
+use_cookie 1
+show_cookie 0
+accept_cookie 1
+cookie_reject_domains
+cookie_accept_domains
+
+# History
+save_hist 1
+
+# Search
+wrap_search 1
+
+# Visual
+confirm_qq 1
+close_tab_back 0
+
+# Bookmarks
+bookmark_file ~/.w3m/bookmark.html
+
+# Performance
+max_load_image 4
+
+# Line editing
+emacs_like_lineedit 0
+vi_prec_num 0
+mark 0
+
+# Display
+label_topline 0
+nextpage_topline 0

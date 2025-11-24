@@ -1,3 +1,5 @@
+# Add deno completions to search path
+if [[ ":$FPATH:" != *":/Users/lgertel/.zsh/completions:"* ]]; then export FPATH="/Users/lgertel/.zsh/completions:$FPATH"; fi
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 # echo source ~/.bash_profile
 
@@ -35,6 +37,10 @@ export ATUIN_NOBIND="true"
 eval "$(atuin init zsh)"
 # bindkey '^r' _atuin_search_widget
 bindkey '^r' atuin-up-search-viins
+
+# Pyenv
+eval "$(pyenv init -)"
+
 #User configuration
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -47,6 +53,10 @@ export VISUAL=nvim
 bindkey -M viins '^E' autosuggest-accept
 bindkey -M viins '^P' up-line-or-history
 bindkey -M viins '^N' down-line-or-history
+
+# Shift+Enter for Ghostty (handles both escape sequence and fixterms)
+bindkey -M viins '^[^M' accept-line  # ESC+Enter
+bindkey -M viins '^[[27;2;13~' accept-line  # Ghostty fixterms sequence
 #----------------------------------------
 
 # zsh plugins
@@ -150,6 +160,19 @@ yt() {
     local video_link="$1"
     fabric -y "$video_link" $transcript_flag
 }
+
+# Claude CLI aliases
+alias cld="claude"
+alias cldp="claude -p"
+alias cldo="claude --model opus"
+alias clds="claude --model sonnet"
+alias cldys="claude --dangerously-skip-permissions --model sonnet"
+alias cldy="claude --dangerously-skip-permissions --model sonnet"
+alias cldyo="claude --dangerously-skip-permissions --model opus"
+alias lfg="claude --dangerously-skip-permissions --model opus"
+alias cldpy="claude -p --dangerously-skip-permissions"
+alias cldpyo="claude -p --dangerously-skip-permissions --model opus"
+alias cldr="claude --resume"
 # ---------------------------------------
 
 # brew installations activation (new mac systems brew path: opt/homebrew , not usr/local )
@@ -163,3 +186,5 @@ if [[ -x "$HOME/.claude/local/claude" ]]; then
 elif command -v claude >/dev/null 2>&1; then
     alias claude="$(command -v claude)"
 fi
+source ~/Developer/tac/scripts/aliases.sh
+source ~/Developer/tac/scripts/aliases.sh
