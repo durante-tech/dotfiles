@@ -4,8 +4,14 @@ background = #000000
 background-opacity = 0.75
 background-blur-radius = 23
 
-font-family = JetBrainsMonoNL Nerd Font
+font-family = JetBrainsMono Nerd Font
 font-size = 20
+
+# Enable programming ligatures (==, =>, !=, >=, <=, etc.)
+font-feature = +calt
+font-feature = +liga
+font-feature = +dlig
+
 cursor-style = block
 cursor-style-blink = false
 cursor-invert-fg-bg = true
