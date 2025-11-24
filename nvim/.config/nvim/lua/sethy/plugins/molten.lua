@@ -23,25 +23,15 @@ return {
         vim.g.molten_use_border_highlights = true
     end,
     config = function()
-        -- Auto-initialize Molten for .ipynb files
-        vim.api.nvim_create_autocmd("BufEnter", {
-            pattern = "*.ipynb",
-            callback = function()
-                -- Check if Molten is already initialized
-                local molten_initialized = vim.fn.exists('*MoltenNext') == 1
-                if not molten_initialized then
-                    -- Auto-initialize with Python kernel
-                    vim.schedule(function()
-                        vim.cmd('MoltenInit python3')
-                    end)
-                end
-            end,
-        })
-
         -- Highlight groups for Molten
         vim.api.nvim_set_hl(0, "MoltenOutputBorder", { fg = "#ffff00", bg = "NONE" })  -- Yellow border
         vim.api.nvim_set_hl(0, "MoltenOutputWin", { bg = "#1f1d2e" })  -- Rose-pine surface
         vim.api.nvim_set_hl(0, "MoltenCell", { bg = "#26233a" })  -- Slightly lighter for cells
+
+        -- Note: Auto-initialization removed to prevent errors
+        -- Manually initialize Molten with:
+        --   :MoltenInit python3
+        -- Or use keybinding: <leader>mI
     end,
     keys = {
         -- Initialize/Kernel Management
