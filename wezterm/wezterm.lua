@@ -8,9 +8,9 @@ config.font_size = 17
 config.color_scheme = "rose-pine"
 config.colors = {
     background = "#000",
-    cursor_bg = "#9B96B5",
-    cursor_fg = "#1a1a1e",
-    cursor_border = "#9B96B5",
+    cursor_bg = "#ffff00",
+    cursor_fg = "#191724",
+    cursor_border = "#ffff00",
 }
 config.window_padding = {
     left = 18,

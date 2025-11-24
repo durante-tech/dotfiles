@@ -22,6 +22,31 @@ if [[ "${widgets[zle-keymap-select]#user:}" == "starship_zle-keymap-select" || \
 fi
 eval "$(starship init zsh)"
 
+# Force yellow cursor in all vim modes (must be after Starship init)
+# Uses OSC 12 escape sequence to set cursor color
+_set_yellow_cursor() {
+  echo -ne "\e]12;#ffff00\a"
+}
+
+function zle-keymap-select {
+  _set_yellow_cursor
+}
+
+function zle-line-init {
+  _set_yellow_cursor
+}
+
+function zle-line-finish {
+  _set_yellow_cursor
+}
+
+zle -N zle-keymap-select
+zle -N zle-line-init
+zle -N zle-line-finish
+
+# Set yellow cursor on shell startup
+_set_yellow_cursor
+
 # Zoxide
 eval "$(zoxide init zsh)"
 
@@ -57,6 +82,7 @@ bindkey -M viins '^N' down-line-or-history
 # Shift+Enter for Ghostty (handles both escape sequence and fixterms)
 bindkey -M viins '^[^M' accept-line  # ESC+Enter
 bindkey -M viins '^[[27;2;13~' accept-line  # Ghostty fixterms sequence
+
 #----------------------------------------
 
 # zsh plugins
@@ -93,11 +119,33 @@ alias fman="compgen -c | fzf | xargs man"
 # zoxide (called from ~/scripts/)
 alias nzo="$HOME/scripts/zoxide_openfiles_nvim.sh"
 
-# Next level of an ls
-# options :  --no-filesize --no-time --no-permissions
-alias ls="eza --no-filesize --long --color=always --icons=always --no-user"
+# Eza - Next level ls with git integration
+# Basic ls with git status indicators (M=modified, N=new, I=ignored, etc.)
+alias ls="eza --long --color=always --icons=always --no-user --no-filesize --git"
 
-# tree
+# All files including hidden, with git status
+alias la="eza --long --all --color=always --icons=always --no-user --git"
+
+# Long format with file sizes and timestamps
+alias ll="eza --long --all --color=always --icons=always --no-user --git --header --group"
+
+# Tree view with git integration (ignores .git directory)
+alias lt="eza --tree --level=2 --color=always --icons=always --git --git-ignore"
+alias lt3="eza --tree --level=3 --color=always --icons=always --git --git-ignore"
+
+# Only directories
+alias lsd="eza --long --only-dirs --color=always --icons=always --no-user --git"
+
+# Sort by modified time (newest first)
+alias lm="eza --long --all --color=always --icons=always --no-user --git --sort=modified --reverse"
+
+# Sort by size (largest first)
+alias lz="eza --long --all --color=always --icons=always --no-user --git --sort=size --reverse"
+
+# Git-specific: show only modified/new files
+alias lg="eza --long --all --color=always --icons=always --no-user --git --git-ignore --only-files"
+
+# Classic tree command (fallback)
 alias tree="tree -L 3 -a -I '.git' --charset X "
 alias dtree="tree -L 3 -a -d -I '.git' --charset X "
 

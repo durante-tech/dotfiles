@@ -37,6 +37,17 @@ bindings = [
   { key = "Back",  mods = "Command", chars = "\u0017"    },# Delete word
 ]
 
+[cursor.style]
+shape = "Block"
+blinking = "Off"
+
+[cursor.vi_mode_style]
+shape = "Block"
+
+[colors.cursor]
+text = "#191724"
+cursor = "#ffff00"
+
 [colors]
 draw_bold_text_with_bright_colors = false
 transparent_background_colors = true
