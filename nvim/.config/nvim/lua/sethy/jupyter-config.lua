@@ -1,11 +1,10 @@
 -- Jupytext: Work with Jupyter notebooks as Python files
 -- Automatically converts .ipynb files to editable .py format
+-- This is NOT a Lazy plugin - it's pure Lua configuration
 
-return {
-    -- Jupytext configuration via autocommands
-    -- No plugin needed - uses jupytext CLI tool
+local M = {}
 
-    config = function()
+function M.setup()
         -- Create autocommand group for Jupyter notebooks
         local jupyter_group = vim.api.nvim_create_augroup("JupyterNotebook", { clear = true })
 
@@ -87,5 +86,6 @@ return {
         --         end
         --     end,
         -- })
-    end,
-}
+end
+
+return M
