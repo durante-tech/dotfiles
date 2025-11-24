@@ -39,5 +39,8 @@ return {
 
         -- Load telescope extension
         require("telescope").load_extension("projects")
+
+        -- Set up keymap after extension is loaded
+        vim.keymap.set("n", "<leader>pp", "<cmd>Telescope projects<CR>", { desc = "Switch project" })
     end,
 }
