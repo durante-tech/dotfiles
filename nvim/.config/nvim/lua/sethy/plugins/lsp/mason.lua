@@ -51,13 +51,29 @@ return {
 
         mason_tool_installer.setup({
             ensure_installed = {
-                "prettier", -- prettier formatter
-                "stylua",   -- lua formatter
-                "isort",    -- python formatter
+                -- Formatters (most common, based on npm downloads & usage)
+                "prettier",      -- JS/TS/HTML/CSS/JSON/YAML/Markdown (76M downloads/week)
+                "prettierd",     -- Prettier daemon (faster)
+                "stylua",        -- Lua formatter (Neovim ecosystem standard)
+                "shfmt",         -- Shell script formatter
+                "black",         -- Python formatter (traditional, 30M downloads/month)
+                "isort",         -- Python import sorter
+                "gofumpt",       -- Go formatter (stricter than gofmt)
+                "goimports",     -- Go imports organizer
+                "taplo",         -- TOML formatter
+                "yamlfmt",       -- YAML formatter (alternative to prettier)
+                "sql-formatter", -- SQL formatter
+                "markdownlint",  -- Markdown linter
+                "biome",         -- JS/TS/JSON formatter & linter (fast, Rust-based)
+
+                -- Linters
                 "pylint",
+                "eslint_d",      -- ESLint daemon (faster)
+                "shellcheck",    -- Shell script linter
+
+                -- LSP servers
                 "clangd",
                 "denols",
-                -- { 'eslint_d', version = '13.1.2' },
             },
 
             -- NOTE: mason BREAKING Change! Removed setup_handlers

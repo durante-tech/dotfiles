@@ -57,10 +57,10 @@ return {
 
         -- Define sign icons for each severity
         local signs = {
-            [vim.diagnostic.severity.ERROR] = " ",
-            [vim.diagnostic.severity.WARN] = " ",
+            [vim.diagnostic.severity.ERROR] = " ",
+            [vim.diagnostic.severity.WARN] = " ",
             [vim.diagnostic.severity.HINT] = "󰠠 ",
-            [vim.diagnostic.severity.INFO] = " ",
+            [vim.diagnostic.severity.INFO] = " ",
         }
 
         -- Set diagnostic config
@@ -73,6 +73,10 @@ return {
             update_in_insert = false,
         })
 
+        -- NOTE :
+        -- Updated to use vim.lsp.config API (Neovim 0.11+)
+        -- The old lspconfig.setup() pattern is deprecated
+        --
         -- Setup servers
         local cmp_nvim_lsp = require("cmp_nvim_lsp")
         local capabilities = cmp_nvim_lsp.default_capabilities()
@@ -147,6 +151,12 @@ return {
         })
         vim.lsp.enable("emmet_ls")
 
+        -- denols (for Deno projects)
+        vim.lsp.config("denols", {
+            root_markers = { "deno.json", "deno.jsonc" },
+        })
+        vim.lsp.enable("denols")
+
         -- ts_ls (TypeScript/JavaScript)
         vim.lsp.config("ts_ls", {
             filetypes = {
@@ -178,5 +188,58 @@ return {
             },
         })
         vim.lsp.enable("gopls")
+
+        -- HACK: If using Blink.cmp Configure all LSPs here
+
+        -- ( comment the ones in mason )
+        -- local lspconfig = require("lspconfig")
+        -- local capabilities = require("blink.cmp").get_lsp_capabilities() -- Import capabilities from blink.cmp
+
+        -- Configure lua_ls
+        -- lspconfig.lua_ls.setup({
+        --     capabilities = capabilities,
+        --     settings = {
+        --         Lua = {
+        --             diagnostics = {
+        --                 globals = { "vim" },
+        --             },
+        --             completion = {
+        --                 callSnippet = "Replace",
+        --             },
+        --             workspace = {
+        --                 library = {
+        --                     [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+        --                     [vim.fn.stdpath("config") .. "/lua"] = true,
+        --                 },
+        --             },
+        --         },
+        --     },
+        -- })
+        --
+        -- -- Configure tsserver (TypeScript and JavaScript)
+        -- lspconfig.ts_ls.setup({
+        --     capabilities = capabilities,
+        --     root_dir = function(fname)
+        --         local util = lspconfig.util
+        --         return not util.root_pattern('deno.json', 'deno.jsonc')(fname)
+        --             and util.root_pattern('tsconfig.json', 'package.json', 'jsconfig.json', '.git')(fname)
+        --     end,
+        --     single_file_support = false,
+        --     on_attach = function(client, bufnr)
+        --         -- Disable formatting if you're using a separate formatter like Prettier
+        --         client.server_capabilities.documentFormattingProvider = false
+        --     end,
+        --     init_options = {
+        --         preferences = {
+        --             includeCompletionsWithSnippetText = true,
+        --             includeCompletionsForImportStatements = true,
+        --         },
+        --     },
+        -- })
+
+        -- Add other LSP servers as needed, e.g., gopls, eslint, html, etc.
+        -- lspconfig.gopls.setup({ capabilities = capabilities })
+        -- lspconfig.html.setup({ capabilities = capabilities })
+        -- lspconfig.cssls.setup({ capabilities = capabilities })
     end,
 }

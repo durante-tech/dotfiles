@@ -58,6 +58,14 @@ return {
             sign = false,
             width = "block",
             right_pad = 1,
+            -- Highlight Mermaid code blocks
+            language_pad = 2,
+            left_pad = 1,
+        },
+        -- Render language name for code blocks (helps identify Mermaid)
+        sign = {
+            enabled = true,
+            highlight = "RenderMarkdownSign",
         },
         bullet = {
             -- Turn on / off list bullet rendering

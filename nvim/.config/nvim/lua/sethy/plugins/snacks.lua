@@ -25,6 +25,7 @@ return {
             -- HACK: read picker docs @ https://github.com/folke/snacks.nvim/blob/main/docs/picker.md
             picker = {
                 enabled = true,
+                hidden = true,
                 matchers = {
                     frecency = true,
                     cwd_bonus = false,
@@ -67,7 +68,7 @@ return {
                         }
                     },
                     telescope = {
-                        reverse = true, -- set to false for search bar to be on top 
+                        reverse = true, -- set to false for search bar to be on top
                         layout = {
                             box = "horizontal",
                             backdrop = false,

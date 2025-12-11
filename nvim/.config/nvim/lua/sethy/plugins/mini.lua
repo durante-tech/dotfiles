@@ -33,17 +33,51 @@ return {
             local MiniFiles = require("mini.files")
             MiniFiles.setup({
                 mappings = {
-                    go_in = "<CR>", -- Map both Enter and L to enter directories or open files
+                    close = "q",
+                    go_in = "<CR>",
                     go_in_plus = "L",
                     go_out = "-",
                     go_out_plus = "H",
+                    reset = "<BS>",
+                    reveal_cwd = "@",
+                    show_help = "g?",
+                    synchronize = "=",  -- ADD THIS: synchronize creates/deletes files
+                    trim_left = "<",
+                    trim_right = ">",
+                },
+                windows = {
+                    preview = true,
+                    width_focus = 30,
+                    width_nofocus = 20,
+                    width_preview = 40,
+                },
+                options = {
+                    permanent_delete = false,
+                    use_as_default_explorer = true,
                 },
             })
-            vim.keymap.set("n", "<leader>ee", "<cmd>lua MiniFiles.open()<CR>", { desc = "Toggle mini file explorer" }) -- toggle file explorer
-            vim.keymap.set("n", "<leader>ef", function()
+
+            -- Open mini.files anchored to the left side
+            local function open_mini_files_left()
+                MiniFiles.open(vim.uv.cwd(), false)
+                -- Position window at left edge after opening
+                vim.schedule(function()
+                    local win = vim.api.nvim_get_current_win()
+                    local config = vim.api.nvim_win_get_config(win)
+                    if config.relative ~= "" then
+                        config.col = 0
+                        config.row = 1
+                        vim.api.nvim_win_set_config(win, config)
+                    end
+                end)
+            end
+            -- Mini.files available via <leader>em (for "mini")
+            -- Primary file explorer is now Neo-tree (<leader>ee)
+            vim.keymap.set("n", "<leader>em", open_mini_files_left, { desc = "Mini.files explorer" })
+            vim.keymap.set("n", "<leader>eM", function()
                 MiniFiles.open(vim.api.nvim_buf_get_name(0), false)
                 MiniFiles.reveal_cwd()
-            end, { desc = "Toggle into currently opened file" })
+            end, { desc = "Mini.files reveal current file" })
         end,
     },
     -- Surround

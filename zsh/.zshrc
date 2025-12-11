@@ -1,3 +1,5 @@
+# Add deno completions to search path
+if [[ ":$FPATH:" != *":/Users/lgertel/.zsh/completions:"* ]]; then export FPATH="/Users/lgertel/.zsh/completions:$FPATH"; fi
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 # echo source ~/.bash_profile
 
@@ -23,6 +25,46 @@ if [[ "${widgets[zle-keymap-select]#user:}" == "starship_zle-keymap-select" || \
 fi
 eval "$(starship init zsh)"
 
+# Force yellow cursor in all vim modes (must be after Starship init)
+# Uses OSC 12 escape sequence to set cursor color
+_set_yellow_cursor() {
+  echo -ne "\e]12;#ffff00\a"
+}
+
+function zle-keymap-select {
+  _set_yellow_cursor
+}
+
+function zle-line-init {
+  _set_yellow_cursor
+}
+
+function zle-line-finish {
+  _set_yellow_cursor
+}
+
+zle -N zle-keymap-select
+zle -N zle-line-init
+zle -N zle-line-finish
+
+# Set yellow cursor on shell startup
+_set_yellow_cursor
+
+# Auto-clear terminal only after specific interactive commands
+_last_command=""
+
+preexec() {
+  _last_command="$1"
+}
+
+precmd() {
+  # Only clear after these interactive commands (nvim, claude, lazygit, etc.)
+  if [[ "$_last_command" =~ "^(nvim|vim|claude|cld|lazygit|htop|btop|yazi)" ]]; then
+    clear
+  fi
+  _set_yellow_cursor
+}
+
 # Zoxide
 eval "$(zoxide init zsh)"
 
@@ -38,6 +80,10 @@ export ATUIN_NOBIND="true"
 eval "$(atuin init zsh)"
 # bindkey '^r' _atuin_search_widget
 bindkey '^r' atuin-up-search-viins
+
+# Pyenv
+eval "$(pyenv init -)"
+
 #User configuration
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -50,6 +96,11 @@ export VISUAL=nvim
 bindkey -M viins '^E' autosuggest-accept
 bindkey -M viins '^P' up-line-or-history
 bindkey -M viins '^N' down-line-or-history
+
+# Shift+Enter for Ghostty (handles both escape sequence and fixterms)
+bindkey -M viins '^[^M' accept-line  # ESC+Enter
+bindkey -M viins '^[[27;2;13~' accept-line  # Ghostty fixterms sequence
+
 #----------------------------------------
 
 # zsh plugins
@@ -86,11 +137,33 @@ alias fman="compgen -c | fzf | xargs man"
 # zoxide (called from ~/scripts/)
 alias nzo="$HOME/scripts/zoxide_openfiles_nvim.sh"
 
-# Next level of an ls
-# options :  --no-filesize --no-time --no-permissions
-alias ls="eza --no-filesize --long --color=always --icons=always --no-user"
+# Eza - Next level ls with git integration
+# Basic ls with git status indicators (M=modified, N=new, I=ignored, etc.)
+alias ls="eza --long --color=always --icons=always --no-user --no-filesize --git"
 
-# tree
+# All files including hidden, with git status
+alias la="eza --long --all --color=always --icons=always --no-user --git"
+
+# Long format with file sizes and timestamps
+alias ll="eza --long --all --color=always --icons=always --no-user --git --header --group"
+
+# Tree view with git integration (ignores .git directory)
+alias lt="eza --tree --level=2 --color=always --icons=always --git --git-ignore"
+alias lt3="eza --tree --level=3 --color=always --icons=always --git --git-ignore"
+
+# Only directories
+alias lsd="eza --long --only-dirs --color=always --icons=always --no-user --git"
+
+# Sort by modified time (newest first)
+alias lm="eza --long --all --color=always --icons=always --no-user --git --sort=modified --reverse"
+
+# Sort by size (largest first)
+alias lz="eza --long --all --color=always --icons=always --no-user --git --sort=size --reverse"
+
+# Git-specific: show only modified/new files
+alias lg="eza --long --all --color=always --icons=always --no-user --git --git-ignore --only-files"
+
+# Classic tree command (fallback)
 alias tree="tree -L 3 -a -I '.git' --charset X "
 alias dtree="tree -L 3 -a -d -I '.git' --charset X "
 
@@ -153,6 +226,19 @@ yt() {
     local video_link="$1"
     fabric -y "$video_link" $transcript_flag
 }
+
+# Claude CLI aliases
+alias cld="claude"
+alias cldp="claude -p"
+alias cldo="claude --model opus"
+alias clds="claude --model sonnet"
+alias cldys="claude --dangerously-skip-permissions --model sonnet"
+alias cldy="claude --dangerously-skip-permissions --model sonnet"
+alias cldyo="claude --dangerously-skip-permissions --model opus"
+alias lfg="claude --dangerously-skip-permissions --model opus"
+alias cldpy="claude -p --dangerously-skip-permissions"
+alias cldpyo="claude -p --dangerously-skip-permissions --model opus"
+alias cldr="claude --resume"
 # ---------------------------------------
 
 # brew installations activation (new mac systems brew path: opt/homebrew , not usr/local )
@@ -166,3 +252,4 @@ if [[ -x "$HOME/.claude/local/claude" ]]; then
 elif command -v claude >/dev/null 2>&1; then
     alias claude="$(command -v claude)"
 fi
+source ~/Developer/tac/scripts/aliases.sh

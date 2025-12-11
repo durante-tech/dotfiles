@@ -21,10 +21,40 @@ return {
                 highlight_groups = {
                     ColorColumn = { bg = "#1C1C21" },
                     Normal = { bg = "none" },                      -- Main background remains transparent
-                    Pmenu = { bg = "", fg = "#e0def4" },           -- Completion menu background
-                    PmenuSel = { bg = "#4a465d", fg = "#f8f5f2" }, -- Highlighted completion item
+                    Pmenu = { bg = "#1f1d2e", fg = "#e0def4" },    -- Completion menu background
+                    PmenuSel = { bg = "#403d52", fg = "#e0def4" }, -- Highlighted completion item
                     PmenuSbar = { bg = "#191724" },                -- Scrollbar background
                     PmenuThumb = { bg = "#9ccfd8" },               -- Scrollbar thumb
+
+                    -- Telescope improvements
+                    TelescopeNormal = { bg = "#191724", fg = "#e0def4" },
+                    TelescopeBorder = { bg = "#191724", fg = "#403d52" },
+                    TelescopePromptNormal = { bg = "#1f1d2e" },
+                    TelescopePromptBorder = { bg = "#1f1d2e", fg = "#eb6f92" },
+                    TelescopePromptTitle = { bg = "#eb6f92", fg = "#191724" },
+                    TelescopePreviewTitle = { bg = "#c4a7e7", fg = "#191724" },
+                    TelescopeResultsTitle = { bg = "#403d52", fg = "#e0def4" },
+                    TelescopeSelection = { bg = "#403d52", fg = "#e0def4" },
+
+                    -- Float windows
+                    NormalFloat = { bg = "#1f1d2e" },
+                    FloatBorder = { fg = "#403d52", bg = "#1f1d2e" },
+                    FloatTitle = { fg = "#eb6f92", bg = "#1f1d2e" },
+
+                    -- Noice (command line UI)
+                    NoiceCmdlinePopupBorder = { fg = "#eb6f92", bg = "none" },
+                    NoiceCmdlineIcon = { fg = "#c4a7e7" },
+
+                    -- Git signs
+                    GitSignsAdd = { fg = "#9ccfd8" },
+                    GitSignsChange = { fg = "#f6c177" },
+                    GitSignsDelete = { fg = "#eb6f92" },
+
+                    -- Diagnostic colors
+                    DiagnosticError = { fg = "#eb6f92" },
+                    DiagnosticWarn = { fg = "#f6c177" },
+                    DiagnosticInfo = { fg = "#c4a7e7" },
+                    DiagnosticHint = { fg = "#9ccfd8" },
                 },
                 enable = {
                     terminal = false,

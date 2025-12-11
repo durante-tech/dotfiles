@@ -3,14 +3,15 @@ local wezterm = require("wezterm")
 local config = wezterm.config_builder()
 
 -- appearance
-config.font = wezterm.font("JetBrainsMonoNL Nerd Font")
-config.font_size = 17
+config.font = wezterm.font("Codelia Ligatures")
+config.font_size = 16
+config.cell_width = 0.9  -- Reduce character spacing (1.0 = default)
 config.color_scheme = "rose-pine"
 config.colors = {
     background = "#000",
-    cursor_bg = "#9B96B5",
-    cursor_fg = "#1a1a1e",
-    cursor_border = "#9B96B5",
+    cursor_bg = "#ffff00",
+    cursor_fg = "#191724",
+    cursor_border = "#ffff00",
 }
 config.window_padding = {
     left = 18,
@@ -31,7 +32,7 @@ config.window_close_confirmation = "NeverPrompt"
 config.automatically_reload_config = true
 config.audible_bell = "Disabled"
 config.adjust_window_size_when_changing_font_size = false
-config.harfbuzz_features = { "calt=0" }
+config.harfbuzz_features = { "calt=1", "liga=1", "dlig=1" }  -- Enable ligatures
 
 -- mapping ctrl a to leader similar to tmux prefix
 config.leader = { key = "a" , mods = "CTRL" , timeout_milliseconds = 1000 }
