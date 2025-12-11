@@ -1,0 +1,67 @@
+# w3m keymap - Vi-like keybindings
+# Following the pattern of other tools in this dotfiles setup
+
+# Navigation (vi-style)
+keymap j DOWN
+keymap k UP
+keymap h LEFT
+keymap l RIGHT
+
+# Scrolling
+keymap C-f NEXT_PAGE
+keymap C-b PREV_PAGE
+keymap C-d NEXT_HALF_PAGE
+keymap C-u PREV_HALF_PAGE
+keymap gg BEGIN
+keymap G END
+keymap 0 LINE_BEGIN
+keymap $ LINE_END
+
+# Tabs
+keymap t NEW_TAB
+keymap T TAB_MENU
+keymap C-h PREV_TAB
+keymap C-l NEXT_TAB
+keymap d CLOSE_TAB
+
+# Links
+keymap f MOVE_LIST_MENU
+keymap F LIST_MENU
+keymap C-g LINE_INFO
+
+# Search
+keymap / SEARCH
+keymap ? SEARCH_BACK
+keymap n SEARCH_NEXT
+keymap N SEARCH_PREV
+
+# History
+keymap H BACK
+keymap L NEXT
+keymap C-o BACK
+
+# Other
+keymap r RELOAD
+keymap o GOTO
+keymap O TAB_GOTO
+keymap B BACK
+keymap u GOTO
+keymap U TAB_GOTO
+keymap v VIEW
+keymap ` MARK
+keymap ' MARK_MID
+keymap ESC-m MOUSE_TOGGLE
+keymap : COMMAND
+keymap q QUIT
+keymap Q QUIT
+
+# Bookmarks
+keymap a ADD_BOOKMARK
+keymap b VIEW_BOOKMARK
+
+# External browser (open in default browser)
+keymap M EXTERN
+keymap ESC-M EXTERN_LINK
+
+# Help
+keymap ? HELP

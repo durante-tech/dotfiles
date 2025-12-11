@@ -1,0 +1,341 @@
+# Tmux Quick Start
+
+Get productive with tmux in 10 minutes.
+
+## What is Tmux?
+
+Think of tmux as having **multiple terminal tabs that persist even when you disconnect**. You can:
+- Split your terminal into multiple panes
+- Have multiple "windows" (like tabs) in one session
+- Detach and come back later - everything is still running
+- Organize different projects in different sessions
+
+## The Key Concept: Prefix Key
+
+**Almost all tmux commands start with the prefix key**: `Ctrl+b`
+
+```
+Press Ctrl+b, release, then press another key
+```
+
+Example: `Ctrl+b` then `|` splits the terminal vertically.
+
+> **Tip:** Think of it like "Hey tmux, I'm talking to you now!" before giving a command.
+
+## 10-Minute Essential Commands
+
+### 1. Starting Tmux (2 minutes)
+
+**Start your first session:**
+```bash
+tmux
+```
+
+You're now in tmux! **Notice the status bar at the bottom** (Catppuccin Mocha theme):
+
+**Status Bar Layout:**
+```
+[Session name] | [Current directory] | [zoom]     [windows]     [battery] | [online]
+     GREEN              BLUE          YELLOW      (center)        GREEN     ROSE/RED
+```
+
+**Visual indicators:**
+- **Session name**: Green normally, **turns RED when you press prefix** (Ctrl+b)
+- **Current directory**: Blue, truncated to 32 chars
+- **Zoom indicator**: Yellow "zoom" appears when pane is maximized
+- **Windows**: Current window has **blue background**
+- **Battery**: Shows percentage, turns red if <10%
+- **Online status**: Rose "on" or red "off"
+
+**Exit tmux (for now):**
+```bash
+exit
+# or
+Ctrl+b then D  # Detach (capital D - session keeps running)
+```
+
+> **Note:** Your config uses `Ctrl+b d` (lowercase) for the **Config menu** to edit dotfiles.
+> Use `Ctrl+b D` (capital D) to detach.
+
+**Get back to your session:**
+```bash
+tmux attach
+```
+
+### 2. Splitting Panes (3 minutes)
+
+**Split vertically (side by side):**
+```
+Ctrl+b then |
+```
+
+**Split horizontally (top and bottom):**
+```
+Ctrl+b then -
+```
+
+**Navigate between panes:**
+```
+Ctrl+h/j/k/l   # Left, Down, Up, Right (works with Neovim too!)
+```
+
+**Close a pane:**
+```
+exit
+# or
+Ctrl+b then x  # Confirm with 'y'
+```
+
+**Maximize/restore a pane:**
+```
+Ctrl+b then m  # Toggle zoom
+```
+
+**Practice Now:**
+1. Start tmux: `tmux`
+2. Split vertically: `Ctrl+b |`
+3. Split the right pane horizontally: `Ctrl+b -`
+4. Navigate: `Ctrl+h`, `Ctrl+l`, `Ctrl+j`, `Ctrl+k`
+5. Maximize one: `Ctrl+b m`
+6. Restore: `Ctrl+b m`
+
+### 3. Windows (Tabs) (2 minutes)
+
+**Create a new window:**
+```
+Ctrl+b then c
+```
+
+**Switch between windows:**
+```
+Ctrl+b then n  # Next window
+Ctrl+b then p  # Previous window
+Ctrl+b then 1-9  # Go to window number (your config starts at 1, not 0)
+```
+
+**Visual indicator:** Current window shows with **blue background** in status bar.
+
+**Rename window:**
+```
+Ctrl+b then ,  # Type new name, press Enter
+```
+
+**Close window:**
+```
+exit  # Or Ctrl+b then x in last pane
+```
+
+**Practice Now:**
+1. Create 3 windows: `Ctrl+b c` (twice)
+2. Name first: `Ctrl+b ,` type "editor" `Enter`
+3. Switch to window 2: `Ctrl+b 2`
+4. Name second: `Ctrl+b ,` type "tests" `Enter`
+5. Switch to window 3: `Ctrl+b 3`
+6. Name third: `Ctrl+b ,` type "server" `Enter`
+7. Navigate: `Ctrl+b 1`, `Ctrl+b 2`, `Ctrl+b 3` (watch blue highlight move!)
+
+### 4. Sessions (Projects) (2 minutes)
+
+**Your current session is unnamed. Let's work with named sessions:**
+
+```bash
+# Exit current session (from terminal)
+tmux kill-session
+
+# Create named session
+tmux new -s myproject
+
+# Detach (session keeps running)
+Ctrl+b then d
+
+# List sessions
+tmux ls
+
+# Attach to specific session
+tmux attach -t myproject
+
+# Switch between sessions (inside tmux)
+Ctrl+b then o  # Opens SessionX (fuzzy finder!)
+```
+
+**Practice Now:**
+1. Create session: `tmux new -s project1`
+2. Do some work (open nvim, run a command, etc.)
+3. Detach: `Ctrl+b D` (capital D!)
+4. Create another: `tmux new -s project2`
+5. Detach: `Ctrl+b D`
+6. List: `tmux ls`
+7. Go back to project1: `tmux attach -t project1`
+8. Or use SessionX: `Ctrl+b o` (fuzzy find!)
+
+### 5. Copy Mode (Scrolling) (1 minute)
+
+**Enter copy mode (like vim):**
+```
+Ctrl+b then v
+```
+
+**Navigate:**
+- `h/j/k/l` - Move cursor
+- `/` - Search
+- `n/N` - Next/previous match
+- `v` - Start selection
+- `y` - Copy
+- `q` - Exit copy mode
+
+**Practice Now:**
+1. Run a command with lots of output: `ls -la /`
+2. Enter copy mode: `Ctrl+b v`
+3. Scroll up: `k k k` or `Ctrl+u`
+4. Search: `/bin` `Enter`
+5. Exit: `q`
+
+## Your First Real Workflow
+
+**Scenario: Work on a web project**
+
+```bash
+# 1. Create project session
+tmux new -s myapp
+
+# 2. Rename first window to "editor"
+Ctrl+b ,
+# Type: editor
+# Press Enter
+
+# 3. Open your code
+cd ~/projects/myapp
+nvim
+
+# 4. Create new window for "server"
+Ctrl+b c
+Ctrl+b ,
+# Type: server
+# Press Enter
+
+# 5. Run server
+npm run dev
+
+# 6. Create window for "tests"
+Ctrl+b c
+Ctrl+b ,
+# Type: tests
+# Press Enter
+
+# 7. Split for git status
+Ctrl+b |
+
+# Left pane: run tests
+npm test
+
+# Right pane: git status
+git status
+
+# 8. Navigate between windows
+Ctrl+b 1  # Editor
+Ctrl+b 2  # Server
+Ctrl+b 3  # Tests
+
+# 9. Detach when done (everything keeps running!)
+Ctrl+b D  # Capital D!
+
+# 10. Come back later
+tmux attach -t myapp
+# Everything is exactly as you left it!
+```
+
+## Essential Keybindings Summary
+
+**Prefix: `Ctrl+b` (press before each command)**
+
+| Keys | Action |
+|------|--------|
+| **Sessions** | |
+| `D` | Detach session (capital D!) |
+| `d` | Config menu (edit dotfiles) |
+| `o` | SessionX (switch projects) |
+| **Windows** | |
+| `c` | Create window |
+| `,` | Rename window |
+| `n` | Next window |
+| `p` | Previous window |
+| `1-9` | Go to window number (starts at 1) |
+| **Panes** | |
+| `\|` | Split vertical |
+| `-` | Split horizontal |
+| `m` | Maximize pane |
+| `x` | Close pane |
+| `h/j/k/l` | Resize panes |
+| **Other** | |
+| `v` | Copy mode |
+| `r` | Reload config |
+| `?` | Show all keybindings |
+
+## Terminal vs Tmux Panes
+
+**You can use Ctrl+h/j/k/l to move between:**
+- Tmux panes
+- Neovim splits
+- Seamlessly! (thanks to vim-tmux-navigator plugin)
+
+## Quick Tips
+
+1. **Detach often** - Your work persists. Use `Ctrl+b D` (capital D!), don't close tmux
+2. **Config menu** - `Ctrl+b d` (lowercase) opens quick edit menu for dotfiles
+3. **Name your sessions** - `tmux new -s projectname` not just `tmux`
+4. **Think hierarchically** - Session → Windows → Panes
+5. **Mouse works!** - Click panes, drag borders, scroll
+6. **Copy mode is vim** - If you know vim, you know copy mode
+7. **Auto-saves** - Your sessions auto-save every 15 minutes
+
+## Common "I'm Stuck" Situations
+
+**"I pressed Ctrl+b and nothing happened"**
+- Did you release Ctrl+b before pressing the next key?
+- Correct: Press `Ctrl+b`, **release**, then press `|`
+- Incorrect: Hold `Ctrl+b` and press `|`
+
+**"My split disappeared"**
+- You probably closed it with `exit` or `Ctrl+b x`
+- Create a new one: `Ctrl+b |` or `Ctrl+b -`
+
+**"I can't see my status bar"**
+- Your terminal might be too small
+- Try: `Ctrl+b r` to reload config
+
+**"How do I get out of copy mode?"**
+- Press `q`
+
+**"I want to scroll up but it's scrolling tmux history, not my app"**
+- If you're in copy mode (`Ctrl+b v`), press `q` first
+- If you want to scroll a pane: click it first, then scroll
+
+## Next Steps
+
+Now that you have the basics:
+
+1. **Keep practicing** these 10-minute essentials
+2. **Read [Daily Cheatsheet](daily-cheatsheet.md)** - keep it open while working
+3. **Learn [Sessions](workflows/sessions.md)** - master project management
+4. **Learn [Panes](workflows/panes.md)** - advanced splitting
+
+## Your First Challenge
+
+Try this workflow **right now**:
+
+1. Create a session called "practice": `tmux new -s practice`
+2. Create 3 windows (code, test, server)
+3. In "code" window: split vertically, open nvim on left
+4. In "test" window: split horizontally
+5. Navigate between everything using `Ctrl+h/j/k/l`
+6. Detach: `Ctrl+b d`
+7. Attach back: `tmux attach -t practice`
+8. Everything should be exactly as you left it!
+
+**Time yourself - can you do this in under 2 minutes?**
+
+---
+
+**Confused?** That's normal! Tmux has a learning curve, but once it clicks, you'll wonder how you lived without it.
+
+**Ready for more?** Check out [Daily Cheatsheet](daily-cheatsheet.md) and start using tmux for real work!

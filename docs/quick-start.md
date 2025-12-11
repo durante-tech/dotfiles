@@ -1,0 +1,266 @@
+# Quick Start Guide
+
+Get productive with this Neovim configuration in 5 minutes.
+
+## Prerequisites
+
+Make sure you've followed the installation steps from the main README. You should have:
+- Neovim 0.11+ installed
+- All plugins installed (run `:Lazy sync` in Neovim)
+- LSP servers installed via Mason (`:Mason`)
+
+## The 5-Minute Essentials
+
+### 1. Understanding the Leader Key
+
+The **leader key** is `<Space>`. Most custom keybindings start with it.
+
+```
+<leader>ff  means:  Space, then f, then f
+```
+
+### 2. Opening Neovim
+
+```bash
+# Open in current directory
+nvim
+
+# Open a specific file
+nvim myfile.js
+
+# Open in a project directory
+cd ~/projects/myapp && nvim
+```
+
+### 3. The Five Commands You Need Right Now
+
+| Command | What It Does | Example |
+|---------|--------------|---------|
+| `<leader>ff` | Find files by name | Space-f-f, type "user" |
+| `<leader>fg` | Search text in files | Space-f-g, type "function" |
+| `i` | Enter INSERT mode | Press i, start typing |
+| `:w` | Save file | Type :w, press Enter |
+| `:q` | Quit | Type :q, press Enter |
+
+### 4. Basic Editing Flow
+
+**Opening and editing a file:**
+```
+1. nvim                          # Open Neovim
+2. Press: <leader>ff            # Find files
+3. Type part of filename        # e.g., "user"
+4. Press Enter                  # Opens the file
+5. Press: i                     # Enter INSERT mode
+6. Type your changes            # Normal typing
+7. Press: Esc                   # Back to NORMAL mode
+8. Type: :w                     # Save
+9. Type: :q                     # Quit
+```
+
+**Quick save and quit:**
+```
+:wq    # Save and quit
+:q!    # Quit without saving
+```
+
+### 5. Essential Motions (Movement Keys)
+
+You'll use these 100 times a day:
+
+| Key | Movement |
+|-----|----------|
+| `h` `j` `k` `l` | Left, Down, Up, Right |
+| `w` | Next word |
+| `b` | Previous word |
+| `0` | Start of line |
+| `$` | End of line |
+| `gg` | Top of file |
+| `G` | Bottom of file |
+| `{` `}` | Previous/Next paragraph |
+
+**Practice:**
+1. Open any file
+2. Press `Esc` to enter NORMAL mode
+3. Press `j` 5 times (moves down)
+4. Press `w` 3 times (jumps words)
+5. Press `gg` (jumps to top)
+
+## Your First Real Workflow
+
+Let's edit an actual file:
+
+### Scenario: Fix a bug in a JavaScript file
+
+```bash
+# 1. Navigate to project
+cd ~/projects/myapp
+
+# 2. Open Neovim
+nvim
+
+# 3. Find the file (in Neovim)
+# Press: <leader>ff
+# Type: user.js
+# Press: Enter
+
+# 4. Search for the bug
+# Press: /
+# Type: getUserById
+# Press: Enter (jumps to it)
+
+# 5. Edit the function
+# Press: i (enter INSERT mode)
+# Make your changes
+# Press: Esc (back to NORMAL mode)
+
+# 6. Save
+# Type: :w
+
+# 7. Search in all files to see where it's used
+# Press: <leader>fg
+# Type: getUserById
+# Press: Enter
+# Browse results with j/k
+
+# 8. Done!
+# Type: :q
+```
+
+## Modes Explained (Super Important!)
+
+Neovim has different **modes**:
+
+### 1. NORMAL Mode (Default)
+- For navigation and commands
+- Press `Esc` to return here from any mode
+- Keys do actions (not typing)
+
+### 2. INSERT Mode
+- For typing text
+- Press `i` to enter
+- Press `Esc` to exit
+- Your status line shows `-- INSERT --`
+
+### 3. VISUAL Mode
+- For selecting text
+- Press `v` to enter (character selection)
+- Press `V` to select lines
+- Press `Esc` to exit
+
+### 4. COMMAND Mode
+- For commands like save/quit
+- Press `:` to enter
+- Type command, press Enter
+- Examples: `:w`, `:q`, `:help`
+
+## Common "I'm Stuck!" Situations
+
+### "I'm in INSERT mode and can't move around!"
+**Solution:** Press `Esc` to go back to NORMAL mode, then use movement keys.
+
+### "I pressed something and now my screen is weird!"
+**Solution:** Press `Esc` a few times, then type `:q!` and Enter to quit without saving.
+
+### "Nothing happens when I type!"
+**Solution:** You're in NORMAL mode. Press `i` to enter INSERT mode.
+
+### "How do I save?"
+**Solution:** Press `Esc`, then type `:w` and Enter.
+
+### "How do I undo?"
+**Solution:** Press `Esc`, then press `u` (undo). Press `Ctrl-r` to redo.
+
+## Essential Keybindings Cheatsheet
+
+### File Operations
+| Key | Action |
+|-----|--------|
+| `<leader>ff` | Find files |
+| `<leader>fg` | Search in files (grep) |
+| `<leader>pr` | Recent files |
+| `-` | File explorer (Oil) |
+
+### Editing
+| Key | Action |
+|-----|--------|
+| `i` | Insert before cursor |
+| `a` | Insert after cursor |
+| `o` | New line below |
+| `O` | New line above |
+| `u` | Undo |
+| `Ctrl-r` | Redo |
+| `dd` | Delete line |
+| `yy` | Copy line |
+| `p` | Paste |
+
+### Code Navigation
+| Key | Action |
+|-----|--------|
+| `gd` | Go to definition |
+| `K` | Show documentation |
+| `<leader>d` | Show diagnostic |
+| `Ctrl-o` | Jump back |
+| `Ctrl-i` | Jump forward |
+
+### Window Management
+| Key | Action |
+|-----|--------|
+| `<C-h>` | Move to left window |
+| `<C-j>` | Move to bottom window |
+| `<C-k>` | Move to top window |
+| `<C-l>` | Move to right window |
+
+### Essential Commands
+| Command | Action |
+|---------|--------|
+| `:w` | Save |
+| `:q` | Quit |
+| `:wq` | Save and quit |
+| `:q!` | Quit without saving |
+| `:e filename` | Open file |
+| `:help topic` | Get help |
+
+## Your First Day Tasks
+
+Complete these to build muscle memory:
+
+### Task 1: Open and Edit (5 minutes)
+1. Open Neovim in a project directory
+2. Use `<leader>ff` to find a file
+3. Press `i`, make a small change
+4. Press `Esc`, then `:wq`
+
+### Task 2: Search and Navigate (5 minutes)
+1. Use `<leader>fg` to search for a function name
+2. Navigate results with `j` and `k`
+3. Press `Enter` on a result
+4. Use `gd` to jump to its definition
+5. Use `Ctrl-o` to jump back
+
+### Task 3: Multiple Files (5 minutes)
+1. Open file A with `<leader>ff`
+2. Open file B with `<leader>ff` (opens in new buffer)
+3. Use `:bnext` to switch between them
+4. Use `:bprev` to go back
+5. Use `:bd` to close a buffer
+
+## Next Steps
+
+Now that you've got the basics:
+
+1. **Keep the [Daily Cheatsheet](daily-cheatsheet.md) open** for reference
+2. **Read [Editing Workflows](workflows/editing.md)** to learn efficient editing
+3. **Practice 30 minutes daily** - muscle memory is everything
+4. **Add one new keybinding per day** - don't overwhelm yourself
+
+## Remember
+
+> "Vim is not about typing fast, it's about thinking fast and having your editor keep up."
+
+Focus on **accuracy** over speed. Speed comes naturally with practice.
+
+---
+
+**Stuck?** Check [Troubleshooting](troubleshooting.md) or review [Keybindings Reference](keybindings.md).
+
+**Ready for more?** Continue to [Daily Cheatsheet](daily-cheatsheet.md).
