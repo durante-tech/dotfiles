@@ -4,7 +4,8 @@ local config = wezterm.config_builder()
 
 -- appearance
 config.font = wezterm.font("Codelia Ligatures")
-config.font_size = 17
+config.font_size = 16
+config.cell_width = 0.9  -- Reduce character spacing (1.0 = default)
 config.color_scheme = "rose-pine"
 config.colors = {
     background = "#000",

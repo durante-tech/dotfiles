@@ -119,6 +119,9 @@ format = "[ $path ]($style)"
 "Music" = "󰝚 "
 "Pictures" = " "
 "Developer" = "󰲋 "
+"Experiments" = "󰙨 "
+"Durante" = "󰢷 "
+"Study" = "󰗚 "
 
 [os]
 disabled = true
