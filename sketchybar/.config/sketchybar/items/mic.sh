@@ -14,6 +14,6 @@ mic=(
   background.drawing=off
 )
 
-sketchybar --add item mic right \
+sketchybar --add item mic left \
            --set mic "${mic[@]}" \
            --subscribe mic volume_change

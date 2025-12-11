@@ -47,6 +47,21 @@ zle -N zle-line-finish
 # Set yellow cursor on shell startup
 _set_yellow_cursor
 
+# Auto-clear terminal only after specific interactive commands
+_last_command=""
+
+preexec() {
+  _last_command="$1"
+}
+
+precmd() {
+  # Only clear after these interactive commands (nvim, claude, lazygit, etc.)
+  if [[ "$_last_command" =~ "^(nvim|vim|claude|cld|lazygit|htop|btop|yazi)" ]]; then
+    clear
+  fi
+  _set_yellow_cursor
+}
+
 # Zoxide
 eval "$(zoxide init zsh)"
 
@@ -234,5 +249,4 @@ if [[ -x "$HOME/.claude/local/claude" ]]; then
 elif command -v claude >/dev/null 2>&1; then
     alias claude="$(command -v claude)"
 fi
-source ~/Developer/tac/scripts/aliases.sh
 source ~/Developer/tac/scripts/aliases.sh

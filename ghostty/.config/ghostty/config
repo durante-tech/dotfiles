@@ -3,9 +3,14 @@ config-file = themes/rosepine
 background = #000000
 background-opacity = 0.75
 background-blur-radius = 23
+# Helps transparency work with tiling WMs
+macos-window-shadow = false
 
 font-family = Codelia Ligatures
-font-size = 20
+font-size = 16
+
+# Adjust character spacing (negative values reduce spacing)
+adjust-cell-width = -5%
 
 # Enable programming ligatures (==, =>, !=, >=, <=, etc.)
 font-feature = +calt

@@ -47,9 +47,18 @@ sketchybar --add bracket workspaces space.1 space.2 space.3 space.4 space.8 spac
            --set workspaces background.color="$PURE_BLACK" \
 
 source "$ITEM_DIR/front_app.sh"
+source "$ITEM_DIR/volume.sh"
+source "$ITEM_DIR/mic.sh"
 
 ##### Right Items #####
 source "$ITEM_DIR/clock.sh"
+source "$ITEM_DIR/weather.sh"
+source "$ITEM_DIR/cpu.sh"
+source "$ITEM_DIR/memory.sh"
+source "$ITEM_DIR/network.sh"
+source "$ITEM_DIR/github.sh"
+source "$ITEM_DIR/calendar.sh"
+source "$ITEM_DIR/spotify.sh"
 
 source "$ITEM_DIR/media_block.sh"
           
