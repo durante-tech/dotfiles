@@ -242,7 +242,7 @@ alias cldr="claude --resume"
 # ---------------------------------------
 
 # brew installations activation (new mac systems brew path: opt/homebrew , not usr/local )
-# source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 [ -s "$HOME/.deno/env" ] && . "$HOME/.deno/env"
