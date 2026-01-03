@@ -90,13 +90,14 @@ outer.top = [
 # Pin key workspaces to monitors
 # See: https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
 [workspace-to-monitor-force-assignment]
-D = '^DEV-MAIN$'         # Development workspace always on DEV-MAIN
-T = '^PORTRAIT-MONITOR$' # Terminal workspace on Portrait
-B = '^DEV-SECOND$'       # Browser workspace on secondary dev monitor
-N = '^DEV-SECOND$'       # Notes workspace on secondary dev monitor
-M = '^DEV-SECOND$'       # Messaging workspace on secondary dev monitor
-F = '^DEV-SECOND$'       # Finder workspace on secondary (floats)
-E = '^DEV-SECOND$'       # Email workspace on secondary
+1 = 'Built-in Retina Display'  # Main workspace on built-in
+2 = '^PORTRAIT-MONITOR$'       # Secondary workspace on portrait
+B = 'Built-in Retina Display'  # Browser on built-in
+D = 'Built-in Retina Display'  # Development on built-in
+F = 'Built-in Retina Display'  # Finder on built-in (floats)
+M = 'Built-in Retina Display'  # Messaging on built-in
+N = 'Built-in Retina Display'  # Notes on built-in
+T = '^PORTRAIT-MONITOR$'       # Terminal on portrait
 
 
 # 'main' binding mode declaration
@@ -165,13 +166,13 @@ alt-leftSquareBracket = 'focus dfs-prev'
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
 alt-1 = 'workspace 1'
 alt-2 = 'workspace 2'
-alt-3 = 'workspace 3'
-alt-4 = 'workspace 4'
+# alt-3 = 'workspace 3'
+# alt-4 = 'workspace 4'
 # alt-5 = 'workspace 5'
 # alt-6 = 'workspace 6'
 # alt-7 = 'workspace 7'
-alt-8 = 'workspace 8'
-alt-9 = 'workspace 9'
+# alt-8 = 'workspace 8'
+# alt-9 = 'workspace 9'
 alt-b = 'workspace B' # for browser
 # COMMENTED OUT FOR BRAZILIAN ACCENTS - ROLLBACK: uncomment line below
 # alt-e = 'workspace E' # for email
@@ -187,13 +188,13 @@ alt-t = 'workspace T' # for terminal shell
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
 alt-shift-1 = 'move-node-to-workspace 1'
 alt-shift-2 = 'move-node-to-workspace 2'
-alt-shift-3 = 'move-node-to-workspace 3'
-alt-shift-4 = 'move-node-to-workspace 4'
+# alt-shift-3 = 'move-node-to-workspace 3'
+# alt-shift-4 = 'move-node-to-workspace 4'
 # alt-shift-5 = 'move-node-to-workspace 5'
 # alt-shift-6 = 'move-node-to-workspace 6'
 # alt-shift-7 = 'move-node-to-workspace 7'
-alt-shift-8 = 'move-node-to-workspace 8'
-alt-shift-9 = 'move-node-to-workspace 9'
+# alt-shift-8 = 'move-node-to-workspace 8'
+# alt-shift-9 = 'move-node-to-workspace 9'
 alt-shift-b = 'move-node-to-workspace B'
 # COMMENTED OUT FOR BRAZILIAN ACCENTS - ROLLBACK: uncomment line below
 # alt-shift-e = 'move-node-to-workspace E'
@@ -383,10 +384,10 @@ run = ['layout tiling', 'move-node-to-workspace D']
 if.app-name-regex-substring = 'intellij|clion|pycharm|webstorm|rider|goland|datagrip|rubymine|phpstorm|fleet'
 run = ['layout tiling', 'move-node-to-workspace D']
 
-# Docker Desktop → D
+# Docker Desktop → floating (accessible from any workspace)
 [[on-window-detected]]
 if.app-id = 'com.electron.dockerdesktop'
-run = ['layout tiling', 'move-node-to-workspace D']
+run = 'layout floating'
 
 # Email → E
 [[on-window-detected]]

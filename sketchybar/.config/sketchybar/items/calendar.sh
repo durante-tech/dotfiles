@@ -12,5 +12,5 @@ calendar=(
   click_script="open -a Calendar"
 )
 
-sketchybar --add item calendar right \
+sketchybar --add item calendar left \
            --set calendar "${calendar[@]}"

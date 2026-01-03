@@ -12,5 +12,5 @@ clearvpn=(
   click_script="open -a 'ClearVPN'"
 )
 
-sketchybar --add item clearvpn right \
+sketchybar --add item clearvpn left \
            --set clearvpn "${clearvpn[@]}"
