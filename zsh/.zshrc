@@ -1,12 +1,12 @@
 # Add deno completions to search path
-if [[ ":$FPATH:" != *":/Users/lgertel/.zsh/completions:"* ]]; then export FPATH="/Users/lgertel/.zsh/completions:$FPATH"; fi
+if [[ ":$FPATH:" != *":$HOME/.zsh/completions:"* ]]; then export FPATH="$HOME/.zsh/completions:$FPATH"; fi
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 # echo source ~/.bash_profile
 
 # Note: .zprofile is automatically sourced by login shells
 # Removed explicit source to avoid duplicate initialization (fnm, brew, etc.)
 
-eval "$(gdircolors)"
+command -v gdircolors &>/dev/null && eval "$(gdircolors)"
 
 # Note: Oh-My-Zsh removed for faster startup (~200ms savings)
 # Git aliases and web-search functions are now defined manually below
@@ -278,9 +278,10 @@ alias cldpyo="claude -p --dangerously-skip-permissions --model opus"
 alias cldr="claude --resume"
 # ---------------------------------------
 
-# brew installations activation (hardcoded path avoids ~60ms subshell overhead)
-source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# brew installations activation
+BREW_PREFIX="${HOMEBREW_PREFIX:-/opt/homebrew}"
+[ -f "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ] && source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+[ -f "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] && source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
 [ -s "$HOME/.deno/env" ] && . "$HOME/.deno/env"
 

@@ -1,108 +1,197 @@
-# My dotfiles
-This directory contains the dotfiles for my mac system which probably won't work on yours.
+# Dotfiles
 
-# Install with Script
+macOS-focused dotfiles using GNU Stow for symlink management. Terminal-centric, keyboard-driven development workflow.
 
-Run the following
-- optional: Install Xcode command line tools beforehand `xcode-select --install`
-    - Install brew  
-        - `sudo /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
+## Quick Start
 
-    - `brew install git`
-    - `git clone https://github.com/Sin-cy/dotfiles.git $HOME/dotfiles` this repo into $HOME
-    - `cd dotfiles` and make install.sh executable `chmod +x ~/dotfiles/install.sh`
-    which ever way possible
-    - run in shell `/bin/bash ~/dotfiles/install.sh` 
+### Fresh Install (New Machine)
 
-# Manual Install
-## Repository and Installations needed
-
-### Install Command Line Tools 
-- `xcode-select --install`
-
-### Install Homebrew
-
-- Install Homebrew.
-
-- `sudo /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
-
-Enter your password and proceed yes to confirm the installation if it prompts you to
-
-#### Homebrew extras required
-- `brew install neovim eza fzf fd stow bat zoxide zsh-autosuggestions
-zsh-syntax-highlighting git starship tmux nvm`
-    - If Mason lsp starts shouting when opening neovim
-    - do nvm install node v23.3.0 or v-xx-xx
-
-#### coreutils
-- `brew install coreutils`
-- add `PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"` to top of the rc
-  file (~/.zshrc or ~/.zshenv)
-
-#### fzf-git
-- `git clone https://github.com/junegunn/fzf-git.sh.git`
-
-### Tmux
-Installation
-- `brew install tmux`
-
-Tmux plugins manager
-- `git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm`
-
-### Git
-
--   Check this by running `git --version` in the shell to see if the command is available
--   it will most likely prompt you to install it with Xcode Command Line tools.
-    - (Skip this step if command line tools already installed)
-
-##### Install Git with Homebrew ( My Default ) 
-- Manually Install git with Homebrew `brew install git`
-- brew installs git on mac at `/opt/homebrew/bin/git`
-
-##### Install Git via Xcode
--   Install Xcode usign `xcode-select --install`
--   xcode installs git at `/usr/bin/git`
-
-
-### GNU Stow
-- Refer the docs : [Read More](https://www.gnu.org/software/stow/)
-```
-brew install stow
-```
-
-## Installation of this repo using stow
-
-First, check out dotfiles repo in your $HOME directory using git
-
-```
-$ git clone https://github.com/Sin-cy/dotfiles.git
-$ cd dotfiles
-```
-#### Before Running any stow commands
-- At least for this config structure
-- **!! make sure home directories is set to have the same structure first !!**
-- for instances ( Watch for Sub-directories ) 
-    - if any subdirectory eg: `~/.config` dont exist in $HOME then `mkdir .config`
-    - other config files that don't exist in $HOME atm, should not have any problems
-      for stow symlinks
-
-
-then use GNU stow to create symlinks
-> [!IMPORTANT]
-> make sure you are in your dotfiles directory
-
-- `cd dotfiles`
-- as long as you have the structure setup in $HOME correctly
-- running `stow .` should be enough
-
-##### However, for assurance
-- run stow commands like below for each directory in dotfiles 
-- re-check if the symlinks are correct for each sub-directories and files
 ```bash
-stow -t ~ starship wezterm tmux
+# 1. Install Xcode CLI tools
+xcode-select --install
 
-#or run them separately
+# 2. Clone repository
+git clone https://github.com/Sin-cy/dotfiles.git ~/dotfiles
+cd ~/dotfiles
 
+# 3. Run installer (installs brew, packages, stows configs)
+chmod +x install.sh
+./install.sh
+
+# 4. Configure for your machine
+./setup.sh --configure
+```
+
+### Update (Existing Machine)
+
+```bash
+cd ~/dotfiles
+
+# Pull latest changes
+git pull
+
+# Re-stow and verify
+./setup.sh --all
+```
+
+### Setup Script Options
+
+```bash
+./setup.sh --check      # Check dependencies and verify symlinks
+./setup.sh --stow       # Re-stow all packages
+./setup.sh --configure  # Configure for current machine (monitors, paths)
+./setup.sh --all        # Run all steps (default)
+```
+
+## Post-Install Configuration
+
+### 1. Monitor Setup (AeroSpace)
+
+After install, configure workspace-to-monitor mapping:
+
+```bash
+# List your monitors
+aerospace list-monitors
+
+# Edit config with your monitor names
+nvim ~/.config/aerospace/aerospace.toml
+```
+
+Update the `[workspace-to-monitor-force-assignment]` section.
+
+### 2. Project Paths (tmux-sessionizer)
+
+Customize project directories for `prefix + f`:
+
+```bash
+# Add to ~/.zshrc or ~/.zprofile
+export TMUX_SESSIONIZER_PATHS="$HOME/Projects $HOME/Developer $HOME/dotfiles"
+```
+
+### 3. Reload Services
+
+```bash
+# Shell
+source ~/.zprofile && source ~/.zshrc
+
+# Window manager
+aerospace reload-config
+
+# Status bar
+sketchybar --reload
+
+# Tmux (inside tmux)
+prefix + r
+
+# Neovim plugins
+nvim +Lazy sync +qa
+```
+
+## What's Included
+
+| Tool | Description |
+|------|-------------|
+| **zsh** | Shell with starship prompt, vi mode, 70+ aliases |
+| **neovim** | IDE-like editor with LSP, Snacks picker, auto-session |
+| **tmux** | Terminal multiplexer with session persistence |
+| **aerospace** | Tiling window manager |
+| **sketchybar** | Custom status bar |
+| **ghostty** | Primary terminal emulator |
+| **karabiner** | Keyboard remapping (Hyperkey system) |
+
+## Key Bindings
+
+### Tmux (prefix: Ctrl+B)
+
+| Key | Action |
+|-----|--------|
+| `\|` / `-` | Split h/v |
+| `h/j/k/l` | Resize panes |
+| `Ctrl+g` | Lazygit (float) |
+| `Ctrl+y` | Yazi (float) |
+| `f` | tmux-sessionizer |
+| `o` | Session picker |
+
+### Neovim (leader: Space)
+
+| Key | Action |
+|-----|--------|
+| `<leader>pf` | Find files |
+| `<leader>ps` | Grep |
+| `<leader>pp` | Switch project |
+| `<leader>lg` | Lazygit |
+| `<leader>ee` | File explorer |
+
+### AeroSpace (Alt-based)
+
+| Key | Action |
+|-----|--------|
+| `alt+h/j/k/l` | Focus window |
+| `alt+shift+h/j/k/l` | Move window |
+| `alt+1-2, b,d,f,m,n,t` | Switch workspace |
+| `alt+enter` | New terminal |
+
+## Directory Structure
+
+```
+dotfiles/
+├── aerospace/     → ~/.config/aerospace/
+├── ghostty/       → ~/.config/ghostty/
+├── karabiner/     → ~/.config/karabiner/
+├── nvim/          → ~/.config/nvim/
+├── scripts/       → ~/scripts/
+├── sketchybar/    → ~/.config/sketchybar/
+├── starship/      → ~/.config/starship/
+├── tmux/          → ~/.config/tmux/
+├── zsh/           → ~/.zshrc, ~/.zprofile
+├── install.sh     # Fresh install script
+├── setup.sh       # Post-clone configuration
+└── CLAUDE.md      # AI assistant context
+```
+
+## Manual Stow Commands
+
+```bash
+cd ~/dotfiles
+
+# Stow individual package
 stow -t ~ nvim
-stow -t ~ zsh
+
+# Re-stow (updates symlinks)
+stow -R -t ~ nvim
+
+# Unstow
+stow -D -t ~ nvim
+
+# Stow all
+stow -t ~ aerospace atuin ghostty karabiner mpd nvim rmpc scripts sketchybar starship tmux w3m yazi zed zsh
+```
+
+## Troubleshooting
+
+### Stow Conflicts
+
+```bash
+# Backup existing and re-stow
+mv ~/.config/nvim ~/.config/nvim.bak
+stow -t ~ nvim
+```
+
+### Commands Not Found
+
+```bash
+source ~/.zprofile && source ~/.zshrc
+# or restart terminal
+```
+
+### Neovim Plugins
+
+```bash
+nvim +Lazy sync +qa
+```
+
+### Tmux Plugins
+
+```bash
+# Inside tmux: prefix + I
 ```

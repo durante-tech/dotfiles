@@ -7,7 +7,7 @@ cpu=(
   background.color="$PURE_BLACK"
   padding_right=5
   padding_left=5
-  update_freq=5
+  update_freq=10
   updates=on
 )
 
