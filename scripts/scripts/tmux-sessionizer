@@ -49,13 +49,10 @@ hydrate() {
 }
 
 # Use CLI arg if provided, otherwise fzf from your custom paths
-# Customize these search paths for your projects:
-SEARCH_PATHS="${TMUX_SESSIONIZER_PATHS:-$HOME/dotfiles $HOME/Projects $HOME}"
-
 if [[ $# -eq 1 ]]; then
     selected=$1
 else
-    selected=$(fd -H . $SEARCH_PATHS -t d -d 1 | fzf)
+    selected=$(fd -H . ~/dotfiles ~/Desktop/main-cs ~/Desktop/main-cs/Projects ~/ ~/Desktop/work ~/Desktop/work/youtube -t d -d 1 | fzf)
 fi
 
 # Abort if nothing selected

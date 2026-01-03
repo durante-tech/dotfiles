@@ -8,7 +8,6 @@ return {
 	},
 	config = function()
 		local harpoon = require("harpoon")
-		local conf = require("telescope.config").values
 
 		harpoon:setup({
 			global_settings = {

@@ -11,8 +11,8 @@ detail_off() {
 }
 
 toggle_detail() {
-  INITIAL_WIDTH=$(sketchybar --query volume | jq -r ".slider.width")
-  if [ "$INITIAL_WIDTH" -eq "0" ]; then
+  INITIAL_WIDTH=$(sketchybar --query volume 2>/dev/null | jq -r ".slider.width // 0")
+  if [ "$INITIAL_WIDTH" -eq "0" ] 2>/dev/null; then
     detail_on
   else
     detail_off
@@ -43,6 +43,8 @@ toggle_devices() {
   sketchybar -m "${args[@]}" > /dev/null
 }
 
+# Right-click or shift-click: show device picker
+# Left-click: toggle slider visibility
 if [ "$BUTTON" = "right" ] || [ "$MODIFIER" = "shift" ]; then
   toggle_devices
 else

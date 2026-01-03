@@ -2,7 +2,7 @@
 
 # Install xCode cli tools
 if [[ "$(uname)" == "Darwin" ]]; then
-    echo "macOS deteted..."
+    echo "macOS detected..."
 
     if xcode-select -p &>/dev/null; then
         echo "Xcode already installed"
@@ -27,8 +27,9 @@ brew analytics off
 
 ## Taps
 echo "Tapping Brew..."
-brew tap homebrew/cask-fonts
+# Note: homebrew/cask-fonts is deprecated, fonts are now in homebrew/cask
 brew tap FelixKratz/formulae
+brew tap nikitabobko/tap
 
 ## Formulae
 echo "Installing Brew Formulae..."
@@ -62,17 +63,36 @@ brew install starship
 brew install tree-sitter
 brew install tree
 brew install borders
+brew install eza
+brew install atuin
+brew install yazi
+brew install w3m
+brew install sketchybar
+
+### Modern CLI replacements (Rust/Go)
+brew install procs       # Better ps
+brew install bottom      # Better htop
+brew install curlie      # Better curl
+brew install onefetch    # Git repo info
+brew install fx          # JSON viewer
+brew install navi        # Interactive cheatsheets
+brew install broot       # Interactive tree
+brew install dust        # Better du
+brew install mpd
+brew install rmpc
 
 ### dev things
 brew install node
 brew install nvm
 brew install sqlite
+brew install pyenv
 
 ## Casks
 brew install --cask raycast
 brew install --cask karabiner-elements
 brew install --cask wezterm
-brew install --cask nikitabobko/tap/aerospace
+brew install --cask ghostty
+brew install --cask aerospace
 brew install --cask keycastr
 brew install --cask betterdisplay
 brew install --cask linearmouse
@@ -84,7 +104,7 @@ brew install --cask font-sf-pro
 echo "Changing macOS defaults..."
 defaults write com.apple.Dock autohide -bool TRUE
 defaults write NSGlobalDomain KeyRepeat -int 2
-defaults write InitialKeyRepeat -int 15
+defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
 csrutil status
 echo "Installation complete..."
@@ -95,15 +115,15 @@ if [ ! -d "$HOME/dotfiles" ]; then
   git clone https://github.com/Sin-cy/dotfiles.git $HOME/dotfiles
 fi
 
-# export gnu coreutils to path
-echo 'export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"' >> ~/.zshrc
+# Note: coreutils PATH is already set in .zprofile (stowed from zsh package)
 
 # Navigate to dotfiles directory
 cd $HOME/dotfiles || exit
 
 # Stow dotfiles packages
 echo "Stowing dotfiles..."
-stow -t ~ aerospace karabiner neovim starship wezterm tmux zsh
+# Core packages (nvim not neovim - matches directory name)
+stow -t ~ aerospace alacritty atuin ghostty karabiner mpd nvim rmpc scripts sketchybar starship tmux w3m wezterm yazi zed zsh
 
 echo "Dotfiles setup complete!"
 

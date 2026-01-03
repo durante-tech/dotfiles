@@ -2,7 +2,7 @@
 
 docker=(
   script="$PLUGIN_DIR/docker.sh"
-  icon="🐳"
+  icon="󰡨"
   label="..."
   background.color="$PURE_BLACK"
   padding_right=5
@@ -12,5 +12,5 @@ docker=(
   click_script="open -a Docker"
 )
 
-sketchybar --add item docker right \
+sketchybar --add item docker left \
            --set docker "${docker[@]}"

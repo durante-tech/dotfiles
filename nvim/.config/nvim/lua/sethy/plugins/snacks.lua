@@ -18,6 +18,10 @@ return {
             input = {
                 enabled = true,
             },
+            explorer = {
+                enabled = true,
+                replace_netrw = true,
+            },
             quickfile = {
                 enabled = true,
                 exclude = { "latex" },
@@ -155,6 +159,7 @@ return {
 
             -- Snacks Picker
             { "<leader>pf", function() require("snacks").picker.files() end, desc = "Find Files (Snacks Picker)" },
+            { "<leader>pr", function() require("snacks").picker.recent() end, desc = "Recent Files" },
             { "<leader>pc", function() require("snacks").picker.files({ cwd = vim.fn.stdpath("config") .. "/lua" }) end, desc = "Find Config File" },
             { "<leader>ps", function() require("snacks").picker.grep() end, desc = "Grep word" },
             { "<leader>pws", function() require("snacks").picker.grep_word() end, desc = "Search Visual selection or Word", mode = { "n", "x" } },
@@ -166,6 +171,10 @@ return {
             -- Other Utils
             { "<leader>th" , function() require("snacks").picker.colorschemes({ layout = "ivy" }) end, desc = "Pick Color Schemes"},
             { "<leader>vh", function() require("snacks").picker.help() end, desc = "Help Pages" },
+
+            -- Snacks Explorer (file tree replacement)
+            { "<leader>ee", function() require("snacks").explorer() end, desc = "Toggle Explorer" },
+            { "<leader>ef", function() require("snacks").explorer.reveal() end, desc = "Reveal current file in Explorer" },
         }
     },
     -- NOTE: todo comments w/ snacks

@@ -10,7 +10,11 @@ return {
 
 		gitworktree.setup()
 
-		require("telescope").load_extension("git_worktree")
+		-- Safely load telescope extension (may not be available at config time)
+		local ok, telescope = pcall(require, "telescope")
+		if ok then
+			telescope.load_extension("git_worktree")
+		end
 
 		-- HACK: by default
 		-- <Enter> - switches to that worktree

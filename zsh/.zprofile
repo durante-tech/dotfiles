@@ -1,6 +1,3 @@
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 export LANG=en_US.UTF-8
@@ -31,13 +28,7 @@ export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 # Tealdeer
 export TEALDEER_CONFIG_DIR="$HOME/.config/tealdeer/"
 
-# Path to your oh-my-zsh installation.
-# NOTE : Disabled Shell Prompt: Currently using Starship
-# NOTE: using oh-my-zsh only for zsh plugins management
-export ZSH="$HOME/.oh-my-zsh"
-
-# Using Starship instead of p10k
-# export ZSH_THEME="powerlevel10k/powerlevel10k"
+# Using Starship for shell prompt
 
 # ------------FZF--------------
 # Set up fzf key bindings and fuzzy completion
@@ -55,10 +46,9 @@ export FZF_ALT_C_OPTS="--preview 'eza --icons=always --tree --color=always {} | 
 export FZF_TMUX_OPTS=" -p90%,70% "  
 # -----------------------------
 
-# NVM 
-export NVM_DIR="$HOME/.nvm"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+# FNM (Fast Node Manager) - replaces NVM for ~10x faster startup
+# FNM reads .nvmrc and .node-version files automatically
+eval "$(fnm env --use-on-cd)"
 
 # Console Ninja
 export PATH=~/.console-ninja/.bin:$PATH
@@ -77,12 +67,11 @@ export PATH="$PATH:/Applications/010 Editor.app/Contents/CmdLine" #ADDED BY 010 
 # Pyenv
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init --path)"
+# Note: pyenv init is done in .zshrc for interactive shells
 
 # Golang
 export GOPATH=$HOME/go
 export PATH=$GOPATH/bin:$PATH
-export PATH=$PATH:$(go env GOPATH)/bin
 
 # Fabric AI
 export FABRIC_ROOT="$HOME/.config/fabric"

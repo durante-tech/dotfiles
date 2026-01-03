@@ -13,8 +13,15 @@ volume_icon=(
   icon.color=$WHITE
   label.color=$WHITE
   label.padding_right=8
+  slider.highlight_color=$WHITE
+  slider.background.height=5
+  slider.background.corner_radius=3
+  slider.background.color=$GREY
+  slider.knob=󰀁
+  slider.knob.drawing=on
+  slider.width=0
 )
 
-sketchybar --add item volume left \
+sketchybar --add slider volume left 100 \
            --set volume "${volume_icon[@]}" \
-           --subscribe volume volume_change
+           --subscribe volume volume_change mouse.clicked

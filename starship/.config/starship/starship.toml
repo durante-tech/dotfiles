@@ -115,9 +115,10 @@ format = "[ $path ]($style)"
 
 [directory.substitutions]
 "Documents" = "󰈙 "
-"Downloads" = " "
+"Downloads" = "󰇚 "
 "Music" = "󰝚 "
-"Pictures" = " "
+"Pictures" = "󰋩 "
+"Github" = "󰊤 "
 "Developer" = "󰲋 "
 "Experiments" = "󰙨 "
 "Durante" = "󰢷 "
@@ -133,15 +134,15 @@ description = "Display symbol for remote Git server"
 command = """
 GIT_REMOTE=$(command git ls-remote --get-url 2> /dev/null)
 if [[ "$GIT_REMOTE" =~ "github" ]]; then
-    GIT_REMOTE_SYMBOL=" "
+    GIT_REMOTE_SYMBOL="󰊤 "
 elif [[ "$GIT_REMOTE" =~ "gitlab" ]]; then
-    GIT_REMOTE_SYMBOL=" "
+    GIT_REMOTE_SYMBOL="󰮠 "
 elif [[ "$GIT_REMOTE" =~ "bitbucket" ]]; then
-    GIT_REMOTE_SYMBOL=" "
+    GIT_REMOTE_SYMBOL="󰂨 "
 elif [[ "$GIT_REMOTE" =~ "git" ]]; then
-    GIT_REMOTE_SYMBOL=" "
+    GIT_REMOTE_SYMBOL="󰊢 "
 else
-    GIT_REMOTE_SYMBOL=" "
+    GIT_REMOTE_SYMBOL="󰊠 "
 fi
 echo "$GIT_REMOTE_SYMBOL "
 """
@@ -149,7 +150,7 @@ when = 'git rev-parse --is-inside-work-tree 2> /dev/null'
 format = "at $output"
 
 [git_branch]
-symbol = "[](black) "
+symbol = "[](black)󰘬 "
 # format =  ' [$symbol$branch(:$remote_branch)]($style)[]'
 style = "fg:lavender bg:black"
 format =  '  on [$symbol$branch]($style)[](black)'
@@ -158,48 +159,48 @@ format =  '  on [$symbol$branch]($style)[](black)'
 format = ' [($all_status$ahead_behind )]($style)'
 
 [nodejs]
-symbol = ""
+symbol = "󰎙"
 format = '[ $symbol( $version) ]($style)'
 
 [c]
-symbol = " "
+symbol = "󰙱 "
 format = '[ $symbol($version) ]($style)'
 
 [rust]
-symbol = ""
+symbol = "󱘗"
 format = '[ $symbol($version) ]($style)'
 
 [golang]
-symbol = ""
+symbol = "󰟓"
 format = '[ $symbol( $version) ]($style)'
 detect_files = ["go.mod"]
 
 [php]
-symbol = ""
+symbol = "󰌟"
 format = '[ $symbol($version) ]($style)'
 
 [java]
-symbol = " "
+symbol = "󰬷 "
 format = '[ $symbol($version) ]($style)'
 
 [kotlin]
-symbol = ""
+symbol = "󱈙"
 
 format = '[ $symbol($version) ]($style)'
 
 [haskell]
-symbol = ""
+symbol = "󰲒"
 
 format = '[ $symbol($version) ]($style)'
 
 [python]
-symbol = ""
+symbol = "󰌠"
 
 format = '[ $symbol($version) ]($style)'
 
 
 [docker_context]
-symbol = ""
+symbol = "󰡨"
 format = '[ $symbol( $context) ]($style)'
 
 
@@ -216,8 +217,8 @@ disabled = true
 disabled = false
 success_symbol = '[𝘹](bold fg:green)'
 error_symbol = '[𝘹](bold fg:red)'
-vimcmd_symbol = '[](bold fg:creen)'
-vimcmd_replace_one_symbol = '[](bold fg:purple)'
-vimcmd_replace_symbol = '[](bold fg:purple)'
-vimcmd_visual_symbol = '[](bold fg:lavender)'
+vimcmd_symbol = '[󰁾](bold fg:creen)'
+vimcmd_replace_one_symbol = '[󰁾](bold fg:purple)'
+vimcmd_replace_symbol = '[󰁾](bold fg:purple)'
+vimcmd_visual_symbol = '[󰁾](bold fg:lavender)'
 

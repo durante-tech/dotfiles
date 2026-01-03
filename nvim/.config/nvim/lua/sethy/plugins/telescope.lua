@@ -1,5 +1,6 @@
 return {
 	"nvim-telescope/telescope.nvim",
+	enabled = false, -- Replaced by Snacks picker for unified experience
 	branch = "master", -- using master to fix issues with deprecated to definition warnings
     -- '0.1.x' for stable ver.
 	dependencies = {

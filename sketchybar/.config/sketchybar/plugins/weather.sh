@@ -4,7 +4,8 @@ source "$CONFIG_DIR/colors.sh"
 
 # Get weather from wttr.in (free, no API key needed)
 # Format: %c = condition icon, %t = temperature
-WEATHER=$(curl -s "wttr.in/Sao+Paulo?format=%c+%t" 2>/dev/null | head -1)
+# Added --max-time 5 to prevent hanging on slow networks
+WEATHER=$(curl -s --max-time 5 "wttr.in/Sao+Paulo?format=%c+%t&m" 2>/dev/null | head -1)
 
 if [ -z "$WEATHER" ] || [[ "$WEATHER" == *"Unknown"* ]] || [[ "$WEATHER" == *"Sorry"* ]]; then
     sketchybar --set "$NAME" icon="󰖐" label="--" icon.color="$GREY"

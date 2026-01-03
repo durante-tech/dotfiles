@@ -5,20 +5,24 @@ source "$CONFIG_DIR/colors.sh"
 # Get network interface (usually en0 for WiFi)
 INTERFACE="en0"
 
-# Get current bytes
-BYTES_IN=$(netstat -ib | grep -E "^$INTERFACE" | head -1 | awk '{print $7}')
-BYTES_OUT=$(netstat -ib | grep -E "^$INTERFACE" | head -1 | awk '{print $10}')
+# Single netstat call instead of two (optimized)
+NETSTAT_OUTPUT=$(netstat -ib | grep -E "^$INTERFACE" | head -1)
+BYTES_IN=$(echo "$NETSTAT_OUTPUT" | awk '{print $7}')
+BYTES_OUT=$(echo "$NETSTAT_OUTPUT" | awk '{print $10}')
 
 # Cache file for previous values
 CACHE_FILE="/tmp/sketchybar_network_cache"
 
 if [ -f "$CACHE_FILE" ]; then
-    PREV_IN=$(cat "$CACHE_FILE" | head -1)
-    PREV_OUT=$(cat "$CACHE_FILE" | tail -1)
+    read -r PREV_IN PREV_OUT < "$CACHE_FILE"
 
     # Calculate speed (bytes per second, update every 5 seconds)
     DIFF_IN=$(( (BYTES_IN - PREV_IN) / 5 ))
     DIFF_OUT=$(( (BYTES_OUT - PREV_OUT) / 5 ))
+
+    # Ensure non-negative values
+    [ "$DIFF_IN" -lt 0 ] && DIFF_IN=0
+    [ "$DIFF_OUT" -lt 0 ] && DIFF_OUT=0
 
     # Convert to human readable
     if [ "$DIFF_IN" -gt 1048576 ]; then
@@ -42,6 +46,5 @@ else
     sketchybar --set "$NAME" icon="󰛳" label="..." icon.color="$GREY"
 fi
 
-# Save current values
-echo "$BYTES_IN" > "$CACHE_FILE"
-echo "$BYTES_OUT" >> "$CACHE_FILE"
+# Save current values (single line, space-separated - faster read)
+echo "$BYTES_IN $BYTES_OUT" > "$CACHE_FILE"
