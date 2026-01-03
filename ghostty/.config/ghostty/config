@@ -6,7 +6,7 @@ background-blur-radius = 23
 # Helps transparency work with tiling WMs
 macos-window-shadow = false
 
-font-family = Codelia Ligatures
+font-family = JetBrainsMono Nerd Font
 font-size = 16
 
 # Adjust character spacing (negative values reduce spacing)

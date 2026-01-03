@@ -37,8 +37,11 @@ return {
             datapath = vim.fn.stdpath("data"),
         })
 
-        -- Load telescope extension
-        require("telescope").load_extension("projects")
+        -- Load telescope extension (safely)
+        local ok, telescope = pcall(require, "telescope")
+        if ok then
+            telescope.load_extension("projects")
+        end
 
         -- Set up keymap after extension is loaded
         vim.keymap.set("n", "<leader>pp", "<cmd>Telescope projects<CR>", { desc = "Switch project" })

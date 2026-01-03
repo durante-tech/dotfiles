@@ -3,16 +3,13 @@ if [[ ":$FPATH:" != *":/Users/lgertel/.zsh/completions:"* ]]; then export FPATH=
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 # echo source ~/.bash_profile
 
-# load env vars from .zprofile into the shells
-[[ -f ~/.zprofile ]] && source ~/.zprofile
-
-eval "$(brew shellenv)"
-# source .zprofile in all zsh shells (just in case)
-# [[ -f "$HOME/.zprofile" ]] && source "$HOME/.zprofile"
+# Note: .zprofile is automatically sourced by login shells
+# Removed explicit source to avoid duplicate initialization (fnm, brew, etc.)
 
 eval "$(gdircolors)"
 
-source $ZSH/oh-my-zsh.sh
+# Note: Oh-My-Zsh removed for faster startup (~200ms savings)
+# Git aliases and web-search functions are now defined manually below
 
 # unbind ctrl g in terminal
 bindkey -r "^G"
@@ -103,14 +100,20 @@ bindkey -M viins '^[[27;2;13~' accept-line  # Ghostty fixterms sequence
 
 #----------------------------------------
 
-# zsh plugins
-plugins=(
-    git
-    ## with oh-my-zsh and not homebrew
-    # zsh-autosuggestions ( git clone <find link in the repo> and uncomment  )
-    # zsh-syntax-highlighting ( git clone <find link in the repo> and uncomment )
-    web-search
-)
+# Web search functions (replaces oh-my-zsh web-search plugin)
+google() { open "https://www.google.com/search?q=${(j:+:)@}" }
+ddg() { open "https://duckduckgo.com/?q=${(j:+:)@}" }
+github() { open "https://github.com/search?q=${(j:+:)@}" }
+
+# Additional git aliases (complements existing ones)
+alias gco='git checkout'
+alias gcb='git checkout -b'
+alias gp='git push'
+alias gl='git pull'
+alias gd='git diff'
+alias gds='git diff --staged'
+alias gb='git branch'
+alias gba='git branch -a'
 
 # -------------------ALIAS----------------------
 # These alias need to have the same exact space as written here
@@ -124,7 +127,7 @@ alias vim="nvim"
 
 # Tmux
 alias tmux="tmux -f $TMUX_CONF"
-alias a="attach"
+alias a="tmux attach"
 # calls the tmux new session script
 alias tns="$HOME/scripts/tmux-sessionizer"
 
@@ -160,15 +163,42 @@ alias lm="eza --long --all --color=always --icons=always --no-user --git --sort=
 # Sort by size (largest first)
 alias lz="eza --long --all --color=always --icons=always --no-user --git --sort=size --reverse"
 
-# Git-specific: show only modified/new files
-alias lg="eza --long --all --color=always --icons=always --no-user --git --git-ignore --only-files"
+# Git-specific: show only modified/new files (use lsg to avoid conflict with lazygit)
+alias lsg="eza --long --all --color=always --icons=always --no-user --git --git-ignore --only-files"
 
 # Classic tree command (fallback)
 alias tree="tree -L 3 -a -I '.git' --charset X "
 alias dtree="tree -L 3 -a -d -I '.git' --charset X "
 
-# lstr
-alias lstr="lstr --icons"
+# lstr (requires lstr to be installed: cargo install lstr)
+# alias lstr="lstr --icons"
+
+# Modern CLI tools (Rust/Go replacements)
+alias ps="procs"                          # Better ps with colors and search
+alias top="btm"                           # Better top/htop with graphs
+alias htop="btm"                          # bottom is the new htop
+alias curl="curlie"                       # curl with syntax highlighting
+alias cat="bat"                           # Already have bat, ensure alias
+alias du="dust"                           # Visual disk usage
+
+# Productivity tools
+alias y="yazi"                            # Fast file manager
+alias br="broot"                          # Interactive tree navigation
+alias json="fx"                           # Interactive JSON viewer
+alias cheat="navi"                        # Interactive cheatsheets
+
+# Git info
+alias ginfo="onefetch"                    # Git repo summary (like neofetch for repos)
+
+# Yazi with cd on exit (changes to last visited directory)
+function ya() {
+    local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+    yazi "$@" --cwd-file="$tmp"
+    if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+        cd -- "$cwd"
+    fi
+    rm -f -- "$tmp"
+}
 
 # git aliases
 alias gt="git"
@@ -196,19 +226,26 @@ alias fbl="fabric --listpatterns"
 alias fbs="fabric --stream"
 alias fbsp="fabric --stream --pattern"
 
-# Dynamically create aliases for all Fabric patterns
-# Loop through all files in the ~/.config/fabric/patterns directory
-for pattern_file in $HOME/.config/fabric/patterns/*; do
-    # Get the base name of the file (i.e., remove the directory path)
-    pattern_name="$(basename "$pattern_file")"
-    alias_name="${FABRIC_ALIAS_PREFIX:-}${pattern_name}"
+# Cached Fabric pattern aliases (regenerates only when patterns directory changes)
+# This saves ~150-250ms on every shell startup
+FABRIC_ALIAS_CACHE="$HOME/.cache/fabric-aliases.zsh"
+FABRIC_PATTERNS_DIR="$HOME/.config/fabric/patterns"
 
-    # Create an alias in the form: alias pattern_name="fabric --pattern pattern_name"
-    alias_command="alias $alias_name='fabric --pattern $pattern_name'"
-
-    # Evaluate the alias command to add it to the current shell
-    eval "$alias_command"
-done
+if [[ -d "$FABRIC_PATTERNS_DIR" ]]; then
+    # Regenerate cache if it doesn't exist or patterns directory is newer
+    if [[ ! -f "$FABRIC_ALIAS_CACHE" ]] || [[ "$FABRIC_PATTERNS_DIR" -nt "$FABRIC_ALIAS_CACHE" ]]; then
+        mkdir -p "$(dirname "$FABRIC_ALIAS_CACHE")"
+        {
+            echo "# Auto-generated Fabric pattern aliases - $(date)"
+            for pattern_file in "$FABRIC_PATTERNS_DIR"/*; do
+                pattern_name="$(basename "$pattern_file")"
+                echo "alias ${pattern_name}='fabric --pattern ${pattern_name}'"
+            done
+        } > "$FABRIC_ALIAS_CACHE"
+    fi
+    # Source the cached aliases
+    [[ -f "$FABRIC_ALIAS_CACHE" ]] && source "$FABRIC_ALIAS_CACHE"
+fi
 
 # Fabric YouTube transcript function
 yt() {
@@ -241,9 +278,9 @@ alias cldpyo="claude -p --dangerously-skip-permissions --model opus"
 alias cldr="claude --resume"
 # ---------------------------------------
 
-# brew installations activation (new mac systems brew path: opt/homebrew , not usr/local )
-source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# brew installations activation (hardcoded path avoids ~60ms subshell overhead)
+source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 [ -s "$HOME/.deno/env" ] && . "$HOME/.deno/env"
 
@@ -252,4 +289,5 @@ if [[ -x "$HOME/.claude/local/claude" ]]; then
 elif command -v claude >/dev/null 2>&1; then
     alias claude="$(command -v claude)"
 fi
-source ~/Developer/tac/scripts/aliases.sh
+# Source project-specific aliases if they exist
+[[ -f ~/Developer/tac/scripts/aliases.sh ]] && source ~/Developer/tac/scripts/aliases.sh
