@@ -2,7 +2,7 @@
 
 source "$CONFIG_DIR/colors.sh"
 
-DOCKER="/usr/local/bin/docker"
+DOCKER=$(command -v docker || echo "/usr/local/bin/docker")
 
 # Check if Docker is running (with timeout to prevent blocking)
 if ! timeout 2s $DOCKER info >/dev/null 2>&1; then

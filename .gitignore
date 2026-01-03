@@ -1,0 +1,14 @@
+# Machine-specific Claude Code settings
+.claude/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Local overrides (create these for machine-specific config)
+*.local

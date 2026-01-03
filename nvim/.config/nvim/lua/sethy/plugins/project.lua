@@ -37,13 +37,15 @@ return {
             datapath = vim.fn.stdpath("data"),
         })
 
-        -- Load telescope extension (safely)
-        local ok, telescope = pcall(require, "telescope")
-        if ok then
-            telescope.load_extension("projects")
-        end
-
-        -- Set up keymap after extension is loaded
-        vim.keymap.set("n", "<leader>pp", "<cmd>Telescope projects<CR>", { desc = "Switch project" })
+        -- Keymap using Snacks picker (Telescope is disabled)
+        vim.keymap.set("n", "<leader>pp", function()
+            local projects = require("project_nvim").get_recent_projects()
+            require("snacks").picker.select(projects, {
+                prompt = "Projects",
+                format = function(item) return vim.fn.fnamemodify(item, ":~") end,
+            }, function(selected)
+                if selected then vim.cmd("cd " .. selected) end
+            end)
+        end, { desc = "Switch project" })
     end,
 }

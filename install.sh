@@ -90,7 +90,6 @@ brew install pyenv
 ## Casks
 brew install --cask raycast
 brew install --cask karabiner-elements
-brew install --cask wezterm
 brew install --cask ghostty
 brew install --cask aerospace
 brew install --cask keycastr
@@ -123,7 +122,7 @@ cd $HOME/dotfiles || exit
 # Stow dotfiles packages
 echo "Stowing dotfiles..."
 # Core packages (nvim not neovim - matches directory name)
-stow -t ~ aerospace alacritty atuin ghostty karabiner mpd nvim rmpc scripts sketchybar starship tmux w3m wezterm yazi zed zsh
+stow -t ~ aerospace atuin ghostty karabiner mpd nvim rmpc scripts sketchybar starship tmux w3m yazi zed zsh
 
 echo "Dotfiles setup complete!"
 

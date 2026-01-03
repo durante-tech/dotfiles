@@ -1,10 +1,15 @@
-eval "$(/opt/homebrew/bin/brew shellenv)"
+# Homebrew - works on both ARM (/opt/homebrew) and Intel (/usr/local)
+if [[ -f /opt/homebrew/bin/brew ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -f /usr/local/bin/brew ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
 
 export LANG=en_US.UTF-8
 
 #------------All PATHS------------
-# GNU coreutils
-export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
+# GNU coreutils (uses HOMEBREW_PREFIX set by brew shellenv)
+[[ -d "$HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin" ]] && export PATH="$HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin:$PATH"
 
 # uv (Python package manager)
 export PATH="$HOME/.local/bin:$PATH"
@@ -76,10 +81,7 @@ export PATH=$GOPATH/bin:$PATH
 # Fabric AI
 export FABRIC_ROOT="$HOME/.config/fabric"
 
-# Setting PATH for Python 3.11
-# The original version is saved in .zprofile.pysave
-PATH="/Library/Frameworks/Python.framework/Versions/3.11/bin:${PATH}"
-export PATH
+# Python managed by pyenv (see PYENV_ROOT above)
 
 
 

@@ -1,9 +1,6 @@
 return {
     "rmagatti/auto-session",
     lazy = false,
-    dependencies = {
-        "nvim-telescope/telescope.nvim", -- Optional Telescope integration
-    },
     config = function()
         local auto_session = require("auto-session")
 
@@ -41,8 +38,8 @@ return {
         keymap.set("n", "<leader>ws", "<cmd>SessionSave<CR>", { desc = "Save session for cwd" })
         keymap.set("n", "<leader>wd", "<cmd>SessionDelete<CR>", { desc = "Delete session for cwd" })
 
-        -- Telescope integration for browsing sessions
+        -- Session browsing (SessionSearch works without Telescope)
         keymap.set("n", "<leader>wf", "<cmd>SessionSearch<CR>", { desc = "Find and switch session" })
-        keymap.set("n", "<leader>wl", "<cmd>Telescope session-lens<CR>", { desc = "List all sessions" })
+        keymap.set("n", "<leader>wl", "<cmd>SessionSearch<CR>", { desc = "List all sessions" })
     end,
 }
