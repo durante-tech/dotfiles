@@ -6,7 +6,6 @@ Complete guide for mastering tmux - your terminal multiplexer and session manage
 
 ### Getting Started
 - **[Quick Start](quick-start.md)** - Get productive with tmux in 10 minutes
-- **[First Session](first-session.md)** - Your first tmux workflow
 
 ### Daily Reference
 - **[Daily Cheatsheet](daily-cheatsheet.md)** - Most common commands at a glance
@@ -19,12 +18,9 @@ Learn tmux workflows for real development:
 - **[Windows](workflows/windows.md)** - Organizing tasks within a session
 - **[Panes](workflows/panes.md)** - Splitting and managing terminal views
 - **[Copy Mode](workflows/copy-mode.md)** - Copying and scrolling like vim
-- **[Session Management](workflows/session-management.md)** - Advanced session juggling
 
 ### Integration
 - **[Tmux + Neovim](integration/nvim.md)** - Seamless navigation between tmux and nvim
-- **[Tmux + Ghostty](integration/ghostty.md)** - Terminal emulator integration
-- **[Tmux Scripts](integration/scripts.md)** - Custom scripts and automation
 
 ## 🎯 What is Tmux?
 
@@ -77,13 +73,11 @@ Ctrl+b  (C-b)  →  Your prefix key (press before all tmux commands)
 1. Master [Windows](workflows/windows.md) - task organization
 2. Learn [Copy Mode](workflows/copy-mode.md) - vim-style copying
 3. Integrate [Tmux + Neovim](integration/nvim.md)
-4. Use [Session Management](workflows/session-management.md) patterns
 
 ### Advanced (Month 2+)
-1. Customize [Tmux Scripts](integration/scripts.md)
-2. Build personal workflow patterns
-3. Create project-specific layouts
-4. Master advanced copy-mode techniques
+1. Build personal workflow patterns
+2. Create project-specific layouts
+3. Master advanced copy-mode techniques
 
 ## 🚀 Most Used Commands
 
@@ -224,7 +218,6 @@ q      Exit            C-b C-m  Music
 
 **Want integration?**
 1. [Tmux + Neovim](integration/nvim.md) - Seamless workflow
-2. [Tmux Scripts](integration/scripts.md) - Automation
 
 ---
 
