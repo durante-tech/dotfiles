@@ -24,8 +24,10 @@ export PATH="$HOME/.local/share/nvim/mason/bin:$PATH"
 export TMUX_CONF="$HOME/.config/tmux/tmux.conf"
 
 # 1Password SSH Agent
-# Use 1Password for SSH key management
-export SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+# Use 1Password for SSH key management (validate socket exists first)
+_1password_sock="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+[[ -S "$_1password_sock" ]] && export SSH_AUTH_SOCK="$_1password_sock"
+unset _1password_sock
 
 # Starship PATH
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
@@ -37,9 +39,9 @@ export TEALDEER_CONFIG_DIR="$HOME/.config/tealdeer/"
 
 # ------------FZF--------------
 # Set up fzf key bindings and fuzzy completion
-export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git "
+export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git --exclude node_modules --exclude .venv --exclude __pycache__ --exclude dist --exclude build"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
+export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git --exclude node_modules --exclude .venv"
 
 export FZF_DEFAULT_OPTS="--height 50% --layout=default --border --color=hl:#2dd4bf"
 
@@ -90,5 +92,8 @@ export FABRIC_ROOT="$HOME/.config/fabric"
 
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
+
+# Source machine-specific local overrides (not tracked in git)
+[[ -f ~/.zprofile.local ]] && source ~/.zprofile.local
 
 

@@ -129,8 +129,8 @@ return {
 			-- Format on save configuration
 			format_on_save = {
 				lsp_fallback = true, -- Use LSP formatter if conform formatter not available
-				async = false,       -- Synchronous (waits for format before saving)
-				timeout_ms = 2000,   -- 2 second timeout (increased for slow formatters)
+				async = true,        -- Async (non-blocking, better UX)
+				timeout_ms = 3000,   -- 3 second timeout for async completion
 			},
 		})
 

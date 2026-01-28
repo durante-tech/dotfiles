@@ -22,9 +22,9 @@ return {
 		-- <c-f> - toggles forcing of the next deletion
 
 		-- Create new worktree
-		vim.keymap.set("n", "<leader>wl", function()
+		vim.keymap.set("n", "<leader>gt", function()
 			require("telescope").extensions.git_worktree.git_worktrees()
-		end, { desc = "list Git Worktree" })
+		end, { desc = "Git worktree list" })
 
 		-- Switch/list worktrees
 		vim.keymap.set("n", "<leader>wc", function()

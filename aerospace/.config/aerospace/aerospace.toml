@@ -81,8 +81,7 @@ outer.right = 15
 # Per-monitor top gap. Update to current monitor names detected by `aerospace list-monitors`.
 # Adjust values as desired per monitor; last number is the default fallback.
 outer.top = [
-  { monitor."DEV-MAIN" = 15 },
-  { monitor."DEV-SECOND" = 15 },
+  { monitor."Built-in Retina Display" = 15 },
   { monitor."PORTRAIT-MONITOR" = 50 },
   15,
 ]
@@ -90,13 +89,14 @@ outer.top = [
 # Pin key workspaces to monitors
 # See: https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
 [workspace-to-monitor-force-assignment]
-1 = 'Built-in Retina Display'  # Main workspace on built-in
+# Built-in display can't be renamed in BetterDisplay, use actual macOS name
+1 = 'Built-in Retina Display'  # Main workspace on laptop
 2 = '^PORTRAIT-MONITOR$'       # Secondary workspace on portrait
-B = 'Built-in Retina Display'  # Browser on built-in
-D = 'Built-in Retina Display'  # Development on built-in
-F = 'Built-in Retina Display'  # Finder on built-in (floats)
-M = 'Built-in Retina Display'  # Messaging on built-in
-N = 'Built-in Retina Display'  # Notes on built-in
+B = 'Built-in Retina Display'  # Browser on laptop
+D = 'Built-in Retina Display'  # Development on laptop
+F = 'Built-in Retina Display'  # Finder on laptop (floats)
+M = 'Built-in Retina Display'  # Messaging on laptop
+N = 'Built-in Retina Display'  # Notes on laptop
 T = '^PORTRAIT-MONITOR$'       # Terminal on portrait
 
 
@@ -355,7 +355,7 @@ run = 'layout floating'
 if.app-id = 'net.whatsapp.WhatsApp'
 run = "move-node-to-workspace M"
 
-# IDEs → Development workspace (D) on DEV-MAIN
+# IDEs → Development workspace (D) on Built-in display
 [[on-window-detected]]
 if.app-id = 'com.microsoft.VSCode'
 run = ['layout tiling', 'move-node-to-workspace D']

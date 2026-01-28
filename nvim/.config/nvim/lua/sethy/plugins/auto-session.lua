@@ -17,7 +17,6 @@ return {
                 "~/Downloads",
                 "~/Documents",
                 "~/Desktop",
-                "~/dotfiles",
                 "/tmp",
             },
 
@@ -40,6 +39,6 @@ return {
 
         -- Session browsing (SessionSearch works without Telescope)
         keymap.set("n", "<leader>wf", "<cmd>SessionSearch<CR>", { desc = "Find and switch session" })
-        keymap.set("n", "<leader>wl", "<cmd>SessionSearch<CR>", { desc = "List all sessions" })
+        keymap.set("n", "<leader>wl", "<cmd>SessionSearch<CR>", { desc = "List all sessions (picker)" })
     end,
 }
