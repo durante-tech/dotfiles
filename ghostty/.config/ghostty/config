@@ -20,7 +20,7 @@ font-feature = +dlig
 cursor-style = block
 cursor-style-blink = false
 cursor-invert-fg-bg = true
-cursor-color = ffff00
+cursor-color = #ffff00
 
 macos-titlebar-style = hidden
 macos-option-as-alt = true
@@ -37,7 +37,8 @@ auto-update-channel = stable
 
 # extras
 shell-integration-features = no-cursor 
-copy-on-select = clipboard
+# copy-on-select disabled - using tmux for clipboard management
+# copy-on-select = clipboard
 
 # Custom Keybinds & Config (super represents cmd key on mac)
 # For Simple Keybinds

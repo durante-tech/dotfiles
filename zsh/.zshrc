@@ -105,16 +105,6 @@ google() { open "https://www.google.com/search?q=${(j:+:)@}" }
 ddg() { open "https://duckduckgo.com/?q=${(j:+:)@}" }
 github() { open "https://github.com/search?q=${(j:+:)@}" }
 
-# Additional git aliases (complements existing ones)
-alias gco='git checkout'
-alias gcb='git checkout -b'
-alias gp='git push'
-alias gl='git pull'
-alias gd='git diff'
-alias gds='git diff --staged'
-alias gb='git branch'
-alias gba='git branch -a'
-
 # -------------------ALIAS----------------------
 # These alias need to have the same exact space as written here
 # HACK: For Running Go Server using Air
@@ -192,21 +182,33 @@ alias ginfo="onefetch"                    # Git repo summary (like neofetch for 
 
 # Yazi with cd on exit (changes to last visited directory)
 function ya() {
-    local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
-    yazi "$@" --cwd-file="$tmp"
-    if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+    local tmp
+    tmp=$(mktemp -t "yazi-cwd.XXXXXX") || return 1
+    trap "rm -f -- '$tmp'" RETURN
+    yazi "$@" --cwd-file="$tmp" || return
+    local cwd
+    if cwd=$(cat -- "$tmp" 2>/dev/null) && [[ -n "$cwd" ]] && [[ "$cwd" != "$PWD" ]]; then
         cd -- "$cwd"
     fi
-    rm -f -- "$tmp"
 }
 
-# git aliases
+# -------------------GIT ALIASES----------------------
+# Consolidated git shortcuts (was scattered across file)
 alias gt="git"
 alias ga="git add ."
 alias gs="git status -s"
 alias gc='git commit -m'
+alias gco='git checkout'
+alias gcb='git checkout -b'
+alias gp='git push'
+alias gl='git pull'
+alias gd='git diff'
+alias gds='git diff --staged'
+alias gb='git branch'
+alias gba='git branch -a'
 alias glog='git log --oneline --graph --all'
 alias gh-create='gh repo create --private --source=. --remote=origin && git push -u --all && gh browse'
+# ----------------------------------------------------
 
 alias nvim-scratch="NVIM_APPNAME=nvim-scratch nvim"
 
@@ -292,3 +294,6 @@ elif command -v claude >/dev/null 2>&1; then
 fi
 # Source project-specific aliases if they exist
 [[ -f ~/Developer/tac/scripts/aliases.sh ]] && source ~/Developer/tac/scripts/aliases.sh
+
+# Source machine-specific local overrides (not tracked in git)
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
