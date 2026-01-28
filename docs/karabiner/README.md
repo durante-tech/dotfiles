@@ -1,0 +1,60 @@
+# Karabiner-Elements Configuration
+
+Keyboard remapping with Hyperkey system for global shortcuts.
+
+## The Hyperkey
+
+**CapsLock** is remapped to a "Hyperkey" (Ctrl+Shift+Cmd+Alt simultaneously).
+
+| Input | Output |
+|-------|--------|
+| CapsLock (tap) | Escape |
+| CapsLock (hold) | Hyper (Ctrl+Shift+Cmd+Alt) |
+| Hyper+Q | Control |
+
+## Why Hyperkey?
+
+- CapsLock is rarely used but in a prime keyboard position
+- Hyper combinations never conflict with app shortcuts
+- Tap for Escape (vim users rejoice)
+- Hold for powerful modifier combinations
+
+## App Launcher (Hyper + Key)
+
+Configure app shortcuts with Hyper+letter combinations:
+
+| Key | Typical Mapping |
+|-----|-----------------|
+| `Hyper+T` | Terminal |
+| `Hyper+B` | Browser |
+| `Hyper+C` | Code editor |
+| `Hyper+S` | Slack |
+| `Hyper+M` | Music |
+
+## Sub-Layers
+
+Hyper enables sub-layers for organized shortcuts:
+
+- **System commands**: Volume, brightness, screenshots
+- **Music control**: Play/pause, next/previous
+- **Vim motions**: Global vim-like navigation
+
+## File Location
+
+```
+karabiner/.config/karabiner/
+├── karabiner.json    # Main configuration
+└── README.md         # Local documentation
+```
+
+## Permissions Required
+
+Grant in System Settings → Privacy & Security:
+- Input Monitoring
+- Accessibility
+
+## Tips
+
+- Sub-layers don't overlap with primary Hyper shortcuts
+- Test new mappings in Karabiner-EventViewer
+- Backup karabiner.json before major changes
