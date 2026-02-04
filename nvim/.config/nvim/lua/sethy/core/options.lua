@@ -46,6 +46,24 @@ vim.o.foldcolumn = "0"
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 
+-- Auto-reload files changed outside of Neovim
+vim.opt.autoread = true
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHoldI" }, {
+    pattern = "*",
+    callback = function()
+        if vim.fn.mode() ~= "c" then  -- Don't check while in command-line mode
+            vim.cmd("checktime")
+        end
+    end,
+})
+-- Notify when file is reloaded
+vim.api.nvim_create_autocmd("FileChangedShellPost", {
+    pattern = "*",
+    callback = function()
+        vim.notify("File changed on disk. Buffer reloaded.", vim.log.levels.WARN)
+    end,
+})
+
 -- misc
 vim.opt.isfname:append("@-@")
 vim.opt.updatetime = 50
