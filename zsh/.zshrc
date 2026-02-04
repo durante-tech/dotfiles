@@ -65,6 +65,13 @@ precmd() {
 # Zoxide
 eval "$(zoxide init zsh)"
 
+# FNM auto-switch on cd (hook only - base env in .zprofile)
+autoload -U add-zsh-hook
+_fnm_autoload_hook() {
+    [[ -f .node-version || -f .nvmrc ]] && fnm use --silent-if-unchanged
+}
+add-zsh-hook chpwd _fnm_autoload_hook
+
 # FZF
 eval "$(fzf --zsh)"
 
@@ -271,7 +278,6 @@ alias cld="claude"
 alias cldp="claude -p"
 alias cldo="claude --model opus"
 alias clds="claude --model sonnet"
-alias cldys="claude --dangerously-skip-permissions --model sonnet"
 alias cldy="claude --dangerously-skip-permissions --model sonnet"
 alias cldyo="claude --dangerously-skip-permissions --model opus"
 alias lfg="claude --dangerously-skip-permissions --model opus"
@@ -294,6 +300,9 @@ elif command -v claude >/dev/null 2>&1; then
 fi
 # Source project-specific aliases if they exist
 [[ -f ~/Developer/tac/scripts/aliases.sh ]] && source ~/Developer/tac/scripts/aliases.sh
+
+# Source PAI (Personal AI Infrastructure) shell config
+[[ -f ~/.claude/skills/CORE/USER/TERMINAL/ZSHRC ]] && source ~/.claude/skills/CORE/USER/TERMINAL/ZSHRC
 
 # Source machine-specific local overrides (not tracked in git)
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
