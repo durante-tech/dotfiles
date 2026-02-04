@@ -215,6 +215,67 @@ terminal_cmd = "/Users/lgertel/.bun/bin/bun /Users/lgertel/.claude/skills/CORE/T
 
 If you get "exit code 127" (command not found), ensure the paths are correct for your system.
 
+### Content Features (PAI ↔ Neovim)
+
+claudecode.nvim creates a **two-way bridge** between PAI and Neovim via WebSocket/MCP protocol.
+
+#### Send Selection to PAI
+Select code in visual mode and send it to PAI for discussion:
+```
+1. Visual select code (v, V, or Ctrl+v)
+2. Press <leader>as
+3. Selection is sent to PAI with file context
+4. PAI can analyze, explain, or suggest changes
+```
+
+#### PAI Opens Files in Neovim
+When PAI references a file, it can open it directly in your editor:
+- PAI says "let me show you line 42 of config.lua"
+- File opens in Neovim at that line
+- No manual navigation needed
+
+#### PAI Proposes Diffs
+When PAI suggests code changes, they appear as a diff view:
+```
+1. PAI proposes changes → diff view opens
+2. Review the diff (side-by-side comparison)
+3. <leader>aa → Accept changes
+4. <leader>ad → Reject changes
+5. Diff view closes automatically on accept
+```
+
+#### Selection Tracking
+PAI always knows what you're looking at:
+- Current file path
+- Cursor position
+- Visual selection (if any)
+- Open buffers
+
+This enables context-aware responses like "in the function you're viewing..." or "for the selected code...".
+
+#### File Tree Integration
+PAI can see your project structure:
+- All open files
+- Project file tree
+- Navigate between files programmatically
+
+#### Diagnostics Access
+PAI can read LSP diagnostics:
+- Errors and warnings in current file
+- Across all open buffers
+- Enables "fix this error" workflows
+
+#### MCP Tools Reference
+
+| Tool | Description |
+|------|-------------|
+| `openFile` | Open a file at specific line in Neovim |
+| `getOpenFiles` | List all open buffers |
+| `getCurrentSelection` | Get visual selection with file context |
+| `getDiagnostics` | Get LSP errors/warnings |
+| `saveDocument` | Save the current buffer |
+| `closeDiff` | Close diff view after accept/reject |
+
 ---
 
 ## Window Management
