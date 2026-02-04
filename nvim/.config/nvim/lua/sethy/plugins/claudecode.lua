@@ -19,16 +19,16 @@ return {
 		{ "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Reject diff" },
 	},
 	opts = {
-		-- Use PAI instead of claude command
-		terminal_cmd = "pai",
+		-- Use PAI instead of claude (full paths since alias/PATH not available in nvim terminal)
+		terminal_cmd = "/Users/lgertel/.bun/bin/bun /Users/lgertel/.claude/skills/CORE/Tools/pai.ts",
 		-- Terminal settings
 		terminal = {
 			split_side = "left", -- Will be overridden by snacks_win_opts
 			provider = "snacks",
 			auto_close = true,
 			snacks_win_opts = {
-				position = "bottom",
-				height = 0.30, -- 30% height
+				position = "right",
+				width = 0.40, -- 40% width
 			},
 		},
 		-- Diff viewing options

@@ -187,6 +187,16 @@ PAI (Personal AI Infrastructure) integrates with Neovim via claudecode.nvim.
 :ClaudeCode -l -m dev-work     " Combine options
 ```
 
+### Configuration Note
+The plugin uses **full paths** instead of aliases because Neovim's terminal doesn't load `.zshrc`:
+
+```lua
+-- In claudecode.lua
+terminal_cmd = "/Users/lgertel/.bun/bin/bun /Users/lgertel/.claude/skills/CORE/Tools/pai.ts"
+```
+
+If you get "exit code 127" (command not found), ensure the paths are correct for your system.
+
 ---
 
 ## Window Management
