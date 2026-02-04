@@ -187,6 +187,24 @@ PAI (Personal AI Infrastructure) integrates with Neovim via claudecode.nvim.
 :ClaudeCode -l -m dev-work     " Combine options
 ```
 
+### Snacks Terminal Split Options
+Configure the PAI terminal position in `claudecode.lua`:
+
+```lua
+snacks_win_opts = {
+    position = "right",  -- or "left", "bottom", "top"
+    width = 0.40,        -- for vertical splits (left/right)
+    -- height = 0.30,    -- for horizontal splits (top/bottom)
+}
+```
+
+| Position | Split Type | Size Option |
+|----------|------------|-------------|
+| `"right"` | Vertical | `width = 0.40` |
+| `"left"` | Vertical | `width = 0.40` |
+| `"bottom"` | Horizontal | `height = 0.30` |
+| `"top"` | Horizontal | `height = 0.30` |
+
 ### Configuration Note
 The plugin uses **full paths** instead of aliases because Neovim's terminal doesn't load `.zshrc`:
 
