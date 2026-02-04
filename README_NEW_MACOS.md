@@ -156,7 +156,7 @@ Mason will automatically install LSP servers on first launch. Wait for installat
 ### GUI Applications (via Homebrew Cask)
 - **Terminal**: WezTerm
 - **Productivity**: Raycast, AeroSpace (window manager)
-- **Utilities**: Karabiner Elements, KeyCastr, BetterDisplay, LinearMouse
+- **Utilities**: KeyCastr, BetterDisplay, LinearMouse
 - **Fonts**: Hack Nerd Font, JetBrains Mono Nerd Font, SF Pro
 
 ### Language/Version Managers
@@ -214,7 +214,7 @@ The install script automatically configures:
 - System Settings → Trackpad → Scroll & Zoom → Enable "Natural scrolling"
 
 #### 2. Keyboard
-- System Settings → Keyboard → Keyboard Shortcuts → Modifier Keys → Remap Caps Lock to Control (or use Karabiner)
+- System Settings → Keyboard → Keyboard Shortcuts → Modifier Keys → Remap Caps Lock to Control
 
 #### 3. 1Password SSH Agent (if using 1Password)
 - Enable 1Password SSH Agent in 1Password Settings
@@ -222,7 +222,6 @@ The install script automatically configures:
 
 #### 4. Permissions
 Grant permissions when prompted for:
-- Karabiner Elements (Input Monitoring, Accessibility)
 - Raycast (Accessibility)
 - AeroSpace (Accessibility)
 - WezTerm (Full Disk Access if needed)
@@ -301,7 +300,7 @@ mv ~/.config/nvim ~/dotfiles_backup/
 mv ~/.zshrc ~/dotfiles_backup/
 # Then re-run stow
 cd ~/dotfiles
-stow -t ~ zsh nvim tmux starship wezterm aerospace karabiner
+stow -t ~ zsh nvim tmux starship wezterm aerospace
 ```
 
 ### Issue: Scripts not executable
@@ -335,9 +334,6 @@ chmod +x ~/scripts/*
    - Import settings or customize manually
    - Set up hotkey (recommended: Cmd+Space)
 
-6. Set up Karabiner Elements:
-   - Complex modifications available at `~/.config/karabiner/`
-
 ---
 
 ## Useful Commands
@@ -350,7 +346,7 @@ cd ~/dotfiles && git pull
 
 # Re-stow after changes
 cd ~/dotfiles
-stow -R -t ~ zsh nvim tmux starship wezterm aerospace karabiner
+stow -R -t ~ zsh nvim tmux starship wezterm aerospace
 
 # Edit configs quickly (using aliases)
 vim ~/.zshrc        # Shell config

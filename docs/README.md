@@ -10,6 +10,7 @@ New to this setup? Start here:
 |-------|-------------|
 | **[Quick Start](getting-started/quick-start.md)** | Get productive in 5 minutes |
 | **[First Day](getting-started/first-day.md)** | Your first day with this config |
+| **[Daily Workflow](getting-started/daily-workflow.md)** | Daily dev workflow reference (git, LSP workspaces, Hyper Key) |
 | **[Adding New Tools](getting-started/new-tools-guide.md)** | How to add tools to this setup |
 
 ## Tool Documentation

@@ -97,7 +97,6 @@ nvim +Lazy sync +qa
 | **aerospace** | Tiling window manager |
 | **sketchybar** | Custom status bar |
 | **ghostty** | Primary terminal emulator |
-| **karabiner** | Keyboard remapping (Hyperkey system) |
 
 ## Key Bindings
 
@@ -137,7 +136,6 @@ nvim +Lazy sync +qa
 dotfiles/
 ├── aerospace/     → ~/.config/aerospace/
 ├── ghostty/       → ~/.config/ghostty/
-├── karabiner/     → ~/.config/karabiner/
 ├── nvim/          → ~/.config/nvim/
 ├── scripts/       → ~/scripts/
 ├── sketchybar/    → ~/.config/sketchybar/
@@ -164,7 +162,7 @@ stow -R -t ~ nvim
 stow -D -t ~ nvim
 
 # Stow all
-stow -t ~ aerospace atuin ghostty karabiner mpd nvim rmpc scripts sketchybar starship tmux w3m yazi zed zsh
+stow -t ~ aerospace atuin ghostty mpd nvim rmpc scripts sketchybar starship tmux w3m yazi zed zsh
 ```
 
 ## Troubleshooting

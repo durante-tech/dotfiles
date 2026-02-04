@@ -108,9 +108,15 @@ bindkey -M viins '^[[27;2;13~' accept-line  # Ghostty fixterms sequence
 #----------------------------------------
 
 # Web search functions (replaces oh-my-zsh web-search plugin)
-google() { open "https://www.google.com/search?q=${(j:+:)@}" }
-ddg() { open "https://duckduckgo.com/?q=${(j:+:)@}" }
-github() { open "https://github.com/search?q=${(j:+:)@}" }
+# Use 'open' on macOS, 'xdg-open' on Linux
+if [[ "$(uname)" == "Darwin" ]]; then
+    _open_cmd="open"
+else
+    _open_cmd="xdg-open"
+fi
+google() { $_open_cmd "https://www.google.com/search?q=${(j:+:)@}" }
+ddg() { $_open_cmd "https://duckduckgo.com/?q=${(j:+:)@}" }
+github() { $_open_cmd "https://github.com/search?q=${(j:+:)@}" }
 
 # -------------------ALIAS----------------------
 # These alias need to have the same exact space as written here

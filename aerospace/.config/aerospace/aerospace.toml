@@ -256,9 +256,9 @@ run = ['layout floating', 'move-node-to-workspace F']
 if.app-name-regex-substring = 'Shottr'
 run = 'layout floating'
 
-# [[on-window-detected]]
-# if.app-id = 'com.mitchellh.ghostty'
-# run = "move-node-to-workspace T"
+[[on-window-detected]]
+if.app-id = 'com.mitchellh.ghostty'
+run = "move-node-to-workspace T"
 
 # Playwright browser - keep floating in current workspace
 [[on-window-detected]]

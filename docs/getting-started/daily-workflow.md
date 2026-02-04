@@ -209,11 +209,11 @@ snacks_win_opts = {
 The plugin uses **full paths** instead of aliases because Neovim's terminal doesn't load `.zshrc`:
 
 ```lua
--- In claudecode.lua
-terminal_cmd = "/Users/lgertel/.bun/bin/bun /Users/lgertel/.claude/skills/CORE/Tools/pai.ts"
+-- In claudecode.lua (uses vim.fn.expand for portability)
+terminal_cmd = vim.fn.expand("~") .. "/.bun/bin/bun " .. vim.fn.expand("~") .. "/.claude/skills/CORE/Tools/pai.ts"
 ```
 
-If you get "exit code 127" (command not found), ensure the paths are correct for your system.
+If you get "exit code 127" (command not found), ensure bun and PAI are installed in your home directory.
 
 ### Content Features (PAI ↔ Neovim)
 

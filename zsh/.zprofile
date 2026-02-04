@@ -25,7 +25,12 @@ export TMUX_CONF="$HOME/.config/tmux/tmux.conf"
 
 # 1Password SSH Agent
 # Use 1Password for SSH key management (validate socket exists first)
-_1password_sock="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+if [[ "$(uname)" == "Darwin" ]]; then
+    _1password_sock="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+else
+    # Linux 1Password socket location
+    _1password_sock="$HOME/.1password/agent.sock"
+fi
 [[ -S "$_1password_sock" ]] && export SSH_AUTH_SOCK="$_1password_sock"
 unset _1password_sock
 
@@ -53,9 +58,8 @@ export FZF_ALT_C_OPTS="--preview 'eza --icons=always --tree --color=always {} | 
 export FZF_TMUX_OPTS=" -p90%,70% "  
 # -----------------------------
 
-# FNM (Fast Node Manager) - replaces NVM for ~10x faster startup
-# FNM reads .nvmrc and .node-version files automatically
-eval "$(fnm env --use-on-cd)"
+# FNM (Fast Node Manager) - base env only (--use-on-cd moved to .zshrc to prevent duplicate init)
+eval "$(fnm env)"
 
 # Console Ninja
 export PATH=~/.console-ninja/.bin:$PATH
@@ -66,8 +70,8 @@ export PATH=~/.console-ninja/.bin:$PATH
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
-# 010 Hex Editor
-export PATH="$PATH:/Applications/010 Editor.app/Contents/CmdLine" #ADDED BY 010 EDITOR
+# 010 Hex Editor (macOS only)
+[[ "$(uname)" == "Darwin" ]] && export PATH="$PATH:/Applications/010 Editor.app/Contents/CmdLine"
 
 #------------Langs------------
 
@@ -84,9 +88,6 @@ export PATH=$GOPATH/bin:$PATH
 export FABRIC_ROOT="$HOME/.config/fabric"
 
 # Python managed by pyenv (see PYENV_ROOT above)
-
-
-
 
 
 
