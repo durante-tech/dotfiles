@@ -105,9 +105,9 @@
                                         "value": 1
                                     }
                                 ],
-                                "description": "Hyper + t -> Ghostty",
+                                "description": "Hyper + t -> Alt+T (workspace T)",
                                 "from": { "key_code": "t" },
-                                "to": [{ "shell_command": "open -a 'Ghostty'" }],
+                                "to": [{ "key_code": "t", "modifiers": ["left_option"] }],
                                 "type": "basic"
                             },
                             {
@@ -118,9 +118,9 @@
                                         "value": 1
                                     }
                                 ],
-                                "description": "Hyper + b -> Zen Browser",
+                                "description": "Hyper + b -> Alt+B (workspace B)",
                                 "from": { "key_code": "b" },
-                                "to": [{ "shell_command": "open -a 'Zen Browser'" }],
+                                "to": [{ "key_code": "b", "modifiers": ["left_option"] }],
                                 "type": "basic"
                             },
                             {
@@ -131,9 +131,9 @@
                                         "value": 1
                                     }
                                 ],
-                                "description": "Hyper + f -> Finder",
+                                "description": "Hyper + f -> Alt+F (workspace F)",
                                 "from": { "key_code": "f" },
-                                "to": [{ "shell_command": "open -a 'Finder'" }],
+                                "to": [{ "key_code": "f", "modifiers": ["left_option"] }],
                                 "type": "basic"
                             },
                             {
@@ -144,9 +144,9 @@
                                         "value": 1
                                     }
                                 ],
-                                "description": "Hyper + 1 -> DaVinci Resolve",
+                                "description": "Hyper + 1 -> Alt+1 (workspace 1)",
                                 "from": { "key_code": "1" },
-                                "to": [{ "shell_command": "open -a 'DaVinci Resolve'" }],
+                                "to": [{ "key_code": "1", "modifiers": ["left_option"] }],
                                 "type": "basic"
                             },
                             {
@@ -157,9 +157,74 @@
                                         "value": 1
                                     }
                                 ],
-                                "description": "Hyper + 2 -> OBS Studio",
+                                "description": "Hyper + 2 -> Alt+2 (workspace 2)",
                                 "from": { "key_code": "2" },
-                                "to": [{ "shell_command": "open -a 'OBS'" }],
+                                "to": [{ "key_code": "2", "modifiers": ["left_option"] }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "name": "hyper",
+                                        "type": "variable_if",
+                                        "value": 1
+                                    }
+                                ],
+                                "description": "Hyper + d -> Alt+D (workspace D)",
+                                "from": { "key_code": "d" },
+                                "to": [{ "key_code": "d", "modifiers": ["left_option"] }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "name": "hyper",
+                                        "type": "variable_if",
+                                        "value": 1
+                                    }
+                                ],
+                                "description": "Hyper + m -> Alt+M (workspace M)",
+                                "from": { "key_code": "m" },
+                                "to": [{ "key_code": "m", "modifiers": ["left_option"] }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "name": "hyper",
+                                        "type": "variable_if",
+                                        "value": 1
+                                    }
+                                ],
+                                "description": "Hyper + . -> Raycast Notes",
+                                "from": { "key_code": "period" },
+                                "to": [{ "shell_command": "open raycast://extensions/raycast/raycast-notes/raycast-notes" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "name": "hyper",
+                                        "type": "variable_if",
+                                        "value": 1
+                                    }
+                                ],
+                                "description": "Hyper + , -> Start Focus Session",
+                                "from": { "key_code": "comma" },
+                                "to": [{ "shell_command": "open raycast://extensions/raycast/raycast-focus/start-focus-session" }],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "name": "hyper",
+                                        "type": "variable_if",
+                                        "value": 1
+                                    }
+                                ],
+                                "description": "Hyper + x -> Raycast AI Chat",
+                                "from": { "key_code": "x" },
+                                "to": [{ "shell_command": "open raycast://extensions/raycast/raycast-ai/ai-chat" }],
                                 "type": "basic"
                             }
                         ]

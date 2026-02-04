@@ -91,6 +91,18 @@ vim.keymap.set("n", "<leader>lx", function()
     })
 end, { desc = "Toggle LSP diagnostics" })
 
+-- LSP Workspace Folders (multi-root workspace support)
+vim.keymap.set("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, { desc = "Add Workspace Folder" })
+vim.keymap.set("n", "<leader>wx", vim.lsp.buf.remove_workspace_folder, { desc = "Remove Workspace Folder" })
+vim.keymap.set("n", "<leader>wl", function()
+    local folders = vim.lsp.buf.list_workspace_folders()
+    if #folders == 0 then
+        print("No workspace folders")
+    else
+        print("Workspace folders: " .. table.concat(folders, ", "))
+    end
+end, { desc = "List Workspace Folders" })
+
 -- Wrapped lines navigation (move by visual line, not actual line)
 vim.keymap.set("n", "j", "gj", { desc = "Move down by visual line" })
 vim.keymap.set("n", "k", "gk", { desc = "Move up by visual line" })
