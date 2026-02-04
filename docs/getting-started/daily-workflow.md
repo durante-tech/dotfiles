@@ -155,6 +155,40 @@ When working across multiple project folders:
 
 ---
 
+## PAI Integration (claudecode.nvim)
+
+PAI (Personal AI Infrastructure) integrates with Neovim via claudecode.nvim.
+
+### Launch PAI
+| Action | Keys | Command |
+|--------|------|---------|
+| Toggle PAI | `<leader>ac` | `pai` |
+| Focus PAI | `<leader>af` | Focus terminal |
+| Local dir | `<leader>al` | `pai -l` |
+| Full MCPs | `<leader>am` | `pai -l -m full` |
+| Dev-work | `<leader>aw` | `pai -l -m dev-work` |
+| Resume | `<leader>ar` | `pai --resume` |
+| Full + Resume | `<leader>aM` | `pai -l -m full --resume` |
+| Dev-work + Resume | `<leader>aW` | `pai -l -m dev-work --resume` |
+
+### Selection & Diffs
+| Action | Keys | Mode |
+|--------|------|------|
+| Send to PAI | `<leader>as` | Visual |
+| Accept diff | `<leader>aa` | Normal |
+| Reject diff | `<leader>ad` | Normal |
+
+### Command Line Options
+```vim
+:ClaudeCode                    " Basic PAI
+:ClaudeCode -l                 " Stay in current directory
+:ClaudeCode -m full            " Load full MCP servers
+:ClaudeCode --resume           " Resume last session
+:ClaudeCode -l -m dev-work     " Combine options
+```
+
+---
+
 ## Window Management
 
 ### Splits
