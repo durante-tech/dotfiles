@@ -20,7 +20,7 @@ return {
 	},
 	opts = {
 		-- Use PAI instead of claude (full paths since alias/PATH not available in nvim terminal)
-		terminal_cmd = "/Users/lgertel/.bun/bin/bun /Users/lgertel/.claude/skills/CORE/Tools/pai.ts",
+		terminal_cmd = vim.fn.expand("~") .. "/.bun/bin/bun " .. vim.fn.expand("~") .. "/.claude/skills/CORE/Tools/pai.ts",
 		-- Terminal settings
 		terminal = {
 			split_side = "left", -- Will be overridden by snacks_win_opts

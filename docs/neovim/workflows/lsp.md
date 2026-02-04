@@ -35,7 +35,7 @@ This config uses `vim.lsp.config` with these servers:
 i                   " Install selected
 ```
 
-Or see [lspconfig.lua](/Users/lgertel/.config/nvim/lua/sethy/plugins/lsp/lspconfig.lua:249) for manual configuration.
+Or see [lspconfig.lua](../../nvim/.config/nvim/lua/sethy/plugins/lsp/lspconfig.lua) for manual configuration.
 
 ## Core LSP Features
 

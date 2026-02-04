@@ -20,7 +20,7 @@ This is a macOS-focused dotfiles repository using **GNU Stow** for symlink manag
 stow -t ~ .
 
 # Stow individual packages
-stow -t ~ zsh nvim tmux starship aerospace ghostty karabiner w3m
+stow -t ~ zsh nvim tmux starship aerospace ghostty w3m
 
 # Re-stow after configuration changes
 stow -R -t ~ zsh nvim tmux w3m
@@ -132,7 +132,6 @@ nvim/
 | **Starship** | `starship/.config/starship/starship.toml` | Shell prompt with Catppuccin theme |
 | **AeroSpace** | `aerospace/.config/aerospace/aerospace.toml` | macOS window manager, multi-monitor setup |
 | **Ghostty** | `ghostty/.config/ghostty/config` | Primary terminal emulator |
-| **Karabiner** | `karabiner/.config/karabiner/` | Keyboard remapping with hyperkey system |
 | **Scripts** | `scripts/scripts/` | Custom utilities (tmux-sessionizer, fzf helpers) |
 
 ### Multi-Monitor Workspace Configuration (AeroSpace)
@@ -368,15 +367,6 @@ FZF is integrated across multiple tools. When adding new scripts or tools:
 2. Preview windows with `bat` for file contents
 3. Bind to convenient keymaps (see existing patterns in `.zshrc`)
 
-### Hyperkey System (Karabiner)
-
-**Caps Lock** → Hyper (Ctrl+Shift+Cmd+Alt)
-- **Hyper alone** → Escape
-- **Hyper+Q** → Control key
-- **Hyper+[key]** → App launcher shortcuts
-
-See `karabiner/.config/karabiner/README.md` for full keybinding documentation.
-
 ## Important Notes
 
 ### Git Repository Structure
@@ -392,16 +382,14 @@ Ghostty and other tools may create `.bak` files (e.g., `config.3ed30444.bak`). T
 
 ### macOS-Specific Configuration
 
-Many configs are macOS-specific (AeroSpace, Karabiner, Ghostty macOS options). When adapting for Linux:
+Many configs are macOS-specific (AeroSpace, Ghostty macOS options). When adapting for Linux:
 - Replace AeroSpace with i3/sway
-- Replace Karabiner with xmodmap/xcape
 - Adjust PATH for Linux package managers
 - Update coreutils paths (no `/opt/homebrew/`)
 
 ### Permission Requirements
 
 Several tools require accessibility permissions on macOS:
-- Karabiner Elements (input monitoring, accessibility)
 - Raycast (accessibility)
 - AeroSpace (accessibility)
 
