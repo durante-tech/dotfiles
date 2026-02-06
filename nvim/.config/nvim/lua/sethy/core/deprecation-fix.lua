@@ -1,6 +1,7 @@
 -- Fix for deprecated vim.lsp.buf_get_clients()
 -- This must load VERY early, before any plugins
 -- Used by: project.nvim, nvim-dap-go
+-- TODO: Check if project.nvim still needs this patch — may be safe to remove
 
 -- The function is already deprecated by Neovim, but we can provide a clean implementation
 -- that plugins can use without triggering deprecation warnings

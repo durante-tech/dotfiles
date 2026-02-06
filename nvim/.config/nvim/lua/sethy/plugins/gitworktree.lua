@@ -1,8 +1,10 @@
 return {
 	"ThePrimeagen/git-worktree.nvim",
+	-- NOTE: Disabled — requires Telescope which is no longer installed (migrated to Snacks picker)
+	-- TODO: Re-enable when a Snacks-compatible worktree picker is available
+	enabled = false,
 	dependencies = {
 		"nvim-lua/plenary.nvim",
-		"nvim-telescope/telescope.nvim",
 	},
 
 	config = function()

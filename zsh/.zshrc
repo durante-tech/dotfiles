@@ -312,3 +312,9 @@ fi
 
 # Source machine-specific local overrides (not tracked in git)
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+
+# bun completions
+[ -s "/Users/lgertel/.bun/_bun" ] && source "/Users/lgertel/.bun/_bun"
+
+# PAI alias
+alias pai='bun ~/.claude/skills/PAI/Tools/pai.ts'
