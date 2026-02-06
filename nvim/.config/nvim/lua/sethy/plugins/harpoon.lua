@@ -4,7 +4,6 @@ return {
 	branch = "harpoon2",
 	dependencies = {
 		"nvim-lua/plenary.nvim",
-		"nvim-telescope/telescope.nvim",
 	},
 	config = function()
 		local harpoon = require("harpoon")
@@ -48,7 +47,8 @@ return {
 		vim.keymap.set("n", "<C-y>", function()
 			harpoon:list():select(1)
 		end)
-		vim.keymap.set("n", "<C-i>", function()
+		-- NOTE: <C-i> is same as <Tab> and breaks native jump-forward, using <M-i> instead
+		vim.keymap.set("n", "<M-i>", function()
 			harpoon:list():select(2)
 		end)
 		vim.keymap.set("n", "<C-n>", function()

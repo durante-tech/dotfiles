@@ -78,7 +78,7 @@ return {
                 jump = { history = true, register = true, nohlsearch = true },
                 search = {
                     mode = "search",
-                    incremental = false,
+                    incremental = true, -- show flash labels interactively during / search
                     max_length = false,
                 },
             },

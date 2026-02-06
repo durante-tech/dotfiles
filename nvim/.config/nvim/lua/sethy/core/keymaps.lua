@@ -24,8 +24,9 @@ vim.keymap.set("v", "p", '"_dp', opts)
 -- Copies or Yank to system clipboard
 vim.keymap.set("n", "<leader>Y", [["+Y]], opts)
 
--- leader d delete wont remember as yanked/clipboard when delete pasting
-vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
+-- leader dd delete wont remember as yanked/clipboard when delete pasting
+-- NOTE: <leader>d is used by LSP diagnostic float, so using <leader>dd here
+vim.keymap.set({ "n", "v" }, "<leader>dd", [["_d]])
 
 -- ctrl c as escape cuz Im lazy to reach up to the esc key
 vim.keymap.set("i", "<C-c>", "<Esc>")
@@ -115,7 +116,5 @@ vim.keymap.set("n", "<leader>tw", function()
     print("Wrap: " .. (vim.opt.wrap:get() and "ON" or "OFF"))
 end, { desc = "Toggle line wrapping" })
 
--- Snacks picker keybindings (documented in docs/)
-vim.keymap.set("n", "<leader>ff", function() require("snacks").picker.files() end, { desc = "Find files" })
-vim.keymap.set("n", "<leader>fg", function() require("snacks").picker.grep() end, { desc = "Live grep (search in files)" })
+-- NOTE: Snacks picker keybindings moved to snacks.lua (<leader>pf, <leader>ps)
 

@@ -169,7 +169,7 @@ return {
             { "<leader>pk", function() require("snacks").picker.keymaps({ layout = "ivy" }) end, desc = "Search Keymaps (Snacks Picker)" },
 
             -- Git Stuff
-            { "<leader>gs", function() require("snacks").picker.git_status() end, desc = "Git Status (changed files)" },
+            { "<leader>gf", function() require("snacks").picker.git_status() end, desc = "Git Status (changed files)" },
             { "<leader>gbr", function() require("snacks").picker.git_branches({ layout = "select" }) end, desc = "Pick and Switch Git Branches" },
 
             -- Other Utils
