@@ -387,6 +387,7 @@ if [ "$SKIP_CASKS" = false ]; then
     cask_install raycast
     cask_install karabiner-elements
     cask_install ghostty
+    cask_install kitty
     cask_install aerospace
     cask_install keycastr
     cask_install betterdisplay
@@ -496,7 +497,7 @@ if [ "$FORCE_STOW" = true ]; then
 fi
 
 # Re-stow to handle updates (-R flag)
-PACKAGES="aerospace atuin ghostty karabiner mpd nvim rmpc scripts sketchybar starship tmux w3m yazi zed zsh"
+PACKAGES="aerospace atuin ghostty karabiner kitty mpd nvim rmpc scripts sketchybar starship tmux w3m yazi zed zsh"
 
 for pkg in $PACKAGES; do
     if [ -d "$DOTFILES_DIR/$pkg" ]; then
