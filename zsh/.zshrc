@@ -20,7 +20,7 @@ set -o vi
 eval "$(starship init zsh)"
 
 # Zoxide
-eval "$(zoxide init zsh)"
+command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
 
 # FNM auto-switch on cd (hook only - base env in .zprofile)
 autoload -U add-zsh-hook
@@ -30,7 +30,7 @@ _fnm_autoload_hook() {
 add-zsh-hook chpwd _fnm_autoload_hook
 
 # FZF
-eval "$(fzf --zsh)"
+command -v fzf &>/dev/null && eval "$(fzf --zsh)"
 
 # FZF with Git right in the shell by Junegunn : check out his github below
 # Keymaps for this is available at https://github.com/junegunn/fzf-git.sh
@@ -38,12 +38,12 @@ eval "$(fzf --zsh)"
 
 # Atuin Configs
 export ATUIN_NOBIND="true"
-eval "$(atuin init zsh)"
+command -v atuin &>/dev/null && eval "$(atuin init zsh)"
 # bindkey '^r' _atuin_search_widget
 bindkey '^r' atuin-up-search-viins
 
 # Pyenv
-eval "$(pyenv init -)"
+command -v pyenv &>/dev/null && eval "$(pyenv init -)"
 
 #User configuration
 # export MANPATH="/usr/local/man:$MANPATH"
