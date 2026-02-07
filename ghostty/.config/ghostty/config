@@ -7,7 +7,7 @@ background-blur-radius = 23
 macos-window-shadow = false
 
 font-family = JetBrainsMono Nerd Font
-font-size = 14
+font-size = 16
 font-thicken = true
 
 # Adjust character spacing (disabled — breaks TUI column math in Claude Code)

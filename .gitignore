@@ -10,5 +10,8 @@
 *.backup
 *~
 
+# Tmux plugins (managed by TPM at runtime)
+tmux/.config/tmux/.tmux/plugins/
+
 # Local overrides (create these for machine-specific config)
 *.local

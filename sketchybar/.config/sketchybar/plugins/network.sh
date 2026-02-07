@@ -2,8 +2,9 @@
 
 source "$CONFIG_DIR/colors.sh"
 
-# Get network interface (usually en0 for WiFi)
-INTERFACE="en0"
+# Detect active network interface (WiFi or Ethernet)
+INTERFACE=$(route -n get default 2>/dev/null | awk '/interface:/ {print $2}')
+INTERFACE="${INTERFACE:-en0}"
 
 # Single netstat call instead of two (optimized)
 NETSTAT_OUTPUT=$(netstat -ib | grep -E "^$INTERFACE" | head -1)

@@ -59,7 +59,7 @@ export FZF_TMUX_OPTS=" -p90%,70% "
 # -----------------------------
 
 # FNM (Fast Node Manager) - base env only (--use-on-cd moved to .zshrc to prevent duplicate init)
-eval "$(fnm env)"
+command -v fnm &>/dev/null && eval "$(fnm env)"
 
 # Console Ninja
 export PATH=~/.console-ninja/.bin:$PATH
