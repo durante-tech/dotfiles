@@ -10,8 +10,8 @@ font-family = JetBrainsMono Nerd Font
 font-size = 14
 font-thicken = true
 
-# Adjust character spacing (negative values reduce spacing)
-adjust-cell-width = -5%
+# Adjust character spacing (disabled — breaks TUI column math in Claude Code)
+# adjust-cell-width = -5%
 
 # Enable programming ligatures (==, =>, !=, >=, <=, etc.)
 font-feature = +calt
@@ -30,8 +30,8 @@ mouse-hide-while-typing = true
 confirm-close-surface = false
 window-decoration = auto
 window-padding-x = 10
-window-padding-y = 10
-window-padding-balance = false
+window-padding-y = 5
+window-padding-balance = true
 
 auto-update = check
 auto-update-channel = stable
@@ -40,6 +40,10 @@ auto-update-channel = stable
 shell-integration-features = no-cursor 
 # copy-on-select disabled - using tmux for clipboard management
 # copy-on-select = clipboard
+
+# Disable right-click context menu (default is context-menu)
+# Using tmux for clipboard, so right-click paste is more useful
+mouse-right-click = paste
 
 # Custom Keybinds & Config (super represents cmd key on mac)
 # For Simple Keybinds
@@ -84,4 +88,4 @@ keybind = super+b>l=goto_split:right
 #Shaders
 # custom-shader = shaders/bettercrt.glsl
 # custom-shader = shaders/retro-terminal.glsl
-keybind = shift+enter=text:\x1b\x0d
+# keybind = shift+enter=text:\x1b\x0d  # disabled — conflicts with Claude Code multi-line input
