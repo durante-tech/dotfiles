@@ -318,14 +318,69 @@ PAI can read LSP diagnostics:
 | Split vertical        | `prefix + \|`     |
 | Split horizontal      | `prefix + -`      |
 
+### Pane Resize (Shift + vim keys)
+
+| Action       | Keys          |
+| ------------ | ------------- |
+| Resize down  | `prefix + H`  |
+| Resize up    | `prefix + J`  |
+| Resize left  | `prefix + K`  |
+| Resize right | `prefix + L`  |
+| Maximize     | `prefix + m`  |
+
+> **Note:** Resize uses uppercase `H/J/K/L` to avoid conflict with vim-tmux-navigator's lowercase `h/j/k/l` for pane navigation.
+
 ### Session Management
 
 | Action         | Keys              |
 | -------------- | ----------------- |
 | New session    | `prefix + N`      |
-| Session picker | `prefix + Ctrl+f` |
-| Detach         | `prefix + d`      |
+| Session picker | `prefix + f`      |
+| Detach         | `prefix + D`      |
 | List sessions  | `prefix + s`      |
+
+---
+
+## Terminal Tuning for Claude Code
+
+Custom shell/terminal settings that can break Claude Code's TUI rendering. These were identified and fixed — documented here for reference.
+
+### Ghostty Settings
+
+| Setting | Bad Value | Fixed Value | Why |
+| ------- | --------- | ----------- | --- |
+| `adjust-cell-width` | `-5%` | commented out | Shrinks character cells, breaks TUI column math — text wraps at wrong positions |
+| `window-padding-balance` | `false` | `true` | Dumps all leftover pixel space to bottom, creating blank gaps |
+| `window-padding-y` | `10` | `5` | Less padding = less size-reporting mismatch (Ghostty includes padding in reported terminal size) |
+| `shift+enter` keybind | `text:\x1b\x0d` | commented out | Sends ESC+CR which conflicts with Claude Code's multi-line input |
+
+### Zsh Settings
+
+| Setting | Issue | Fix |
+| ------- | ----- | --- |
+| Yellow cursor OSC 12 escapes (`\e]12;...`) | Injected on every prompt draw via `precmd`, `zle-keymap-select`, `zle-line-init`, `zle-line-finish` — corrupts TUI rendering | Removed all hooks. Ghostty's `cursor-color = #ffff00` handles this natively |
+| Starship widget override | `zle -N zle-keymap-select ""` unregistered Starship's handler, replaced with cursor escape emitter | Removed — let Starship manage its own vi-mode indicator |
+| Shift+Enter zsh bindings | `^[^M` and `^[[27;2;13~` bound to `accept-line` — intercepts Claude Code's multi-line sequences | Commented out |
+
+### Tmux Settings
+
+| Setting | Issue | Fix |
+| ------- | ----- | --- |
+| `escape-time` (missing) | Default 500ms delay after Escape — creates input lag when switching panes | Added `set -g escape-time 0` |
+| `focus-events` (missing) | Apps don't receive FocusIn/FocusOut — Claude Code can't redraw on pane switch | Added `set -g focus-events on` |
+| `-r` flag on resize `h/j/k/l` | Repeat timer shadows vim-tmux-navigator keys — pane feels "stuck" until Enter | Moved resize to uppercase `H/J/K/L` |
+| `-r` flag on maximize `m` | Repeat timer after one-shot action | Removed `-r` |
+| `-r` flag on sessionizer `f` | Repeat timer after one-shot action | Removed `-r` |
+
+### Quick Diagnostic Checklist
+
+If Claude Code displays incorrectly, check:
+
+1. **Blank gap at bottom?** → `window-padding-balance` must be `true` in Ghostty
+2. **Text wrapping wrong?** → Remove any `adjust-cell-width` in Ghostty
+3. **Pane won't focus?** → Check for `-r` flags on tmux bindings + add `escape-time 0`
+4. **Garbled output?** → Remove any shell hooks emitting raw escape sequences (OSC 12, cursor manipulation)
+5. **Shift+Enter broken?** → Don't override it in Ghostty keybinds or zsh `bindkey`
 
 ---
 

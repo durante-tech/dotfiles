@@ -49,8 +49,8 @@ sketchybar --add bracket workspaces space.1 space.2 space.B space.D space.F spac
 source "$ITEM_DIR/front_app.sh"
 source "$ITEM_DIR/docker.sh"
 source "$ITEM_DIR/macupdater.sh"
-source "$ITEM_DIR/mic.sh"
 source "$ITEM_DIR/clearvpn.sh"
+source "$ITEM_DIR/voice_server.sh"
 source "$ITEM_DIR/calendar.sh"
 
 ##### Right Items #####
@@ -58,6 +58,7 @@ source "$ITEM_DIR/clock.sh"
 source "$ITEM_DIR/weather.sh"
 source "$ITEM_DIR/cpu.sh"
 source "$ITEM_DIR/memory.sh"
+source "$ITEM_DIR/mic.sh"
 source "$ITEM_DIR/network.sh"
 source "$ITEM_DIR/github.sh"
 

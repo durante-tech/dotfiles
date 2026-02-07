@@ -27,9 +27,9 @@ if [ -f "$LOG_FILE" ]; then
         if [ "$UPDATES" -eq 0 ]; then
             sketchybar --set "$NAME" icon="󰚰" label="✓" icon.color="$GREEN"
         elif [ "$UPDATES" -eq 1 ]; then
-            sketchybar --set "$NAME" icon="󰚰" label="1 update" icon.color="$YELLOW"
+            sketchybar --set "$NAME" icon="󰚰" label="1" icon.color="$YELLOW"
         else
-            sketchybar --set "$NAME" icon="󰚰" label="${UPDATES} updates" icon.color="$ORANGE"
+            sketchybar --set "$NAME" icon="󰚰" label="${UPDATES}" icon.color="$ORANGE"
         fi
     else
         sketchybar --set "$NAME" icon="󰚰" label="..." icon.color="$GREY"

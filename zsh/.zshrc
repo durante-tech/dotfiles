@@ -14,53 +14,10 @@ command -v gdircolors &>/dev/null && eval "$(gdircolors)"
 # unbind ctrl g in terminal
 bindkey -r "^G"
 
-# Starship
-bindkey -v
-if [[ "${widgets[zle-keymap-select]#user:}" == "starship_zle-keymap-select" || \
-      "${widgets[zle-keymap-select]#user:}" == "starship_zle-keymap-select-wrapped" ]]; then
-    zle -N zle-keymap-select "";
-fi
+# Vi mode + Starship (vi mode must be set BEFORE starship init so Starship
+# can register its zle-keymap-select handler for vi-mode indicators)
+set -o vi
 eval "$(starship init zsh)"
-
-# Force yellow cursor in all vim modes (must be after Starship init)
-# Uses OSC 12 escape sequence to set cursor color
-_set_yellow_cursor() {
-  echo -ne "\e]12;#ffff00\a"
-}
-
-function zle-keymap-select {
-  _set_yellow_cursor
-}
-
-function zle-line-init {
-  _set_yellow_cursor
-}
-
-function zle-line-finish {
-  _set_yellow_cursor
-}
-
-zle -N zle-keymap-select
-zle -N zle-line-init
-zle -N zle-line-finish
-
-# Set yellow cursor on shell startup
-_set_yellow_cursor
-
-# Auto-clear terminal only after specific interactive commands
-_last_command=""
-
-preexec() {
-  _last_command="$1"
-}
-
-precmd() {
-  # Only clear after these interactive commands (nvim, claude, lazygit, etc.)
-  if [[ "$_last_command" =~ "^(nvim|vim|claude|cld|lazygit|htop|btop|yazi)" ]]; then
-    clear
-  fi
-  _set_yellow_cursor
-}
 
 # Zoxide
 eval "$(zoxide init zsh)"
@@ -92,7 +49,8 @@ eval "$(pyenv init -)"
 # export MANPATH="/usr/local/man:$MANPATH"
 
 #----- Vim Editing modes & keymaps ------
-set -o vi
+# Note: set -o vi is done before starship init (above) so Starship's
+# vi-mode handler isn't clobbered
 
 export EDITOR=nvim
 export VISUAL=nvim
@@ -101,9 +59,9 @@ bindkey -M viins '^E' autosuggest-accept
 bindkey -M viins '^P' up-line-or-history
 bindkey -M viins '^N' down-line-or-history
 
-# Shift+Enter for Ghostty (handles both escape sequence and fixterms)
-bindkey -M viins '^[^M' accept-line  # ESC+Enter
-bindkey -M viins '^[[27;2;13~' accept-line  # Ghostty fixterms sequence
+# Shift+Enter for Ghostty — disabled, conflicts with Claude Code multi-line input
+# bindkey -M viins '^[^M' accept-line  # ESC+Enter
+# bindkey -M viins '^[[27;2;13~' accept-line  # Ghostty fixterms sequence
 
 #----------------------------------------
 
@@ -138,7 +96,7 @@ alias tns="$HOME/scripts/tmux-sessionizer"
 # called from ~/scripts/
 alias nlof="$HOME/scripts/fzf_listoldfiles.sh"
 # opens documentation through fzf (eg: git,zsh etc.)
-alias fman="compgen -c | fzf | xargs man"
+alias fman='print -rl -- ${(k)commands} | fzf | xargs man'
 
 # zoxide (called from ~/scripts/)
 alias nzo="$HOME/scripts/zoxide_openfiles_nvim.sh"
@@ -313,8 +271,7 @@ fi
 # Source machine-specific local overrides (not tracked in git)
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
-# bun completions
-[ -s "/Users/lgertel/.bun/_bun" ] && source "/Users/lgertel/.bun/_bun"
+# bun completions (sourced in .zprofile, not duplicated here)
 
 # PAI alias
 alias pai='bun ~/.claude/skills/PAI/Tools/pai.ts'
