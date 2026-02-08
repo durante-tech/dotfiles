@@ -13,5 +13,8 @@
 # Tmux plugins (managed by TPM at runtime)
 tmux/.config/tmux/.tmux/plugins/
 
+# MCP server config (machine-specific, uses env var references)
+.mcp.json
+
 # Local overrides (create these for machine-specific config)
 *.local
