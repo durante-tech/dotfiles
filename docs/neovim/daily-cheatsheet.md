@@ -25,7 +25,8 @@ Quick reference for the most common operations. Print this or keep it open!
 | Find files by name | `<leader>ff` |
 | Search text in files | `<leader>fg` |
 | Recent files | `<leader>pr` |
-| File explorer | `-` |
+| File explorer (tree) | `<leader>ee` |
+| File explorer (buffer) | `-` |
 | Switch project | `<leader>pp` |
 | Search word under cursor | `<leader>pWs` |
 

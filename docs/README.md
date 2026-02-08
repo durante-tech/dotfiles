@@ -41,11 +41,41 @@ Each configured tool has its own documentation:
 | **[Starship](starship/README.md)** | Cross-shell prompt | Catppuccin Mocha, git status |
 | **[Yazi](yazi/README.md)** | Terminal file manager | Async I/O, image preview |
 
+### Shell Enhancements
+
+| Tool | Description | Key Features |
+|------|-------------|--------------|
+| **[Atuin](atuin/README.md)** | Shell history search | Fuzzy search, vim-mode, secrets filter |
+| **[w3m](w3m/README.md)** | Terminal web browser | Vi keybindings, tmux popup (`Ctrl+B > Ctrl+W`) |
+
+### Music
+
+| Tool | Description | Key Features |
+|------|-------------|--------------|
+| **[MPD](mpd/README.md)** | Music player daemon | CoreAudio, auto-update library |
+| **[rmpc](rmpc/README.md)** | MPD TUI client | Vim controls, tmux popup (`Ctrl+B > Ctrl+M`) |
+
 ### Utilities
 
 | Tool | Description | Key Features |
 |------|-------------|--------------|
 | **[Scripts](scripts/README.md)** | Custom utilities | tmux-sessionizer, fzf-git |
+
+### Alternative/Legacy Terminals
+
+Configurations kept for reference or as backups:
+
+| Tool | Status | Description |
+|------|--------|-------------|
+| **[Kitty](kitty/README.md)** | Backup | Mirrors Ghostty config, available as fallback |
+| **[Alacritty](alacritty/README.md)** | Legacy | Original GPU terminal, replaced by Ghostty |
+| **[WezTerm](wezterm/README.md)** | Legacy | Lua-configurable terminal, replaced by Ghostty |
+
+### Alternative Editor
+
+| Tool | Status | Description |
+|------|--------|-------------|
+| **[Zed](zed/README.md)** | Experimental | Fast Rust editor with vim mode |
 
 ## Quick Reference Cards
 
@@ -77,22 +107,32 @@ All tools configured with vi-style keybindings:
 - Zsh: `set -o vi`
 - Tmux: `mode-keys vi`
 - Neovim: Native
+- Atuin: `keymap_mode = "vim-insert"`
+- w3m: Custom vi keymap
+- Yazi: Built-in vi mode
 
 ## Architecture
 
 ```
 ~/dotfiles/
 ├── aerospace/    → ~/.config/aerospace/
+├── alacritty/    → ~/.config/alacritty/       (legacy)
+├── atuin/        → ~/.config/atuin/
 ├── ghostty/      → ~/.config/ghostty/
 ├── karabiner/    → ~/.config/karabiner/
+├── kitty/        → ~/.config/kitty/           (backup)
+├── mpd/          → ~/.config/mpd/
 ├── nvim/         → ~/.config/nvim/
+├── rmpc/         → ~/.config/rmpc/
 ├── scripts/      → ~/scripts/
 ├── sketchybar/   → ~/.config/sketchybar/
 ├── starship/     → ~/.config/starship/
 ├── tmux/         → ~/.config/tmux/
+├── w3m/          → ~/.w3m/
+├── wezterm/      → ~/.config/wezterm/         (legacy)
 ├── yazi/         → ~/.config/yazi/
+├── zed/          → ~/.config/zed/             (experimental)
 ├── zsh/          → ~/.zshrc, ~/.zprofile
-├── Brewfile      → Declarative packages
 └── docs/         → This documentation
 ```
 
