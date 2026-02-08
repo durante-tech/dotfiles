@@ -262,11 +262,11 @@ if [[ -x "$HOME/.claude/local/claude" ]]; then
 elif command -v claude >/dev/null 2>&1; then
     alias claude="$(command -v claude)"
 fi
+# Zsh completions (needed after oh-my-zsh removal)
+autoload -Uz compinit && compinit -C
+
 # Source project-specific aliases if they exist
 [[ -f ~/Developer/tac/scripts/aliases.sh ]] && source ~/Developer/tac/scripts/aliases.sh
-
-# Source PAI (Personal AI Infrastructure) shell config
-[[ -f ~/.claude/skills/CORE/USER/TERMINAL/ZSHRC ]] && source ~/.claude/skills/CORE/USER/TERMINAL/ZSHRC
 
 # Source machine-specific local overrides (not tracked in git)
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
