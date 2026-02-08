@@ -1,0 +1,57 @@
+# MPD - Music Player Daemon
+
+MPD is a server-side music player that runs as a background daemon. It plays music from `~/Music/` and is controlled via the `rmpc` TUI client.
+
+## Quick Start
+
+```bash
+# Start the daemon
+mpd
+
+# Control via rmpc (see docs/rmpc/README.md)
+rmpc
+```
+
+## Configuration
+
+| Setting | Value | Description |
+|---------|-------|-------------|
+| `music_directory` | `~/Music` | Music library root |
+| `bind_to_address` | `127.0.0.1` | Local access only |
+| `port` | `6600` | Default MPD port |
+| `restore_paused` | `yes` | Resume state on restart |
+| `auto_update` | `yes` | Auto-detect new files |
+
+## Audio Output
+
+- **CoreAudio**: macOS native audio output with software volume mixer
+- **FIFO Visualizer**: Pipes audio data to `/tmp/mpd.fifo` for visualizers
+
+## Data Files
+
+All stored in `~/.config/mpd/`:
+
+| File | Purpose |
+|------|---------|
+| `database` | Song metadata cache |
+| `state` | Playback state (saved on stop) |
+| `sticker.sql` | Song ratings/metadata |
+| `playlists/` | Saved playlists (m3u) |
+
+## Tmux Integration
+
+Access rmpc (MPD client) as a floating popup:
+
+```
+Ctrl+B > Ctrl+M    # Opens rmpc in floating window
+```
+
+## Note
+
+MPD does not auto-start. Start it manually with `mpd` when you want to listen to music. It will persist in the background until stopped with `mpd --kill`.
+
+## File Location
+
+```
+mpd/.config/mpd/mpd.conf
+```
