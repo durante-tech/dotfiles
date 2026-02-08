@@ -1,0 +1,53 @@
+#!/bin/bash
+# aerospace-purge-phantoms
+# Purges phantom/stale windows from AeroSpace that no longer exist in macOS.
+# AeroSpace 0.20.2-Beta accumulates stale window references when apps close.
+#
+# Usage: aerospace-purge-phantoms [--dry-run]
+
+set -euo pipefail
+
+DRY_RUN=false
+[[ "${1:-}" == "--dry-run" ]] && DRY_RUN=true
+
+# Get all window IDs that AeroSpace tracks
+aerospace_ids=$(aerospace list-windows --all --format '%{window-id}' 2>/dev/null)
+
+# Get all window IDs that macOS actually knows about via CoreGraphics
+macos_ids_file=$(mktemp)
+trap "rm -f $macos_ids_file" EXIT
+
+swift -e '
+import CoreGraphics
+let opts: CGWindowListOption = [.optionAll, .excludeDesktopElements]
+guard let wins = CGWindowListCopyWindowInfo(opts, kCGNullWindowID) as? [[String: Any]] else { exit(1) }
+for w in wins {
+    if let wid = w["kCGWindowNumber"] as? Int { print(wid) }
+}
+' 2>/dev/null > "$macos_ids_file"
+
+# Find and close phantom windows
+phantom_count=0
+for aero_id in $aerospace_ids; do
+    if ! grep -qx "$aero_id" "$macos_ids_file"; then
+        app_name=$(aerospace list-windows --all --format '%{window-id}|%{app-name}' 2>/dev/null | grep "^${aero_id}|" | cut -d'|' -f2)
+        if $DRY_RUN; then
+            echo "[DRY RUN] Would close phantom: $aero_id ($app_name)"
+        else
+            aerospace close --window-id "$aero_id" 2>/dev/null
+            echo "Closed phantom: $aero_id ($app_name)"
+        fi
+        ((phantom_count++)) || true
+    fi
+done
+
+if [[ $phantom_count -eq 0 ]]; then
+    echo "No phantom windows found."
+else
+    echo "---"
+    if $DRY_RUN; then
+        echo "$phantom_count phantom window(s) would be purged."
+    else
+        echo "$phantom_count phantom window(s) purged."
+    fi
+fi
