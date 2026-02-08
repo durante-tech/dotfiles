@@ -81,23 +81,23 @@ outer.right = 15
 # Per-monitor top gap. Update to current monitor names detected by `aerospace list-monitors`.
 # Adjust values as desired per monitor; last number is the default fallback.
 outer.top = [
-  { monitor."Built-in Retina Display" = 15 },
-  { monitor."PORTRAIT-MONITOR" = 50 },
-  15,
+  { monitor."SAMSUNG" = 45 },
+  45,
 ]
 
 # Pin key workspaces to monitors
 # See: https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
 [workspace-to-monitor-force-assignment]
-# Built-in display can't be renamed in BetterDisplay, use actual macOS name
-1 = 'Built-in Retina Display'  # Main workspace on laptop
-2 = '^PORTRAIT-MONITOR$'       # Secondary workspace on portrait
-B = 'Built-in Retina Display'  # Browser on laptop
-D = 'Built-in Retina Display'  # Development on laptop
-F = 'Built-in Retina Display'  # Finder on laptop (floats)
-M = 'Built-in Retina Display'  # Messaging on laptop
-N = 'Built-in Retina Display'  # Notes on laptop
-T = '^PORTRAIT-MONITOR$'       # Terminal on portrait
+# Single monitor setup - all workspaces on SAMSUNG
+# Run `aerospace list-monitors` to see current monitor names
+1 = 'SAMSUNG'   # Main workspace
+2 = 'SAMSUNG'   # Secondary workspace
+B = 'SAMSUNG'   # Browser
+D = 'SAMSUNG'   # Development
+F = 'SAMSUNG'   # Finder (floats)
+M = 'SAMSUNG'   # Messaging
+N = 'SAMSUNG'   # Notes
+T = 'SAMSUNG'   # Terminal
 
 
 # 'main' binding mode declaration
@@ -313,6 +313,10 @@ run = "move-node-to-workspace N"
 
 [[on-window-detected]]
 if.app-id = 'com.electron.wispr-flow'
+run = "move-node-to-workspace N"
+
+[[on-window-detected]]
+if.app-id = 'com.lukilabs.lukiapp-setapp'
 run = "move-node-to-workspace N"
 
 # Terminals → T
