@@ -2,16 +2,24 @@
 
 Complete documentation for this macOS dotfiles configuration.
 
-## Getting Started
+## The Dotfiles Mastery Course
 
-New to this setup? Start here:
+New here? Follow the structured learning path from zero to productive:
+
+**[Start the Course](course/README.md)** — 7 levels, from installation to mastery.
+
+## Getting Started
 
 | Guide | Description |
 |-------|-------------|
+| **[Philosophy](getting-started/philosophy.md)** | Why this system, design decisions |
+| **[Installation](getting-started/installation.md)** | Fresh macOS to running system |
+| **[GNU Stow](getting-started/gnu-stow.md)** | How configs are deployed (symlinks) |
 | **[Quick Start](getting-started/quick-start.md)** | Get productive in 5 minutes |
 | **[First Day](getting-started/first-day.md)** | Your first day with this config |
-| **[Daily Workflow](getting-started/daily-workflow.md)** | Daily dev workflow reference (git, LSP workspaces, Hyper Key) |
-| **[Adding New Tools](getting-started/new-tools-guide.md)** | How to add tools to this setup |
+| **[Daily Workflow](getting-started/daily-workflow.md)** | Daily dev workflow reference |
+| **[Customizing](getting-started/customizing.md)** | Fork and make it yours |
+| **[New Tools Guide](getting-started/new-tools-guide.md)** | Modern CLI tools reference |
 
 ## Tool Documentation
 
@@ -55,6 +63,16 @@ Each configured tool has its own documentation:
 | **[MPD](mpd/README.md)** | Music player daemon | CoreAudio, auto-update library |
 | **[rmpc](rmpc/README.md)** | MPD TUI client | Vim controls, tmux popup (`Ctrl+B > Ctrl+M`) |
 
+### Workflows & Integration
+
+| Guide | Description | Key Features |
+|-------|-------------|--------------|
+| **[Shell Navigation](zsh/navigation-stack.md)** | FZF + Zoxide + Atuin | Fuzzy finding, smart jump, history search |
+| **[Aliases & Functions](zsh/aliases-and-functions.md)** | All 70+ shell aliases | Categorized reference with examples |
+| **[Git Workflow](git/workflow.md)** | Lazygit + FZF-git + aliases | Shell, TUI, and editor git integration |
+| **[Window Management](window-management/workflow.md)** | AeroSpace + Karabiner daily use | Workspaces, Hyper key, sublayers |
+| **[Development Stack](integration/development-stack.md)** | Nvim + Tmux + Git | End-to-end integrated workflow |
+
 ### Utilities
 
 | Tool | Description | Key Features |
@@ -83,8 +101,8 @@ Configurations kept for reference or as backups:
 
 | Context | Action | Key |
 |---------|--------|-----|
-| **Neovim** | Find files | `<leader>ff` |
-| **Neovim** | Search in files | `<leader>fg` |
+| **Neovim** | Find files | `<leader>pf` |
+| **Neovim** | Search in files | `<leader>ps` |
 | **Neovim** | File explorer | `-` |
 | **Tmux** | New session | `Ctrl+B > N` |
 | **Tmux** | Lazygit | `Ctrl+B > Ctrl+G` |
