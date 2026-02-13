@@ -62,7 +62,7 @@ import { getUser } from './user';
 
 | Keys | Action |
 |------|--------|
-| `gR` | Show all references in Telescope |
+| `gR` | Show all references in picker |
 | `Ctrl-j`/`k` | Navigate results |
 | `Enter` | Jump to reference |
 
@@ -70,7 +70,7 @@ import { getUser } from './user';
 ```javascript
 // Want to see everywhere getUser is called:
 1. Cursor on getUser
-2. gR                   // Telescope shows all usages
+2. gR                   // Picker shows all usages
 3. Review list
 4. Enter on one         // Jump to it
 5. Ctrl-o               // Jump back to list
@@ -207,7 +207,7 @@ This config shows diagnostics in the gutter:
 **Workflow:**
 ```javascript
 // File has 5 errors:
-1. <leader>D        // See all errors in Telescope
+1. <leader>D        // See all errors in picker
 2. Navigate list    // Review each
 3. Enter            // Jump to error
 4. <leader>vca      // See quick fixes
@@ -217,21 +217,21 @@ This config shows diagnostics in the gutter:
 
 ## Autocomplete
 
-### Using nvim-cmp
+### Using Blink.cmp
 
-Completion appears automatically as you type.
+Blink.cmp is a Rust-based completion engine. Completion appears automatically as you type.
 
 **In INSERT mode:**
 
 | Keys | Action |
 |------|--------|
-| `Ctrl-n` | Next completion |
-| `Ctrl-p` | Previous completion |
+| `Ctrl-j` / `Ctrl-k` | Navigate completions |
+| `Ctrl-n` / `Ctrl-p` | Navigate completions (alt) |
+| `Ctrl-y` / `Enter` | Confirm selection |
 | `Ctrl-e` | Close completion |
-| `Ctrl-y` | Confirm selection |
-| `Enter` | Confirm selection |
-| `Tab` | Jump to next snippet field |
-| `Shift-Tab` | Jump to previous snippet field |
+| `Ctrl-space` | Toggle documentation |
+| `Ctrl-b` / `Ctrl-f` | Scroll documentation |
+| `Tab` / `Shift-Tab` | Navigate snippets / completions |
 
 ### Completion Sources
 
@@ -239,7 +239,7 @@ This config includes completions from:
 - LSP (intelligent, context-aware)
 - Buffer words (text in current buffer)
 - Path (file paths)
-- Luasnip (snippets)
+- Snippets
 
 **Completion Icons:**
 ```
@@ -322,7 +322,7 @@ const age: number = "30";
 4. Enter               // Renames in all files!
 
 // Then verify:
-5. <leader>fg          // Grep old name
+5. <leader>ps          // Grep old name
    getUserData
 6. No results!         // Success
 ```
@@ -514,7 +514,7 @@ vim.diagnostic.config({
 
 ### Bulk Refactoring
 1. `gR` - See all references
-2. Review in Telescope
+2. Review in picker
 3. `<leader>rn` - Rename all at once
 
 ### Learning New APIs

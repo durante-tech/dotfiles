@@ -342,12 +342,12 @@ C-b f                   # Sessionizer (find projects)
 :RestoreSession         " Restore session for current directory
 :SaveSession            " Save current session
 :DeleteSession          " Delete session
-:Telescope session-lens " Browse sessions
+<leader>wl              " List sessions (Snacks picker)
 
 " Or with your keymaps:
 <leader>wr              " Restore session
 <leader>ws              " Save session
-<leader>wf              " Find session (Telescope)
+<leader>wf              " Find session
 ```
 
 ### Session Persistence
@@ -655,7 +655,7 @@ Window 3: notes
 
 1. **Read docs** (Window 1)
 2. **Switch to code** (Window 0)
-   - Use Neovim's Telescope to explore
+   - Use Neovim's Snacks picker to explore
    - Split to see multiple files
 3. **Try code in REPL** (Window 2)
 4. **Take notes** (Window 3)
@@ -976,7 +976,7 @@ ls ~/.config/tmux/.tmux/resurrect/
 # Should show saved sessions
 
 # Or:
-:Telescope session-lens
+<leader>wl              " List sessions
 ```
 
 **Fix:**

@@ -1,0 +1,295 @@
+# Window & Buffer Management
+
+Work with multiple files simultaneously using splits, buffers, and tabs.
+
+## Key Concepts
+
+| Concept | What It Is | Analogy |
+|---------|-----------|---------|
+| **Buffer** | A file loaded in memory | An open document |
+| **Window** | A viewport showing a buffer | A pane/panel |
+| **Tab** | A collection of windows | A workspace/layout |
+
+One buffer can be shown in multiple windows. Closing a window doesn't close the buffer.
+
+## Buffers
+
+### Opening Files into Buffers
+
+| Method | Action |
+|--------|--------|
+| `<leader>pf` | Find and open file (Snacks picker) |
+| `:e filename` | Open file by path |
+| `:e **/*user<Tab>` | Open file with completion |
+| `gd` | Open file at definition (LSP) |
+
+### Navigating Buffers
+
+| Keys | Action |
+|------|--------|
+| `:ls` | List all open buffers |
+| `:bnext` or `:bn` | Next buffer |
+| `:bprev` or `:bp` | Previous buffer |
+| `:b <partial>` | Switch to buffer by partial name |
+| `:b#` | Switch to alternate (last) buffer |
+| `:b <Tab>` | Cycle through buffer names |
+
+**Examples:**
+```vim
+:b user<Tab>           " Jumps to user.js (or shows matches)
+:b#                    " Toggle between two files
+:3b                    " Jump to buffer #3
+```
+
+### Closing Buffers
+
+| Keys | Action |
+|------|--------|
+| `:bd` | Close current buffer |
+| `:bd!` | Force close (discard changes) |
+| `:bw` | Wipe buffer (remove completely) |
+| `:%bd` | Close all buffers |
+| `:%bd \| e#` | Close all except current |
+
+### Harpoon (Quick Buffer Marks)
+
+For your most-used files, use Harpoon instead of buffer navigation:
+
+| Keys | Action |
+|------|--------|
+| `<leader>a` | Add current file to harpoon |
+| `<C-e>` | Toggle harpoon quick menu |
+| `<C-y>` | Jump to harpoon mark 1 |
+| `<M-i>` | Jump to harpoon mark 2 |
+| `<C-n>` | Jump to harpoon mark 3 |
+| `<C-s>` | Jump to harpoon mark 4 |
+
+**Workflow:**
+```vim
+" Mark your 4 most-used files:
+" Open user.js     → <leader>a
+" Open config.js   → <leader>a
+" Open test.js     → <leader>a
+" Open routes.js   → <leader>a
+
+" Now jump between them instantly:
+<C-y>              " user.js
+<M-i>              " config.js
+<C-n>              " test.js
+<C-s>              " routes.js
+```
+
+## Windows (Splits)
+
+### Creating Splits
+
+| Keys | Action |
+|------|--------|
+| `:vs` or `Ctrl-w v` | Vertical split (side by side) |
+| `:sp` or `Ctrl-w s` | Horizontal split (top/bottom) |
+| `:vs filename` | Vertical split with specific file |
+| `:sp filename` | Horizontal split with specific file |
+
+**From Oil file explorer:**
+| Keys | Action |
+|------|--------|
+| `<C-v>` | Open file in vertical split |
+| `_` | Open file in horizontal split |
+
+### Navigating Between Windows
+
+| Keys | Action |
+|------|--------|
+| `Ctrl-h` | Move to left window |
+| `Ctrl-j` | Move to bottom window |
+| `Ctrl-k` | Move to top window |
+| `Ctrl-l` | Move to right window |
+| `Ctrl-w w` | Cycle through windows |
+| `Ctrl-w p` | Previous (last focused) window |
+
+These also work across tmux panes (via vim-tmux-navigator).
+
+### Resizing Windows
+
+| Keys | Action |
+|------|--------|
+| `Ctrl-w =` | Equalize all window sizes |
+| `Ctrl-w _` | Maximize height |
+| `Ctrl-w \|` | Maximize width |
+| `Ctrl-w +` / `-` | Increase/decrease height |
+| `Ctrl-w >` / `<` | Increase/decrease width |
+| `<leader>sm` | Toggle maximize current window |
+
+### Closing Windows
+
+| Keys | Action |
+|------|--------|
+| `:q` | Close current window |
+| `:only` or `Ctrl-w o` | Close all windows except current |
+| `Ctrl-w c` | Close current window |
+
+### Rearranging Windows
+
+| Keys | Action |
+|------|--------|
+| `Ctrl-w H` | Move window to far left |
+| `Ctrl-w J` | Move window to bottom |
+| `Ctrl-w K` | Move window to top |
+| `Ctrl-w L` | Move window to far right |
+| `Ctrl-w r` | Rotate windows |
+| `Ctrl-w T` | Move window to new tab |
+
+## Tabs
+
+Tabs are rarely needed with buffers and splits, but useful for separate layouts:
+
+| Keys | Action |
+|------|--------|
+| `:tabnew` | New tab |
+| `:tabnew filename` | New tab with file |
+| `gt` | Next tab |
+| `gT` | Previous tab |
+| `Ngt` | Go to tab N (e.g., `2gt`) |
+| `:tabclose` | Close current tab |
+| `:tabonly` | Close all tabs except current |
+
+## Practical Workflows
+
+### Workflow 1: Side-by-Side Editing
+
+```vim
+" Compare or edit two files side by side:
+1. <leader>pf              " Find first file
+2. :vs                     " Create vertical split
+3. <leader>pf              " Find second file in new split
+
+" Navigate between them:
+Ctrl-h / Ctrl-l            " Left / right
+
+" Equalize widths:
+Ctrl-w =
+```
+
+### Workflow 2: Code + Test Split
+
+```vim
+" Source code on left, tests on right:
+1. <leader>pf user.js      " Open source
+2. :vs                     " Split vertically
+3. <leader>pf user.test.js " Open test
+
+" Work on both:
+" Edit source (Ctrl-h)
+" Switch to test (Ctrl-l)
+" Run tests from terminal (tmux pane)
+```
+
+### Workflow 3: Reference + Edit
+
+```vim
+" Read-only reference on top, editing on bottom:
+1. <leader>pf types.ts     " Open type definitions
+2. :sp                     " Split horizontally
+3. <leader>pf impl.ts      " Open implementation below
+
+" Now you can see types while implementing
+```
+
+### Workflow 4: Exploring with Definition Jump
+
+```vim
+" Open definition in a split instead of replacing current buffer:
+1. Ctrl-w v                " Create vertical split
+2. gd                      " Go to definition (opens in new split)
+3. K                       " Read docs
+4. Ctrl-w c                " Close split when done
+```
+
+### Workflow 5: Multi-File Refactoring
+
+```vim
+" Open all files that need changes:
+1. <leader>pf → file1      " Open
+2. <leader>pf → file2      " Open (buffer 2)
+3. <leader>pf → file3      " Open (buffer 3)
+
+" Navigate with:
+:bn / :bp                  " Next/previous buffer
+:b <partial>               " Jump by name
+```
+
+### Workflow 6: Maximize and Restore
+
+```vim
+" Working in splits but need to focus on one:
+1. <leader>sm              " Maximize current window
+2. (do focused work)
+3. <leader>sm              " Restore split layout
+```
+
+## Tips
+
+### Quick Buffer Switching
+
+```vim
+" Toggle between last two files:
+:b#                        " Or Ctrl-^
+
+" This is the fastest way to switch between
+" source and test files
+```
+
+### Open Definition in Split
+
+```vim
+Ctrl-w v                   " Vertical split
+gd                         " Definition opens in new split
+" Read, then Ctrl-w c to close
+```
+
+### Close All But Current
+
+```vim
+:%bd | e#                  " Close all buffers, reopen current
+:only                      " Close all windows except current
+```
+
+### Remember Buffer Names
+
+```vim
+:ls                        " Shows all buffers with numbers
+"   1  "user.js"
+"   2  "config.js"
+"   3 %a "routes.js"      " % = current, a = active
+
+:3b                        " Jump to buffer 3
+```
+
+## Quick Reference
+
+| Task | Command |
+|------|---------|
+| Find and open file | `<leader>pf` |
+| Vertical split | `:vs` or `Ctrl-w v` |
+| Horizontal split | `:sp` or `Ctrl-w s` |
+| Navigate windows | `Ctrl-h/j/k/l` |
+| Maximize window | `<leader>sm` |
+| Close window | `:q` or `Ctrl-w c` |
+| List buffers | `:ls` |
+| Next/prev buffer | `:bn` / `:bp` |
+| Switch by name | `:b partial<Tab>` |
+| Toggle last buffer | `:b#` or `Ctrl-^` |
+| Close buffer | `:bd` |
+| Harpoon add | `<leader>a` |
+| Harpoon menu | `<C-e>` |
+
+---
+
+**Practice Challenge:**
+1. Open 3 files using `<leader>pf`
+2. Create a vertical split with `:vs`
+3. Navigate between splits with `Ctrl-h/l`
+4. Use `:b#` to toggle between two buffers
+5. Try Harpoon: mark 2 files with `<leader>a`, then jump with `<C-y>` and `<M-i>`
+
+**Next:** [File Management Workflows](file-management.md)

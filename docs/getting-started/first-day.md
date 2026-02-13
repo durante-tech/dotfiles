@@ -81,7 +81,7 @@ Still in practice.txt:
    nvim
 
 2. Find files by name:
-   <leader>ff
+   <leader>pf
    (Remember: <leader> = Space key)
 
 3. Type partial filename
@@ -95,7 +95,7 @@ Still in practice.txt:
 **Exercise 5: Searching in Files (15 minutes)**
 ```vim
 1. Search for text:
-   <leader>fg
+   <leader>ps
 
 2. Type a common word (like "function" or "const")
 
@@ -105,15 +105,15 @@ Still in practice.txt:
    - Enter to jump to file
 
 4. Once in file:
-   - Ctrl-o to jump back to Telescope
-   - Or Esc to close
+   - Ctrl-o to jump back
+   - Or Esc to close picker
 ```
 
 **Exercise 6: Editing a Real File (30 minutes)**
 ```vim
 Workflow: Find, Open, Edit, Save
 
-1. <leader>ff
+1. <leader>pf
 2. Find a file you want to edit
 3. Enter
 
@@ -140,7 +140,7 @@ Take a break! Let your muscle memory settle.
 **Exercise 7: Using LSP (30 minutes)**
 ```vim
 1. Open a code file:
-   <leader>ff
+   <leader>pf
    Find a .js, .ts, .go, or .lua file
 
 2. Find a function call:
@@ -169,7 +169,7 @@ Take a break! Let your muscle memory settle.
 ```vim
 1. Open two files side by side:
    :vs
-   <leader>ff
+   <leader>pf
    (opens in new split)
 
 2. Navigate between them:
@@ -217,12 +217,12 @@ Take a break! Let your muscle memory settle.
 Scenario: Fix a typo across multiple files
 
 1. Find the typo:
-   <leader>fg
+   <leader>ps
    Type the misspelled word
    Enter
 
 2. Review each occurrence:
-   - Telescope shows all matches
+   - Picker shows all matches
    - Navigate with Ctrl-j/k
    - Enter to open file
 
@@ -244,10 +244,10 @@ Scenario: Fix a typo across multiple files
 Scenario: Rename a variable
 
 1. Find the variable:
-   <leader>fg variable_name
+   <leader>ps variable_name
 
 2. Jump to definition:
-   - Open file from Telescope
+   - Open file from picker
    - gd on variable
 
 3. Rename everywhere:
@@ -257,9 +257,9 @@ Scenario: Rename a variable
    (LSP renames in ALL files!)
 
 4. Verify:
-   <leader>fg old_name
+   <leader>ps old_name
    Should find nothing!
-   <leader>fg new_name
+   <leader>ps new_name
    Should find all occurrences!
 ```
 
@@ -272,7 +272,7 @@ Scenario: Rename a variable
 Timer: 5 minutes
 Goal: Open 10 different files as fast as possible
 
-<leader>ff → type → Enter (repeat 10 times)
+<leader>pf → type → Enter (repeat 10 times)
 
 Track your time!
 ```
@@ -325,7 +325,7 @@ Do each 5 times!
 **Set Your Preferences:**
 ```vim
 1. Try different colorschemes:
-   <leader>ths
+   <leader>th
    Browse with j/k
    Enter to apply
 
@@ -346,8 +346,8 @@ Write down on paper (yes, paper!):
 
 ```
 My Top 10 Keys:
-1. <leader>ff - Find files
-2. <leader>fg - Grep
+1. <leader>pf - Find files
+2. <leader>ps - Grep
 3. gd - Definition
 4. K - Docs
 5. ciw - Change word
@@ -363,15 +363,15 @@ My Top 10 Keys:
 Tomorrow I will practice:
 - [ ] Text objects (ciw, ci", ci{) 20 times
 - [ ] LSP features (gd, K, gR) 10 times
-- [ ] Searching (<leader>fg) for every lookup
+- [ ] Searching (<leader>ps) for every lookup
 - [ ] NO mouse usage for navigation
 ```
 
 ## End of Day Checklist
 
 - [ ] Can enter/exit INSERT mode without thinking
-- [ ] Can open files with `<leader>ff`
-- [ ] Can search text with `<leader>fg`
+- [ ] Can open files with `<leader>pf`
+- [ ] Can search text with `<leader>ps`
 - [ ] Can save (`:w`) and quit (`:q`)
 - [ ] Can undo (`u`) mistakes
 - [ ] Can navigate with `hjkl` comfortably

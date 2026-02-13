@@ -89,7 +89,7 @@ gR          " LSP: Find all usages
 1. Place cursor on variable
 2. Press `*` to highlight all occurrences
 3. Press `n` to jump through them
-4. Press `gR` to see all in Telescope
+4. Press `gR` to see all in picker
 
 ### Navigate by Searching
 
@@ -120,7 +120,7 @@ mM          " Global mark M (anywhere in project)
 'M          " Jump back to mark M (even from different file)
 ```
 
-### Telescope Power User Tips
+### Snacks Picker Power User Tips
 
 **Recent files are your friend:**
 ```vim
@@ -131,15 +131,20 @@ mM          " Global mark M (anywhere in project)
 
 **Search word under cursor:**
 ```vim
-<leader>pWs      " Grep for word under cursor
+<leader>pws      " Grep for word under cursor
 " Instantly find all usages
 ```
 
-**Telescope from visual selection:**
+**Search visual selection:**
 ```vim
 " Select text in visual mode
-:Telescope grep_string
-" Searches for selected text!
+<leader>pws      " Searches for selected text
+```
+
+**Flash jump for instant navigation:**
+```vim
+s{char}{char}    " Jump to any visible 2-char match
+S                " Treesitter-aware jump to code structures
 ```
 
 ## Editing Tricks
@@ -271,7 +276,7 @@ const user = getUser();
 ### Find All Usages Then Refactor
 
 ```javascript
-1. gR                  " Find all usages in Telescope
+1. gR                  " Find all usages in picker
 2. Review each one     " Understand context
 3. <leader>rn          " Rename if needed
    OR
@@ -381,11 +386,11 @@ let @a='/function^M@a'
 
 ```vim
 :vs              " Vertical split
-<leader>ff       " Find file
+<leader>pf       " Find file
 " Opens in new split!
 
 :sp              " Horizontal split
-<leader>ff       " Find file
+<leader>pf       " Find file
 ```
 
 ### Window Navigation Flow
@@ -464,7 +469,7 @@ Check which plugins load on startup:
 
 ```vim
 " Slower:
-<leader>ff<search><CR>
+<leader>pf<search><CR>
 
 " Faster (if you know path):
 :e path/to/file<tab>
@@ -541,7 +546,7 @@ Ctrl-\ Ctrl-n        " Exit to normal mode
 
 ```vim
 1. <leader>pp              " Open project
-2. <leader>fg              " Grep for "main" or entry point
+2. <leader>ps              " Grep for "main" or entry point
 3. gd                      " Jump to definitions
 4. K                       " Read documentation
 5. mM                      " Mark important places
@@ -552,7 +557,7 @@ Ctrl-\ Ctrl-n        " Exit to normal mode
 
 ```vim
 1. gR                      " Find all usages
-2. Review in Telescope     " Understand scope
+2. Review in picker     " Understand scope
 3. <leader>rn              " Safe rename
    OR
 4. :%s/old/new/gc          " Manual with confirmation
@@ -561,7 +566,7 @@ Ctrl-\ Ctrl-n        " Exit to normal mode
 ### Workflow: Debugging
 
 ```vim
-1. <leader>fg error        " Find error message
+1. <leader>ps error        " Find error message
 2. gd                      " Jump to source
 3. di{                     " Delete function body
 4. o                       " New line

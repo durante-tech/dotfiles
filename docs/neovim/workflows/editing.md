@@ -83,7 +83,7 @@ Example: `3dw` = delete 3 words = `3` (count) + `d` (delete) + `w` (word motion)
 | `gp` | Paste and move cursor after |
 | `gP` | Paste before and move cursor after |
 
-**Pro Tip:** Yank from one file, switch files with `<leader>ff`, then paste!
+**Pro Tip:** Yank from one file, switch files with `<leader>pf`, then paste!
 
 ## Text Objects
 
@@ -537,14 +537,16 @@ q               // Stop recording
 Add/change/delete surrounding characters:
 
 ```javascript
-// Using visual mode:
-viw    // Select word
-S"     // Surround with quotes (if vim-surround installed)
+// mini.surround (installed):
+sa + motion + char    // Add surround (e.g., saiw" wraps word in quotes)
+ds + char             // Delete surround (e.g., ds" removes quotes)
+sr + old + new        // Replace surround (e.g., sr"' changes " to ')
 
-// Or install mini.surround for:
-sa + motion + char    // Add surround
-sd + char             // Delete surround
-sr + old + new        // Replace surround
+// Examples:
+saiw"     // Surround inner word with "
+saiw(     // Surround inner word with ()
+ds"       // Delete surrounding "
+sr"'      // Replace " with '
 ```
 
 ### Case Conversion
@@ -644,7 +646,7 @@ return oldName;
 ```javascript
 // Extract lines 15-20 to new function:
 1. :15,20d             // Delete (cut) lines
-2. <leader>ff          // Find destination file
+2. <leader>pf          // Find destination file
 3. gg                  // Go to top
 4. P                   // Paste before
 ```

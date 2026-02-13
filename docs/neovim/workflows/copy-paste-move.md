@@ -65,7 +65,7 @@ Deleting in Vim automatically copies to register:
 4. y               " Yank (copy)
 
 " File 2: Destination
-5. <leader>ff      " Find file
+5. <leader>pf      " Find file
 6. (select file)
 7. Enter           " Open
 8. p               " Paste below cursor
@@ -80,7 +80,7 @@ Deleting in Vim automatically copies to register:
 :%y                " Yank entire file
 
 " File 2: Destination
-<leader>ff         " Find file
+<leader>pf         " Find file
 (select and open)
 gg                 " Go to top
 p                  " Paste
@@ -95,7 +95,7 @@ gg                 " Top
 :%y+               " Yank entire file to system clipboard
 
 " File 2: Destination (even in different Neovim instance!)
-<leader>ff         " Find file
+<leader>pf         " Find file
 "+p                " Paste from system clipboard
 ```
 
@@ -107,7 +107,7 @@ gg                 " Top
 1. yy              " Yank line
 
 " Destination file:
-2. <leader>ff      " Find file
+2. <leader>pf      " Find file
 3. (open file)
 4. /some pattern   " Find where to paste
 5. p               " Paste below
@@ -123,7 +123,7 @@ gg                 " Top
 3. y               " Yank
 
 " Destination file:
-4. <leader>ff      " Find file
+4. <leader>pf      " Find file
 5. p               " Paste
 ```
 
@@ -137,7 +137,7 @@ j j
 "Ayy               " Append another
 
 " Paste from named register:
-<leader>ff         " Find file
+<leader>pf         " Find file
 "ap                " Paste from register 'a'
 ```
 
@@ -151,7 +151,7 @@ j j
 4. y                  " Yank
 
 " Destination file:
-5. <leader>ff         " Find file
+5. <leader>pf         " Find file
 6. /insert here       " Find insertion point
 7. p                  " Paste below
 ```
@@ -299,7 +299,7 @@ p                  " Paste
 dd                 " Delete (cut) line
 
 " Destination file:
-<leader>ff         " Find file
+<leader>pf         " Find file
 p                  " Paste
 ```
 
@@ -309,7 +309,7 @@ p                  " Paste
 "add               " Delete to register 'a'
 
 " Destination file:
-<leader>ff
+<leader>pf
 "ap                " Paste from 'a'
 
 " Back to source:
@@ -362,7 +362,7 @@ yyP                " Copy and paste above
 4. y                   " Yank
 
 " Destination file:
-5. <leader>ff          " Find file
+5. <leader>pf          " Find file
 6. G                   " Go to end
 7. p                   " Paste
 ```
@@ -377,12 +377,12 @@ yyP                " Copy and paste above
 4. "Ayy                " Append to 'a'
 
 " File 2:
-5. <leader>ff          " Open another file
+5. <leader>pf          " Open another file
 6. /^import
 7. "Ayy                " Append more
 
 " Destination:
-8. <leader>ff          " Open target file
+8. <leader>pf          " Open target file
 9. gg                  " Top of file
 10. "aP                " Paste all imports
 ```
@@ -395,7 +395,7 @@ yyP                " Copy and paste above
 :%y                    " Yank entire file
 
 " Destination:
-<leader>ff             " Open file
+<leader>pf             " Open file
 gg                     " Top
 p                      " Paste
 ```
@@ -420,7 +420,7 @@ V}
 "Ay                    " Append to 'a'
 
 " Paste all:
-<leader>ff
+<leader>pf
 "ap                    " Paste everything
 ```
 
@@ -552,12 +552,12 @@ p                      " Pastes over it
 
 **Copy line to another file:**
 ```vim
-yy → <leader>ff → p
+yy → <leader>pf → p
 ```
 
 **Copy all file contents:**
 ```vim
-:%y → <leader>ff → p
+:%y → <leader>pf → p
 ```
 
 **Copy to system clipboard:**
@@ -609,7 +609,7 @@ ggVG  (or  :%y  to just yank)
 
 **Pro Tip:** For your common pattern (copy all from one file, paste to another), the fastest is:
 ```vim
-:%y → <leader>ff → gg → p
+:%y → <leader>pf → gg → p
 ```
 
 Or use system clipboard for maximum compatibility:

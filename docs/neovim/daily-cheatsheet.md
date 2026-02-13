@@ -6,8 +6,8 @@ Quick reference for the most common operations. Print this or keep it open!
 
 | Action | Keys | Notes |
 |--------|------|-------|
-| Find files | `<leader>ff` | Fuzzy find by name |
-| Search in files | `<leader>fg` | Grep across project |
+| Find files | `<leader>pf` | Fuzzy find by name |
+| Search in files | `<leader>ps` | Grep across project |
 | Recent files | `<leader>pr` | Quick access to recent |
 | Go to definition | `gd` | Jump to where it's defined |
 | Show documentation | `K` | Hover docs for symbol |
@@ -22,13 +22,13 @@ Quick reference for the most common operations. Print this or keep it open!
 ### Finding & Opening Files
 | Action | Keys |
 |--------|------|
-| Find files by name | `<leader>ff` |
-| Search text in files | `<leader>fg` |
+| Find files by name | `<leader>pf` |
+| Search text in files | `<leader>ps` |
 | Recent files | `<leader>pr` |
 | File explorer (tree) | `<leader>ee` |
 | File explorer (buffer) | `-` |
 | Switch project | `<leader>pp` |
-| Search word under cursor | `<leader>pWs` |
+| Search word under cursor | `<leader>pws` |
 
 ### Workspace & Sessions
 | Action | Keys |
@@ -265,7 +265,7 @@ Use with operators (`d`, `c`, `y`):
 
 ### Quick File Edit Flow
 ```
-<leader>ff → find file
+<leader>pf → find file
 i → insert mode
 (make changes)
 Esc → normal mode
@@ -275,14 +275,14 @@ Esc → normal mode
 
 ### Search and Replace Flow
 ```
-<leader>fg → search text
+<leader>ps → search text
 (review results)
 :%s/old/new/gc → replace with confirm
 ```
 
 ### Code Navigation Flow
 ```
-<leader>fg → find usage
+<leader>ps → find usage
 gd → go to definition
 K → read docs
 Ctrl-o → jump back
@@ -290,8 +290,8 @@ Ctrl-o → jump back
 
 ### Multi-file Edit Flow
 ```
-<leader>ff → open file 1
-<leader>ff → open file 2
+<leader>pf → open file 1
+<leader>pf → open file 2
 :bnext → switch between buffers
 (edit in each)
 :wa → save all

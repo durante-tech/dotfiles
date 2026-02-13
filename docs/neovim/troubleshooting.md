@@ -111,7 +111,7 @@ nvim --startuptime startup.log
 :Lazy sync
 ```
 
-### "Telescope not finding files"
+### "Picker not finding files"
 
 **Causes:**
 - Not in a project directory
@@ -123,14 +123,15 @@ nvim --startuptime startup.log
 " 1. Make sure you're in project root
 :pwd
 
-" 2. Find all files including hidden
-:Telescope find_files hidden=true
+" 2. Use the picker with hidden files
+" Snacks picker respects fd settings from FZF_DEFAULT_COMMAND
+" which already includes --hidden --exclude .git
 
-" 3. Find gitignored files
-:Telescope find_files no_ignore=true
-
-" 4. Check ripgrep is installed
+" 3. Check ripgrep is installed (used for grep)
 :!rg --version
+
+" 4. Check fd is installed (used for file finding)
+:!fd --version
 ```
 
 ### "Oil file explorer not opening"
@@ -222,23 +223,24 @@ nvim --startuptime startup.log
 ### "Completions not appearing"
 
 **Causes:**
-- nvim-cmp not configured
+- Blink.cmp not loaded
 - LSP not providing completions
 - Completion disabled
 
 **Solutions:**
 ```vim
-" 1. Check nvim-cmp loaded
-:lua print(vim.inspect(require('cmp')))
+" 1. Check Blink.cmp loaded
+:lua print(vim.inspect(require('blink.cmp')))
 
 " 2. Check LSP capabilities
-:lua print(vim.inspect(vim.lsp.get_active_clients()[1].server_capabilities))
+:lua print(vim.inspect(vim.lsp.get_clients()[1].server_capabilities))
 
 " 3. Trigger manually
-" In INSERT mode: Ctrl-n
+" In INSERT mode: Ctrl-n or Ctrl-space
 
-" 4. Check sources
-:lua print(vim.inspect(require('cmp').get_config().sources))
+" 4. Check Lazy for plugin status
+:Lazy
+" Look for blink.cmp in the list
 ```
 
 ### "Wrong LSP server attached"
@@ -416,22 +418,24 @@ top -p $(pgrep nvim)
 :set nohlsearch          " Disable forever
 ```
 
-### "Can't find file with Telescope"
+### "Can't find file with picker"
 
 **Try:**
 ```vim
 " 1. Search all files
-:Telescope find_files
+<leader>pf
 
-" 2. Include hidden
-:Telescope find_files hidden=true
+" 2. Make sure you're in project root
+:pwd
 
-" 3. Include gitignored
-:Telescope find_files no_ignore=true
+" 3. Snacks picker respects fd settings from FZF_DEFAULT_COMMAND
+" which already includes --hidden --exclude .git
 
-" 4. Change directory
+" 4. Check fd is installed (used for file finding)
+:!fd --version
+
+" 5. Change directory if needed
 :cd /path/to/project
-:Telescope find_files
 ```
 
 ### "Grep not finding text I can see"
@@ -446,10 +450,13 @@ top -p $(pgrep nvim)
 " 1. Check current directory
 :pwd
 
-" 2. Grep with no ignore
-:Telescope live_grep additional_args={'--no-ignore'}
+" 2. Use Snacks grep
+<leader>ps
 
-" 3. Use different search
+" 3. Check ripgrep is installed (used for grep)
+:!rg --version
+
+" 4. Use vimgrep as fallback
 :vimgrep /pattern/ **/*
 ```
 
@@ -478,7 +485,7 @@ nvim
 **Check:**
 ```vim
 " 1. Check if key is mapped
-:verbose map <leader>ff
+:verbose map <leader>pf
 
 " 2. Check leader key
 :let mapleader
@@ -654,7 +661,7 @@ Then check:
 
 ```vim
 :help plugin-name
-:help telescope
+:help snacks
 :help lspconfig
 ```
 

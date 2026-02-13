@@ -44,12 +44,14 @@ prefix + Ctrl+f  # From inside tmux
 
 | Action                | Keys          | Description                                                  |
 | --------------------- | ------------- | ------------------------------------------------------------ |
-| **Git status picker** | `<leader>gs`  | Shows ONLY modified/staged/untracked files with diff preview |
+| **Git changed files** | `<leader>gf`  | Shows ONLY modified/staged/untracked files with diff preview |
 | Git branches          | `<leader>gbr` | Switch branches                                              |
 | Lazygit (full UI)     | `<leader>lg`  | Complete git interface                                       |
 | Lazygit logs          | `<leader>gl`  | Browse commit history                                        |
 
-**`<leader>gs` is your go-to** for "what did I change?" - much faster than the file explorer.
+**`<leader>gf` is your go-to** for "what did I change?" - much faster than the file explorer.
+
+> **Note:** `<leader>gf` is Gitsigns "stage hunk", `<leader>gf` is the Snacks "git changed files" picker.
 
 ### Inside Git Status Picker
 
@@ -641,7 +643,7 @@ nvim .                         # Open nvim
 tns                            # Pick project via tmux-sessionizer
 
 # In nvim:
-<leader>gs                     # Check what changed (git status)
+<leader>gf                     # Check what changed (git status)
 <leader>pr                     # Recent files from yesterday
 ```
 
@@ -663,7 +665,7 @@ gR                             # Find all usages
 <leader>vca                    # Code actions (auto-fix)
 
 # Check your changes
-<leader>gs                     # Only changed files
+<leader>gf                     # Only changed files
 ```
 
 ### 3. Quick Multi-File Edit
@@ -672,14 +674,14 @@ gR                             # Find all usages
 <leader>ps                     # Search for pattern
 # Select result → opens file
 # Make edit
-<leader>gs                     # See all changes
+<leader>gf                     # See all changes
 # Jump between changed files
 ```
 
 ### 4. End of Day
 
 ```bash
-<leader>gs                     # Review all changes
+<leader>gf                     # Review all changes
 <leader>lg                     # Lazygit for commit
 # or in terminal:
 lg                             # Lazygit alias
@@ -694,7 +696,7 @@ lg                             # Lazygit alias
 - `<leader>pf` - Find files
 - `<leader>ps` - Search in files
 - `<leader>pr` - Recent files
-- `<leader>gs` - Git changed files only
+- `<leader>gf` - Git changed files only
 
 **Code Navigation:**
 
@@ -705,7 +707,7 @@ lg                             # Lazygit alias
 
 **Git:**
 
-- `<leader>gs` - Changed files picker
+- `<leader>gf` - Git changed files picker
 - `<leader>lg` - Lazygit
 - `<leader>gbr` - Switch branch
 

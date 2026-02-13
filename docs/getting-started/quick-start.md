@@ -16,7 +16,7 @@ Make sure you've followed the installation steps from the main README. You shoul
 The **leader key** is `<Space>`. Most custom keybindings start with it.
 
 ```
-<leader>ff  means:  Space, then f, then f
+<leader>pf  means:  Space, then p, then f
 ```
 
 ### 2. Opening Neovim
@@ -36,8 +36,8 @@ cd ~/projects/myapp && nvim
 
 | Command | What It Does | Example |
 |---------|--------------|---------|
-| `<leader>ff` | Find files by name | Space-f-f, type "user" |
-| `<leader>fg` | Search text in files | Space-f-g, type "function" |
+| `<leader>pf` | Find files by name | Space-f-f, type "user" |
+| `<leader>ps` | Search text in files | Space-f-g, type "function" |
 | `i` | Enter INSERT mode | Press i, start typing |
 | `:w` | Save file | Type :w, press Enter |
 | `:q` | Quit | Type :q, press Enter |
@@ -47,7 +47,7 @@ cd ~/projects/myapp && nvim
 **Opening and editing a file:**
 ```
 1. nvim                          # Open Neovim
-2. Press: <leader>ff            # Find files
+2. Press: <leader>pf            # Find files
 3. Type part of filename        # e.g., "user"
 4. Press Enter                  # Opens the file
 5. Press: i                     # Enter INSERT mode
@@ -99,7 +99,7 @@ cd ~/projects/myapp
 nvim
 
 # 3. Find the file (in Neovim)
-# Press: <leader>ff
+# Press: <leader>pf
 # Type: user.js
 # Press: Enter
 
@@ -117,7 +117,7 @@ nvim
 # Type: :w
 
 # 7. Search in all files to see where it's used
-# Press: <leader>fg
+# Press: <leader>ps
 # Type: getUserById
 # Press: Enter
 # Browse results with j/k
@@ -175,8 +175,8 @@ Neovim has different **modes**:
 ### File Operations
 | Key | Action |
 |-----|--------|
-| `<leader>ff` | Find files |
-| `<leader>fg` | Search in files (grep) |
+| `<leader>pf` | Find files |
+| `<leader>ps` | Search in files (grep) |
 | `<leader>pr` | Recent files |
 | `-` | File explorer (Oil) |
 
@@ -226,20 +226,20 @@ Complete these to build muscle memory:
 
 ### Task 1: Open and Edit (5 minutes)
 1. Open Neovim in a project directory
-2. Use `<leader>ff` to find a file
+2. Use `<leader>pf` to find a file
 3. Press `i`, make a small change
 4. Press `Esc`, then `:wq`
 
 ### Task 2: Search and Navigate (5 minutes)
-1. Use `<leader>fg` to search for a function name
+1. Use `<leader>ps` to search for a function name
 2. Navigate results with `j` and `k`
 3. Press `Enter` on a result
 4. Use `gd` to jump to its definition
 5. Use `Ctrl-o` to jump back
 
 ### Task 3: Multiple Files (5 minutes)
-1. Open file A with `<leader>ff`
-2. Open file B with `<leader>ff` (opens in new buffer)
+1. Open file A with `<leader>pf`
+2. Open file B with `<leader>pf` (opens in new buffer)
 3. Use `:bnext` to switch between them
 4. Use `:bprev` to go back
 5. Use `:bd` to close a buffer

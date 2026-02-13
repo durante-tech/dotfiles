@@ -6,8 +6,8 @@ This Neovim configuration is built for modern development workflows with Lazy.nv
 
 | Action | Keybinding |
 |--------|------------|
-| Find files | `<leader>ff` |
-| Search in files | `<leader>fg` |
+| Find files | `<leader>pf` |
+| Search in files | `<leader>ps` |
 | Switch project | `<leader>pp` |
 | File explorer | `-` (Oil) or `<leader>ee` (Snacks explorer) |
 | Go to definition | `gd` |
@@ -28,7 +28,9 @@ This Neovim configuration is built for modern development workflows with Lazy.nv
 - **[Editing](workflows/editing.md)** - Writing and manipulating code
 - **[Navigation](workflows/navigation.md)** - Moving through files and code
 - **[File Management](workflows/file-management.md)** - Finding and managing files
+- **[Search & Replace](workflows/search-replace.md)** - Finding and transforming text
 - **[Copy/Paste/Move](workflows/copy-paste-move.md)** - Clipboard and text manipulation
+- **[Windows & Buffers](workflows/windows-buffers.md)** - Splits, buffers, and tabs
 - **[LSP & Completion](workflows/lsp.md)** - Language server features
 
 ### Configuration
@@ -45,7 +47,7 @@ This Neovim configuration is built for modern development workflows with Lazy.nv
 
 | Plugin | Purpose | Key |
 |--------|---------|-----|
-| Snacks.nvim | Picker, notifications, explorer, UI | `<leader>ff`, `<leader>ee` |
+| Snacks.nvim | Picker, notifications, explorer, UI | `<leader>pf`, `<leader>ee` |
 | Oil.nvim | Buffer-based file explorer | `-` |
 | Blink.cmp | Fast completions | Auto |
 | Conform.nvim | Formatting | `<leader>mp` |
@@ -88,9 +90,9 @@ This Neovim configuration is built for modern development workflows with Lazy.nv
 
 | Plugin | Purpose | Key |
 |--------|---------|-----|
-| Claude Code | AI assistant integration | Via MCP |
+| Claude Code | AI assistant integration | `<leader>ac` toggle, `<leader>as` send selection |
 | Tailwind Tools | Tailwind CSS support | Auto |
-| Emmet | HTML/CSS expansion | `<C-y>,` |
+| Emmet | HTML/CSS expansion | `<leader>xe` (wrap) |
 | Render-markdown | Markdown rendering in buffer | Auto |
 | Markdown-preview | Browser markdown preview | `:MarkdownPreview` |
 | Molten | Jupyter notebook support | `:MoltenInit` |

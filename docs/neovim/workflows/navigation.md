@@ -97,16 +97,18 @@ ct"     // Change till quote (keeps quote)
 
 ## Across-File Navigation
 
-### Fuzzy Finding with Telescope
+### Fuzzy Finding with Snacks Picker
 
 | Keys | Action | Use Case |
 |------|--------|----------|
-| `<leader>ff` | Find files | Open file by name |
-| `<leader>fg` | Grep in files | Find text across project |
+| `<leader>pf` | Find files | Open file by name |
+| `<leader>ps` | Grep in files | Find text across project |
 | `<leader>pr` | Recent files | Reopen recent files |
-| `<leader>pWs` | Search word under cursor | Find all usages |
+| `<leader>pws` | Search word under cursor | Find all usages |
+| `<leader>pc` | Find config files | Quick access to nvim config |
+| `<leader>pT` | Find TODO/FIXME | Jump to todo comments |
 
-**Telescope Navigation:**
+**Picker Navigation:**
 - `Ctrl-j` / `Ctrl-k` - Move down/up in results
 - `Ctrl-n` / `Ctrl-p` - Move down/up (alternative)
 - `Enter` - Open file
@@ -114,6 +116,23 @@ ct"     // Change till quote (keeps quote)
 - `Ctrl-v` - Open in vertical split
 - `Ctrl-t` - Open in new tab
 - `Esc` - Close
+
+### Flash Navigation (Jump Anywhere)
+
+| Keys | Action |
+|------|--------|
+| `s` | Flash jump - press 2 chars to jump anywhere visible |
+| `S` | Treesitter flash - jump to code structures |
+| `<leader>fl` | Jump to a line |
+| `<leader>fw` | Jump to a word |
+
+### Harpoon (Quick File Marks)
+
+| Keys | Action |
+|------|--------|
+| `<leader>a` | Add current file to harpoon |
+| `<C-e>` | Toggle harpoon quick menu |
+| `<C-y>` / `<M-i>` / `<C-n>` / `<C-s>` | Jump to mark 1/2/3/4 |
 
 ### Project & Session Management
 
@@ -142,7 +161,7 @@ Language Server Protocol provides intelligent navigation:
 |------|--------|----------|
 | `gd` | Go to definition | Jump to where symbol is defined |
 | `gD` | Go to declaration | Jump to declaration |
-| `gR` | Show references | Find all usages via Telescope |
+| `gR` | Show references | Find all usages via Snacks picker |
 | `gi` | Go to implementation | Jump to implementation |
 | `gt` | Go to type definition | Jump to type definition |
 | `K` | Hover documentation | Read docs without leaving |
@@ -161,7 +180,7 @@ gd          // Jump to definition: const user = {...}
 K           // Read hover docs
 
 // 3. Find where else it's used
-gR          // Telescope shows all references
+gR          // Picker shows all references
 
 // 4. Check type definition
 gt          // Jump to type/interface
@@ -295,7 +314,7 @@ See [Search & Replace Workflow](search-replace.md) for detailed patterns.
 
 ```
 1. <leader>pp       // Open project
-2. <leader>fg       // Grep for main function/class
+2. <leader>ps       // Grep for main function/class
 3. Enter            // Open file
 4. /className       // Search for class
 5. n n n            // Jump through matches
@@ -308,7 +327,7 @@ See [Search & Replace Workflow](search-replace.md) for detailed patterns.
 ### Workflow 2: Bug Hunting
 
 ```
-1. <leader>fg       // Grep for error message
+1. <leader>ps       // Grep for error message
 2. Enter            // Open file with error
 3. *                // Search for variable under cursor
 4. n n              // Jump through usages
@@ -323,7 +342,7 @@ See [Search & Replace Workflow](search-replace.md) for detailed patterns.
 
 ```
 1. gd               // Go to definition
-2. gR               // Show all references in Telescope
+2. gR               // Show all references in picker
 3. Review list      // See everywhere it's used
 4. <leader>rn       // LSP rename
 5. Type new name
@@ -333,7 +352,7 @@ See [Search & Replace Workflow](search-replace.md) for detailed patterns.
 ### Workflow 4: Learning a New API
 
 ```
-1. <leader>ff       // Find file
+1. <leader>pf       // Find file
 2. /import          // Find imports
 3. gd               // Jump to import source
 4. K                // Read docs
@@ -353,8 +372,8 @@ See [Search & Replace Workflow](search-replace.md) for detailed patterns.
 | Screen away | `Ctrl-d` / `Ctrl-u` |
 | Know line number | `:42` or `42gg` |
 | Know text content | `/pattern` |
-| Different file, know name | `<leader>ff` |
-| Different file, know content | `<leader>fg` |
+| Different file, know name | `<leader>pf` |
+| Different file, know content | `<leader>ps` |
 | Was there before | `Ctrl-o` |
 | Symbol definition | `gd` |
 | All usages | `gR` |

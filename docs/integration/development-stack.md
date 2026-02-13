@@ -1,0 +1,340 @@
+# Development Stack Integration
+
+How Neovim, Tmux, and Git work together as a unified development environment.
+
+## The Stack
+
+```
+┌──────────────────────────────────────────────────┐
+│  AeroSpace (window manager)                       │
+│  ┌──────────────────────────────────────────────┐ │
+│  │  Ghostty (terminal emulator)                  │ │
+│  │  ┌──────────────────────────────────────────┐ │ │
+│  │  │  Tmux (session multiplexer)               │ │ │
+│  │  │  ┌────────────────┬───────────────────┐  │ │ │
+│  │  │  │  Neovim        │  Shell / Lazygit  │  │ │ │
+│  │  │  │  (editor)      │  (commands/git)   │  │ │ │
+│  │  │  └────────────────┴───────────────────┘  │ │ │
+│  │  └──────────────────────────────────────────┘ │ │
+│  └──────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────┘
+```
+
+Each layer has a specific job. Together they form a keyboard-driven IDE.
+
+## Seamless Navigation
+
+### vim-tmux-navigator
+
+The key integration: `Ctrl+h/j/k/l` moves between Neovim splits AND tmux panes without thinking about boundaries.
+
+```
+┌──────────────────────────────────────────────┐
+│ Tmux Window                                   │
+│ ┌──────────────────┬────────────────────────┐ │
+│ │ Neovim           │ Neovim                  │ │
+│ │ (split 1)        │ (split 2)              │ │
+│ │                  │                          │ │
+│ │  Ctrl+l ──────────►                        │ │
+│ │                  │ ◄────────── Ctrl+h      │ │
+│ │                  │                          │ │
+│ ├──────────────────┴────────────────────────┤ │
+│ │ Tmux pane (shell)                          │ │
+│ │                                            │ │
+│ │  ▲ Ctrl+k from here goes to Neovim above  │ │
+│ └────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────┘
+```
+
+Same keys, whether you're crossing:
+- Neovim split → Neovim split
+- Neovim split → Tmux pane
+- Tmux pane → Neovim split
+- Tmux pane → Tmux pane
+
+## Project Management with tmux-sessionizer
+
+### How It Works
+
+`tmux-sessionizer` (`tns` alias) creates one tmux session per project:
+
+1. Scans configured directories for project folders
+2. Presents them in FZF for selection
+3. Creates a tmux session named after the project (or attaches if it exists)
+4. Sets the working directory to the project root
+
+### Configuration
+
+The script scans these paths by default (customizable via `TMUX_SESSIONIZER_PATHS`):
+
+```bash
+$HOME/dotfiles $HOME/Projects $HOME/Developer $HOME
+```
+
+### Project Hydration
+
+If a project has a `.tmux-sessionizer` file, it runs on session creation:
+
+```bash
+# Example: ~/Projects/myapp/.tmux-sessionizer
+# Automatically set up windows for this project
+
+tmux rename-window -t $1 "code"
+tmux send-keys -t $1 "nvim ." C-m
+
+tmux new-window -t $1 -n "test"
+tmux send-keys -t $1 "bun test --watch" C-m
+
+tmux new-window -t $1 -n "server"
+tmux send-keys -t $1 "bun dev" C-m
+
+tmux select-window -t $1:1
+```
+
+### Launching
+
+| Method | Where |
+|--------|-------|
+| `tns` | From any terminal |
+| `prefix + f` | From inside tmux (`Ctrl+B > f`) |
+
+## Typical Session Layout
+
+### Single Project
+
+```
+Tmux Session: "myproject"
+├── Window 1: "code"     → Neovim with project open
+├── Window 2: "test"     → Test runner (bun test --watch)
+└── Window 3: "server"   → Dev server (bun dev)
+```
+
+Switch windows: `prefix + 1/2/3` or `prefix + n/p`
+
+### Multi-Project Day
+
+```
+Tmux Sessions:
+├── "frontend"
+│   ├── Window 1: Neovim (React app)
+│   └── Window 2: Dev server
+├── "backend"
+│   ├── Window 1: Neovim (API)
+│   └── Window 2: Server + logs
+└── "dotfiles"
+    └── Window 1: Neovim (configs)
+```
+
+Switch sessions: `tns` or `prefix + s` (session list)
+
+## Floating Windows (Tmux Popups)
+
+Tmux popup windows float over your work. Use them for quick tasks, then dismiss.
+
+| Binding | Tool | Size | Use Case |
+|---------|------|------|----------|
+| `prefix + Ctrl+G` | Lazygit | 90% | Git operations |
+| `prefix + Ctrl+Y` | Yazi | 90% | File management |
+| `prefix + Ctrl+T` | Zsh | 80% | Quick terminal command |
+| `prefix + Ctrl+M` | rmpc | 95% | Music control |
+| `prefix + Ctrl+W` | w3m | 90% | Quick web lookup |
+
+### Workflow: Git Without Leaving Your Editor
+
+```
+1. Working in Neovim...
+2. Ctrl+B > Ctrl+G       ← Lazygit floats over everything
+3. Stage, commit, push    ← Full git operations
+4. q                      ← Dismiss, back to Neovim
+```
+
+No window switching. No context loss.
+
+### Config Quick Edit Menu
+
+`prefix + d` opens a menu to quickly edit any config file:
+
+| Key | Opens |
+|-----|-------|
+| `z` | `.zshrc` in floating nvim |
+| `p` | `.zprofile` in floating nvim |
+| `t` | `tmux.conf` in floating nvim |
+| `v` | Neovim config directory |
+
+## Auto-Session (Neovim Workspace Persistence)
+
+Auto-session saves and restores your Neovim state per project directory.
+
+### What Gets Saved
+
+- Open buffers and their positions
+- Window layout (splits)
+- Current working directory
+- Tab configuration
+
+### How It Works
+
+1. You open Neovim in `~/Projects/myapp/`
+2. Work: open files, create splits, navigate code
+3. Close Neovim (`:qa`)
+4. Auto-session saves the state
+5. Next time you open Neovim in `~/Projects/myapp/`
+6. Everything restores — same files, same layout
+
+### Session Management
+
+| Keys | Action |
+|------|--------|
+| `<leader>wr` | Restore session for current directory |
+| `<leader>ws` | Save session manually |
+| `<leader>wd` | Delete session for current directory |
+| `<leader>wf` | Find and switch to a session |
+| `<leader>wl` | List all sessions |
+
+### Session + tmux-sessionizer
+
+These two tools complement each other:
+
+```
+tns → pick "myproject"
+  → tmux session created in ~/Projects/myproject
+  → Neovim opens
+  → auto-session restores last state
+  → You're exactly where you left off
+```
+
+## Tmux Session Persistence
+
+### tmux-resurrect + tmux-continuum
+
+These plugins persist tmux sessions across system restarts:
+
+- **tmux-resurrect**: Saves/restores tmux sessions (windows, panes, layouts)
+- **tmux-continuum**: Auto-saves every 15 minutes
+
+| Action | Keys |
+|--------|------|
+| Save sessions | `prefix + Ctrl+s` |
+| Restore sessions | `prefix + Ctrl+r` |
+| Auto-save | Every 15 minutes (continuum) |
+
+### What Survives a Reboot
+
+```
+Before reboot:
+  Session "frontend" → 3 windows, specific layout
+  Session "backend" → 2 windows
+
+After reboot + tmux start:
+  prefix + Ctrl+r → Everything restored
+  Same sessions, windows, pane layout
+  Running processes restarted (nvim, bun, node)
+```
+
+## Layout Presets (4K Workflows)
+
+Quick layout switching for different tasks:
+
+| Binding | Layout | Best For |
+|---------|--------|----------|
+| `prefix + Alt+1` | Main-vertical | Coding (big left, stack right) |
+| `prefix + Alt+2` | Main-horizontal | Reference on top, work below |
+| `prefix + Alt+3` | Tiled grid | Multiple equal panes |
+| `prefix + Alt+4` | Even-horizontal | Side-by-side comparison |
+| `prefix + Alt+5` | Even-vertical | Stacked views |
+| `prefix + F2` | Layout menu | Pick from a menu |
+
+## End-to-End Workflows
+
+### Workflow 1: Start a New Feature
+
+```bash
+# 1. Jump to project
+tns                          # Pick project
+
+# 2. Create branch (from Neovim)
+Ctrl+B > Ctrl+G              # Open lazygit
+n                             # New branch → "feature/new-thing"
+q                             # Close lazygit
+
+# 3. Code
+<leader>pf                   # Find file to edit
+# ... make changes ...
+<leader>rn                   # Rename symbols
+gd / gR                      # Navigate code
+
+# 4. Test
+prefix + 2                   # Switch to test window
+bun test                     # Run tests
+prefix + 1                   # Back to code
+
+# 5. Commit
+Ctrl+B > Ctrl+G              # Lazygit float
+Space                         # Stage files
+c                             # Commit
+p                             # Push
+q                             # Done
+```
+
+### Workflow 2: Review and Fix a Bug
+
+```bash
+# 1. Find the bug
+<leader>ps                   # Search for error message
+gd                            # Jump to definition
+K                             # Read docs
+gR                            # Find all references
+
+# 2. Understand context
+]h                            # Navigate git hunks
+<leader>hb                   # Blame the line
+Ctrl+G Ctrl+H                # Browse recent commits (terminal)
+
+# 3. Fix
+# ... edit code ...
+<leader>vca                  # Code actions for quick fixes
+
+# 4. Verify
+prefix + 2                   # Test window
+bun test                     # Run tests
+prefix + 1                   # Back to code
+
+# 5. Commit
+Ctrl+B > Ctrl+G              # Lazygit
+# Stage → commit → push
+```
+
+### Workflow 3: Multi-Project Context Switch
+
+```bash
+# Working on frontend...
+tns                           # Switch to backend project
+# auto-session restores Neovim state
+# tmux session preserved
+
+# Quick fix in backend...
+tns                           # Switch back to frontend
+# Everything exactly as you left it
+```
+
+## Integration Summary
+
+| Layer | Tool | Responsibility |
+|-------|------|---------------|
+| Window management | AeroSpace | Which monitor/workspace |
+| Terminal | Ghostty | GPU rendering, fonts, colors |
+| Session multiplexing | Tmux | Multiple projects, window layouts |
+| Navigation | vim-tmux-navigator | Seamless Ctrl+h/j/k/l everywhere |
+| Editing | Neovim | Code editing, LSP, completion |
+| Session persistence | auto-session + resurrect | State survives restarts |
+| Project switching | tmux-sessionizer | FZF-based project picker |
+| Git | Lazygit + Gitsigns + FZF-git | Visual git from any context |
+| File management | Oil + Yazi | Buffer-based and TUI file ops |
+
+---
+
+**Key insight:** You never leave the keyboard. Every tool is accessible from every other tool. The boundaries between them are invisible — `Ctrl+h/j/k/l` crosses Neovim and Tmux, lazygit floats over everything, sessions persist automatically.
+
+---
+
+**Next:** [Customizing Your Setup](../getting-started/customizing.md)

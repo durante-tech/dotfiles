@@ -50,13 +50,19 @@ Comprehensive list of all keybindings in this configuration, organized by catego
 
 | Key | Action | Plugin |
 |-----|--------|--------|
-| `<leader>ff` | Find files | Telescope |
-| `<leader>fg` | Grep in files | Telescope |
-| `<leader>pr` | Recent files | Telescope |
-| `<leader>pWs` | Search word under cursor | Telescope |
-| `<leader>pp` | Switch project | Project.nvim + Telescope |
-| `<leader>ths` | Theme switcher | Telescope themes |
-| `-` | Open file explorer | Oil |
+| `<leader>pf` | Find files | Snacks picker |
+| `<leader>ps` | Grep in files | Snacks picker |
+| `<leader>pr` | Recent files | Snacks picker |
+| `<leader>pws` | Search word under cursor | Snacks picker |
+| `<leader>pc` | Find config files | Snacks picker |
+| `<leader>pT` | Find TODO/FIXME | Snacks picker |
+| `<leader>pp` | Switch project | Project.nvim |
+| `<leader>th` | Theme switcher | Snacks picker |
+| `-` | Open file explorer (buffer) | Oil |
+| `<leader>ee` | Toggle file explorer (sidebar) | Snacks explorer |
+| `<leader>ef` | Reveal current file in explorer | Snacks explorer |
+| `<leader>em` | Mini files browser | MiniFiles |
+| `<leader>eM` | Reveal current file in Mini | MiniFiles |
 
 ### Session & Workspace Management
 
@@ -66,22 +72,22 @@ Comprehensive list of all keybindings in this configuration, organized by catego
 | `<leader>wr` | Restore session | Auto-session |
 | `<leader>wd` | Delete session | Auto-session |
 | `<leader>wf` | Find session | Auto-session |
-| `<leader>wl` | List all sessions | Auto-session + Telescope |
+| `<leader>wl` | List all sessions | Auto-session |
 
 ### LSP (Language Server)
 
 | Key | Action | Context |
 |-----|--------|---------|
-| `gd` | Go to definition | Telescope |
+| `gd` | Go to definition | Snacks picker |
 | `gD` | Go to declaration | LSP |
-| `gR` | Show references | Telescope |
-| `gi` | Go to implementation | Telescope |
-| `gt` | Go to type definition | Telescope |
+| `gR` | Show references | Snacks picker |
+| `gi` | Go to implementation | Snacks picker |
+| `gt` | Go to type definition | Snacks picker |
 | `K` | Hover documentation | LSP |
 | `<leader>vca` | Code actions | LSP (Normal & Visual) |
 | `<leader>rn` | Rename symbol | LSP |
 | `<leader>d` | Show line diagnostics | LSP |
-| `<leader>D` | Show buffer diagnostics | Telescope |
+| `<leader>D` | Show buffer diagnostics | Snacks picker |
 | `<leader>rs` | Restart LSP | LSP |
 | `Ctrl-h` | Signature help | LSP (INSERT mode) |
 
@@ -131,18 +137,17 @@ Comprehensive list of all keybindings in this configuration, organized by catego
 
 | Key | Action | Plugin |
 |-----|--------|--------|
-| `Ctrl-n` | Next completion | nvim-cmp |
-| `Ctrl-p` | Previous completion | nvim-cmp |
-| `Ctrl-e` | Close completion | nvim-cmp |
-| `Ctrl-y` | Confirm selection | nvim-cmp |
-| `Enter` | Confirm selection | nvim-cmp |
-| `Tab` | Next snippet field | LuaSnip |
-| `Shift-Tab` | Previous snippet field | LuaSnip |
-| `Ctrl-E` | Accept autosuggestion | zsh-autosuggestions |
+| `Ctrl-j` / `Ctrl-k` | Navigate completions | Blink.cmp |
+| `Ctrl-n` / `Ctrl-p` | Navigate completions (alt) | Blink.cmp |
+| `Ctrl-y` / `Enter` | Confirm selection | Blink.cmp |
+| `Ctrl-e` | Close completion | Blink.cmp |
+| `Ctrl-space` | Toggle documentation | Blink.cmp |
+| `Ctrl-b` / `Ctrl-f` | Scroll documentation | Blink.cmp |
+| `Tab` / `Shift-Tab` | Navigate snippets / completions | Blink.cmp |
 
-## Telescope Keybindings
+## Snacks Picker Keybindings
 
-**When Telescope is open:**
+**When the picker is open:**
 
 | Key | Action |
 |-----|--------|
@@ -154,8 +159,66 @@ Comprehensive list of all keybindings in this configuration, organized by catego
 | `Ctrl-t` | Open in new tab |
 | `Ctrl-u` | Scroll preview up |
 | `Ctrl-d` | Scroll preview down |
-| `Ctrl-c` / `Esc` | Close Telescope |
-| `Ctrl-/` | Show keybindings help |
+| `Esc` | Close picker |
+
+### Navigation & Motion
+
+| Key | Action | Plugin |
+|-----|--------|--------|
+| `s` | Flash jump (press 2 chars to jump) | Flash.nvim |
+| `S` | Treesitter flash (jump to code structures) | Flash.nvim |
+| `<leader>fl` | Jump to line | Flash.nvim |
+| `<leader>fw` | Jump to word | Flash.nvim |
+| `<leader>a` | Add file to harpoon marks | Harpoon |
+| `<C-e>` | Toggle harpoon quick menu | Harpoon |
+| `<C-y>` / `<M-i>` / `<C-n>` / `<C-s>` | Jump to mark 1/2/3/4 | Harpoon |
+
+### Surround (mini.surround)
+
+| Key | Action | Example |
+|-----|--------|---------|
+| `sa` + motion + char | Add surrounding | `saiw"` wraps word in quotes |
+| `ds` + char | Delete surrounding | `ds"` removes quotes |
+| `sr` + old + new | Replace surrounding | `sr"'` changes `"` to `'` |
+
+### Split/Join & Whitespace
+
+| Key | Action | Plugin |
+|-----|--------|--------|
+| `sj` | Join arguments to one line | mini.splitjoin |
+| `sk` | Split arguments to multiple lines | mini.splitjoin |
+| `<leader>cw` | Erase trailing whitespace | mini.trailspace |
+
+### Claude Code Integration
+
+| Key | Action | Plugin |
+|-----|--------|--------|
+| `<leader>ac` | Toggle Claude Code terminal | claudecode.nvim |
+| `<leader>af` | Focus Claude Code | claudecode.nvim |
+| `<leader>as` | Send selection to Claude (visual) | claudecode.nvim |
+| `<leader>aa` | Accept diff | claudecode.nvim |
+| `<leader>ad` | Reject diff | claudecode.nvim |
+| `<leader>am` | Full MCPs mode | claudecode.nvim |
+| `<leader>ar` | Resume session | claudecode.nvim |
+
+### Git (extended)
+
+| Key | Action | Plugin |
+|-----|--------|--------|
+| `<leader>gg` | Open git status | Fugitive |
+| `<leader>gs` | Stage hunk (or visual range) | Gitsigns |
+| `<leader>gr` | Reset hunk | Gitsigns |
+| `<leader>gS` / `<leader>gR` | Stage/reset buffer | Gitsigns |
+| `<leader>gu` | Undo stage | Gitsigns |
+| `<leader>gp` | Preview hunk | Gitsigns |
+| `<leader>gbl` | Blame line | Gitsigns |
+| `<leader>gB` | Toggle current line blame | Gitsigns |
+| `<leader>gd` / `<leader>gD` | Diff this / diff against ~ | Gitsigns |
+| `<leader>gf` | Git changed files picker | Snacks |
+| `<leader>gbr` | Pick and switch branch | Snacks |
+| `<leader>lg` | Open lazygit | Snacks |
+| `<leader>gl` | View git logs | Snacks |
+| `]h` / `[h` | Next/previous hunk | Gitsigns |
 
 ## Oil (File Explorer) Keybindings
 
@@ -369,8 +432,8 @@ These work seamlessly between Neovim and tmux:
 
 ```
 MODES:           FILES:              CODE:
-Esc - Normal     <leader>ff - Find   gd - Definition
-i   - Insert     <leader>fg - Grep   K  - Docs
+Esc - Normal     <leader>pf - Find   gd - Definition
+i   - Insert     <leader>ps - Grep   K  - Docs
 v   - Visual     <leader>pp - Proj   <leader>rn - Rename
 :   - Command    -          - Explr  <leader>vca - Actions
 

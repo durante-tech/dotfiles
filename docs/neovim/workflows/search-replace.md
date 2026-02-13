@@ -1,0 +1,319 @@
+# Search & Replace Workflows
+
+Find text and transform it efficiently across files.
+
+## Basic Search
+
+### Within Current File
+
+| Keys | Action |
+|------|--------|
+| `/pattern` | Search forward |
+| `?pattern` | Search backward |
+| `n` | Next match |
+| `N` | Previous match |
+| `*` | Search word under cursor (forward) |
+| `#` | Search word under cursor (backward) |
+
+**After searching:**
+```vim
+:noh                   " Clear search highlights
+```
+
+### Search Options
+
+```vim
+/pattern\c             " Case-insensitive
+/pattern\C             " Case-sensitive (override smartcase)
+/\<word\>              " Exact word match
+/pattern1\|pattern2    " Match either
+```
+
+### Regex Search
+
+```vim
+/function.*User        " 'function' followed by 'User'
+/^import               " Lines starting with 'import'
+/;$                    " Lines ending with semicolon
+/\d\+                  " One or more digits
+/\s\+$                 " Trailing whitespace
+```
+
+## Basic Replace
+
+### Substitute Command
+
+```vim
+:s/old/new/            " Replace first on current line
+:s/old/new/g           " Replace all on current line
+:%s/old/new/g          " Replace all in entire file
+:%s/old/new/gc         " Replace all with confirmation
+```
+
+**The `c` flag prompts for each match:**
+| Response | Action |
+|----------|--------|
+| `y` | Yes, replace this |
+| `n` | No, skip this |
+| `a` | Replace all remaining |
+| `q` | Quit substitution |
+| `l` | Replace this and quit (last) |
+
+### Range Substitution
+
+```vim
+:10,20s/old/new/g      " Lines 10-20
+:.,$s/old/new/g        " Current line to end of file
+:.,+5s/old/new/g       " Current line plus 5 more
+:'<,'>s/old/new/g      " Visual selection (auto-inserted)
+```
+
+## Project-Wide Search
+
+### Grep Across Files
+
+| Keys | Action |
+|------|--------|
+| `<leader>ps` | Snacks grep (live search across project) |
+| `<leader>pws` | Search word under cursor across project |
+
+**Workflow:**
+```
+1. <leader>ps              " Open grep picker
+2. Type search term         " Results update live
+3. Ctrl-j/k                " Navigate results
+4. Enter                   " Jump to match
+5. Ctrl-o                  " Jump back
+```
+
+### Using gR for References
+
+```vim
+" Cursor on a symbol:
+gR                         " LSP: Find all references in picker
+" Shows every file and line where this symbol is used
+```
+
+## Search & Replace Workflows
+
+### Workflow 1: Replace in Single File
+
+```vim
+" Simple find and replace:
+:%s/getUserData/fetchUserData/gc
+" y/n for each → done
+
+" Or with visual selection:
+V                          " Select lines
+:s/old/new/g               " Replace within selection
+```
+
+### Workflow 2: Replace Word Under Cursor
+
+```vim
+" Fast method:
+1. * or #                  " Search for word under cursor
+2. :%s//newWord/gc         " Empty pattern = use last search
+   " This replaces the word you just searched for!
+```
+
+### Workflow 3: Replace Across Multiple Files
+
+**Method 1: Using Quickfix List**
+```vim
+" 1. Populate quickfix with matches
+:vimgrep /oldPattern/ **/*.js
+
+" 2. Replace in all quickfix matches
+:cfdo %s/oldPattern/newPattern/gc | update
+
+" 3. Review changes
+:cfdo                      " Navigate through changed files
+```
+
+**Method 2: Using LSP Rename (Best for Symbols)**
+```vim
+" Cursor on symbol:
+<leader>rn                 " LSP rename
+" Type new name → Enter
+" Renames in ALL files, respects scope!
+```
+
+**Method 3: Search Then Replace Manually**
+```vim
+1. <leader>ps              " Grep for pattern
+2. Review matches           " Understand context
+3. Open each file           " Make targeted changes
+4. <leader>ps              " Verify no remaining matches
+```
+
+### Workflow 4: Regex Replace
+
+```vim
+" Add quotes around bare values:
+:%s/name: \(\w\+\)/name: "\1"/g
+" name: John → name: "John"
+
+" Remove console.log lines:
+:g/console\.log/d
+
+" Convert var to const:
+:%s/\<var\>/const/g
+
+" Add semicolons to lines that don't have them:
+:%s/\([^;{}\s]\)$/\1;/
+
+" Remove trailing whitespace:
+:%s/\s\+$//
+```
+
+### Workflow 5: Multi-Line Replace
+
+```vim
+" Join split function arguments:
+" Before:
+"   function getData(
+"     user,
+"     config
+"   )
+
+" Visual select the block, then:
+:join                      " Joins selected lines
+" or
+J                          " Join current line with next
+```
+
+### Workflow 6: Bulk Operations with :g
+
+The global command `:g` runs a command on every matching line:
+
+```vim
+" Delete all blank lines:
+:g/^$/d
+
+" Delete all lines containing 'TODO':
+:g/TODO/d
+
+" Comment all lines containing 'debug':
+:g/debug/norm gcc
+
+" Move all imports to top of file:
+:g/^import/m 0
+
+" Copy all function signatures to register:
+:g/^function/yank A
+" Then paste with: "ap
+
+" Indent all lines matching pattern:
+:g/return/norm >>
+
+" Delete all lines NOT matching pattern:
+:v/important/d
+" (:v is inverse of :g)
+```
+
+## Advanced Search Patterns
+
+### Lookahead and Lookbehind
+
+```vim
+" Match 'foo' only when followed by 'bar':
+/foo\(bar\)\@=
+
+" Match 'foo' only when NOT followed by 'bar':
+/foo\(bar\)\@!
+
+" Match 'bar' only when preceded by 'foo':
+/\(foo\)\@<=bar
+```
+
+### Using Registers in Replace
+
+```vim
+" Replace with contents of register 'a':
+:%s/pattern/\=@a/g
+
+" Replace with result of expression:
+:%s/\d\+/\=submatch(0)+1/g
+" Increments all numbers by 1
+```
+
+### Case Transformations
+
+```vim
+" To uppercase:
+:%s/\<\w\+\>/\U&/g
+
+" To lowercase:
+:%s/\<\w\+\>/\L&/g
+
+" Capitalize first letter:
+:%s/\<\w/\u&/g
+
+" camelCase to snake_case (approximate):
+:%s/\(\l\)\(\u\)/\1_\l\2/g
+```
+
+## Tips
+
+### Search History
+
+```vim
+/                          " Open search
+<Up>/<Down>                " Cycle through search history
+q/                         " Open search history window
+```
+
+### Replace History
+
+```vim
+:                          " Open command mode
+<Up>                       " Cycle through command history
+" Previous :%s commands are there
+```
+
+### Repeat Last Substitution
+
+```vim
+&                          " Repeat last :s on current line
+g&                         " Repeat last :s on entire file
+```
+
+### Visual Star Search
+
+```vim
+" Select text in visual mode, then:
+*                          " Search for selected text
+```
+
+### Count Matches Before Replacing
+
+```vim
+:%s/pattern//gn            " Count matches (n flag = no replace)
+" Shows: "42 matches on 15 lines"
+```
+
+## Quick Reference
+
+| Task | Command |
+|------|---------|
+| Find in file | `/pattern` |
+| Find in project | `<leader>ps` |
+| Find word under cursor | `*` or `<leader>pws` |
+| Find symbol references | `gR` |
+| Replace in file | `:%s/old/new/gc` |
+| Replace in selection | `:'<,'>s/old/new/g` |
+| Replace across project | `:vimgrep` + `:cfdo` |
+| Rename symbol | `<leader>rn` |
+| Delete matching lines | `:g/pattern/d` |
+| Delete non-matching lines | `:v/pattern/d` |
+
+---
+
+**Practice Challenge:**
+1. Open a file and use `*` on 5 different words
+2. Replace a word using `:%s/old/new/gc`
+3. Use `:g/pattern/d` to delete all comment lines
+4. Try `<leader>rn` to rename a function
+
+**Next:** [Copy, Paste & Move Workflows](copy-paste-move.md)
