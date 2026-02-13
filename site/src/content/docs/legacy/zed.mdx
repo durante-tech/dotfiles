@@ -1,0 +1,75 @@
+---
+title: "Zed - Code Editor"
+description: "> Status: Experimental — Testing as a fast alternative to Neovim. Not the primary editor."
+---
+> **Status: Experimental** — Testing as a fast alternative to [Neovim](/neovim/). Not the primary editor.
+
+Zed is a high-performance Rust-based editor configured with vim mode and keybindings that mirror the Neovim setup where possible.
+
+## Configuration Summary
+
+| Setting | Value |
+|---------|-------|
+| Theme | Rose Pine |
+| Font | Codelia Ligatures, 16pt |
+| Vim mode | Enabled |
+| Cursor | Block, no blink |
+| Line numbers | Relative |
+| Format on save | Off |
+| Tab bar | Hidden |
+
+## Keybindings (vim-style)
+
+### Normal Mode
+
+| Key | Action |
+|-----|--------|
+| `Space R N` | Rename symbol |
+| `Space V` | Go to definition (split) |
+| `Space G D` | Toggle hunk diff |
+| `Space T I` | Toggle inlay hints |
+| `Space C Z` | Toggle zen mode |
+| `Space F P` | Open recent project |
+| `Space M P` | Format |
+| `Shift+K` | Hover documentation |
+| `G R` | Find all references |
+| `G F` | Go to file |
+| `G ]` / `G [` | Next/previous diagnostic |
+| `Ctrl+^` | Alternate file |
+
+### Pane Navigation
+
+| Key | Action |
+|-----|--------|
+| `Ctrl+H/J/K/L` | Move between panes |
+| `Ctrl+W F` | New terminal |
+
+### Visual Mode
+
+| Key | Action |
+|-----|--------|
+| `=` | Format selection |
+| `Shift+J` / `Shift+K` | Move lines down/up |
+
+### File Explorer
+
+| Key | Action |
+|-----|--------|
+| `a` | New file |
+| `A` | New directory |
+| `r` | Rename |
+| `d` | Delete |
+| `x` / `c` / `p` | Cut/copy/paste |
+| `q` | Close panel |
+
+## Languages Configured
+
+Python (ruff formatter), JavaScript/TypeScript, Rust, Go, JSON
+
+## File Locations
+
+```
+zed/.config/zed/settings.json   # Editor settings
+zed/.config/zed/keymap.json     # Custom keybindings
+zed/.config/zed/README.md       # Original notes
+```

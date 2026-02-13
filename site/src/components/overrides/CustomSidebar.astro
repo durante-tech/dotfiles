@@ -1,0 +1,20 @@
+---
+import type { Props } from '@astrojs/starlight/props';
+import Default from '@astrojs/starlight/components/Sidebar.astro';
+import StreakCounter from '../StreakCounter.tsx';
+---
+
+<div class="sidebar-with-streak">
+  <div class="sidebar-streak-wrapper">
+    <StreakCounter client:idle />
+  </div>
+  <Default {...Astro.props}><slot /></Default>
+</div>
+
+<style>
+  .sidebar-streak-wrapper {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--cat-surface0, #313244);
+    margin-bottom: 0.5rem;
+  }
+</style>

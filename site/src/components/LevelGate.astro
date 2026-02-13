@@ -1,0 +1,112 @@
+---
+interface Props {
+  level: number;
+  requiredLevel: number;
+}
+
+const { level, requiredLevel } = Astro.props;
+---
+
+<div class="level-gate" data-level={level} data-required={requiredLevel} id={`level-gate-${level}`}>
+  <div class="level-gate-overlay">
+    <div class="level-gate-content">
+      <span class="level-gate-lock">&#x1F512;</span>
+      <p class="level-gate-message">Complete Level {requiredLevel} to unlock this content.</p>
+      <button class="level-gate-skip" onclick={`document.getElementById('level-gate-${level}').classList.add('level-gate--skipped')`}>
+        Skip ahead anyway
+      </button>
+    </div>
+  </div>
+  <slot />
+</div>
+
+<script>
+  function initLevelGates() {
+    const STORAGE_KEY = 'dotfiles-mastery-progress';
+
+    let progress: any = {};
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) progress = JSON.parse(raw);
+    } catch {}
+
+    document.querySelectorAll<HTMLElement>('.level-gate').forEach((gate) => {
+      const level = Number(gate.dataset.level);
+      if (level === 0) {
+        gate.classList.add('level-gate--unlocked');
+        return;
+      }
+
+      // Simple check: if we have any completed lessons in previous levels, unlock
+      const lessons = progress.lessons || {};
+      const completedCount = Object.values(lessons).filter(
+        (l: any) => l.completed
+      ).length;
+
+      // Unlock if any progress exists (soft gate)
+      if (completedCount > 0 || level <= 1) {
+        gate.classList.add('level-gate--unlocked');
+      }
+    });
+  }
+
+  initLevelGates();
+  document.addEventListener('astro:after-swap', initLevelGates);
+</script>
+
+<style>
+  .level-gate {
+    position: relative;
+  }
+
+  .level-gate-overlay {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: rgba(17, 17, 27, 0.85);
+    backdrop-filter: blur(4px);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    min-height: 200px;
+  }
+
+  .level-gate--unlocked .level-gate-overlay,
+  .level-gate--skipped .level-gate-overlay {
+    display: none;
+  }
+
+  .level-gate-content {
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .level-gate-lock {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .level-gate-message {
+    color: var(--cat-subtext0, #a6adc8);
+    margin-bottom: 1rem;
+  }
+
+  .level-gate-skip {
+    background: transparent;
+    border: 1px solid var(--cat-overlay0, #6c7086);
+    color: var(--cat-overlay1, #7f849c);
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-family: inherit;
+  }
+
+  .level-gate-skip:hover {
+    border-color: var(--cat-mauve, #cba6f7);
+    color: var(--cat-mauve, #cba6f7);
+  }
+</style>

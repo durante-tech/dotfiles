@@ -1,0 +1,341 @@
+---
+title: "Aliases and Functions Reference"
+description: "Every alias and function in the shell configuration, organized by category with usage examples."
+---
+
+import CompleteLessonButton from '../../../components/CompleteLessonButton.tsx';
+import LevelGateBanner from '../../../components/LevelGateBanner.tsx';
+
+<LevelGateBanner level={6} client:load />
+
+Every alias and function in the shell configuration, organized by category with usage examples.
+
+## How Aliases Work
+
+An alias replaces a command with a shortcut. When you type `gs`, zsh expands it to `git status -s` before executing.
+
+All aliases live in `zsh/.zshrc`. After adding or changing aliases:
+
+```bash
+source ~/.zshrc    # Reload without restarting terminal
+```
+
+## Core Shortcuts
+
+| Alias | Expands To | When to Use |
+|-------|-----------|-------------|
+| `c` | `clear` | Clear the terminal |
+| `e` | `exit` | Close the current shell |
+| `vim` | `nvim` | Ensures you always use Neovim |
+
+These are muscle-memory shortcuts. You'll type `c` hundreds of times a day.
+
+## File Listing (Eza)
+
+Eza replaces `ls` with colors, icons, git integration, and tree views.
+
+### Quick Picks
+
+| Alias | What You See | Best For |
+|-------|-------------|----------|
+| `ls` | Long format, icons, git status | Default "what's here?" |
+| `la` | Same + hidden files | Seeing dotfiles |
+| `ll` | Full details (sizes, groups, headers) | Detailed inspection |
+| `lt` | Tree view (2 levels) | Understanding structure |
+
+### All Listing Aliases
+
+| Alias | Description | Flags |
+|-------|------------|-------|
+| `ls` | Standard list with git | `--long --icons --git --no-user --no-filesize` |
+| `la` | All files with git | `--long --all --icons --git --no-user` |
+| `ll` | Full long format | `--long --all --icons --git --header --group` |
+| `lt` | Tree (2 levels, git-ignored hidden) | `--tree --level=2 --git --git-ignore` |
+| `lt3` | Tree (3 levels) | `--tree --level=3 --git --git-ignore` |
+| `lsd` | Directories only | `--long --only-dirs --icons --git` |
+| `lm` | Sort by modified (newest first) | `--sort=modified --reverse` |
+| `lz` | Sort by size (largest first) | `--sort=size --reverse` |
+| `lsg` | Git-tracked files only | `--only-files --git-ignore` |
+| `tree` | Classic tree (3 levels, excludes .git) | `tree -L 3 -a -I '.git'` |
+| `dtree` | Directories-only tree | `tree -L 3 -a -d -I '.git'` |
+
+### Usage Examples
+
+```bash
+ls                   # Quick look at current directory
+la ~/dotfiles        # See all files including hidden
+lt                   # Understand project structure at a glance
+lm                   # What was recently modified?
+lz                   # What's taking up space?
+lsg                  # What files does git track here?
+lsd                  # Just the folders
+```
+
+## Modern CLI Replacements
+
+These aliases silently replace old Unix tools with modern Rust/Go alternatives.
+
+| Alias | Old Tool | New Tool | Why It's Better |
+|-------|----------|----------|----------------|
+| `cat` | cat | `bat` | Syntax highlighting, line numbers, git diff markers |
+| `ps` | ps | `procs` | Colored output, searchable, tree view |
+| `top` / `htop` | top/htop | `btm` (bottom) | Interactive graphs, CPU/memory/network/disk |
+| `curl` | curl | `curlie` | Syntax-highlighted request/response, HTTPie-like |
+| `du` | du | `dust` | Visual bar chart of disk usage |
+
+### Usage Examples
+
+```bash
+cat ~/.zshrc         # Actually runs bat — syntax highlighted, paged
+ps                   # Actually runs procs — searchable process list
+top                  # Actually runs btm — interactive dashboard
+curl httpbin.org/ip  # Actually runs curlie — pretty-printed response
+du ~/Projects        # Actually runs dust — visual disk breakdown
+```
+
+## Productivity Tools
+
+| Alias | Tool | Description |
+|-------|------|-------------|
+| `y` | `yazi` | Fast terminal file manager |
+| `br` | `broot` | Interactive tree navigation with fuzzy search |
+| `json` | `fx` | Interactive JSON viewer/explorer |
+| `cheat` | `navi` | Interactive cheatsheets for any command |
+| `ginfo` | `onefetch` | Git repo summary (like neofetch for repos) |
+
+### Usage Examples
+
+```bash
+y                    # Browse files, preview images, copy/move
+br                   # Navigate deep directory trees interactively
+echo '{"a":1}' | json  # Explore JSON interactively
+cheat                # Forgot a command? Browse cheatsheets
+ginfo                # Quick stats about current git repo
+```
+
+## Tmux
+
+| Alias | Expands To | When to Use |
+|-------|-----------|-------------|
+| `tmux` | `tmux -f $TMUX_CONF` | Start tmux with correct config path |
+| `a` | `tmux attach` | Reattach to last session |
+| `tns` | `tmux-sessionizer` | FZF project picker → creates/attaches session |
+
+### Usage Examples
+
+```bash
+a                    # Reconnect after closing terminal
+tns                  # Pick a project, get a tmux session
+```
+
+## FZF Integration
+
+| Alias | What It Does | Script |
+|-------|-------------|--------|
+| `nlof` | FZF recent Neovim files → open selected | `~/scripts/fzf_listoldfiles.sh` |
+| `fman` | FZF all available man pages → display selected | Inline in `.zshrc` |
+| `nzo` | Zoxide dirs → FZF → open in Neovim | `~/scripts/zoxide_openfiles_nvim.sh` |
+
+### Usage Examples
+
+```bash
+nlof                 # "What was I editing yesterday?" → pick → nvim
+fman                 # "How does tar work again?" → pick → man page
+nzo                  # Jump to any project dir → open files in nvim
+```
+
+## Git Aliases
+
+### Everyday Git
+
+| Alias | Expands To | Usage |
+|-------|-----------|-------|
+| `gt` | `git` | Short git prefix |
+| `gs` | `git status -s` | Quick status check |
+| `ga` | `git add .` | Stage everything |
+| `gc "msg"` | `git commit -m "msg"` | Quick commit |
+| `gp` | `git push` | Push to remote |
+| `gl` | `git pull` | Pull from remote |
+| `gd` | `git diff` | See unstaged changes |
+| `gds` | `git diff --staged` | See staged changes |
+| `glog` | `git log --oneline --graph --all` | Visual branch history |
+| `lg` | `lazygit` | Full git TUI |
+
+### Branching
+
+| Alias | Expands To | Usage |
+|-------|-----------|-------|
+| `gb` | `git branch` | List branches |
+| `gba` | `git branch -a` | List all branches (including remote) |
+| `gco` | `git checkout` | Switch branches |
+| `gcb` | `git checkout -b` | Create + switch to new branch |
+
+### GitHub
+
+| Alias | What It Does |
+|-------|-------------|
+| `gh-create` | Create private repo, push all branches, open in browser |
+
+### Common Git Workflows
+
+```bash
+# Quick commit cycle
+gs                    # What changed?
+ga                    # Stage all
+gc "fix login bug"    # Commit
+gp                    # Push
+
+# Feature branch
+gcb feature/auth      # Create branch
+# ... work ...
+ga && gc "add auth"   # Commit
+gp                    # Push
+
+# Review before commit
+gd                    # Unstaged changes
+gds                   # Staged changes
+glog                  # History context
+```
+
+## Claude CLI Aliases
+
+| Alias | Expands To | When to Use |
+|-------|-----------|-------------|
+| `cld` | `claude` | Basic Claude CLI |
+| `cldp` | `claude -p` | Project mode |
+| `cldo` | `claude --model opus` | Use Opus model |
+| `clds` | `claude --model sonnet` | Use Sonnet model |
+| `cldy` | `claude --dangerously-skip-permissions --model sonnet` | Skip permissions (Sonnet) |
+| `cldyo` / `lfg` | `claude --dangerously-skip-permissions --model opus` | Skip permissions (Opus) |
+| `cldpy` | `claude -p --dangerously-skip-permissions` | Project + skip permissions |
+| `cldpyo` | `claude -p --dangerously-skip-permissions --model opus` | Project + skip + Opus |
+| `cldr` | `claude --resume` | Resume last session |
+
+### Usage Examples
+
+```bash
+cld                   # Start a Claude conversation
+cldo                  # Start with Opus (more capable)
+lfg                   # Full power, no permission prompts
+cldr                  # Pick up where you left off
+```
+
+## Fabric AI Aliases
+
+Fabric is an AI pattern system for content processing.
+
+### Static Aliases
+
+| Alias | Expands To |
+|-------|-----------|
+| `fb` | `fabric` |
+| `fbp` | `fabric --pattern` |
+| `fbl` | `fabric --listpatterns` |
+| `fbs` | `fabric --stream` |
+| `fbsp` | `fabric --stream --pattern` |
+
+### Dynamic Pattern Aliases
+
+Fabric auto-generates an alias for every installed pattern. These are cached in `~/.cache/fabric-aliases.zsh` for fast shell startup (~150ms savings).
+
+```bash
+fbl                          # List all available patterns
+extract_wisdom < article.md  # Run the extract_wisdom pattern
+summarize < doc.txt          # Run the summarize pattern
+```
+
+Each pattern name becomes its own command. There are 240+ patterns.
+
+## Shell Functions
+
+Functions are more powerful than aliases — they accept arguments and run logic.
+
+### Web Search Functions
+
+```bash
+google "search term"     # Opens Google search in default browser
+ddg "search term"        # Opens DuckDuckGo search
+github "search term"     # Opens GitHub search
+```
+
+These use `open` (macOS) or `xdg-open` (Linux) to launch the browser.
+
+### Yazi with Directory Change (`ya`)
+
+```bash
+ya                       # Open yazi file manager
+                         # When you quit, terminal cd's to last visited directory
+```
+
+Unlike `y` (plain yazi), `ya` tracks the directory you navigated to inside yazi and changes your shell's working directory on exit.
+
+### YouTube Transcript (`yt`)
+
+```bash
+yt https://youtube.com/watch?v=...           # Download transcript
+yt -t https://youtube.com/watch?v=...        # Download with timestamps
+```
+
+Uses Fabric to extract YouTube video transcripts. Pipe into patterns:
+
+```bash
+yt https://... | extract_wisdom              # Get key insights
+yt https://... | summarize                   # Quick summary
+```
+
+## Other Aliases
+
+| Alias | What It Does |
+|-------|-------------|
+| `air` | Go live-reload server (`$(go env GOPATH)/bin/air`) |
+| `nvim-scratch` | Launch Neovim with separate config (`NVIM_APPNAME=nvim-scratch`) |
+| `mpds` | Start MPD music daemon |
+| `pai` | PAI tool (bun-based) |
+
+## Adding Your Own
+
+Add new aliases to `zsh/.zshrc` near the existing ones:
+
+```bash
+# Your custom aliases
+alias myapp="cd ~/Projects/myapp && nvim ."
+alias k="kubectl"
+```
+
+For machine-specific aliases, use `~/.zshrc.local` (not tracked in git):
+
+```bash
+# In ~/.zshrc.local
+alias work-vpn="sudo openvpn /etc/work.conf"
+export SECRET_KEY="..."
+```
+
+## Quick Reference by Task
+
+| Task | Alias |
+|------|-------|
+| Clear terminal | `c` |
+| List files | `ls` / `la` / `ll` |
+| See project structure | `lt` / `lt3` |
+| Find what changed | `lm` (by time) / `lsg` (git only) |
+| Git status | `gs` |
+| Git commit all | `ga && gc "msg"` |
+| Git push | `gp` |
+| Git visual history | `glog` |
+| Full git TUI | `lg` |
+| New branch | `gcb name` |
+| Switch branch | `gco name` |
+| Open recent files | `nlof` |
+| Jump to project | `tns` |
+| Reconnect tmux | `a` |
+| File manager | `y` (yazi) / `ya` (yazi + cd) |
+| Web search | `google "query"` / `ddg "query"` |
+| JSON exploration | `json` |
+| System monitor | `top` |
+| Disk usage | `du` |
+
+---
+
+**Next:** [Navigation Stack (FZF + Zoxide + Atuin)](/zsh/navigation-stack/)
+
+<CompleteLessonButton client:idle lessonId="6.3" slug="zsh/aliases-and-functions" nextLessonSlug="git/workflow" nextLessonTitle="Git Workflow" />

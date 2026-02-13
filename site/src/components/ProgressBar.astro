@@ -1,0 +1,84 @@
+---
+interface Props {
+  level: number;
+  totalLessons: number;
+  lessonIds: string[];
+}
+
+const { level, totalLessons, lessonIds } = Astro.props;
+---
+
+<div class="progress-bar-wrapper" data-level={level} data-total={totalLessons} data-lessons={JSON.stringify(lessonIds)}>
+  <div class="progress-bar-label">
+    <span>Level {level} Progress</span>
+    <span class="progress-bar-count" id={`progress-count-${level}`}>0/{totalLessons}</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-bar-fill" id={`progress-fill-${level}`} style="width: 0%"></div>
+  </div>
+</div>
+
+<script>
+  function initProgressBars() {
+    const STORAGE_KEY = 'dotfiles-mastery-progress';
+
+    let progress: any = {};
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) progress = JSON.parse(raw);
+    } catch {}
+
+    document.querySelectorAll<HTMLElement>('.progress-bar-wrapper').forEach((wrapper) => {
+      const level = wrapper.dataset.level;
+      const total = Number(wrapper.dataset.total) || 0;
+      const lessonIds: string[] = JSON.parse(wrapper.dataset.lessons || '[]');
+
+      const completed = lessonIds.filter(
+        (id) => progress.lessons?.[id]?.completed
+      ).length;
+
+      const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+      const countEl = document.getElementById(`progress-count-${level}`);
+      const fillEl = document.getElementById(`progress-fill-${level}`);
+
+      if (countEl) countEl.textContent = `${completed}/${total}`;
+      if (fillEl) fillEl.style.width = `${percentage}%`;
+    });
+  }
+
+  initProgressBars();
+  document.addEventListener('astro:after-swap', initProgressBars);
+</script>
+
+<style>
+  .progress-bar-wrapper {
+    margin: 1rem 0;
+  }
+
+  .progress-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--cat-subtext0, #a6adc8);
+    margin-bottom: 0.3rem;
+  }
+
+  .progress-bar-count {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: var(--cat-surface0, #313244);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--cat-mauve, #cba6f7);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+</style>

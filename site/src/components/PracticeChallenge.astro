@@ -1,0 +1,80 @@
+---
+interface Props {
+  title?: string;
+  difficulty?: 'beginner' | 'intermediate' | 'advanced';
+}
+
+const { title = 'Practice', difficulty = 'beginner' } = Astro.props;
+
+const difficultyColors = {
+  beginner: { bg: 'rgba(166, 227, 161, 0.1)', border: '#a6e3a1', label: 'Beginner' },
+  intermediate: { bg: 'rgba(249, 226, 175, 0.1)', border: '#f9e2af', label: 'Intermediate' },
+  advanced: { bg: 'rgba(243, 139, 168, 0.1)', border: '#f38ba8', label: 'Advanced' },
+};
+
+const colors = difficultyColors[difficulty];
+---
+
+<div class="practice-challenge" style={`--pc-bg: ${colors.bg}; --pc-border: ${colors.border};`}>
+  <div class="practice-header">
+    <span class="practice-icon">&#9881;</span>
+    <span class="practice-title">{title}</span>
+    <span class="practice-badge">{colors.label}</span>
+  </div>
+  <div class="practice-content">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .practice-challenge {
+    background: var(--pc-bg);
+    border: 1px solid var(--pc-border);
+    border-left-width: 4px;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+  }
+
+  .practice-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+  }
+
+  .practice-icon {
+    font-size: 1.1rem;
+  }
+
+  .practice-title {
+    color: var(--cat-text, #cdd6f4);
+  }
+
+  .practice-badge {
+    font-size: 0.7rem;
+    padding: 0.15em 0.5em;
+    border-radius: 99px;
+    background: var(--pc-border);
+    color: var(--cat-base, #1e1e2e);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-left: auto;
+  }
+
+  .practice-content {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .practice-content :global(ol),
+  .practice-content :global(ul) {
+    padding-left: 1.25rem;
+  }
+
+  .practice-content :global(li + li) {
+    margin-top: 0.25rem;
+  }
+</style>

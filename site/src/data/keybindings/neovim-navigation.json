@@ -1,0 +1,27 @@
+{
+  "id": "neovim-navigation",
+  "title": "Neovim Navigation",
+  "description": "Flash jumps, Harpoon marks, file pickers, Oil",
+  "drills": [
+    { "keys": "s", "action": "Flash jump (type 2 chars to jump)", "context": "Normal mode", "category": "flash", "difficulty": 2, "mnemonic": "s for sneak/search" },
+    { "keys": "S", "action": "Treesitter flash (jump to code structures)", "context": "Normal mode", "category": "flash", "difficulty": 3, "mnemonic": "Capital S for structure" },
+    { "keys": "Space a", "action": "Add file to Harpoon", "context": "Normal mode", "category": "harpoon", "difficulty": 2, "mnemonic": "leader a for add" },
+    { "keys": "Ctrl+e", "action": "Toggle Harpoon quick menu", "context": "Normal mode", "category": "harpoon", "difficulty": 2, "mnemonic": "Ctrl+e for explorer" },
+    { "keys": "Ctrl+y", "action": "Jump to Harpoon mark 1", "context": "Normal mode", "category": "harpoon", "difficulty": 2, "mnemonic": "First mark" },
+    { "keys": "-", "action": "Open Oil file browser (parent dir)", "context": "Normal mode", "category": "oil", "difficulty": 1, "mnemonic": "Dash goes up" },
+    { "keys": "Space pf", "action": "Find files (fuzzy picker)", "context": "Normal mode", "category": "picker", "difficulty": 1, "mnemonic": "leader project files" },
+    { "keys": "Space ps", "action": "Grep search in files", "context": "Normal mode", "category": "picker", "difficulty": 1, "mnemonic": "leader project search" },
+    { "keys": "Space pr", "action": "Recent files", "context": "Normal mode", "category": "picker", "difficulty": 2, "mnemonic": "leader project recent" },
+    { "keys": "Space ee", "action": "Toggle file explorer", "context": "Normal mode", "category": "explorer", "difficulty": 2, "mnemonic": "leader explore explorer" },
+    { "keys": "Space pp", "action": "Switch between projects", "context": "Normal mode", "category": "picker", "difficulty": 2, "mnemonic": "leader project project" },
+    { "keys": "gd", "action": "Go to definition", "context": "Normal mode", "category": "lsp", "difficulty": 2, "mnemonic": "go definition" },
+    { "keys": "gR", "action": "Show all references", "context": "Normal mode", "category": "lsp", "difficulty": 2, "mnemonic": "go References" },
+    { "keys": "K", "action": "Show hover documentation", "context": "Normal mode", "category": "lsp", "difficulty": 2, "mnemonic": "K for knowledge" },
+    { "keys": "Ctrl+o", "action": "Jump to older position", "context": "Normal mode", "category": "jumplist", "difficulty": 2, "mnemonic": "o for older" },
+    { "keys": "Ctrl+i", "action": "Jump to newer position", "context": "Normal mode", "category": "jumplist", "difficulty": 2, "mnemonic": "i for inner/newer" },
+    { "keys": "f", "action": "Find character forward (on line)", "context": "Normal mode", "category": "motion", "difficulty": 1, "mnemonic": "f for find" },
+    { "keys": "t", "action": "Jump to before character (on line)", "context": "Normal mode", "category": "motion", "difficulty": 2, "mnemonic": "t for till" },
+    { "keys": ";", "action": "Repeat last f/t forward", "context": "Normal mode", "category": "motion", "difficulty": 2, "mnemonic": "Semicolon repeats" },
+    { "keys": "%", "action": "Jump to matching bracket", "context": "Normal mode", "category": "motion", "difficulty": 2, "mnemonic": "% matches pairs" }
+  ]
+}

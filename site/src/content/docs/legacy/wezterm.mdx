@@ -1,0 +1,38 @@
+---
+title: "WezTerm - Terminal Emulator"
+description: "> Status: Legacy — Replaced by Ghostty. Configuration kept for reference."
+---
+> **Status: Legacy** — Replaced by [Ghostty](/ghostty/). Configuration kept for reference.
+
+WezTerm was the Lua-configurable terminal used before Ghostty. The config established many patterns (Cmd+B prefix, vim pane navigation) that carried forward.
+
+## Configuration Summary
+
+| Setting | Value |
+|---------|-------|
+| Theme | Rose Pine |
+| Font | JetBrainsMono Nerd Font, 16pt |
+| Opacity | 0.75 |
+| Background blur | 23px |
+| Cell width | 95% |
+
+## Keybindings (Cmd+B leader)
+
+| Key | Action |
+|-----|--------|
+| `Cmd+B > r` | Reload config |
+| `Cmd+B > x` | Close pane |
+| `Cmd+B > c` | New tab |
+| `Cmd+B > n` | New window |
+| `Cmd+B > 1-9` | Jump to tab |
+| `Cmd+B > \` | Split horizontal |
+| `Cmd+B > -` | Split vertical |
+| `Cmd+B > h/j/k/l` | Navigate panes |
+| `Cmd+B > e` | Equalize panes |
+| `Cmd+B > ,` | Toggle zoom |
+
+## File Location
+
+```
+wezterm/.config/wezterm/wezterm.lua
+```

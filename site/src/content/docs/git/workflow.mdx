@@ -1,0 +1,315 @@
+---
+title: "Git Workflow"
+description: "How to use Git efficiently with lazygit, FZF-git, shell aliases, and Neovim integration."
+---
+
+import CompleteLessonButton from '../../../components/CompleteLessonButton.tsx';
+import LevelGateBanner from '../../../components/LevelGateBanner.tsx';
+
+<LevelGateBanner level={6} client:load />
+
+How to use Git efficiently with lazygit, FZF-git, shell aliases, and Neovim integration.
+
+## Git Tools Overview
+
+| Tool | Where | Purpose |
+|------|-------|---------|
+| **Shell aliases** | Terminal | Quick one-liners (`gs`, `ga`, `gc`) |
+| **FZF-git** | Terminal | Interactive git ops with preview (`Ctrl+G` sequences) |
+| **Lazygit** | Terminal / Tmux float | Full TUI for staging, committing, branching |
+| **Gitsigns** | Neovim | Inline hunks, blame, stage from editor |
+| **Git worktrees** | Neovim | Work on multiple branches simultaneously |
+
+## Shell Git Aliases
+
+Quick commands for the most common operations:
+
+### Status & Diff
+
+| Alias | Command | When to Use |
+|-------|---------|-------------|
+| `gs` | `git status -s` | Quick check what changed |
+| `gd` | `git diff` | See unstaged changes |
+| `gds` | `git diff --staged` | See what's about to be committed |
+| `glog` | `git log --oneline --graph --all` | Visual branch history |
+| `ginfo` | `onefetch` | Repo summary (like neofetch for repos) |
+
+### Staging & Committing
+
+| Alias | Command | When to Use |
+|-------|---------|-------------|
+| `ga` | `git add .` | Stage everything |
+| `gc "msg"` | `git commit -m "msg"` | Quick commit |
+| `gp` | `git push` | Push to remote |
+| `gl` | `git pull` | Pull from remote |
+
+### Branching
+
+| Alias | Command | When to Use |
+|-------|---------|-------------|
+| `gb` | `git branch` | List local branches |
+| `gba` | `git branch -a` | List all branches (including remote) |
+| `gco` | `git checkout` | Switch branches |
+| `gcb` | `git checkout -b` | Create and switch to new branch |
+
+### GitHub CLI
+
+| Alias | Command | When to Use |
+|-------|---------|-------------|
+| `gh-create` | Create private repo + push + open browser | New project setup |
+
+### Typical Shell Workflow
+
+```bash
+# Feature branch workflow:
+gcb feature/new-thing      # Create branch
+# ... make changes ...
+gs                          # Check status
+gd                          # Review changes
+ga                          # Stage all
+gc "add new feature"        # Commit
+gp                          # Push
+
+# Quick fix workflow:
+gs                          # What changed?
+gds                         # Already staged?
+gc "fix typo"               # Commit
+gp                          # Push
+```
+
+## FZF-Git: Interactive Git with Preview
+
+Junegunn's `fzf-git.sh` gives you FZF-powered git commands with live previews. All keybindings start with `Ctrl+G`:
+
+### Available Commands
+
+| Keys | Shows | Preview |
+|------|-------|---------|
+| `Ctrl+G Ctrl+F` | Tracked **files** | File contents with syntax highlighting |
+| `Ctrl+G Ctrl+B` | **Branches** (local + remote) | Recent commits on branch |
+| `Ctrl+G Ctrl+T` | **Tags** | Tag message and commit |
+| `Ctrl+G Ctrl+H` | Commit **hashes** | Full diff of commit |
+| `Ctrl+G Ctrl+R` | **Remotes** | Remote URL and info |
+| `Ctrl+G Ctrl+S` | **Stashes** | Stash diff |
+
+### When to Use FZF-Git vs Aliases
+
+| Situation | Use |
+|-----------|-----|
+| "Which branch was that?" | `Ctrl+G Ctrl+B` (browse with preview) |
+| "What did that commit change?" | `Ctrl+G Ctrl+H` (browse with diff preview) |
+| "I know the exact branch" | `gco main` (alias is faster) |
+| "Quick status check" | `gs` (alias is faster) |
+
+### FZF-Git Workflows
+
+**Find and checkout a branch:**
+```bash
+Ctrl+G Ctrl+B        # Browse branches with commit preview
+                      # Select one → name inserted at cursor
+gco <branch>          # Checkout
+```
+
+**Find a commit to cherry-pick:**
+```bash
+Ctrl+G Ctrl+H        # Browse commits with full diff
+                      # Select → hash at cursor
+git cherry-pick <hash>
+```
+
+**Recover from a stash:**
+```bash
+Ctrl+G Ctrl+S        # Browse stashes with diff preview
+                      # Identify the right one
+git stash pop stash@{N}
+```
+
+## Lazygit: Full Git TUI
+
+Lazygit is a terminal UI for git that handles complex operations visually.
+
+### Launching
+
+| Method | Where |
+|--------|-------|
+| `lg` | Shell alias |
+| `Ctrl+B > Ctrl+G` | Tmux floating popup (90% screen) |
+| `<leader>lg` | From Neovim (opens in tmux float) |
+
+The tmux popup is the recommended way — it floats over your work, and you dismiss it when done.
+
+### Lazygit Panels
+
+```
+┌─────────────┬──────────────────────────┐
+│ Status      │                          │
+├─────────────┤   Main Panel             │
+│ Files       │   (diff, commit details) │
+├─────────────┤                          │
+│ Branches    │                          │
+├─────────────┤                          │
+│ Commits     │                          │
+├─────────────┤                          │
+│ Stash       │                          │
+└─────────────┴──────────────────────────┘
+```
+
+Navigate panels with `Tab` / number keys. Within panels, use `j/k` to move.
+
+### Essential Lazygit Keys
+
+| Key | Panel | Action |
+|-----|-------|--------|
+| `Space` | Files | Stage/unstage file |
+| `a` | Files | Stage all |
+| `c` | Files | Commit staged |
+| `p` | Files/Commits | Push |
+| `P` | Files/Commits | Pull |
+| `n` | Branches | New branch |
+| `Space` | Branches | Checkout branch |
+| `M` | Branches | Merge into current |
+| `r` | Branches | Rebase onto |
+| `s` | Commits | Squash |
+| `f` | Commits | Fixup |
+| `d` | Stash | Drop stash |
+| `g` | Stash | Apply stash |
+| `?` | Any | Help (shows all keys) |
+
+### When to Use Lazygit
+
+| Situation | Why Lazygit |
+|-----------|-------------|
+| Interactive rebase | Visual commit reordering, squashing |
+| Partial staging | Stage individual hunks, not whole files |
+| Merge conflicts | Side-by-side conflict resolution |
+| Complex history | Visual branch graph |
+| Multiple operations | Faster than typing many git commands |
+
+### When NOT to Use Lazygit
+
+| Situation | Use Instead |
+|-----------|------------|
+| Quick commit of all changes | `ga && gc "msg" && gp` |
+| Check status | `gs` |
+| Simple branch switch | `gco main` |
+
+## Neovim Git Integration
+
+### Gitsigns (In-Editor Git)
+
+Gitsigns shows git changes inline and lets you stage hunks without leaving the editor.
+
+| Keys | Action |
+|------|--------|
+| `<leader>gs` | Git status (Snacks picker) |
+| `<leader>gf` | Git changed files picker |
+| `<leader>gbr` | Browse branches |
+| `<leader>gl` | Git log |
+| `<leader>lg` | Open lazygit |
+
+### Hunk Operations
+
+When the cursor is on a changed line:
+
+| Keys | Action |
+|------|--------|
+| `]h` | Jump to next hunk |
+| `[h` | Jump to previous hunk |
+| `<leader>hs` | Stage hunk |
+| `<leader>hr` | Reset hunk |
+| `<leader>hp` | Preview hunk (popup) |
+| `<leader>hb` | Blame line |
+| `<leader>hB` | Blame full file |
+
+### Git Worktrees (Multiple Branches Simultaneously)
+
+Git worktrees let you have multiple branches checked out at once, each in its own directory.
+
+| Keys | Action |
+|------|--------|
+| `<leader>gt` | Browse/switch worktrees |
+| `<leader>gT` | Create new worktree |
+
+**Workflow:**
+```
+1. <leader>gT              # Create worktree for feature branch
+2. Work on feature          # In its own directory
+3. <leader>gt              # Switch back to main worktree
+4. Compare changes          # Both branches accessible
+```
+
+## Putting It All Together
+
+### Daily Workflow
+
+```bash
+# 1. Start of day: pull latest
+gl                           # git pull
+
+# 2. Check what's happening
+glog                         # Visual history
+gs                           # Local changes
+
+# 3. Create feature branch
+gcb feature/thing            # New branch
+
+# 4. Work in Neovim
+nvim .
+# ... edit files ...
+# ]h / [h to navigate hunks
+# <leader>hs to stage hunks
+# <leader>hp to preview changes
+
+# 5. Commit (pick your method)
+# Method A: Shell aliases
+ga && gc "add feature" && gp
+
+# Method B: Lazygit (recommended for complex commits)
+lg                           # Or Ctrl+B > Ctrl+G in tmux
+# Stage files, write commit message, push
+
+# 6. End of day
+glog                         # Review what you did
+```
+
+### Resolving Merge Conflicts
+
+```bash
+gl                           # Pull triggers conflict
+lg                           # Open lazygit
+# Navigate to conflicted files
+# Lazygit shows conflict markers with side-by-side view
+# Choose "pick ours" / "pick theirs" / manual edit
+# Stage resolved files, commit
+```
+
+### Interactive Rebase (Squashing Commits)
+
+```bash
+lg                           # Open lazygit
+# Go to Commits panel
+# Navigate to oldest commit to rebase
+# Press 'e' to start interactive rebase
+# 's' to squash, 'f' to fixup, 'r' to reword
+# Continue rebase
+```
+
+## Quick Reference
+
+| Task | Fastest Method |
+|------|---------------|
+| Check status | `gs` |
+| Quick commit all | `ga && gc "msg"` |
+| Stage specific hunks | Lazygit or `<leader>hs` in nvim |
+| Browse branches | `Ctrl+G Ctrl+B` or `<leader>gbr` |
+| Browse commits | `Ctrl+G Ctrl+H` or `<leader>gl` |
+| Complex git ops | `lg` or `Ctrl+B > Ctrl+G` |
+| Rename across files | `<leader>rn` (LSP, not git) |
+| See changed files | `<leader>gf` in nvim |
+| Blame a line | `<leader>hb` in nvim |
+
+---
+
+**Next:** [Development Stack Integration](/integration/development-stack/)
+
+<CompleteLessonButton client:idle lessonId="6.4" slug="git/workflow" nextLessonSlug="scripts" nextLessonTitle="Custom Scripts" />

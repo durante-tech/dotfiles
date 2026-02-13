@@ -1,0 +1,30 @@
+{
+  "id": "neovim-editing",
+  "title": "Neovim Text Objects & Editing",
+  "description": "Operators, text objects, surround, and advanced editing",
+  "drills": [
+    { "keys": "ciw", "action": "Change inner word", "context": "Normal mode", "category": "text-object", "difficulty": 2, "mnemonic": "change inside word" },
+    { "keys": "ci\"", "action": "Change inside double quotes", "context": "Normal mode", "category": "text-object", "difficulty": 2, "mnemonic": "change inside quotes" },
+    { "keys": "ci(", "action": "Change inside parentheses", "context": "Normal mode", "category": "text-object", "difficulty": 2, "mnemonic": "change inside parens" },
+    { "keys": "di{", "action": "Delete inside curly braces", "context": "Normal mode", "category": "text-object", "difficulty": 2, "mnemonic": "delete inside braces" },
+    { "keys": "da\"", "action": "Delete around double quotes (including quotes)", "context": "Normal mode", "category": "text-object", "difficulty": 3, "mnemonic": "delete around quotes" },
+    { "keys": "yi{", "action": "Yank inside curly braces", "context": "Normal mode", "category": "text-object", "difficulty": 2, "mnemonic": "yank inside braces" },
+    { "keys": "viw", "action": "Select inner word", "context": "Normal mode", "category": "text-object", "difficulty": 2, "mnemonic": "visual inner word" },
+    { "keys": "vip", "action": "Select inner paragraph", "context": "Normal mode", "category": "text-object", "difficulty": 2, "mnemonic": "visual inner paragraph" },
+    { "keys": "cit", "action": "Change inside HTML tag", "context": "Normal mode", "category": "text-object", "difficulty": 3, "mnemonic": "change inside tag" },
+    { "keys": "dw", "action": "Delete to next word", "context": "Normal mode", "category": "operator", "difficulty": 1, "mnemonic": "delete word" },
+    { "keys": "d$", "action": "Delete to end of line", "context": "Normal mode", "category": "operator", "difficulty": 2, "mnemonic": "delete to end" },
+    { "keys": "D", "action": "Delete to end of line (shortcut)", "context": "Normal mode", "category": "operator", "difficulty": 2, "mnemonic": "D = d$" },
+    { "keys": "C", "action": "Change to end of line", "context": "Normal mode", "category": "operator", "difficulty": 2, "mnemonic": "C = c$" },
+    { "keys": "cc", "action": "Change entire line", "context": "Normal mode", "category": "operator", "difficulty": 2, "mnemonic": "cc = change line" },
+    { "keys": ">>", "action": "Indent line", "context": "Normal mode", "category": "operator", "difficulty": 2, "mnemonic": ">> pushes right" },
+    { "keys": "<<", "action": "Outdent line", "context": "Normal mode", "category": "operator", "difficulty": 2, "mnemonic": "<< pushes left" },
+    { "keys": "J", "action": "Join line below with current", "context": "Normal mode", "category": "editing", "difficulty": 2, "mnemonic": "J for join" },
+    { "keys": "~", "action": "Toggle case of character", "context": "Normal mode", "category": "editing", "difficulty": 3, "mnemonic": "Tilde swaps case" },
+    { "keys": "r", "action": "Replace single character", "context": "Normal mode", "category": "editing", "difficulty": 2, "mnemonic": "r for replace one" },
+    { "keys": "R", "action": "Enter Replace mode (overtype)", "context": "Normal mode", "category": "modes", "difficulty": 3, "mnemonic": "R for replace mode" },
+    { "keys": "saiw\"", "action": "Surround word with quotes (mini.surround)", "context": "Normal mode", "category": "surround", "difficulty": 3, "mnemonic": "surround add inner word with quotes" },
+    { "keys": "ds\"", "action": "Delete surrounding quotes", "context": "Normal mode", "category": "surround", "difficulty": 3, "mnemonic": "delete surround quotes" },
+    { "keys": "sr\"'", "action": "Replace surrounding quotes with single quotes", "context": "Normal mode", "category": "surround", "difficulty": 3, "mnemonic": "surround replace double with single" }
+  ]
+}

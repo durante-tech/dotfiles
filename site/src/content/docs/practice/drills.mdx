@@ -1,0 +1,57 @@
+---
+title: "Keybinding Drills"
+description: "Practice keybindings with spaced repetition. The system tracks your progress and prioritizes the bindings you struggle with."
+---
+
+import KeybindingTrainer from '../../../components/KeybindingTrainer.tsx';
+
+import neovimCore from '../../../data/keybindings/neovim-core.json';
+import neovimEditing from '../../../data/keybindings/neovim-editing.json';
+import neovimNavigation from '../../../data/keybindings/neovim-navigation.json';
+import tmuxCore from '../../../data/keybindings/tmux-core.json';
+import zshCore from '../../../data/keybindings/zsh-core.json';
+import aerospaceCore from '../../../data/keybindings/aerospace-core.json';
+
+Pick a drill set and choose your mode:
+
+- **Learn**: See the keybinding and mnemonic, then advance at your pace
+- **Drill**: The system shows you actions, you press the correct keys. SM-2 prioritizes weak items
+- **Test**: Timed drill, scored on accuracy
+
+---
+
+## Neovim Core
+
+Essential motions, modes, and basic editing.
+
+<KeybindingTrainer client:idle drillSet={neovimCore} maxQuestions={10} />
+
+## Neovim Editing
+
+Text objects, operators, surround, and advanced editing.
+
+<KeybindingTrainer client:idle drillSet={neovimEditing} maxQuestions={10} />
+
+## Neovim Navigation
+
+Flash jumps, Harpoon, file pickers, LSP navigation.
+
+<KeybindingTrainer client:idle drillSet={neovimNavigation} maxQuestions={10} />
+
+## Tmux
+
+Sessions, windows, panes, and floating windows.
+
+<KeybindingTrainer client:idle drillSet={tmuxCore} maxQuestions={10} />
+
+## Shell & Zsh
+
+Zoxide, FZF, Atuin, and aliases.
+
+<KeybindingTrainer client:idle drillSet={zshCore} maxQuestions={10} />
+
+## AeroSpace
+
+Window management, workspaces, and layout control.
+
+<KeybindingTrainer client:idle drillSet={aerospaceCore} maxQuestions={10} />

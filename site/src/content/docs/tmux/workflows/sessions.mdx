@@ -1,0 +1,553 @@
+---
+title: "Session Management Workflows"
+description: "Master tmux sessions for managing multiple projects and contexts."
+---
+
+import CompleteLessonButton from '../../../../components/CompleteLessonButton.tsx';
+import LevelGateBanner from '../../../../components/LevelGateBanner.tsx';
+
+<LevelGateBanner level={2} client:load />
+
+Master tmux sessions for managing multiple projects and contexts.
+
+## What Are Sessions?
+
+A **session** is tmux's top-level container. Think of it as:
+- One project = One session
+- A workspace that persists even when you disconnect
+- A collection of windows (tabs) and panes
+
+**Philosophy:** Each project or major context should be its own session.
+
+## Creating Sessions
+
+### Method 1: From Terminal (Outside Tmux)
+
+**Simple session:**
+```bash
+tmux                    # Creates unnamed session
+```
+
+**Named session (RECOMMENDED):**
+```bash
+tmux new -s myproject   # Create session named "myproject"
+tmux new -s web-app     # Create session named "web-app"
+tmux new -s dotfiles    # Create session named "dotfiles"
+```
+
+**With starting directory:**
+```bash
+tmux new -s myproject -c ~/projects/myproject
+```
+
+**With starting command:**
+```bash
+tmux new -s server -c ~/app "npm run dev"
+```
+
+### Method 2: From Inside Tmux
+
+**Create new session:**
+```
+C-b n                   # Prompts for session name
+```
+
+**Or use command:**
+```
+C-b :new -s sessionname
+```
+
+## Attaching to Sessions
+
+### List Available Sessions
+
+```bash
+tmux ls                 # List all sessions
+# Output:
+# myproject: 3 windows (created Mon Jan 1 10:00:00 2025)
+# web-app: 2 windows (created Mon Jan 1 11:00:00 2025)
+```
+
+### Attach to Session
+
+**Most recent session:**
+```bash
+tmux attach             # or tmux a
+```
+
+**Specific session:**
+```bash
+tmux attach -t myproject    # or tmux a -t myproject
+```
+
+**Read-only attach (great for pair programming):**
+```bash
+tmux attach -t myproject -r
+```
+
+## Switching Between Sessions
+
+### Method 1: SessionX (BEST - Your Config)
+
+```
+C-b o                   # Opens SessionX fuzzy finder
+# Type partial name
+# Enter to switch
+```
+
+**Why SessionX is great:**
+- Fuzzy finding
+- Preview of session contents
+- Fast keyboard navigation
+- Shows session details
+
+### Method 2: Sessionizer (Find & Create)
+
+```
+C-b f                   # Opens tmux-sessionizer
+# Fuzzy find project directories
+# Creates session if doesn't exist
+# Switches to existing session if it does
+```
+
+**Perfect for:**
+- Finding projects in ~/projects/
+- Automatically creating sessions from directories
+- Quick project switching
+
+### Method 3: Manual Switch (Inside Tmux)
+
+**Switch to next/previous:**
+```
+C-b (                   # Previous session
+C-b )                   # Next session
+```
+
+**Switch to specific:**
+```
+C-b s                   # Interactive session list
+# Use j/k to navigate
+# Enter to switch
+```
+
+**Or by name:**
+```
+C-b :switch-client -t myproject
+```
+
+## Detaching from Sessions
+
+**Detach (session keeps running):**
+```
+C-b D                   # Detach from current session (capital D!)
+```
+
+**Why detach instead of exit:**
+- Your work persists
+- All running processes continue
+- Can reattach anytime
+- Perfect for long-running tasks
+
+**Note:** Your config uses:
+- `C-b D` (capital D) - Detach session
+- `C-b d` (lowercase d) - Config menu (edit dotfiles)
+
+## Killing Sessions
+
+**Kill current session (from inside):**
+```bash
+exit                    # In last pane/window, or
+C-b :kill-session
+```
+
+**Kill specific session (from outside):**
+```bash
+tmux kill-session -t myproject
+```
+
+**Kill all sessions except current:**
+```bash
+tmux kill-session -a
+```
+
+**Kill all sessions:**
+```bash
+tmux kill-server
+```
+
+## Renaming Sessions
+
+**Rename current session:**
+```
+C-b $                   # Prompts for new name
+```
+
+**Or from command:**
+```
+C-b :rename-session newname
+```
+
+**From outside tmux:**
+```bash
+tmux rename-session -t oldname newname
+```
+
+## Session Workflows
+
+### Workflow 1: Multi-Project Development
+
+**Setup:**
+```bash
+# Morning routine:
+tmux new -s work-api -c ~/work/api
+C-b D                   # Detach (capital D!)
+
+tmux new -s work-frontend -c ~/work/frontend
+C-b D
+
+tmux new -s personal-blog -c ~/projects/blog
+C-b D
+
+tmux new -s dotfiles -c ~/dotfiles
+C-b D
+
+# Now you have 4 projects ready
+tmux ls
+```
+
+**Switch between them:**
+```
+C-b o                   # SessionX - fuzzy find project
+# Or
+C-b f                   # Sessionizer - find by directory
+```
+
+**Visual Organization:**
+```
+Session: work-api
+  Window 0: editor (nvim)
+  Window 1: server (API running)
+  Window 2: database (psql)
+
+Session: work-frontend
+  Window 0: editor (nvim)
+  Window 1: dev-server (npm run dev)
+  Window 2: tests (jest --watch)
+
+Session: personal-blog
+  Window 0: editor
+  Window 1: preview
+
+Session: dotfiles
+  Window 0: editor
+```
+
+### Workflow 2: Context Switching
+
+**Scenario:** Working on feature, need to fix urgent bug
+
+```bash
+# Currently in: feature-123 session
+C-b D                   # Detach (capital D! - feature work preserved)
+
+# Create hotfix session
+tmux new -s hotfix-456 -c ~/work/api
+# Fix the bug
+# Run tests
+# Deploy
+
+# Back to feature
+C-b o                   # SessionX
+# Type: feature
+# Enter
+
+# Everything exactly as you left it!
+```
+
+### Workflow 3: Client Work
+
+**Setup different sessions per client:**
+```bash
+tmux new -s client-acme -c ~/clients/acme
+tmux new -s client-widgets -c ~/clients/widgets
+tmux new -s client-startup -c ~/clients/startup
+```
+
+**Switch based on what you're working on:**
+```
+C-b o                   # SessionX
+# Type client name
+```
+
+### Workflow 4: Learning & Experiments
+
+```bash
+# Main work preserved
+tmux new -s work -c ~/work
+
+# Experiment session (can kill without worry)
+tmux new -s experiment -c ~/tmp/experiment
+# Try new library, test concepts, etc.
+
+# If experiment works:
+cp -r ~/tmp/experiment ~/work/new-feature
+
+# Delete experiment:
+tmux kill-session -t experiment
+```
+
+### Workflow 5: Remote Server Management
+
+```bash
+# SSH into server
+ssh server
+
+# Create persistent session (survives disconnects!)
+tmux new -s production
+
+# Run long-running tasks
+npm run build
+# etc.
+
+# Disconnect (SSH drops)
+# Session keeps running on server!
+
+# Later: SSH back in
+ssh server
+tmux attach -t production
+# Everything still running!
+```
+
+## Session Persistence
+
+**Your config has auto-restore enabled!**
+
+### How It Works:
+
+1. **Auto-saves** every 15 minutes (tmux-continuum)
+2. **Persists across reboots** (tmux-resurrect)
+3. **Restores:**
+   - Session names
+   - Window layout
+   - Pane layout
+   - Working directories
+   - Running programs (vim, less, etc.)
+
+### Manual Save/Restore:
+
+**Save current state:**
+```
+C-b :save
+# Or happens automatically
+```
+
+**Restore after reboot:**
+```bash
+# First time after reboot:
+tmux
+# Sessions auto-restore!
+
+# Or manually:
+C-b Ctrl-r              # Restore
+```
+
+**Note:** Some programs won't restore perfectly:
+- Running servers (need manual restart)
+- Interactive programs
+- SSH connections
+
+**Solution:** Use startup scripts in sessions
+
+## Advanced Session Patterns
+
+### Pattern 1: Session Groups (Shared Windows)
+
+**Create sessions that share windows:**
+```bash
+tmux new -s main
+# Work in main
+
+# New session attached to main's windows:
+tmux new -s mirror -t main
+# Both sessions see same windows!
+# Great for presentations or pair programming
+```
+
+### Pattern 2: Nested Sessions (Sessions in Sessions)
+
+**Run tmux inside tmux (for remote work):**
+```bash
+# Local tmux
+tmux new -s local
+
+# SSH into remote
+ssh server
+
+# Remote tmux
+tmux new -s remote
+
+# Now you have:
+# Local: C-b (outer commands)
+# Remote: C-b b (inner commands - prefix twice)
+```
+
+### Pattern 3: Session Templates
+
+**Create session with predefined layout:**
+```bash
+#!/bin/bash
+# ~/scripts/new-project-session.sh
+
+SESSION=$1
+
+tmux new -s $SESSION -d -c ~/projects/$SESSION
+
+# Window 0: Editor
+tmux rename-window -t $SESSION:0 'editor'
+tmux send-keys -t $SESSION:0 'nvim' C-m
+
+# Window 1: Server
+tmux new-window -t $SESSION:1 -n 'server' -c ~/projects/$SESSION
+tmux send-keys -t $SESSION:1 'npm run dev' C-m
+
+# Window 2: Tests
+tmux new-window -t $SESSION:2 -n 'tests' -c ~/projects/$SESSION
+tmux split-window -t $SESSION:2 -h
+tmux send-keys -t $SESSION:2.0 'npm test' C-m
+tmux send-keys -t $SESSION:2.1 'git status' C-m
+
+# Attach
+tmux attach -t $SESSION
+```
+
+**Usage:**
+```bash
+./new-project-session.sh myapp
+```
+
+### Pattern 4: Session Monitoring
+
+**Monitor session activity:**
+```bash
+# From another terminal:
+watch -n 1 'tmux ls'
+
+# Or check specific session:
+tmux display-message -p -t myproject
+```
+
+**Get session info:**
+```bash
+tmux list-sessions -F "#{session_name}: #{session_windows} windows, #{session_attached} attached"
+```
+
+## Tips & Best Practices
+
+### Naming Conventions
+
+**Good names:**
+- `work-api` - Clear what it is
+- `personal-blog` - Project name
+- `client-acme` - Client work
+- `learn-rust` - Learning projects
+
+**Bad names:**
+- `0`, `1`, `2` - No context
+- `test` - Too generic
+- `asdf` - Meaningless
+
+### Session Organization
+
+**By project:**
+```
+tmux new -s projectname
+```
+
+**By context:**
+```
+tmux new -s work
+tmux new -s personal
+tmux new -s learning
+```
+
+**By client:**
+```
+tmux new -s client-name
+```
+
+### Session Cleanup
+
+**Weekly cleanup:**
+```bash
+# List sessions:
+tmux ls
+
+# Kill unused:
+tmux kill-session -t old-project
+tmux kill-session -t experiment
+
+# Or kill all except current:
+tmux kill-session -a
+```
+
+### Performance
+
+**Too many sessions?**
+- Tmux is lightweight, but 20+ sessions can slow things down
+- Kill inactive sessions
+- Consider session groups for shared work
+
+## Keyboard Shortcuts Summary
+
+| Keys | Action |
+|------|--------|
+| `C-b o` | SessionX (fuzzy find) |
+| `C-b f` | Sessionizer (find projects) |
+| `C-b n` | New session |
+| `C-b D` | **Detach** (capital D!) |
+| `C-b d` | **Config menu** (lowercase - edit dotfiles) |
+| `C-b s` | List sessions (interactive) |
+| `C-b (` | Previous session |
+| `C-b )` | Next session |
+| `C-b $` | Rename session |
+| `C-b L` | Last session (toggle) |
+
+## Troubleshooting
+
+**"Can't find my session"**
+```bash
+tmux ls                 # List all sessions
+```
+
+**"Attached to wrong session"**
+```
+C-b o                   # SessionX to switch
+```
+
+**"Session name already exists"**
+```bash
+tmux attach -t name     # Attach instead of creating
+# Or rename existing:
+tmux rename-session -t name newname
+```
+
+**"Lost session after reboot"**
+```bash
+tmux                    # Auto-restores!
+# If not, check tmux-resurrect is installed
+```
+
+**"Session is read-only"**
+```bash
+# You attached with -r flag
+# Exit and attach normally:
+tmux attach -t name
+```
+
+---
+
+**Pro Tip:** Think of sessions as workspaces. One clear session per project keeps your mind organized and your work separate!
+
+**Next:** [Windows](/tmux/workflows/windows/) - Organizing tasks within a session
+
+<CompleteLessonButton client:idle lessonId="2.4" slug="tmux/workflows/sessions" nextLessonSlug="zsh/navigation-stack" nextLessonTitle="Shell Navigation" />
