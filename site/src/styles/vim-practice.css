@@ -1,0 +1,170 @@
+/* VimPractice component styles */
+.vim-practice {
+  background: var(--rp-surface, #1f1d2e);
+  border: 1px solid var(--rp-overlay, #26233a);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin: 1.5rem 0;
+}
+
+.vim-practice-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.vim-practice-icon {
+  font-size: 1.2rem;
+  color: var(--cat-green, #a6e3a1);
+}
+
+.vim-practice-title {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--cat-lavender, #b4befe);
+  font-weight: 600;
+}
+
+.vim-practice-desc {
+  color: var(--cat-subtext0, #a6adc8);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.vim-practice-panels {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.vim-practice-panel {
+  flex: 1;
+}
+
+.vim-practice-panel-label {
+  font-size: 0.75rem;
+  color: var(--cat-overlay1, #7f849c);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.vim-practice-code {
+  background: var(--rp-base, #191724);
+  border: 1px solid var(--rp-overlay, #26233a);
+  border-radius: 6px;
+  padding: 0.75rem;
+  font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--cat-text, #cdd6f4);
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+.vim-practice-arrow {
+  font-size: 1.5rem;
+  color: var(--cat-mauve, #cba6f7);
+  flex-shrink: 0;
+}
+
+.vim-practice-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.vim-practice-btn {
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid;
+  font-size: 0.8rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+
+.vim-practice-btn--hint {
+  background: transparent;
+  border-color: var(--cat-yellow, #f9e2af);
+  color: var(--cat-yellow, #f9e2af);
+}
+
+.vim-practice-btn--hint:hover {
+  background: rgba(249, 226, 175, 0.15);
+}
+
+.vim-practice-btn--answer {
+  background: transparent;
+  border-color: var(--cat-green, #a6e3a1);
+  color: var(--cat-green, #a6e3a1);
+}
+
+.vim-practice-btn--answer:hover {
+  background: rgba(166, 227, 161, 0.15);
+}
+
+.vim-practice-hints {
+  margin-bottom: 0.75rem;
+}
+
+.vim-practice-hint {
+  padding: 0.4rem 0.6rem;
+  background: rgba(249, 226, 175, 0.08);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: var(--cat-text, #cdd6f4);
+  margin-bottom: 0.25rem;
+}
+
+.vim-practice-hint-num {
+  color: var(--cat-yellow, #f9e2af);
+  font-weight: 600;
+}
+
+.vim-practice-answer {
+  background: rgba(166, 227, 161, 0.08);
+  border: 1px solid rgba(166, 227, 161, 0.2);
+  border-radius: 6px;
+  padding: 0.75rem;
+}
+
+.vim-practice-answer-label {
+  font-size: 0.75rem;
+  color: var(--cat-green, #a6e3a1);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.vim-practice-commands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.vim-practice-command kbd {
+  display: inline-block;
+  padding: 0.2em 0.5em;
+  font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  background: var(--cat-surface0, #313244);
+  border: 1px solid var(--cat-surface2, #585b70);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  color: var(--cat-text, #cdd6f4);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .vim-practice-panels {
+    flex-direction: column;
+  }
+
+  .vim-practice-arrow {
+    transform: rotate(90deg);
+  }
+}

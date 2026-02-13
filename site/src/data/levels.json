@@ -1,0 +1,125 @@
+{
+  "levels": [
+    {
+      "level": 0,
+      "title": "Foundation",
+      "subtitle": "Understand WHY and get it running",
+      "estimatedDays": 1,
+      "gateRequirement": 3,
+      "checkpoint": "All tools installed, terminal opens with Starship prompt, nvim launches with plugins.",
+      "lessons": [
+        { "id": "0.1", "slug": "getting-started/philosophy", "title": "Philosophy", "estimatedMinutes": 15, "type": "read" },
+        { "id": "0.2", "slug": "getting-started/installation", "title": "Installation", "estimatedMinutes": 30, "type": "hands-on" },
+        { "id": "0.3", "slug": "getting-started/gnu-stow", "title": "GNU Stow", "estimatedMinutes": 10, "type": "read" }
+      ]
+    },
+    {
+      "level": 1,
+      "title": "Survival",
+      "subtitle": "Open, edit, save, quit. Don't panic.",
+      "estimatedDays": 7,
+      "gateRequirement": 4,
+      "checkpoint": "You can open, edit, save, and quit files without googling.",
+      "lessons": [
+        { "id": "1.1", "slug": "getting-started/quick-start", "title": "Quick Start", "estimatedMinutes": 15, "type": "hands-on" },
+        { "id": "1.2", "slug": "getting-started/first-day", "title": "First Day", "estimatedMinutes": 150, "type": "hands-on" },
+        { "id": "1.3", "slug": "neovim/daily-cheatsheet", "title": "Neovim Cheatsheet", "estimatedMinutes": 0, "type": "reference" },
+        { "id": "1.4", "slug": "ghostty", "title": "Ghostty Terminal", "estimatedMinutes": 5, "type": "read" }
+      ]
+    },
+    {
+      "level": 2,
+      "title": "Navigation",
+      "subtitle": "Move fast. Never scroll, never use arrow keys.",
+      "estimatedDays": 7,
+      "gateRequirement": 5,
+      "checkpoint": "You never hold j or k to scroll. You search to move.",
+      "lessons": [
+        { "id": "2.1", "slug": "neovim/workflows/navigation", "title": "Navigation Workflows", "estimatedMinutes": 30, "type": "hands-on" },
+        { "id": "2.2", "slug": "neovim/workflows/file-management", "title": "File Management", "estimatedMinutes": 20, "type": "hands-on" },
+        { "id": "2.3", "slug": "tmux/quick-start", "title": "Tmux Quick Start", "estimatedMinutes": 20, "type": "hands-on" },
+        { "id": "2.4", "slug": "tmux/workflows/sessions", "title": "Sessions & Windows", "estimatedMinutes": 30, "type": "hands-on" },
+        { "id": "2.5", "slug": "zsh/navigation-stack", "title": "Shell Navigation", "estimatedMinutes": 20, "type": "hands-on" }
+      ]
+    },
+    {
+      "level": 3,
+      "title": "Efficient Editing",
+      "subtitle": "Edit text surgically with operators + text objects.",
+      "estimatedDays": 7,
+      "gateRequirement": 5,
+      "checkpoint": "You think in verb + object instead of cursor positioning.",
+      "lessons": [
+        { "id": "3.1", "slug": "neovim/workflows/editing", "title": "Editing Workflows", "estimatedMinutes": 45, "type": "hands-on" },
+        { "id": "3.2", "slug": "neovim/workflows/copy-paste-move", "title": "Copy, Paste, Move", "estimatedMinutes": 30, "type": "hands-on" },
+        { "id": "3.3", "slug": "neovim/workflows/search-replace", "title": "Search & Replace", "estimatedMinutes": 30, "type": "hands-on" },
+        { "id": "3.4", "slug": "neovim/workflows/windows-buffers", "title": "Windows & Buffers", "estimatedMinutes": 20, "type": "hands-on" },
+        { "id": "3.5", "slug": "tmux/workflows/panes", "title": "Tmux Panes & Copy Mode", "estimatedMinutes": 20, "type": "hands-on" }
+      ]
+    },
+    {
+      "level": 4,
+      "title": "Code Intelligence",
+      "subtitle": "Let the LSP do the thinking.",
+      "estimatedDays": 7,
+      "gateRequirement": 4,
+      "checkpoint": "You can jump to definitions, find references, rename, and fix errors.",
+      "lessons": [
+        { "id": "4.1", "slug": "neovim/workflows/lsp", "title": "LSP Workflows", "estimatedMinutes": 45, "type": "hands-on" },
+        { "id": "4.2", "slug": "neovim/keybindings", "title": "Keybinding Reference", "estimatedMinutes": 0, "type": "reference" },
+        { "id": "4.3", "slug": "tmux/integration/nvim", "title": "Tmux + Neovim", "estimatedMinutes": 30, "type": "hands-on" },
+        { "id": "4.4", "slug": "atuin", "title": "Atuin History", "estimatedMinutes": 5, "type": "read" }
+      ]
+    },
+    {
+      "level": 5,
+      "title": "Window Management",
+      "subtitle": "Manage your entire screen without the mouse.",
+      "estimatedDays": 7,
+      "gateRequirement": 6,
+      "checkpoint": "You switch between apps using only keyboard shortcuts.",
+      "lessons": [
+        { "id": "5.1", "slug": "aerospace", "title": "AeroSpace", "estimatedMinutes": 15, "type": "hands-on" },
+        { "id": "5.2", "slug": "karabiner", "title": "Karabiner", "estimatedMinutes": 10, "type": "hands-on" },
+        { "id": "5.3", "slug": "sketchybar", "title": "SketchyBar", "estimatedMinutes": 5, "type": "read" },
+        { "id": "5.4", "slug": "starship", "title": "Starship Prompt", "estimatedMinutes": 5, "type": "read" },
+        { "id": "5.5", "slug": "window-management/workflow", "title": "Window Workflows", "estimatedMinutes": 20, "type": "hands-on" },
+        { "id": "5.6", "slug": "getting-started/daily-workflow", "title": "Daily Workflow", "estimatedMinutes": 15, "type": "read" }
+      ]
+    },
+    {
+      "level": 6,
+      "title": "Power Tools",
+      "subtitle": "Master the supporting tools.",
+      "estimatedDays": 7,
+      "gateRequirement": 8,
+      "checkpoint": "You know every tool and when to reach for each one.",
+      "lessons": [
+        { "id": "6.1", "slug": "yazi", "title": "Yazi File Manager", "estimatedMinutes": 10, "type": "hands-on" },
+        { "id": "6.2", "slug": "getting-started/new-tools-guide", "title": "Modern CLI Tools", "estimatedMinutes": 20, "type": "read" },
+        { "id": "6.3", "slug": "zsh/aliases-and-functions", "title": "Aliases & Functions", "estimatedMinutes": 20, "type": "reference" },
+        { "id": "6.4", "slug": "git/workflow", "title": "Git Workflow", "estimatedMinutes": 30, "type": "hands-on" },
+        { "id": "6.5", "slug": "scripts", "title": "Custom Scripts", "estimatedMinutes": 10, "type": "read" },
+        { "id": "6.6", "slug": "tmux/keybindings", "title": "Tmux Keybindings", "estimatedMinutes": 0, "type": "reference" },
+        { "id": "6.7", "slug": "mpd", "title": "MPD Music", "estimatedMinutes": 5, "type": "read" },
+        { "id": "6.8", "slug": "w3m", "title": "w3m Browser", "estimatedMinutes": 5, "type": "read" }
+      ]
+    },
+    {
+      "level": 7,
+      "title": "Mastery",
+      "subtitle": "Speed from reducing mental overhead.",
+      "estimatedDays": -1,
+      "gateRequirement": 6,
+      "checkpoint": "Ongoing mastery through practice and customization.",
+      "lessons": [
+        { "id": "7.1", "slug": "integration/development-stack", "title": "Development Stack", "estimatedMinutes": 30, "type": "hands-on" },
+        { "id": "7.2", "slug": "neovim/tips-and-tricks", "title": "Tips & Tricks", "estimatedMinutes": 30, "type": "read" },
+        { "id": "7.3", "slug": "neovim/troubleshooting", "title": "Troubleshooting", "estimatedMinutes": 0, "type": "reference" },
+        { "id": "7.4", "slug": "tmux", "title": "Tmux Reference", "estimatedMinutes": 0, "type": "reference" },
+        { "id": "7.5", "slug": "neovim/formatters", "title": "Formatters", "estimatedMinutes": 15, "type": "read" },
+        { "id": "7.6", "slug": "getting-started/customizing", "title": "Customizing", "estimatedMinutes": 20, "type": "hands-on" }
+      ]
+    }
+  ]
+}

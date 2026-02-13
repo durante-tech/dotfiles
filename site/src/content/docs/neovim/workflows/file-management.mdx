@@ -1,0 +1,341 @@
+---
+title: "File Management Workflows"
+description: "Complete guide to creating, moving, renaming, and managing files and directories in Neovim."
+---
+
+import CompleteLessonButton from '../../../../components/CompleteLessonButton.tsx';
+import LevelGateBanner from '../../../../components/LevelGateBanner.tsx';
+
+<LevelGateBanner level={2} client:load />
+
+Complete guide to creating, moving, renaming, and managing files and directories in Neovim.
+
+## File Explorer Overview
+
+This config has **three file explorers**:
+
+1. **Snacks Explorer** (`<leader>ee`) - Tree-style sidebar explorer (Primary)
+2. **MiniFiles** (`<leader>em`) - Miller-column style explorer (Secondary)
+3. **Oil** (`-`) - Buffer-based file manipulation (Alternative)
+
+---
+
+## Snacks Explorer - Primary File Explorer (`<leader>ee`)
+
+Snacks Explorer is a picker-based tree view sidebar. It uses a selection-based workflow for file operations.
+
+### Opening Snacks Explorer
+
+| Keys | Action |
+|------|--------|
+| `<leader>ee` | Toggle Snacks Explorer |
+| `<leader>ef` | Reveal current file in Explorer |
+
+### Navigation
+
+| Keys | Action |
+|------|--------|
+| `j` / `k` | Move down/up |
+| `<CR>` or `l` | Open file or toggle directory |
+| `h` | Close directory |
+| `<BS>` | Go up one directory |
+| `.` | Focus on current directory (set as cwd) |
+| `H` | Toggle hidden files |
+| `I` | Toggle ignored files (gitignore) |
+| `Z` | Close all directories |
+| `P` | Toggle preview |
+
+### File Operations
+
+| Keys | Action |
+|------|--------|
+| `a` | **Add** new file or directory (trailing `/` for dir) |
+| `r` | **Rename** current file |
+| `d` | **Delete** current/selected files (uses system trash) |
+| `o` | **Open** file with system application |
+| `u` | **Refresh** the file tree |
+
+### Selecting Files
+
+| Keys | Action |
+|------|--------|
+| `<Tab>` | Toggle selection on file |
+| `v` / `V` | Visual mode to select multiple |
+
+### Copy & Move (Selection Workflow)
+
+The most powerful way to move/copy files:
+
+1. **Select files** with `<Tab>` (works on multiple)
+2. **Navigate** to the target directory
+3. **Execute:**
+
+| Keys | With Selection | Without Selection |
+|------|---------------|-------------------|
+| `m` | **Move** selected files here | **Rename** current file |
+| `c` | **Copy** selected files here | **Copy** with new name prompt |
+
+**Example: Move files to another directory:**
+```
+1. Navigate to source files
+2. <Tab> on file1.txt        " Select
+3. <Tab> on file2.txt        " Select another
+4. Navigate to target directory
+5. m                         " Moves both files here!
+```
+
+### Copy & Move (Register Workflow)
+
+Alternative using yank/paste (works across explorer instances):
+
+| Keys | Action |
+|------|--------|
+| `y` | **Yank** file paths to register |
+| `p` | **Paste** (copies files from register) |
+
+**Example: Copy a file to another directory:**
+```
+1. Navigate to source file
+2. y                         " Yank file path
+3. Navigate to target directory
+4. p                         " Pastes (copies) the file here
+```
+
+### Git Integration
+
+| Keys | Action |
+|------|--------|
+| `]g` / `[g` | Jump to next/previous git change |
+
+### Diagnostics
+
+| Keys | Action |
+|------|--------|
+| `]d` / `[d` | Next/previous diagnostic |
+| `]e` / `[e` | Next/previous error |
+| `]w` / `[w` | Next/previous warning |
+
+### Quick Actions
+
+| Keys | Action |
+|------|--------|
+| `<leader>/` | Grep in current directory |
+| `<C-t>` | Open terminal in current directory |
+| `<C-c>` | Change tab directory to current |
+
+---
+
+## MiniFiles - Secondary Explorer (`<leader>em`)
+
+MiniFiles shows your file system in a Miller-column view with preview.
+
+### Opening MiniFiles
+
+| Keys | Action |
+|------|--------|
+| `<leader>em` | Open MiniFiles at project root |
+| `<leader>eM` | Open MiniFiles at current file |
+
+### Navigation
+
+| Keys | Action |
+|------|--------|
+| `j` / `k` | Move down/up in list |
+| `<CR>` or `L` | Enter directory or open file |
+| `-` or `H` | Go to parent directory |
+| `@` | Reveal cwd |
+| `g?` | Show help |
+| `q` | Close MiniFiles |
+
+### File Operations (Buffer-Edit Style)
+
+MiniFiles works like editing a buffer - make changes, then **synchronize** with `=`.
+
+**Create File:**
+```vim
+1. <leader>em          " Open MiniFiles
+2. Navigate to directory
+3. i                   " INSERT mode
+4. Type: newfile.js    " Add filename on new line
+5. Esc
+6. =                   " Synchronize (creates the file!)
+```
+
+**Create Directory:**
+```vim
+1. <leader>em
+2. i                   " INSERT mode
+3. Type: dirname/      " Trailing slash for directory!
+4. Esc
+5. =                   " Synchronize
+```
+
+**Delete:**
+```vim
+1. <leader>em
+2. Navigate to file
+3. dd                  " Delete the line
+4. =                   " Synchronize (deletes the file)
+```
+
+**Rename:**
+```vim
+1. <leader>em
+2. Navigate to file
+3. cw                  " Change word (edit filename)
+4. Type new name
+5. Esc
+6. =                   " Synchronize (renames)
+```
+
+**Move:**
+```vim
+1. <leader>em
+2. Navigate to file
+3. dd                  " Cut the line
+4. Navigate to target directory
+5. p                   " Paste
+6. =                   " Synchronize (moves file)
+```
+
+**Copy:**
+```vim
+1. <leader>em
+2. Navigate to file
+3. yy                  " Yank the line
+4. Navigate to target directory
+5. p                   " Paste
+6. cw → new-name.js   " Rename the copy
+7. =                   " Synchronize (creates copy)
+```
+
+---
+
+## Oil - Buffer-Based Explorer (`-`)
+
+Oil treats the file listing as a regular buffer. All changes apply when you save with `:w`.
+
+### Opening Oil
+
+| Keys | Action |
+|------|--------|
+| `-` | Open Oil in current directory |
+| `<leader>-` | Open Oil in floating window |
+
+### Navigation
+
+| Keys | Action |
+|------|--------|
+| `j` / `k` | Move down/up |
+| `<CR>` | Open file or enter directory |
+| `-` | Go to parent directory |
+| `q` | Close Oil |
+
+### File Operations (Edit-and-Save Style)
+
+All changes happen when you `:w` the buffer.
+
+**Create File:**
+```vim
+1. -                   " Open Oil
+2. i                   " Insert mode
+3. newfile.js          " Type filename
+4. Esc
+5. :w                  " Save → creates file
+```
+
+**Create Directory:**
+```vim
+1. -
+2. i
+3. dirname/            " Trailing slash!
+4. Esc
+5. :w
+```
+
+**Delete:**
+```vim
+1. -
+2. dd                  " Delete the line
+3. :w                  " Save → deletes file (goes to trash)
+```
+
+**Rename:**
+```vim
+1. -
+2. cw                  " Change word
+3. Type new name
+4. Esc
+5. :w                  " Save → renames
+```
+
+**Bulk Rename:**
+```vim
+1. -
+2. :%s/old/new/g       " Rename pattern across all files
+3. :w                  " Apply all renames
+```
+
+**Duplicate File:**
+```vim
+1. -
+2. yy                  " Yank filename line
+3. p                   " Paste below
+4. cw → copy.js        " Change name
+5. :w                  " Creates copy
+```
+
+### Opening Files from Oil
+
+| Keys | Action |
+|------|--------|
+| `<CR>` | Open in current window |
+| `<M-h>` | Open in horizontal split |
+
+---
+
+## Traditional File Operations (Ex Commands)
+
+These work anywhere, no explorer needed:
+
+| Command | Action |
+|---------|--------|
+| `:e filename` | Create/edit file |
+| `:e %:h/newfile.js` | Create file in same directory as current |
+| `:!mkdir -p path/to/dir` | Create directory |
+| `:!rm filename` | Delete file |
+| `:!mv old new` | Rename/move |
+| `:!cp source dest` | Copy file |
+| `:saveas newname` | Save as (keeps both) |
+
+---
+
+## Quick Reference
+
+### Which Explorer to Use?
+
+| Task | Best Tool | Why |
+|------|-----------|-----|
+| Browse project tree | Snacks (`<leader>ee`) | Persistent sidebar, git status |
+| Move/copy multiple files | Snacks (`<leader>ee`) | Tab-select + m/c workflow |
+| Quick rename | Any | All support it |
+| Bulk rename with regex | Oil (`-`) | Buffer-based :%s works |
+| Create nested structure | MiniFiles (`<leader>em`) | Insert multiple lines + sync |
+| Quick peek at files | MiniFiles (`<leader>em`) | Preview column built-in |
+
+### Explorer Keybinding Comparison
+
+| Action | Snacks (`<leader>ee`) | MiniFiles (`<leader>em`) | Oil (`-`) |
+|--------|----------------------|-------------------------|-----------|
+| **Create** | `a` | `i` + type + `=` | `i` + type + `:w` |
+| **Rename** | `r` | `cw` + `=` | `cw` + `:w` |
+| **Delete** | `d` | `dd` + `=` | `dd` + `:w` |
+| **Copy** | `<Tab>` + `c` (or `y`/`p`) | `yy` + `p` + `=` | `yy` + `p` + `:w` |
+| **Move** | `<Tab>` + `m` | `dd` + `p` + `=` | `cw` path + `:w` |
+| **Apply** | Immediate | `=` (synchronize) | `:w` (save) |
+
+---
+
+**Pro Tip:** Snacks Explorer for browsing and multi-file ops. Oil for quick edits and bulk renames. MiniFiles when you want the column preview.
+
+<CompleteLessonButton client:idle lessonId="2.2" slug="neovim/workflows/file-management" nextLessonSlug="tmux/quick-start" nextLessonTitle="Tmux Quick Start" />

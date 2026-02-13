@@ -1,0 +1,76 @@
+---
+title: "Atuin - Shell History"
+description: "Atuin replaces the default shell history with a searchable, filterable database. It provides fuzzy search over your entire command history via Ctrl+R or the ..."
+---
+
+import CompleteLessonButton from '../../components/CompleteLessonButton.tsx';
+import LevelGateBanner from '../../components/LevelGateBanner.tsx';
+
+<LevelGateBanner level={4} client:load />
+
+Atuin replaces the default shell history with a searchable, filterable database. It provides fuzzy search over your entire command history via `Ctrl+R` or the up arrow key.
+
+## Quick Reference
+
+| Key | Action |
+|-----|--------|
+| `Ctrl+R` | Open Atuin search UI |
+| `Up Arrow` | Fuzzy search through history |
+| `Enter` | Execute selected command |
+| `Tab` | Return command to shell for editing |
+| `Esc` | Cancel and return to shell |
+
+## Configuration
+
+**Key settings** (from `config.toml`):
+
+| Setting | Value | Description |
+|---------|-------|-------------|
+| `inline_height` | `20` | Max lines for search UI |
+| `invert` | `true` | Search bar at bottom of UI |
+| `enter_accept` | `true` | Execute immediately on Enter |
+| `keymap_mode` | `vim-insert` | Start in vim insert mode |
+
+## Search Modes
+
+When the search UI is open:
+
+| Mode | Description |
+|------|-------------|
+| `fuzzy` | Default — matches anywhere in command |
+| `prefix` | Match from start of command |
+| `fulltext` | Full text search |
+
+The up arrow key uses fuzzy mode by default (`search_mode_shell_up_key_binding`).
+
+## Vim Keybindings
+
+Atuin starts in vim insert mode. Standard vim motions work:
+
+| Key | Action |
+|-----|--------|
+| `Esc` | Switch to vim normal mode |
+| `j` / `k` | Navigate results (normal mode) |
+| `/` | Search within results |
+
+## Sync
+
+Sync v2 is enabled (`records = true`) but no sync server is configured. History stays local.
+
+## Security
+
+Atuin automatically filters secrets from history (AWS keys, GitHub PATs, Slack tokens, Stripe keys).
+
+## Integration
+
+- Loaded in `.zshrc` via `eval "$(atuin init zsh)"`
+- Works with vi-mode (`keymap_mode = "vim-insert"`)
+- Respects terminal's Catppuccin Mocha theme
+
+## File Location
+
+```
+atuin/.config/atuin/config.toml
+```
+
+<CompleteLessonButton client:idle lessonId="4.4" slug="atuin" nextLessonSlug="aerospace" nextLessonTitle="AeroSpace" />

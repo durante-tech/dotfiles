@@ -1,0 +1,211 @@
+---
+title: "The Dotfiles Mastery Course"
+description: "A structured learning path from fresh macOS to keyboard-driven productivity."
+---
+
+import LevelMap from '../../components/LevelMap.tsx';
+
+A structured learning path from fresh macOS to keyboard-driven productivity.
+
+<LevelMap client:idle />
+
+## How to Use This Course
+
+Work through the levels in order. Each level builds on the previous one. Don't skip ahead — muscle memory needs time to form.
+
+**Pace:** One level per week is ideal. Spend daily practice time on the current level before moving on.
+
+---
+
+## Level 0: Foundation (Day 1)
+
+*Goal: Understand WHY this system exists and get it running.*
+
+| # | Topic | Doc | Time |
+|---|-------|-----|------|
+| 0.1 | Philosophy & design decisions | [Philosophy](/getting-started/philosophy/) | 15 min read |
+| 0.2 | Install everything | [Installation Guide](/getting-started/installation/) | 30 min |
+| 0.3 | How GNU Stow works | [GNU Stow Guide](/getting-started/gnu-stow/) | 10 min read |
+
+**Checkpoint:** All tools installed, terminal opens with Starship prompt, `nvim` launches with plugins.
+
+---
+
+## Level 1: Survival (Week 1)
+
+*Goal: Open files, edit text, save, quit. Don't panic.*
+
+| # | Topic | Doc | Time |
+|---|-------|-----|------|
+| 1.1 | Neovim 5-minute essentials | [Quick Start](/getting-started/quick-start/) | 15 min |
+| 1.2 | Modes, movement, basic editing | [First Day](/getting-started/first-day/) | 2-3 hours |
+| 1.3 | Daily cheatsheet (keep open!) | [Daily Cheatsheet](/neovim/daily-cheatsheet/) | Reference |
+| 1.4 | Terminal basics (Ghostty) | [Ghostty](/ghostty/) | 5 min read |
+
+**Daily practice:**
+- Open 5 files with `<leader>pf`
+- Edit and save with `i` → edit → `Esc` → `:w`
+- Navigate with `w`, `b`, `{`, `}`
+- Undo/redo with `u` / `Ctrl-r`
+
+**Checkpoint:** You can open, edit, save, and quit files without googling.
+
+---
+
+## Level 2: Navigation (Week 2)
+
+*Goal: Move fast. Never scroll, never use arrow keys.*
+
+| # | Topic | Doc | Time |
+|---|-------|-----|------|
+| 2.1 | All navigation motions | [Navigation Workflows](/neovim/workflows/navigation/) | 30 min |
+| 2.2 | File explorer (Oil) | [File Management](/neovim/workflows/file-management/) | 20 min |
+| 2.3 | Tmux basics | [Tmux Quick Start](/tmux/quick-start/) | 20 min |
+| 2.4 | Tmux sessions & windows | [Sessions](/tmux/workflows/sessions/), [Windows](/tmux/workflows/windows/) | 30 min |
+| 2.5 | Shell navigation (zoxide, fzf, atuin) | [Navigation Stack](/zsh/navigation-stack/) | 20 min |
+
+**Daily practice:**
+- Use `f{char}` and `t{char}` for inline jumps
+- Use `/pattern` instead of scrolling
+- Use `*` to find word under cursor
+- Open tmux and create 2 windows
+- Use `z <partial>` to jump directories
+
+**Checkpoint:** You never hold `j` or `k` to scroll. You search to move.
+
+---
+
+## Level 3: Efficient Editing (Week 3)
+
+*Goal: Edit text surgically with operators + text objects.*
+
+| # | Topic | Doc | Time |
+|---|-------|-----|------|
+| 3.1 | Operators, motions, text objects | [Editing Workflows](/neovim/workflows/editing/) | 45 min |
+| 3.2 | Copy, paste, move between files | [Copy/Paste/Move](/neovim/workflows/copy-paste-move/) | 30 min |
+| 3.3 | Search and replace | [Search & Replace](/neovim/workflows/search-replace/) | 30 min |
+| 3.4 | Windows, buffers, splits | [Windows & Buffers](/neovim/workflows/windows-buffers/) | 20 min |
+| 3.5 | Tmux panes & copy mode | [Panes](/tmux/workflows/panes/), [Copy Mode](/tmux/workflows/copy-mode/) | 20 min |
+
+**Daily practice:**
+- Use `ci"`, `di(`, `ya{` (text objects)
+- Use `.` (dot command) to repeat edits
+- Use `:%s/old/new/gc` for replacement
+- Split editor: `:vs` then `Ctrl-h/l`
+- Use named registers (`"ayy`, `"ap`)
+
+**Checkpoint:** You think in "verb + object" (e.g., `ciw` = "change inner word") instead of cursor positioning.
+
+---
+
+## Level 4: Code Intelligence (Week 4)
+
+*Goal: Let the LSP do the thinking. Navigate code by meaning, not by text.*
+
+| # | Topic | Doc | Time |
+|---|-------|-----|------|
+| 4.1 | LSP features & completion | [LSP Workflows](/neovim/workflows/lsp/) | 45 min |
+| 4.2 | Complete keybinding reference | [Keybindings](/neovim/keybindings/) | Reference |
+| 4.3 | Tmux + Neovim integration | [Tmux-Nvim](/tmux/integration/nvim/) | 30 min |
+| 4.4 | Shell history (Atuin) | [Atuin](/atuin/) | 5 min |
+
+**Daily practice:**
+- Use `gd` → read → `Ctrl-o` (definition jump cycle)
+- Use `K` on every unfamiliar function
+- Use `<leader>rn` for safe renaming
+- Use `<leader>vca` when you see errors
+- Use `Ctrl-r` in shell for history search
+
+**Checkpoint:** You can jump to any definition, find all references, rename across files, and fix errors with code actions.
+
+---
+
+## Level 5: Window Management (Week 5)
+
+*Goal: Manage your entire screen without touching the mouse.*
+
+| # | Topic | Doc | Time |
+|---|-------|-----|------|
+| 5.1 | AeroSpace workspaces | [AeroSpace](/aerospace/) | 15 min |
+| 5.2 | Karabiner Hyperkey | [Karabiner](/karabiner/) | 10 min |
+| 5.3 | SketchyBar status bar | [SketchyBar](/sketchybar/) | 5 min |
+| 5.4 | Starship prompt | [Starship](/starship/) | 5 min |
+| 5.5 | Window management workflows | [Window Management](/window-management/workflow/) | 20 min |
+| 5.6 | Daily dev workflow | [Daily Workflow](/getting-started/daily-workflow/) | 15 min |
+
+**Daily practice:**
+- Use `Alt+D/T/B` to switch workspaces
+- Use `Alt+H/L` to focus windows
+- Use `Alt+Shift+H/L` to move windows
+- CapsLock tap = Esc, hold = Hyper
+
+**Checkpoint:** You switch between browser, terminal, and editor using only keyboard shortcuts.
+
+---
+
+## Level 6: Power Tools (Week 6)
+
+*Goal: Master the supporting tools that accelerate everything.*
+
+| # | Topic | Doc | Time |
+|---|-------|-----|------|
+| 6.1 | Yazi file manager | [Yazi](/yazi/) | 10 min |
+| 6.2 | Modern CLI replacements | [New Tools](/getting-started/new-tools-guide/) | 20 min |
+| 6.3 | All aliases & functions | [Aliases Reference](/zsh/aliases-and-functions/) | 20 min |
+| 6.4 | Git workflow (lazygit, fzf-git) | [Git Workflow](/git/workflow/) | 30 min |
+| 6.5 | Custom scripts | [Scripts](/scripts/) | 10 min |
+| 6.6 | Tmux full keybindings | [Tmux Keybindings](/tmux/keybindings/) | Reference |
+| 6.7 | Music (MPD + rmpc) | [MPD](/mpd/), [rmpc](/rmpc/) | 5 min |
+| 6.8 | w3m terminal browser | [w3m](/w3m/) | 5 min |
+
+**Daily practice:**
+- Use `ya` to navigate files (cd on exit)
+- Use `procs` / `btm` / `dust` instead of old commands
+- Use `tns` (tmux-sessionizer) to manage projects
+- Use floating windows: `Ctrl+B > Ctrl+G` (lazygit)
+
+**Checkpoint:** You know every tool in the system and when to reach for each one.
+
+---
+
+## Level 7: Mastery (Ongoing)
+
+*Goal: Speed comes from reducing mental overhead, not faster fingers.*
+
+| # | Topic | Doc | Time |
+|---|-------|-----|------|
+| 7.1 | Full stack integration | [Development Stack](/integration/development-stack/) | 30 min |
+| 7.2 | Pro tips & tricks | [Tips & Tricks](/neovim/tips-and-tricks/) | 30 min |
+| 7.3 | Troubleshooting | [Troubleshooting](/neovim/troubleshooting/) | Reference |
+| 7.4 | Full Tmux reference | [Tmux README](/tmux/) | Reference |
+| 7.5 | Formatters & linting | [Formatters](/neovim/formatters/) | 15 min |
+| 7.6 | Customizing your setup | [Customizing](/getting-started/customizing/) | 20 min |
+
+**Ongoing practice:**
+- Pick one trick per week from Tips & Tricks
+- Practice macros (`qa` → record → `q` → `@a`)
+- Learn Flash jumps (`s` then 2 chars)
+- Customize: add your own aliases, keybindings, plugins
+
+---
+
+## Quick Reference: What to Open When
+
+| Situation | Open This |
+|-----------|-----------|
+| "I forgot how to..." | [Daily Cheatsheet](/neovim/daily-cheatsheet/) |
+| "What's the keybinding for..." | [Keybindings](/neovim/keybindings/) |
+| "Something is broken" | [Troubleshooting](/neovim/troubleshooting/) |
+| "I want to learn something new" | [Tips & Tricks](/neovim/tips-and-tricks/) |
+| "How do these tools connect?" | [Daily Workflow](/getting-started/daily-workflow/) |
+| "What does this tool do?" | [Docs Index](/docs-index/) |
+
+---
+
+## Learning Philosophy
+
+1. **Learn one thing at a time.** Don't try to memorize every keybinding. Add 2-3 per day.
+2. **Use it 100 times.** A keybinding isn't learned until it's muscle memory. Force yourself.
+3. **Don't fall back to old habits.** If you catch yourself reaching for the mouse, stop. Find the keyboard way.
+4. **It gets worse before it gets better.** Week 1 will feel slow. By week 4 you'll be faster than any GUI.
+5. **Customize gradually.** Understand the defaults before changing them.

@@ -1,0 +1,52 @@
+---
+interface Props {
+  keys: string;
+  separator?: string;
+}
+
+const { keys, separator = '+' } = Astro.props;
+
+// Parse key string into individual keys
+// Examples: "Ctrl+B", "leader pf", "Shift+Alt+H"
+const keyList = keys.split(separator).map((k) => k.trim());
+
+// Special display mappings
+const keyDisplay: Record<string, string> = {
+  ctrl: 'Ctrl',
+  alt: 'Alt',
+  shift: 'Shift',
+  cmd: 'Cmd',
+  super: 'Super',
+  leader: 'Space',
+  space: 'Space',
+  enter: 'Enter',
+  esc: 'Esc',
+  tab: 'Tab',
+  bs: 'Backspace',
+  del: 'Delete',
+};
+---
+
+<span class="key-combo">
+  {keyList.map((key, i) => (
+    <>
+      <kbd>{keyDisplay[key.toLowerCase()] || key}</kbd>
+      {i < keyList.length - 1 && <span class="key-sep">{separator === ' ' ? ' ' : '+'}</span>}
+    </>
+  ))}
+</span>
+
+<style>
+  .key-combo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15em;
+    white-space: nowrap;
+  }
+
+  .key-sep {
+    color: var(--cat-overlay0, #6c7086);
+    font-size: 0.8em;
+    margin: 0 0.1em;
+  }
+</style>

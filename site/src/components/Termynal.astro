@@ -1,0 +1,180 @@
+---
+/**
+ * Terminal typing animation for the landing page.
+ * Pure CSS + minimal JS, no external dependencies.
+ */
+---
+
+<div class="termynal-wrapper">
+  <div class="termynal" id="termynal">
+    <div class="termynal-header">
+      <span class="termynal-dot termynal-dot--red"></span>
+      <span class="termynal-dot termynal-dot--yellow"></span>
+      <span class="termynal-dot termynal-dot--green"></span>
+      <span class="termynal-title">~ dotfiles</span>
+    </div>
+    <div class="termynal-body">
+      <div class="termynal-line" data-ty="input" data-delay="600">git clone https://github.com/Sin-cy/dotfiles ~/dotfiles</div>
+      <div class="termynal-line" data-ty="progress" data-delay="300">Cloning into '~/dotfiles'...</div>
+      <div class="termynal-line" data-ty="input" data-delay="400">cd ~/dotfiles && stow -t ~ zsh nvim tmux</div>
+      <div class="termynal-line" data-ty="output" data-delay="200">Stowing zsh... done</div>
+      <div class="termynal-line" data-ty="output" data-delay="150">Stowing nvim... done</div>
+      <div class="termynal-line" data-ty="output" data-delay="150">Stowing tmux... done</div>
+      <div class="termynal-line" data-ty="input" data-delay="600">nvim .</div>
+      <div class="termynal-line" data-ty="output" data-delay="300" data-final="true">Ready. 40+ plugins loaded. Happy hacking.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function initTermynal() {
+    const body = document.querySelector('#termynal .termynal-body');
+    if (!body) return;
+
+    const lines = Array.from(body.querySelectorAll('.termynal-line'));
+    // Hide all lines initially
+    lines.forEach((line) => {
+      (line as HTMLElement).style.display = 'none';
+    });
+
+    let currentLine = 0;
+
+    function showNextLine() {
+      if (currentLine >= lines.length) return;
+
+      const line = lines[currentLine] as HTMLElement;
+      const delay = Number(line.dataset.delay) || 300;
+      const type = line.dataset.ty || 'output';
+
+      line.style.display = 'block';
+
+      if (type === 'input') {
+        // Typing animation for input lines
+        const text = line.textContent || '';
+        line.textContent = '';
+        line.classList.add('termynal-line--input');
+        let charIndex = 0;
+
+        const typeChar = () => {
+          if (charIndex < text.length) {
+            line.textContent += text[charIndex];
+            charIndex++;
+            setTimeout(typeChar, 25 + Math.random() * 35);
+          } else {
+            currentLine++;
+            setTimeout(showNextLine, delay);
+          }
+        };
+
+        setTimeout(typeChar, 200);
+      } else if (type === 'progress') {
+        line.classList.add('termynal-line--progress');
+        currentLine++;
+        setTimeout(showNextLine, delay);
+      } else {
+        line.classList.add('termynal-line--output');
+        if (line.dataset.final === 'true') {
+          line.classList.add('termynal-line--final');
+        }
+        currentLine++;
+        setTimeout(showNextLine, delay);
+      }
+    }
+
+    // Start after a short delay
+    setTimeout(showNextLine, 800);
+  }
+
+  // Use IntersectionObserver to start animation when visible
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          observer.unobserve(entry.target);
+          initTermynal();
+        }
+      });
+    },
+    { threshold: 0.3 }
+  );
+
+  const termynal = document.getElementById('termynal');
+  if (termynal) observer.observe(termynal);
+</script>
+
+<style>
+  .termynal-wrapper {
+    max-width: 650px;
+    margin: 2rem auto;
+  }
+
+  .termynal {
+    background: var(--rp-base, #191724);
+    border-radius: 10px;
+    border: 1px solid var(--rp-overlay, #26233a);
+    overflow: hidden;
+    font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .termynal-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    background: var(--rp-surface, #1f1d2e);
+    border-bottom: 1px solid var(--rp-overlay, #26233a);
+  }
+
+  .termynal-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .termynal-dot--red { background: #ed8796; }
+  .termynal-dot--yellow { background: #eed49f; }
+  .termynal-dot--green { background: #a6da95; }
+
+  .termynal-title {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--cat-overlay1, #7f849c);
+  }
+
+  .termynal-body {
+    padding: 1rem 1.25rem;
+    min-height: 220px;
+  }
+
+  .termynal-line {
+    margin: 0.25rem 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .termynal-line--input::before {
+    content: '$ ';
+    color: var(--cat-green, #a6e3a1);
+  }
+
+  .termynal-line--input {
+    color: var(--cat-text, #cdd6f4);
+  }
+
+  .termynal-line--output {
+    color: var(--cat-subtext0, #a6adc8);
+  }
+
+  .termynal-line--progress {
+    color: var(--cat-overlay1, #7f849c);
+  }
+
+  .termynal-line--final {
+    color: var(--cat-green, #a6e3a1);
+    font-weight: 600;
+    margin-top: 0.5rem;
+  }
+</style>

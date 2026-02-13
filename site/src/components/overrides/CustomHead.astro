@@ -1,0 +1,37 @@
+---
+import type { Props } from '@astrojs/starlight/props';
+import Default from '@astrojs/starlight/components/Head.astro';
+import { ViewTransitions } from 'astro:transitions';
+---
+
+<Default {...Astro.props}><slot /></Default>
+<ViewTransitions />
+
+<script is:inline type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Course",
+  "name": "Dotfiles Mastery",
+  "description": "A structured learning path from fresh macOS to keyboard-driven productivity in 7 weeks.",
+  "provider": {
+    "@type": "Organization",
+    "name": "Dotfiles Mastery",
+    "url": "https://dotfiles-mastery.vercel.app"
+  },
+  "educationalLevel": "Beginner to Advanced",
+  "numberOfLessons": 41,
+  "timeRequired": "P7W",
+  "teaches": [
+    "Neovim modal editing",
+    "Tmux terminal multiplexing",
+    "Keyboard-driven macOS workflow",
+    "Shell customization with Zsh",
+    "Window management with AeroSpace"
+  ],
+  "hasCourseInstance": {
+    "@type": "CourseInstance",
+    "courseMode": "online",
+    "courseWorkload": "PT5H/W"
+  }
+}
+</script>

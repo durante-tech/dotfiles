@@ -1,0 +1,50 @@
+---
+title: "Dotfiles Mastery Course"
+description: "A structured learning path from fresh macOS to keyboard-driven productivity. 8 levels, 39 lessons."
+template: splash
+hero:
+  tagline: "From fresh macOS to keyboard-driven productivity in 7 weeks."
+  actions:
+    - text: Start the Course
+      link: /course/
+      icon: right-arrow
+      variant: primary
+    - text: Browse Documentation
+      link: /docs-index/
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+import Termynal from '../../components/Termynal.astro';
+
+<Termynal />
+
+## What You'll Learn
+
+<CardGrid>
+  <Card title="Level 0-1: Foundation" icon="rocket">
+    Install everything, learn to open, edit, save, and quit files. Survive your first week.
+  </Card>
+  <Card title="Level 2-3: Navigation & Editing" icon="magnifier">
+    Move fast with motions, text objects, and search. Edit surgically with operators.
+  </Card>
+  <Card title="Level 4-5: Intelligence & Windows" icon="puzzle">
+    LSP code navigation, workspace management, and full keyboard-driven window control.
+  </Card>
+  <Card title="Level 6-7: Power & Mastery" icon="star">
+    Master every tool in the system. Build custom workflows. Achieve keyboard fluency.
+  </Card>
+</CardGrid>
+
+## The Stack
+
+| Tool | Purpose | Theme |
+|------|---------|-------|
+| **Neovim** | Modal code editor | Rose-pine |
+| **Tmux** | Terminal multiplexer | Catppuccin Mocha |
+| **Zsh** | Shell + 100 aliases | Catppuccin Mocha |
+| **AeroSpace** | Window manager | - |
+| **Ghostty** | GPU terminal | Rose-pine |
+| **Yazi** | File manager | Catppuccin |
+
+> **Philosophy:** The keyboard is faster than the mouse. Every tool, every keybinding, every choice serves that goal.

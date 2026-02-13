@@ -1,0 +1,110 @@
+---
+interface Props {
+  prevSlug?: string;
+  prevTitle?: string;
+  nextSlug?: string;
+  nextTitle?: string;
+}
+
+const { prevSlug, prevTitle, nextSlug, nextTitle } = Astro.props;
+---
+
+{(prevSlug || nextSlug) && (
+  <nav class="lesson-nav" aria-label="Lesson navigation">
+    <div class="lesson-nav-prev">
+      {prevSlug && (
+        <a href={`/${prevSlug}/`} class="lesson-nav-link">
+          <span class="lesson-nav-arrow">&larr;</span>
+          <span class="lesson-nav-meta">
+            <span class="lesson-nav-direction">Previous</span>
+            <span class="lesson-nav-title">{prevTitle}</span>
+          </span>
+        </a>
+      )}
+    </div>
+    <div class="lesson-nav-next">
+      {nextSlug && (
+        <a href={`/${nextSlug}/`} class="lesson-nav-link lesson-nav-link--next">
+          <span class="lesson-nav-meta">
+            <span class="lesson-nav-direction">Next</span>
+            <span class="lesson-nav-title">{nextTitle}</span>
+          </span>
+          <span class="lesson-nav-arrow">&rarr;</span>
+        </a>
+      )}
+    </div>
+  </nav>
+)}
+
+<style>
+  .lesson-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--cat-surface1, #45475a);
+  }
+
+  .lesson-nav-prev,
+  .lesson-nav-next {
+    flex: 1;
+  }
+
+  .lesson-nav-next {
+    text-align: right;
+  }
+
+  .lesson-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--cat-surface1, #45475a);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--cat-text, #cdd6f4);
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .lesson-nav-link:hover {
+    border-color: var(--cat-mauve, #cba6f7);
+    background: rgba(203, 166, 247, 0.05);
+  }
+
+  .lesson-nav-link--next {
+    flex-direction: row;
+  }
+
+  .lesson-nav-arrow {
+    font-size: 1.2rem;
+    color: var(--cat-mauve, #cba6f7);
+  }
+
+  .lesson-nav-meta {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .lesson-nav-direction {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--cat-overlay1, #7f849c);
+  }
+
+  .lesson-nav-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 480px) {
+    .lesson-nav {
+      flex-direction: column;
+    }
+
+    .lesson-nav-next {
+      text-align: left;
+    }
+  }
+</style>

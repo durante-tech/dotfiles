@@ -1,0 +1,284 @@
+/* Keybinding Trainer */
+.kb-trainer {
+  background: var(--rp-surface, #1f1d2e);
+  border: 1px solid var(--rp-overlay, #26233a);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  min-height: 280px;
+}
+
+.kb-trainer-empty {
+  color: var(--cat-overlay1, #7f849c);
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Mode Selector */
+.kb-modes {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  align-items: center;
+}
+
+.kb-mode-btn {
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--cat-surface2, #585b70);
+  background: transparent;
+  color: var(--cat-text, #cdd6f4);
+  font-size: 0.8rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.kb-mode-btn:hover {
+  border-color: var(--cat-mauve, #cba6f7);
+}
+
+.kb-mode-btn--active {
+  background: var(--cat-mauve, #cba6f7);
+  color: var(--cat-base, #1e1e2e);
+  border-color: var(--cat-mauve, #cba6f7);
+  font-weight: 600;
+}
+
+.kb-set-title {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--cat-overlay0, #6c7086);
+}
+
+.kb-progress-indicator {
+  font-size: 0.75rem;
+  color: var(--cat-overlay1, #7f849c);
+  text-align: right;
+  margin-bottom: 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Action Display */
+.kb-action {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--cat-text, #cdd6f4);
+  margin-bottom: 0.25rem;
+}
+
+.kb-context {
+  font-size: 0.8rem;
+  color: var(--cat-overlay1, #7f849c);
+  margin-bottom: 1rem;
+}
+
+/* Learn Mode */
+.kb-answer-display {
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.kb-keys-display {
+  font-size: 1.4rem;
+  padding: 0.3em 0.6em;
+  background: var(--cat-surface0, #313244);
+  border: 2px solid var(--cat-mauve, #cba6f7);
+  border-bottom-width: 3px;
+  border-radius: 8px;
+  color: var(--cat-rosewater, #f5e0dc);
+  font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', monospace;
+}
+
+.kb-mnemonic {
+  font-size: 0.85rem;
+  color: var(--cat-yellow, #f9e2af);
+  margin: 0.75rem 0;
+  font-style: italic;
+}
+
+/* Input */
+.kb-input-area {
+  margin: 1rem 0;
+}
+
+.kb-key-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--rp-base, #191724);
+  border: 2px solid var(--cat-mauve, #cba6f7);
+  border-radius: 8px;
+  color: var(--cat-text, #cdd6f4);
+  font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  text-align: center;
+  outline: none;
+  cursor: text;
+}
+
+.kb-key-input:focus {
+  box-shadow: 0 0 0 3px rgba(203, 166, 247, 0.3);
+}
+
+/* Buttons */
+.kb-start-btn,
+.kb-next-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--cat-mauve, #cba6f7);
+  background: transparent;
+  color: var(--cat-mauve, #cba6f7);
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+  margin-top: 0.5rem;
+}
+
+.kb-start-btn:hover,
+.kb-next-btn:hover {
+  background: rgba(203, 166, 247, 0.1);
+}
+
+/* Feedback */
+.kb-feedback {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.kb-feedback-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.kb-feedback--correct .kb-feedback-icon {
+  color: var(--cat-green, #a6e3a1);
+}
+
+.kb-feedback--incorrect .kb-feedback-icon {
+  color: var(--cat-red, #f38ba8);
+}
+
+.kb-feedback-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.kb-feedback--correct .kb-feedback-text {
+  color: var(--cat-green, #a6e3a1);
+}
+
+.kb-feedback--incorrect .kb-feedback-text {
+  color: var(--cat-red, #f38ba8);
+}
+
+.kb-correct-answer {
+  margin-bottom: 0.5rem;
+  color: var(--cat-text, #cdd6f4);
+}
+
+.kb-correct-answer kbd,
+.kb-you-pressed kbd {
+  display: inline-block;
+  padding: 0.15em 0.4em;
+  background: var(--cat-surface0, #313244);
+  border: 1px solid var(--cat-surface2, #585b70);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', monospace;
+  font-size: 0.9em;
+}
+
+.kb-you-pressed {
+  font-size: 0.85rem;
+  color: var(--cat-overlay1, #7f849c);
+  margin-top: 0.5rem;
+}
+
+/* Summary */
+.kb-summary h3 {
+  color: var(--cat-lavender, #b4befe);
+  margin-bottom: 1rem;
+}
+
+.kb-summary-stats {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.kb-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.kb-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--cat-lavender, #b4befe);
+  font-variant-numeric: tabular-nums;
+}
+
+.kb-stat-label {
+  font-size: 0.7rem;
+  color: var(--cat-overlay1, #7f849c);
+  text-transform: uppercase;
+}
+
+.kb-summary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.kb-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  background: rgba(166, 227, 161, 0.08);
+  font-size: 0.85rem;
+}
+
+.kb-summary-item--wrong {
+  background: rgba(243, 139, 168, 0.08);
+}
+
+.kb-summary-icon {
+  font-size: 0.9rem;
+}
+
+.kb-summary-action {
+  flex: 1;
+  color: var(--cat-text, #cdd6f4);
+}
+
+.kb-summary-keys {
+  font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', monospace;
+  font-size: 0.8em;
+  padding: 0.1em 0.3em;
+  background: var(--cat-surface0, #313244);
+  border-radius: 3px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .kb-trainer {
+    padding: 1rem;
+  }
+
+  .kb-action {
+    font-size: 1rem;
+  }
+
+  .kb-modes {
+    flex-wrap: wrap;
+  }
+}

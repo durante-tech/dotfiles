@@ -1,0 +1,139 @@
+---
+interface Props {
+  src: string;
+  rows?: number;
+  cols?: number;
+  speed?: number;
+  autoPlay?: boolean;
+  loop?: boolean;
+  title?: string;
+}
+
+const {
+  src,
+  rows = 24,
+  cols = 80,
+  speed = 1.5,
+  autoPlay = false,
+  loop = false,
+  title,
+} = Astro.props;
+
+const playerId = `asciinema-${src.replace(/[^a-z0-9]/gi, '-')}`;
+---
+
+<div class="asciinema-wrapper" data-player-id={playerId}>
+  {title && <p class="asciinema-title">{title}</p>}
+  <div
+    id={playerId}
+    class="asciinema-container"
+    data-src={src}
+    data-rows={rows}
+    data-cols={cols}
+    data-speed={speed}
+    data-autoplay={autoPlay}
+    data-loop={loop}
+  >
+    <div class="asciinema-placeholder">
+      <span class="asciinema-play-icon">&#9654;</span>
+      <span>Loading terminal recording...</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Lazy-load asciinema player when container enters viewport
+  const initPlayers = () => {
+    const containers = document.querySelectorAll<HTMLElement>('.asciinema-container');
+    if (!containers.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(async (entry) => {
+          if (!entry.isIntersecting) return;
+
+          const el = entry.target as HTMLElement;
+          observer.unobserve(el);
+
+          const src = el.dataset.src;
+          if (!src) return;
+
+          try {
+            const AsciinemaPlayer = await import('asciinema-player');
+            // @ts-ignore - dynamic import of CSS
+            await import('asciinema-player/dist/bundle/asciinema-player.css');
+
+            el.innerHTML = '';
+            AsciinemaPlayer.create(src, el, {
+              rows: Number(el.dataset.rows) || 24,
+              cols: Number(el.dataset.cols) || 80,
+              speed: Number(el.dataset.speed) || 1.5,
+              autoPlay: el.dataset.autoplay === 'true',
+              loop: el.dataset.loop === 'true',
+              theme: 'catppuccin-mocha',
+              fit: 'width',
+              terminalFontFamily: "'JetBrainsMono Nerd Font', 'JetBrains Mono', monospace",
+            });
+          } catch (err) {
+            console.error('Failed to load asciinema player:', err);
+            el.innerHTML = `<p class="asciinema-error">Failed to load recording. <a href="${src}" download>Download .cast file</a></p>`;
+          }
+        });
+      },
+      { rootMargin: '200px' }
+    );
+
+    containers.forEach((el) => observer.observe(el));
+  };
+
+  // Run on page load and after view transitions
+  initPlayers();
+  document.addEventListener('astro:after-swap', initPlayers);
+</script>
+
+<style>
+  .asciinema-wrapper {
+    margin: 1.5rem 0;
+  }
+
+  .asciinema-title {
+    font-size: 0.85rem;
+    color: var(--cat-subtext0, #a6adc8);
+    margin-bottom: 0.5rem;
+    font-style: italic;
+  }
+
+  .asciinema-container {
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--rp-base, #191724);
+    border: 1px solid var(--rp-overlay, #26233a);
+    min-height: 200px;
+  }
+
+  .asciinema-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    color: var(--cat-overlay1, #7f849c);
+    gap: 0.5rem;
+  }
+
+  .asciinema-play-icon {
+    font-size: 2rem;
+    opacity: 0.5;
+  }
+
+  .asciinema-error {
+    padding: 1rem;
+    color: var(--cat-red, #f38ba8);
+    text-align: center;
+  }
+
+  /* Override asciinema player theme */
+  :global(.ap-wrapper) {
+    border-radius: 8px !important;
+  }
+</style>

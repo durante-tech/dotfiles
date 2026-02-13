@@ -1,0 +1,20 @@
+{
+  "id": "zsh-core",
+  "title": "Zsh & Shell Tools",
+  "description": "Zoxide, FZF, Atuin, and shell navigation",
+  "drills": [
+    { "keys": "z", "action": "Smart directory jump (zoxide)", "context": "Shell", "category": "navigation", "difficulty": 1, "mnemonic": "z for zoxide" },
+    { "keys": "Ctrl+t", "action": "FZF file finder", "context": "Shell", "category": "fzf", "difficulty": 1, "mnemonic": "t for find (FZF)" },
+    { "keys": "Alt+c", "action": "FZF directory finder", "context": "Shell", "category": "fzf", "difficulty": 2, "mnemonic": "c for cd to directory" },
+    { "keys": "Ctrl+r", "action": "Shell history search (Atuin)", "context": "Shell", "category": "history", "difficulty": 1, "mnemonic": "r for reverse search" },
+    { "keys": "Ctrl+e", "action": "Accept autosuggestion", "context": "Shell", "category": "editing", "difficulty": 2, "mnemonic": "e for end/accept" },
+    { "keys": "Ctrl+p", "action": "Previous history entry", "context": "Shell", "category": "history", "difficulty": 2, "mnemonic": "p for previous" },
+    { "keys": "Ctrl+n", "action": "Next history entry", "context": "Shell", "category": "history", "difficulty": 2, "mnemonic": "n for next" },
+    { "keys": "lg", "action": "Open lazygit", "context": "Shell alias", "category": "aliases", "difficulty": 1, "mnemonic": "lazygit" },
+    { "keys": "tns", "action": "Tmux sessionizer", "context": "Shell alias", "category": "aliases", "difficulty": 2, "mnemonic": "tmux new session" },
+    { "keys": "gs", "action": "Git status (short)", "context": "Shell alias", "category": "aliases", "difficulty": 1, "mnemonic": "git status" },
+    { "keys": "glog", "action": "Git log (graph)", "context": "Shell alias", "category": "aliases", "difficulty": 2, "mnemonic": "git log" },
+    { "keys": "ya", "action": "Yazi with cd-on-exit", "context": "Shell function", "category": "aliases", "difficulty": 2, "mnemonic": "yazi alias" },
+    { "keys": "nlof", "action": "FZF recent Neovim files", "context": "Shell alias", "category": "aliases", "difficulty": 3, "mnemonic": "neovim list old files" }
+  ]
+}

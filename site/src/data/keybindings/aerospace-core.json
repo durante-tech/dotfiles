@@ -1,0 +1,22 @@
+{
+  "id": "aerospace-core",
+  "title": "AeroSpace Window Manager",
+  "description": "Workspaces, window focus, and window movement",
+  "drills": [
+    { "keys": "Alt+h", "action": "Focus window left", "context": "AeroSpace", "category": "focus", "difficulty": 1, "mnemonic": "vim-style hjkl" },
+    { "keys": "Alt+l", "action": "Focus window right", "context": "AeroSpace", "category": "focus", "difficulty": 1, "mnemonic": "vim-style hjkl" },
+    { "keys": "Alt+j", "action": "Focus window down", "context": "AeroSpace", "category": "focus", "difficulty": 1, "mnemonic": "vim-style hjkl" },
+    { "keys": "Alt+k", "action": "Focus window up", "context": "AeroSpace", "category": "focus", "difficulty": 1, "mnemonic": "vim-style hjkl" },
+    { "keys": "Alt+Shift+h", "action": "Move window left", "context": "AeroSpace", "category": "move", "difficulty": 2, "mnemonic": "Shift adds force (move)" },
+    { "keys": "Alt+Shift+l", "action": "Move window right", "context": "AeroSpace", "category": "move", "difficulty": 2, "mnemonic": "Shift adds force (move)" },
+    { "keys": "Alt+d", "action": "Switch to Development workspace", "context": "AeroSpace", "category": "workspace", "difficulty": 1, "mnemonic": "d for development" },
+    { "keys": "Alt+t", "action": "Switch to Terminal workspace", "context": "AeroSpace", "category": "workspace", "difficulty": 1, "mnemonic": "t for terminal" },
+    { "keys": "Alt+b", "action": "Switch to Browser workspace", "context": "AeroSpace", "category": "workspace", "difficulty": 1, "mnemonic": "b for browser" },
+    { "keys": "Alt+m", "action": "Switch to Messaging workspace", "context": "AeroSpace", "category": "workspace", "difficulty": 1, "mnemonic": "m for messaging" },
+    { "keys": "Alt+n", "action": "Switch to Notes workspace", "context": "AeroSpace", "category": "workspace", "difficulty": 1, "mnemonic": "n for notes" },
+    { "keys": "Alt+Shift+Space", "action": "Toggle fullscreen", "context": "AeroSpace", "category": "layout", "difficulty": 2, "mnemonic": "Shift+Space = maximize" },
+    { "keys": "Alt+/", "action": "Toggle layout (tiles/horiz/vert)", "context": "AeroSpace", "category": "layout", "difficulty": 2, "mnemonic": "Slash toggles" },
+    { "keys": "Alt+Enter", "action": "Open Ghostty terminal", "context": "AeroSpace", "category": "launch", "difficulty": 1, "mnemonic": "Enter opens new terminal" },
+    { "keys": "Alt+Tab", "action": "Workspace back-and-forth", "context": "AeroSpace", "category": "workspace", "difficulty": 1, "mnemonic": "Tab switches back" }
+  ]
+}

@@ -1,0 +1,206 @@
+/*
+ * Dotfiles Mastery - Custom Theme
+ * Catppuccin Mocha accents + Rose-pine code blocks
+ */
+
+/* === Catppuccin Mocha Color Tokens === */
+:root {
+	--cat-rosewater: #f5e0dc;
+	--cat-flamingo: #f2cdcd;
+	--cat-pink: #f5c2e7;
+	--cat-mauve: #cba6f7;
+	--cat-red: #f38ba8;
+	--cat-maroon: #eba0ac;
+	--cat-peach: #fab387;
+	--cat-yellow: #f9e2af;
+	--cat-green: #a6e3a1;
+	--cat-teal: #94e2d5;
+	--cat-sky: #89dceb;
+	--cat-sapphire: #74c7ec;
+	--cat-blue: #89b4fa;
+	--cat-lavender: #b4befe;
+	--cat-text: #cdd6f4;
+	--cat-subtext1: #bac2de;
+	--cat-subtext0: #a6adc8;
+	--cat-overlay2: #9399b2;
+	--cat-overlay1: #7f849c;
+	--cat-overlay0: #6c7086;
+	--cat-surface2: #585b70;
+	--cat-surface1: #45475a;
+	--cat-surface0: #313244;
+	--cat-base: #1e1e2e;
+	--cat-mantle: #181825;
+	--cat-crust: #11111b;
+
+	/* Rose-pine colors for code */
+	--rp-base: #191724;
+	--rp-surface: #1f1d2e;
+	--rp-overlay: #26233a;
+	--rp-highlight-low: #21202e;
+	--rp-highlight-med: #403d52;
+}
+
+/* === Starlight Theme Overrides (Dark) === */
+:root[data-theme='dark'] {
+	--sl-color-accent-low: #2a2140;
+	--sl-color-accent: var(--cat-mauve);
+	--sl-color-accent-high: #e2d0fa;
+	--sl-color-white: var(--cat-text);
+	--sl-color-gray-1: var(--cat-subtext1);
+	--sl-color-gray-2: var(--cat-subtext0);
+	--sl-color-gray-3: var(--cat-overlay1);
+	--sl-color-gray-4: var(--cat-surface2);
+	--sl-color-gray-5: var(--cat-surface1);
+	--sl-color-gray-6: var(--cat-surface0);
+	--sl-color-black: var(--cat-base);
+	--sl-color-bg-nav: var(--cat-mantle);
+	--sl-color-bg-sidebar: var(--cat-mantle);
+	--sl-color-hairline-light: var(--cat-surface0);
+	--sl-color-hairline-shade: var(--cat-crust);
+}
+
+/* === Code Blocks: Rose-pine Background === */
+:root[data-theme='dark'] pre:has(code) {
+	background: var(--rp-base) !important;
+	border: 1px solid var(--rp-overlay);
+}
+
+:root[data-theme='dark'] :not(pre) > code {
+	background: var(--rp-surface);
+	color: var(--cat-rosewater);
+	padding: 0.15em 0.35em;
+	border-radius: 4px;
+	font-size: 0.9em;
+}
+
+/* === Kbd Elements (Keybinding Display) === */
+kbd {
+	display: inline-block;
+	padding: 0.15em 0.45em;
+	font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', ui-monospace, monospace;
+	font-size: 0.85em;
+	line-height: 1.4;
+	color: var(--cat-text);
+	background: var(--cat-surface0);
+	border: 1px solid var(--cat-surface2);
+	border-bottom-width: 2px;
+	border-radius: 5px;
+	box-shadow: 0 1px 0 var(--cat-crust);
+	white-space: nowrap;
+}
+
+kbd + kbd {
+	margin-left: 0.2em;
+}
+
+/* === Level Badge Colors === */
+.sl-badge.note {
+	--sl-color-badge-note-bg: var(--cat-surface0);
+	--sl-color-badge-note-text: var(--cat-lavender);
+}
+
+.sl-badge.success {
+	--sl-color-badge-success-bg: #1a3a2a;
+	--sl-color-badge-success-text: var(--cat-green);
+}
+
+.sl-badge.caution {
+	--sl-color-badge-caution-bg: #3a2a1a;
+	--sl-color-badge-caution-text: var(--cat-yellow);
+}
+
+/* === Tables === */
+:root[data-theme='dark'] table {
+	border-collapse: collapse;
+}
+
+:root[data-theme='dark'] th {
+	background: var(--cat-surface0);
+	color: var(--cat-lavender);
+	font-weight: 600;
+}
+
+:root[data-theme='dark'] td {
+	border-color: var(--cat-surface1);
+}
+
+:root[data-theme='dark'] tr:nth-child(even) td {
+	background: rgba(49, 50, 68, 0.3);
+}
+
+/* === Table Responsive Wrapper === */
+.sl-markdown-content table {
+	display: block;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+/* === Links === */
+:root[data-theme='dark'] a {
+	color: var(--cat-sapphire);
+}
+
+:root[data-theme='dark'] a:hover {
+	color: var(--cat-sky);
+}
+
+/* === Sidebar Polish === */
+:root[data-theme='dark'] nav.sidebar .top-level > li > details > summary {
+	font-weight: 600;
+}
+
+/* === Splash Page Hero === */
+.hero {
+	padding-block: 3rem;
+}
+
+/* === Content Width === */
+.sl-markdown-content {
+	max-width: 75ch;
+}
+
+/* === Blockquotes === */
+:root[data-theme='dark'] blockquote {
+	border-left-color: var(--cat-mauve);
+	background: rgba(203, 166, 247, 0.05);
+}
+
+/* === Strong Text Accent === */
+:root[data-theme='dark'] .sl-markdown-content strong {
+	color: var(--cat-rosewater);
+}
+
+/* === Headings === */
+:root[data-theme='dark'] .sl-markdown-content h2 {
+	color: var(--cat-lavender);
+	border-bottom: 1px solid var(--cat-surface1);
+	padding-bottom: 0.3em;
+}
+
+:root[data-theme='dark'] .sl-markdown-content h3 {
+	color: var(--cat-blue);
+}
+
+:root[data-theme='dark'] .sl-markdown-content h4 {
+	color: var(--cat-sapphire);
+}
+
+/* === Level Map === */
+.level-map-wrapper {
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+	margin: 1.5rem 0;
+	padding: 0.5rem 0;
+}
+
+.level-map-svg {
+	width: 100%;
+	min-width: 600px;
+	height: auto;
+}
+
+/* === Selection === */
+::selection {
+	background: rgba(203, 166, 247, 0.3);
+	color: var(--cat-text);
+}

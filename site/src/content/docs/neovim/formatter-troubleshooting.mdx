@@ -1,0 +1,504 @@
+---
+title: "Formatter Troubleshooting Guide"
+description: "Quick fixes for common formatter issues."
+---
+Quick fixes for common formatter issues.
+
+## Current Known Issues (Neovim 0.11)
+
+### ⚠️ Deprecation Warning: `vim.lsp.buf_get_clients()`
+
+**Error message:**
+```
+vim.lsp.buf_get_clients() is deprecated. Run ":checkhealth vim.deprecated" for more info
+```
+
+**What it means:**
+- Neovim 0.11 changed the LSP API
+- Old: `vim.lsp.buf_get_clients()`
+- New: `vim.lsp.get_clients()`
+- A plugin (likely conform.nvim) hasn't updated yet
+
+**Impact:**
+- ⚠️ Warning only (not an error)
+- ✅ Formatting still works fine
+- No action needed until plugin updates
+
+**To suppress the warning:**
+
+Add this to your `init.lua` or `options.lua`:
+```lua
+-- Suppress deprecation warnings (temporary)
+vim.deprecate = function() end
+```
+
+**Permanent fix:**
+- Wait for conform.nvim update
+- Or manually update plugin: `:Lazy sync`
+- Plugin maintainers are aware and updating
+
+---
+
+## Format Request Errors
+
+### Error: "Request textDocument/formatting failed"
+
+**Causes:**
+1. Formatter not installed
+2. Formatter crashed (invalid syntax)
+3. Wrong formatter configuration
+4. Timeout (file too large)
+
+**Fix 1: Check if formatter is installed**
+```vim
+:Mason
+# Find formatter, check if marked with ✓
+
+# Or from terminal:
+which biome
+which prettier
+which stylua
+```
+
+**Fix 2: Check formatter output**
+```vim
+:messages
+# Shows formatter errors
+```
+
+**Fix 3: Test formatter manually**
+```bash
+# Test biome:
+echo "const x=1" | biome format --stdin-file-path=test.js
+
+# Test prettier:
+echo "const x=1" | prettier --parser babel
+
+# Test stylua:
+echo "local x = 1" | stylua -
+```
+
+**Fix 4: Use LSP fallback**
+```vim
+<leader>f           # Uses LSP formatter instead of conform
+```
+
+**Fix 5: Increase timeout**
+
+Edit `formatting.lua` line 136:
+```lua
+timeout_ms = 5000,  # 5 seconds instead of 2
+```
+
+---
+
+### Error: "No formatter available for this filetype"
+
+**Cause:** File type not configured in `formatting.lua`
+
+**Fix: Check file type**
+```vim
+:set filetype?
+# Shows current file type
+```
+
+**Add formatter for file type:**
+
+Edit `formatting.lua`, add to `formatters_by_ft`:
+```lua
+formatters_by_ft = {
+    -- ... existing configs ...
+    yourfiletype = { "formatter-name" },
+},
+```
+
+---
+
+### Biome Errors
+
+**Error: "Could not format content"**
+
+**Cause:** Invalid JavaScript/TypeScript syntax
+
+**Fix:**
+1. Fix syntax errors first
+2. Or use Prettier instead: `<leader>f`
+3. Or disable format_on_save temporarily
+
+**Switch to Prettier for JS/TS:**
+
+Edit `formatting.lua` lines 40-43:
+```lua
+-- Change from:
+javascript = { "biome" },
+
+-- To:
+javascript = { "prettierd", "prettier", stop_after_first = true },
+```
+
+**Test biome:**
+```bash
+# Check if biome works:
+echo 'const x = 1' | biome format --stdin-file-path=test.js
+
+# Should output:
+# const x = 1;
+```
+
+---
+
+### Prettier Errors
+
+**Error: "No parser could be inferred"**
+
+**Cause:** Prettier doesn't recognize file type
+
+**Fix: Specify parser**
+
+Edit `formatting.lua`, add after prettier config (line 156):
+```lua
+conform.formatters.prettier = {
+    prepend_args = function(_, ctx)
+        local args = {
+            "--tab-width", "4",
+            "--use-tabs", "false",
+        }
+
+        -- Add parser for specific file types
+        if vim.bo[ctx.buf].filetype == "yourfiletype" then
+            table.insert(args, "--parser")
+            table.insert(args, "babel") -- or "markdown", "html", etc.
+        end
+
+        return args
+    end,
+}
+```
+
+---
+
+### Python (Black) Errors
+
+**Error: "Cannot parse"**
+
+**Cause:** Invalid Python syntax
+
+**Fix:**
+1. Fix syntax errors first
+2. Or use autopep8: Install via Mason, change config to `{ "autopep8" }`
+
+**Check Black:**
+```bash
+# Test black:
+echo "x=1" | black -
+
+# Should output:
+# x = 1
+```
+
+---
+
+### Go Formatter Errors
+
+**Error: "gofumpt: command not found"**
+
+**Cause:** gofumpt not installed
+
+**Fix:**
+```bash
+# Install gofumpt:
+go install mvdan.cc/gofumpt@latest
+
+# Or use standard gofmt:
+# Edit formatting.lua line 88:
+go = { "goimports", "gofmt" },  # Remove "gofumpt"
+```
+
+---
+
+## Format on Save Issues
+
+### Format on Save Not Working
+
+**Check 1: Is it enabled?**
+```vim
+:lua print(vim.inspect(require("conform").formatters_by_ft))
+# Should show configured formatters
+```
+
+**Check 2: Check buffer-local disable**
+```vim
+:lua print(vim.b.disable_autoformat)
+# Should be nil or false
+```
+
+**Check 3: Re-enable for current buffer**
+```vim
+:lua vim.b.disable_autoformat = false
+```
+
+**Check 4: Restart Neovim**
+```bash
+:qa
+nvim yourfile.js
+:w  # Try saving
+```
+
+---
+
+### Format on Save Too Slow
+
+**Symptoms:** Noticeable delay when saving files
+
+**Fix 1: Use faster formatters**
+- Prettier → Biome (35x faster)
+- Black → Ruff (10-100x faster)
+
+**Fix 2: Use async formatting**
+
+Edit `formatting.lua` line 135:
+```lua
+async = true,       # Don't wait for format to complete
+```
+
+**Warning:** Async mode means file saves before formatting completes. File will be formatted, but you'll see unformatted version briefly.
+
+**Fix 3: Increase timeout (if async doesn't work)**
+```lua
+timeout_ms = 5000,  # Give more time
+```
+
+---
+
+### Format on Save Happens Twice
+
+**Symptoms:** File formats, then formats again
+
+**Cause:** Both LSP formatter AND conform.nvim running
+
+**Fix: Disable LSP format on save**
+
+Edit `lspconfig.lua`, in the `LspAttach` autocmd (around line 12):
+```lua
+-- Add this inside the callback:
+vim.bo[ev.buf].formatexpr = nil  -- Disable LSP format
+```
+
+Or disable format_on_save in conform and use only LSP:
+```lua
+format_on_save = nil,  -- In formatting.lua
+```
+
+---
+
+## Specific File Type Issues
+
+### Markdown Not Formatting
+
+**Check prettier is installed:**
+```vim
+:Mason
+# Find "prettier", should have ✓
+```
+
+**Test prettier:**
+```bash
+echo "# test" | prettier --parser markdown
+```
+
+**If fails, reinstall:**
+```vim
+:Mason
+# Find prettier, press "X" to uninstall
+# Press "i" to reinstall
+```
+
+---
+
+### Shell Scripts Not Formatting
+
+**Check shfmt:**
+```bash
+which shfmt
+# Should show path
+```
+
+**If not found:**
+```vim
+:Mason
+# Install shfmt
+```
+
+**Or Homebrew:**
+```bash
+brew install shfmt
+```
+
+---
+
+### Lua Files Not Formatting
+
+**Check stylua:**
+```bash
+which stylua
+# Should show ~/.local/share/nvim/mason/bin/stylua
+```
+
+**Test stylua:**
+```bash
+echo "local x=1" | stylua -
+# Should output:
+# local x = 1
+```
+
+---
+
+## Emergency Fixes
+
+### Disable All Formatting
+
+**Temporarily disable for current session:**
+```vim
+:lua vim.g.disable_autoformat = true
+```
+
+**Re-enable:**
+```vim
+:lua vim.g.disable_autoformat = false
+```
+
+**Permanently disable format on save:**
+
+Edit `formatting.lua` line 133:
+```lua
+format_on_save = nil,  -- Disable
+```
+
+---
+
+### Reset Formatter Configuration
+
+**1. Backup current config:**
+```bash
+cp ~/.config/nvim/lua/sethy/plugins/formatting.lua ~/formatting.lua.backup
+```
+
+**2. Use minimal config:**
+```lua
+-- Minimal formatting.lua:
+return {
+    "stevearc/conform.nvim",
+    event = { "BufReadPre", "BufNewFile" },
+    config = function()
+        require("conform").setup({
+            formatters_by_ft = {
+                javascript = { "prettier" },
+                typescript = { "prettier" },
+                lua = { "stylua" },
+            },
+        })
+    end,
+}
+```
+
+**3. Restart Neovim:**
+```bash
+nvim
+:Lazy sync
+```
+
+---
+
+## Debug Commands
+
+**Check conform status:**
+```vim
+:ConformInfo
+```
+
+**Check available formatters:**
+```vim
+:lua print(vim.inspect(require("conform").list_formatters(0)))
+```
+
+**Check Mason installed tools:**
+```vim
+:Mason
+```
+
+**Check all messages:**
+```vim
+:messages
+```
+
+**Run health check:**
+```vim
+:checkhealth conform
+```
+
+**Check LSP clients:**
+```vim
+:lua print(vim.inspect(vim.lsp.get_clients()))
+```
+
+---
+
+## Still Not Working?
+
+**1. Check Neovim version:**
+```bash
+nvim --version
+# Should be 0.10+ (preferably 0.11+)
+```
+
+**2. Update plugins:**
+```vim
+:Lazy sync
+:Mason
+# Press "U" (Shift+U) to update all
+```
+
+**3. Clear plugin cache:**
+```bash
+rm -rf ~/.local/share/nvim
+rm -rf ~/.cache/nvim
+nvim  # Reinstalls everything
+```
+
+**4. Check logs:**
+```bash
+# Neovim log:
+cat ~/.local/state/nvim/log
+
+# Mason log:
+cat ~/.local/state/nvim/mason.log
+```
+
+**5. Test in minimal config:**
+```bash
+# Create minimal init.lua:
+nvim --clean -u minimal.lua
+
+# In minimal.lua:
+-- vim.opt.runtimepath:append("~/.local/share/nvim/lazy/conform.nvim")
+-- require("conform").setup({})
+```
+
+---
+
+## Quick Reference
+
+| Issue | Quick Fix |
+|-------|-----------|
+| Deprecation warning | Ignore (wait for plugin update) |
+| Format not working | `:ConformInfo` then `:Mason` |
+| Format too slow | Use biome/ruff instead |
+| Wrong indentation | Edit formatter config in `formatting.lua` |
+| Format on save broken | `:lua vim.b.disable_autoformat = false` |
+| Formatter not found | `:Mason` and install it |
+
+---
+
+**Last updated:** January 2025
+
+**Need more help?** Check `:help conform.nvim` or visit https://github.com/stevearc/conform.nvim/issues
