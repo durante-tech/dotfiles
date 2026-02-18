@@ -38,7 +38,7 @@ return {
                 styles = {
                     comments = {},
                     conditionals = {},
-                    keywords = { bold = true },
+                    keywords = { "bold" },
                     functions = {},
                     strings = {},
                 },
