@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+# theme-switch — Central theme switcher for dotfiles
+# Usage: theme-switch [auto|dark|light|toggle]
+
+set -euo pipefail
+
+STATE_FILE="$HOME/.config/current-theme"
+GHOSTTY_CONFIG="$HOME/.config/ghostty/config"
+STARSHIP_CONFIG="${STARSHIP_CONFIG:-$HOME/.config/starship/starship.toml}"
+
+# Determine target mode
+case "${1:-auto}" in
+    auto)
+        # macOS: AppleInterfaceStyle is set to "Dark" in dark mode, absent in light mode
+        if defaults read -g AppleInterfaceStyle &>/dev/null; then
+            MODE="dark"
+        else
+            MODE="light"
+        fi
+        ;;
+    dark)  MODE="dark" ;;
+    light) MODE="light" ;;
+    toggle)
+        CURRENT="$(cat "$STATE_FILE" 2>/dev/null || echo dark)"
+        if [[ "$CURRENT" == "dark" ]]; then
+            MODE="light"
+        else
+            MODE="dark"
+        fi
+        ;;
+    *)
+        echo "Usage: theme-switch [auto|dark|light|toggle]"
+        exit 1
+        ;;
+esac
+
+# Write state file (single source of truth)
+mkdir -p "$(dirname "$STATE_FILE")"
+echo "$MODE" > "$STATE_FILE"
+
+# --- Ghostty ---
+if [[ -f "$GHOSTTY_CONFIG" ]]; then
+    if [[ "$MODE" == "light" ]]; then
+        sed -i '' 's|^config-file = themes/rosepine[[:space:]]*$|config-file = themes/rosepine-dawn|' "$GHOSTTY_CONFIG"
+        sed -i '' 's|^background = #000000[[:space:]]*$|background = #faf4ed|' "$GHOSTTY_CONFIG"
+        sed -i '' 's|^background-opacity = 0.75[[:space:]]*$|background-opacity = 1.0|' "$GHOSTTY_CONFIG"
+    else
+        sed -i '' 's|^config-file = themes/rosepine-dawn[[:space:]]*$|config-file = themes/rosepine|' "$GHOSTTY_CONFIG"
+        sed -i '' 's|^background = #faf4ed[[:space:]]*$|background = #000000|' "$GHOSTTY_CONFIG"
+        sed -i '' 's|^background-opacity = 1.0[[:space:]]*$|background-opacity = 0.75|' "$GHOSTTY_CONFIG"
+    fi
+fi
+
+# --- Neovim ---
+# Neovim reads ~/.config/current-theme on FocusGained — no action needed here.
+
+# --- Tmux ---
+if command -v tmux &>/dev/null && tmux list-sessions &>/dev/null 2>&1; then
+    tmux source-file ~/.config/tmux/tmux.conf 2>/dev/null || true
+fi
+
+# --- Starship ---
+if [[ -f "$STARSHIP_CONFIG" ]]; then
+    if [[ "$MODE" == "light" ]]; then
+        sed -i '' 's|^palette = "catppuccin_mocha"$|palette = "catppuccin_latte"|' "$STARSHIP_CONFIG"
+    else
+        sed -i '' 's|^palette = "catppuccin_latte"$|palette = "catppuccin_mocha"|' "$STARSHIP_CONFIG"
+    fi
+fi
+
+# --- Sketchybar ---
+if command -v sketchybar &>/dev/null; then
+    sketchybar --reload 2>/dev/null || true
+fi
+
+echo "Theme switched to: $MODE"
