@@ -273,10 +273,14 @@ autoload -Uz compinit && compinit -C
 
 # bun completions (sourced in .zprofile, not duplicated here)
 
-# PAI alias
-alias pai='bun ~/.claude/skills/PAI/Tools/pai.ts'
 # The following lines have been added by Docker Desktop to enable Docker CLI completions.
 fpath=(/Users/lgertel/.docker/completions $fpath)
 autoload -Uz compinit
 compinit
 # End of Docker CLI completions
+
+# Theme switching
+alias theme="theme-switch"
+
+# PAI alias
+alias pai='bun /Users/lgertel/.claude/skills/PAI/Tools/pai.ts'
