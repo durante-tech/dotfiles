@@ -12,7 +12,7 @@ local function apply_theme()
     else
         vim.o.background = "dark"
     end
-    vim.cmd("colorscheme everforest")
+    vim.cmd("colorscheme rose-pine")
 end
 
 apply_theme()

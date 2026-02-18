@@ -3,8 +3,6 @@ return {
     {
         "neanias/everforest-nvim",
         name = "everforest",
-        lazy = false,
-        priority = 1000,
         config = function()
             require("everforest").setup({
                 background = "medium",
@@ -68,7 +66,8 @@ return {
     {
         "rose-pine/neovim",
         name = "rose-pine",
-        -- priority = 1000,
+        lazy = false,
+        priority = 1000,
         config = function()
             require("rose-pine").setup({
                 variant = "auto",      -- auto, main, moon, or dawn
