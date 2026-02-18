@@ -41,12 +41,12 @@ echo "$MODE" > "$STATE_FILE"
 # --- Ghostty ---
 if [[ -f "$GHOSTTY_CONFIG" ]]; then
     if [[ "$MODE" == "light" ]]; then
-        sed -i '' 's|^config-file = themes/rosepine[[:space:]]*$|config-file = themes/rosepine-dawn|' "$GHOSTTY_CONFIG"
-        sed -i '' 's|^background = #000000[[:space:]]*$|background = #faf4ed|' "$GHOSTTY_CONFIG"
+        sed -i '' 's|^theme = Everforest Dark Hard[[:space:]]*$|theme = Everforest Light Med|' "$GHOSTTY_CONFIG"
+        sed -i '' 's|^background = #272e33[[:space:]]*$|background = #fdf6e3|' "$GHOSTTY_CONFIG"
         sed -i '' 's|^background-opacity = 0.75[[:space:]]*$|background-opacity = 1.0|' "$GHOSTTY_CONFIG"
     else
-        sed -i '' 's|^config-file = themes/rosepine-dawn[[:space:]]*$|config-file = themes/rosepine|' "$GHOSTTY_CONFIG"
-        sed -i '' 's|^background = #faf4ed[[:space:]]*$|background = #000000|' "$GHOSTTY_CONFIG"
+        sed -i '' 's|^theme = Everforest Light Med[[:space:]]*$|theme = Everforest Dark Hard|' "$GHOSTTY_CONFIG"
+        sed -i '' 's|^background = #fdf6e3[[:space:]]*$|background = #272e33|' "$GHOSTTY_CONFIG"
         sed -i '' 's|^background-opacity = 1.0[[:space:]]*$|background-opacity = 0.75|' "$GHOSTTY_CONFIG"
     fi
 fi

@@ -1,4 +1,69 @@
 return {
+    -- NOTE: Everforest
+    {
+        "neanias/everforest-nvim",
+        name = "everforest",
+        lazy = false,
+        priority = 1000,
+        config = function()
+            require("everforest").setup({
+                background = "medium",
+                transparent_background_level = vim.o.background == "dark" and 1 or 0,
+                italics = false,
+                disable_italic_comments = true,
+                on_highlights = function(hl, palette)
+                    -- Only apply transparency overrides in dark mode
+                    if vim.o.background ~= "dark" then return end
+                    hl.NormalFloat = { bg = "none" }
+                    hl.FloatBorder = { bg = "none" }
+                end,
+            })
+        end,
+    },
+    -- NOTE: Catppuccin
+    {
+        "catppuccin/nvim",
+        name = "catppuccin",
+        lazy = false,
+        priority = 1000,
+        config = function()
+            require("catppuccin").setup({
+                flavour = "auto",
+                background = {
+                    light = "latte",
+                    dark = "mocha",
+                },
+                transparent_background = vim.o.background == "dark",
+                term_colors = true,
+                styles = {
+                    comments = {},
+                    conditionals = {},
+                    keywords = { bold = true },
+                    functions = {},
+                    strings = {},
+                },
+                integrations = {
+                    blink_cmp = true,
+                    flash = true,
+                    gitsigns = true,
+                    harpoon = true,
+                    mason = true,
+                    mini = { enabled = true },
+                    noice = true,
+                    snacks = true,
+                    treesitter = true,
+                    which_key = true,
+                    native_lsp = {
+                        enabled = true,
+                        underlines = {
+                            errors = { "undercurl" },
+                            warnings = { "undercurl" },
+                        },
+                    },
+                },
+            })
+        end,
+    },
     -- NOTE: Rose pine
     {
         "rose-pine/neovim",
