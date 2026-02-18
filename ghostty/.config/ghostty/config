@@ -1,6 +1,6 @@
 # By default Reload config with shft + cmd + , 
-config-file = themes/rosepine
-background = #000000
+theme = Everforest Dark Hard
+background = #272e33
 background-opacity = 0.75
 background-blur-radius = 23
 # Helps transparency work with tiling WMs
