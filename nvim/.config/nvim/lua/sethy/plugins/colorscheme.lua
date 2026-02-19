@@ -1,76 +1,12 @@
 return {
-    -- NOTE: Everforest
-    {
-        "neanias/everforest-nvim",
-        name = "everforest",
-        config = function()
-            require("everforest").setup({
-                background = "medium",
-                transparent_background_level = vim.o.background == "dark" and 1 or 0,
-                italics = false,
-                disable_italic_comments = true,
-                on_highlights = function(hl, palette)
-                    -- Only apply transparency overrides in dark mode
-                    if vim.o.background ~= "dark" then return end
-                    hl.NormalFloat = { bg = "none" }
-                    hl.FloatBorder = { bg = "none" }
-                end,
-            })
-        end,
-    },
-    -- NOTE: Catppuccin
-    {
-        "catppuccin/nvim",
-        name = "catppuccin",
-        lazy = false,
-        priority = 1000,
-        config = function()
-            require("catppuccin").setup({
-                flavour = "auto",
-                background = {
-                    light = "latte",
-                    dark = "mocha",
-                },
-                transparent_background = vim.o.background == "dark",
-                term_colors = true,
-                styles = {
-                    comments = {},
-                    conditionals = {},
-                    keywords = { "bold" },
-                    functions = {},
-                    strings = {},
-                },
-                integrations = {
-                    blink_cmp = true,
-                    flash = true,
-                    gitsigns = true,
-                    harpoon = true,
-                    mason = true,
-                    mini = { enabled = true },
-                    noice = true,
-                    snacks = true,
-                    treesitter = true,
-                    which_key = true,
-                    native_lsp = {
-                        enabled = true,
-                        underlines = {
-                            errors = { "undercurl" },
-                            warnings = { "undercurl" },
-                        },
-                    },
-                },
-            })
-        end,
-    },
     -- NOTE: Rose pine
     {
         "rose-pine/neovim",
         name = "rose-pine",
-        lazy = false,
-        priority = 1000,
+        -- priority = 1000,
         config = function()
             require("rose-pine").setup({
-                variant = "auto",      -- auto, main, moon, or dawn
+                variant = "main",      -- auto, main, moon, or dawn
                 dark_variant = "main", -- main, moon, or dawn
                 dim_inactive_windows = false,
                 -- disable_background = true,
@@ -80,46 +16,46 @@ return {
                 styles = {
                     bold = true,
                     italic = false,
-                    transparency = vim.o.background == "dark",
+                    transparency = true,
                 },
-                before_highlight = function(group, highlight, palette)
-                    -- Only apply transparency overrides in dark mode
-                    if vim.o.background ~= "dark" then return end
+                highlight_groups = {
+                    ColorColumn = { bg = "#1C1C21" },
+                    Normal = { bg = "none" },                      -- Main background remains transparent
+                    Pmenu = { bg = "#1f1d2e", fg = "#e0def4" },    -- Completion menu background
+                    PmenuSel = { bg = "#403d52", fg = "#e0def4" }, -- Highlighted completion item
+                    PmenuSbar = { bg = "#191724" },                -- Scrollbar background
+                    PmenuThumb = { bg = "#9ccfd8" },               -- Scrollbar thumb
 
-                    local dark_overrides = {
-                        ColorColumn = { bg = "#1C1C21" },
-                        Normal = { bg = "none" },
-                        Pmenu = { bg = "#1f1d2e", fg = "#e0def4" },
-                        PmenuSel = { bg = "#403d52", fg = "#e0def4" },
-                        PmenuSbar = { bg = "#191724" },
-                        PmenuThumb = { bg = "#9ccfd8" },
-                        TelescopeNormal = { bg = "#191724", fg = "#e0def4" },
-                        TelescopeBorder = { bg = "#191724", fg = "#403d52" },
-                        TelescopePromptNormal = { bg = "#1f1d2e" },
-                        TelescopePromptBorder = { bg = "#1f1d2e", fg = "#eb6f92" },
-                        TelescopePromptTitle = { bg = "#eb6f92", fg = "#191724" },
-                        TelescopePreviewTitle = { bg = "#c4a7e7", fg = "#191724" },
-                        TelescopeResultsTitle = { bg = "#403d52", fg = "#e0def4" },
-                        TelescopeSelection = { bg = "#403d52", fg = "#e0def4" },
-                        NormalFloat = { bg = "#1f1d2e" },
-                        FloatBorder = { fg = "#403d52", bg = "#1f1d2e" },
-                        FloatTitle = { fg = "#eb6f92", bg = "#1f1d2e" },
-                        NoiceCmdlinePopupBorder = { fg = "#eb6f92", bg = "none" },
-                        NoiceCmdlineIcon = { fg = "#c4a7e7" },
-                        GitSignsAdd = { fg = "#9ccfd8" },
-                        GitSignsChange = { fg = "#f6c177" },
-                        GitSignsDelete = { fg = "#eb6f92" },
-                        DiagnosticError = { fg = "#eb6f92" },
-                        DiagnosticWarn = { fg = "#f6c177" },
-                        DiagnosticInfo = { fg = "#c4a7e7" },
-                        DiagnosticHint = { fg = "#9ccfd8" },
-                    }
-                    if dark_overrides[group] then
-                        for k, v in pairs(dark_overrides[group]) do
-                            highlight[k] = v
-                        end
-                    end
-                end,
+                    -- Telescope improvements
+                    TelescopeNormal = { bg = "#191724", fg = "#e0def4" },
+                    TelescopeBorder = { bg = "#191724", fg = "#403d52" },
+                    TelescopePromptNormal = { bg = "#1f1d2e" },
+                    TelescopePromptBorder = { bg = "#1f1d2e", fg = "#eb6f92" },
+                    TelescopePromptTitle = { bg = "#eb6f92", fg = "#191724" },
+                    TelescopePreviewTitle = { bg = "#c4a7e7", fg = "#191724" },
+                    TelescopeResultsTitle = { bg = "#403d52", fg = "#e0def4" },
+                    TelescopeSelection = { bg = "#403d52", fg = "#e0def4" },
+
+                    -- Float windows
+                    NormalFloat = { bg = "#1f1d2e" },
+                    FloatBorder = { fg = "#403d52", bg = "#1f1d2e" },
+                    FloatTitle = { fg = "#eb6f92", bg = "#1f1d2e" },
+
+                    -- Noice (command line UI)
+                    NoiceCmdlinePopupBorder = { fg = "#eb6f92", bg = "none" },
+                    NoiceCmdlineIcon = { fg = "#c4a7e7" },
+
+                    -- Git signs
+                    GitSignsAdd = { fg = "#9ccfd8" },
+                    GitSignsChange = { fg = "#f6c177" },
+                    GitSignsDelete = { fg = "#eb6f92" },
+
+                    -- Diagnostic colors
+                    DiagnosticError = { fg = "#eb6f92" },
+                    DiagnosticWarn = { fg = "#f6c177" },
+                    DiagnosticInfo = { fg = "#c4a7e7" },
+                    DiagnosticHint = { fg = "#9ccfd8" },
+                },
                 enable = {
                     terminal = false,
                     legacy_highlights = false, -- Improve compatibility for previous versions of Neovim

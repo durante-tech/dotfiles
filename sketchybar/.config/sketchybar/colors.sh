@@ -1,14 +1,5 @@
 #!/bin/bash
 
-CURRENT_THEME="$(cat "$HOME/.config/current-theme" 2>/dev/null || echo dark)"
-SKETCHYBAR_CONFIG_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-if [ "$CURRENT_THEME" = "light" ]; then
-    source "$SKETCHYBAR_CONFIG_DIR/colors-light.sh"
-    return 0 2>/dev/null || exit 0
-fi
-
-# Dark mode (Catppuccin Mocha) — default
 export PURE_WHITE=0xffffffff
 export PURE_BLACK=0xff000000
 
