@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# kitty-sessionizer - FZF-based project picker (kitty-native, no tmux)
+# Opens selected project in a new kitty tab
+# Customize paths via TMUX_SESSIONIZER_PATHS env var (reuses same env var)
+
+SESSIONIZER_PATHS="${TMUX_SESSIONIZER_PATHS:-$HOME/dotfiles $HOME/Projects $HOME/Developer $HOME}"
+
+selected=$(fd -H . $SESSIONIZER_PATHS -t d -d 1 2>/dev/null | fzf --prompt="Project> " --border --reverse)
+
+if [[ -z $selected ]]; then
+    exit 0
+fi
+
+selected_name=$(basename "$selected" | tr . _)
+
+# Open a new kitty tab at the selected directory with a title
+kitty @ launch --type=tab --tab-title "$selected_name" --cwd "$selected"

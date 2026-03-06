@@ -1,3 +1,19 @@
+# Kitty-in-tmux: propagate KITTY env vars so kitty graphics protocol works
+if [[ -n "$TMUX" && -z "$KITTY_PID" ]]; then
+    local _kitty_pid
+    _kitty_pid=$(pgrep -a kitty 2>/dev/null | grep -v 'kitten\|ssh' | head -1 | awk '{print $1}')
+    if [[ -n "$_kitty_pid" ]]; then
+        export KITTY_PID="$_kitty_pid"
+        # Resolve KITTY_WINDOW_ID from kitty's environment
+        local _kitty_wid
+        _kitty_wid=$(command ps -p "$_kitty_pid" -o command= 2>/dev/null | grep -q kitty && echo "1")
+        export KITTY_WINDOW_ID="${_kitty_wid:-1}"
+        # Inject into tmux server so new panes/windows inherit
+        tmux setenv KITTY_PID "$KITTY_PID" 2>/dev/null
+        tmux setenv KITTY_WINDOW_ID "$KITTY_WINDOW_ID" 2>/dev/null
+    fi
+fi
+
 # Add deno completions to search path
 if [[ ":$FPATH:" != *":$HOME/.zsh/completions:"* ]]; then export FPATH="$HOME/.zsh/completions:$FPATH"; fi
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
@@ -273,10 +289,27 @@ autoload -Uz compinit && compinit -C
 
 # bun completions (sourced in .zprofile, not duplicated here)
 
-# PAI alias
-alias pai='bun ~/.claude/skills/PAI/Tools/pai.ts'
 # The following lines have been added by Docker Desktop to enable Docker CLI completions.
 fpath=(/Users/lgertel/.docker/completions $fpath)
 autoload -Uz compinit
 compinit
 # End of Docker CLI completions
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/lgertel/.lmstudio/bin"
+# End of LM Studio CLI section
+
+
+# pnpm
+export PNPM_HOME="/Users/lgertel/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+# PAI alias
+alias pai='bun /Users/lgertel/.claude/PAI/Tools/pai.ts'
+
+# Alias GOOGLE_API_KEY as GEMINI_API_KEY for PI framework compatibility
+export GEMINI_API_KEY="${GOOGLE_API_KEY}"
