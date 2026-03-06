@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# kitty-config-menu - FZF config file picker (replaces tmux display-menu)
+
+declare -A configs
+configs=(
+    [".zshrc"]="$HOME/.zshrc"
+    [".zprofile"]="$HOME/.zprofile"
+    ["kitty.conf"]="$HOME/.config/kitty/kitty.conf"
+    ["nvim"]="$HOME/.config/nvim"
+    ["tmux.conf"]="$HOME/.config/tmux/tmux.conf"
+)
+
+selected=$(printf "%s\n" "${!configs[@]}" | sort | fzf --prompt="Config> " --border --reverse)
+
+if [[ -z $selected ]]; then
+    exit 0
+fi
+
+target="${configs[$selected]}"
+
+if [[ -d "$target" ]]; then
+    cd "$target" && nvim .
+else
+    nvim "$target"
+fi

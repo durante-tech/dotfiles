@@ -966,7 +966,6 @@ FZF is integrated across: zsh (Ctrl+T, Alt+C), tmux-sessionizer, Neovim pickers,
 ### Local Override Files
 
 - `~/.zprofile.local` and `~/.zshrc.local` are sourced if they exist (machine-specific, not in git)
-- `~/Developer/tac/scripts/aliases.sh` sourced if exists (project-specific)
 
 ### 1Password SSH Agent
 
