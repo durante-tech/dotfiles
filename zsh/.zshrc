@@ -311,5 +311,3 @@ esac
 # PAI alias
 alias pai='bun /Users/lgertel/.claude/PAI/Tools/pai.ts'
 
-# Alias GOOGLE_API_KEY as GEMINI_API_KEY for PI framework compatibility
-export GEMINI_API_KEY="${GOOGLE_API_KEY}"
