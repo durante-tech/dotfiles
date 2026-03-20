@@ -5,6 +5,10 @@ return {
         dependencies = { "nvim-treesitter/nvim-treesitter" },
         opts = {},
         config = function()
+            if #vim.api.nvim_list_uis() == 0 or not vim.o.termguicolors then
+                return
+            end
+
             local nvchadcolorizer = require("colorizer")
             local tailwindcolorizer = require("tailwindcss-colorizer-cmp")
 
@@ -21,7 +25,11 @@ return {
 
             vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
                 callback = function()
-                    vim.cmd("ColorizerAttachToBuffer")
+                    if #vim.api.nvim_list_uis() == 0 or not vim.o.termguicolors then
+                        return
+                    end
+
+                    nvchadcolorizer.attach_to_buffer(0)
                 end,
             })
 

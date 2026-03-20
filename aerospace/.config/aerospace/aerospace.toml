@@ -92,7 +92,7 @@ outer.top = [
 # Built-in display can't be renamed in BetterDisplay, use actual macOS name
 1 = 'Built-in Retina Display'  # Main workspace on laptop
 2 = '^PORTRAIT-MONITOR$'       # Secondary workspace on portrait
-B = 'Built-in Retina Display'  # Browser on laptop
+B = '^PORTRAIT-MONITOR$'  # Browser on laptop
 D = 'Built-in Retina Display'  # Development on laptop
 F = 'Built-in Retina Display'  # Finder on laptop (floats)
 M = 'Built-in Retina Display'  # Messaging on laptop
