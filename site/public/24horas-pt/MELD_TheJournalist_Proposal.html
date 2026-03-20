@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meld — Proposta Comercial | TheJournalist AI para 24horas.pt</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================
+       MELD COMMERCIAL PROPOSAL — TheJournalist AI
+       Brand: #0A0F1C bg, #3B82F6 blue, #8B5CF6 purple
+       ============================================ */
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0A0F1C;
+      --bg-card: rgba(15, 23, 42, 0.65);
+      --blue: #3B82F6;
+      --purple: #8B5CF6;
+      --accent: #A5B4FC;
+      --text-primary: #F1F5F9;
+      --text-secondary: #94A3B8;
+      --gradient: linear-gradient(135deg, #3B82F6, #8B5CF6);
+      --gradient-h: linear-gradient(90deg, #3B82F6, #8B5CF6);
+      --glass-border: rgba(165, 180, 252, 0.12);
+      --glass-border-hover: rgba(165, 180, 252, 0.28);
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* -- Sections -- */
+    .section {
+      padding: 100px 10vw;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 50%, rgba(59, 130, 246, 0.04) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 30%, rgba(139, 92, 246, 0.03) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .section > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* -- Typography -- */
+    h1 {
+      font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      margin-bottom: 0.4em;
+    }
+
+    h2 {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      margin-bottom: 0.5em;
+    }
+
+    h3 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      margin-bottom: 0.8em;
+    }
+
+    h4 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    p, li {
+      color: var(--text-secondary);
+      font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+      line-height: 1.7;
+    }
+
+    .gradient-text {
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .text-blue { color: var(--blue); }
+    .text-purple { color: var(--purple); }
+    .text-accent { color: var(--accent); }
+
+    /* -- Signature gradient line -- */
+    .sig-line {
+      width: 80px;
+      height: 3px;
+      background: var(--gradient-h);
+      border-radius: 2px;
+      margin: 1.5em 0;
+    }
+
+    .sig-line-center {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .sig-line-full {
+      width: 100%;
+      height: 2px;
+      background: var(--gradient-h);
+      border-radius: 1px;
+      opacity: 0.4;
+      margin: 4em 0;
+    }
+
+    /* -- Cards -- */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 32px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.35s ease;
+    }
+
+    .card:hover {
+      border-color: var(--glass-border-hover);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(59, 130, 246, 0.08);
+    }
+
+    .card-accent-top {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-accent-top::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--gradient-h);
+    }
+
+    /* -- Grids -- */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    /* -- CSS Logo (Two Rings) -- */
+    .logo-rings {
+      position: relative;
+      width: 120px;
+      height: 80px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-rings .ring {
+      position: absolute;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 2.5px solid;
+    }
+
+    .logo-rings .ring-blue {
+      left: 12px;
+      border-color: var(--blue);
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+    }
+
+    .logo-rings .ring-purple {
+      left: 48px;
+      border-color: var(--purple);
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.15);
+    }
+
+    .logo-rings .ring-glow {
+      position: absolute;
+      left: 42px;
+      top: 12px;
+      width: 16px;
+      height: 32px;
+      background: linear-gradient(180deg, rgba(59, 130, 246, 0.35), rgba(139, 92, 246, 0.35));
+      border-radius: 50%;
+      filter: blur(6px);
+      animation: glowPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    /* -- Wordmark -- */
+    .wordmark {
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* -- Particles -- */
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.12;
+      animation: particleFloat 12s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes particleFloat {
+      0%, 100% { transform: translate(0, 0); }
+      25% { transform: translate(15px, -30px); }
+      50% { transform: translate(-10px, -15px); }
+      75% { transform: translate(20px, -40px); }
+    }
+
+    /* -- Founder cards -- */
+    .founder-card {
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 32px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.35s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .founder-card:hover {
+      border-color: var(--glass-border-hover);
+      transform: translateY(-3px);
+    }
+
+    .founder-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .founder-avatar-eric {
+      background: rgba(59, 130, 246, 0.15);
+      border: 2px solid rgba(59, 130, 246, 0.3);
+      color: var(--blue);
+    }
+
+    .founder-avatar-lucas {
+      background: rgba(139, 92, 246, 0.15);
+      border: 2px solid rgba(139, 92, 246, 0.3);
+      color: var(--purple);
+    }
+
+    /* -- Capability icon -- */
+    .cap-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      font-size: 1.3rem;
+    }
+
+    .cap-icon-blue {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .cap-icon-purple {
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .cap-icon-green {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+
+    .cap-icon-amber {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    /* -- Timeline horizontal -- */
+    .timeline {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+      margin-top: 2.5em;
+      position: relative;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 22px;
+      left: 24px;
+      right: 24px;
+      height: 2px;
+      background: var(--gradient-h);
+      opacity: 0.4;
+    }
+
+    .timeline-step {
+      flex: 1;
+      text-align: center;
+      position: relative;
+    }
+
+    .timeline-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--blue);
+      margin: 16px auto;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+    }
+
+    .timeline-step:nth-child(even) .timeline-dot {
+      background: var(--purple);
+      box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
+    }
+
+    .timeline-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+
+    .timeline-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-top: 8px;
+    }
+
+    .timeline-desc {
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    /* -- Phase cards -- */
+    .phase-card {
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 28px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.35s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .phase-card:hover {
+      border-color: var(--glass-border-hover);
+      transform: translateY(-2px);
+    }
+
+    .phase-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--gradient-h);
+    }
+
+    .phase-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .phase-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .phase-duration {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--blue);
+      margin-bottom: 14px;
+    }
+
+    .phase-card ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .phase-card ul li {
+      padding: 4px 0;
+      padding-left: 18px;
+      position: relative;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .phase-card ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 12px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    /* -- Pricing table -- */
+    .pricing-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1.5em;
+    }
+
+    .pricing-table th {
+      text-align: left;
+      padding: 14px 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 2px solid rgba(165, 180, 252, 0.15);
+    }
+
+    .pricing-table th:last-child {
+      text-align: right;
+    }
+
+    .pricing-table td {
+      padding: 16px 20px;
+      font-size: 0.95rem;
+      border-bottom: 1px solid rgba(165, 180, 252, 0.06);
+      color: var(--text-secondary);
+    }
+
+    .pricing-table td:last-child {
+      text-align: right;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .pricing-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .pricing-table tr:hover td {
+      background: rgba(59, 130, 246, 0.03);
+    }
+
+    .pricing-total {
+      background: rgba(59, 130, 246, 0.06);
+      border-top: 2px solid rgba(165, 180, 252, 0.15);
+    }
+
+    .pricing-total td {
+      font-weight: 700 !important;
+      color: var(--text-primary) !important;
+      font-size: 1.05rem;
+    }
+
+    .pricing-total td:last-child {
+      font-size: 1.15rem;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* -- Compliance cards -- */
+    .compliance-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      font-size: 1.4rem;
+    }
+
+    /* -- CTA button -- */
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 36px;
+      background: var(--gradient);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+    }
+
+    .cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
+    }
+
+    /* -- Note block -- */
+    .note-block {
+      margin-top: 2em;
+      padding: 16px 24px;
+      background: rgba(165, 180, 252, 0.04);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+    }
+
+    /* -- Callout -- */
+    .callout {
+      padding: 18px 24px;
+      border-radius: 0 12px 12px 0;
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      margin-top: 1.5em;
+    }
+
+    .callout-blue {
+      background: rgba(59, 130, 246, 0.06);
+      border-left: 3px solid var(--blue);
+    }
+
+    .callout strong {
+      color: var(--text-primary);
+    }
+
+    /* -- Contact block -- */
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+      font-size: 1rem;
+    }
+
+    .contact-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(59, 130, 246, 0.08);
+      border: 1px solid rgba(59, 130, 246, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* -- Steps -- */
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--gradient);
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+
+    /* -- Helpers -- */
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .mb-1 { margin-bottom: 0.5em; }
+    .mb-2 { margin-bottom: 1em; }
+    .mb-3 { margin-bottom: 1.5em; }
+    .mb-4 { margin-bottom: 2em; }
+    .mt-2 { margin-top: 1em; }
+    .mt-3 { margin-top: 1.5em; }
+    .mt-4 { margin-top: 2em; }
+    .text-center { text-align: center; }
+    .max-w-700 { max-width: 700px; }
+    .max-w-900 { max-width: 900px; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* -- Challenge cards -- */
+    .challenge-card {
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 24px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+    }
+
+    .challenge-card:hover {
+      border-color: var(--glass-border-hover);
+      transform: translateY(-2px);
+    }
+
+    .challenge-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    /* -- Footer -- */
+    .footer {
+      padding: 40px 10vw;
+      text-align: center;
+      position: relative;
+    }
+
+    .footer-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .footer-logo .logo-rings {
+      width: 60px;
+      height: 40px;
+    }
+
+    .footer-logo .logo-rings .ring {
+      width: 28px;
+      height: 28px;
+    }
+
+    .footer-logo .logo-rings .ring-blue {
+      left: 6px;
+    }
+
+    .footer-logo .logo-rings .ring-purple {
+      left: 24px;
+    }
+
+    .footer-logo .logo-rings .ring-glow {
+      left: 21px;
+      top: 6px;
+      width: 8px;
+      height: 16px;
+    }
+
+    .footer-wordmark {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* -- Responsive -- */
+    @media (max-width: 900px) {
+      .section { padding: 60px 6vw; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .grid-4 { grid-template-columns: 1fr; }
+      .timeline { flex-direction: column; gap: 20px; }
+      .timeline::before { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      .section { padding: 48px 5vw; }
+    }
+
+    /* -- Print -- */
+    @media print {
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
+
+      @page {
+        size: A4;
+        margin: 12mm 10mm 14mm 10mm;
+      }
+
+      body {
+        background: var(--bg) !important;
+      }
+
+      /* Hero always on its own page */
+      .section-hero {
+        page-break-after: always;
+      }
+
+      /* Sections CAN break across pages — they're too large to avoid */
+      .section {
+        page-break-inside: auto;
+        padding-top: 40px;
+        padding-bottom: 40px;
+      }
+
+      /* Cards, callouts, notes MUST NOT break across pages */
+      .card,
+      .phase-card,
+      .founder-card,
+      .challenge-card,
+      .callout,
+      .callout-blue,
+      .note-block,
+      .step-item,
+      .contact-item,
+      .compliance-icon + h4 + p + ul {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      /* Grid items must not orphan */
+      .grid-2 > *,
+      .grid-3 > *,
+      .grid-4 > * {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      /* Table rows must not break */
+      .pricing-table tr {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      /* Timeline stays together */
+      .timeline {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      /* Signature lines should not be orphaned at top/bottom of page */
+      .sig-line-full {
+        break-after: auto;
+        page-break-after: auto;
+      }
+
+      /* Section headings should not be widowed at bottom of page */
+      h2, h3 {
+        break-after: avoid !important;
+        page-break-after: avoid !important;
+      }
+
+      /* Footer on its own space */
+      .footer {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      /* Preserve backgrounds */
+      .card, .phase-card, .founder-card, .challenge-card {
+        background: rgba(15, 23, 42, 0.9) !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+
+      /* Disable animations and transitions for print */
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+
+      /* Disable hover transforms */
+      .card:hover, .phase-card:hover, .founder-card:hover {
+        transform: none !important;
+        box-shadow: none !important;
+      }
+    }
+
+    /* -- Animations -- */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================================================================
+       SECTION 1 — COVER
+       ================================================================ -->
+  <section class="section section-hero" id="cover">
+    <div class="particle" style="width:6px;height:6px;background:var(--blue);top:15%;left:12%;animation-delay:0s;"></div>
+    <div class="particle" style="width:4px;height:4px;background:var(--purple);top:25%;left:75%;animation-delay:2s;"></div>
+    <div class="particle" style="width:5px;height:5px;background:var(--accent);top:70%;left:20%;animation-delay:4s;"></div>
+    <div class="particle" style="width:3px;height:3px;background:var(--blue);top:60%;left:82%;animation-delay:1s;"></div>
+    <div class="particle" style="width:7px;height:7px;background:var(--purple);top:80%;left:50%;animation-delay:3s;"></div>
+    <div class="particle" style="width:4px;height:4px;background:var(--accent);top:10%;left:55%;animation-delay:5s;"></div>
+
+    <div class="logo-rings mx-auto mb-3">
+      <div class="ring ring-blue"></div>
+      <div class="ring ring-purple"></div>
+      <div class="ring-glow"></div>
+    </div>
+
+    <div class="wordmark mb-1">MELD</div>
+
+    <p style="font-size:clamp(1.1rem, 2vw, 1.4rem); color:var(--text-secondary); font-weight:300; letter-spacing:0.02em; margin-bottom:0.6em;">
+      Onde mentes e m&aacute;quinas se fundem.
+    </p>
+
+    <div class="sig-line sig-line-center"></div>
+
+    <p style="font-size:1.3rem; color:var(--text-primary); font-weight:700; margin-bottom:0.4em;">
+      Proposta Comercial
+    </p>
+
+    <p style="font-size:1.05rem; color:var(--accent); font-weight:500; margin-bottom:2em;">
+      TheJournalist AI para 24horas.pt
+    </p>
+
+    <p style="font-size:0.85rem; color:var(--text-secondary); opacity:0.7; letter-spacing:0.05em;">
+      Mar&ccedil;o 2026 &mdash; Confidencial
+    </p>
+
+    <p class="mono" style="font-size:0.75rem; color:var(--text-secondary); opacity:0.5; margin-top:1em; letter-spacing:0.08em;">
+      meldhq.ai
+    </p>
+  </section>
+
+  <!-- ================================================================
+       SECTION 2 — SOBRE A MELD
+       ================================================================ -->
+  <section class="section" id="sobre">
+    <h3>Sobre a Meld</h3>
+    <h2>Construimos software acelerado por intelig&ecirc;ncia artificial.</h2>
+    <div class="sig-line"></div>
+
+    <p style="max-width:750px; margin-bottom:2em;">
+      A Meld funde criatividade humana com IA para construir plataformas de software complexas &mdash; r&aacute;pido, com precis&atilde;o e com qualidade de produ&ccedil;&atilde;o desde o primeiro dia. Baseados em Tampa, Florida, servimos clientes em portugu&ecirc;s e ingl&ecirc;s com equipas s&eacute;nior que dominam desde a arquitectura de sistemas at&eacute; &agrave; entrega em produ&ccedil;&atilde;o.
+    </p>
+
+    <div class="grid-2 mt-3">
+      <div class="founder-card">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg, #3B82F6, #60A5FA);"></div>
+        <div class="founder-avatar founder-avatar-eric" style="font-size:1rem;">CTO</div>
+        <div style="font-size:1.2rem; font-weight:700; color:var(--text-primary);">Lideran&ccedil;a T&eacute;cnica</div>
+        <div style="font-size:0.85rem; color:var(--accent); margin-bottom:12px;">Co-Fundador &amp; CTO</div>
+        <p style="font-size:0.9rem;">
+          Engenheiro full-stack com foco em IA aplicada. Respons&aacute;vel pela arquitectura t&eacute;cnica e entrega de plataformas SaaS complexas. <strong style="color:var(--text-primary);">Constr&oacute;i a m&aacute;quina.</strong>
+        </p>
+      </div>
+
+      <div class="founder-card">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg, #8B5CF6, #A78BFA);"></div>
+        <div class="founder-avatar founder-avatar-lucas" style="font-size:1rem;">CEO</div>
+        <div style="font-size:1.2rem; font-weight:700; color:var(--text-primary);">Lideran&ccedil;a Comercial</div>
+        <div style="font-size:0.85rem; color:var(--accent); margin-bottom:12px;">Co-Fundador &amp; CEO</div>
+        <p style="font-size:0.9rem;">
+          Estrat&eacute;gia de neg&oacute;cio e crescimento. Gest&atilde;o de clientes e opera&ccedil;&otilde;es comerciais. <strong style="color:var(--text-primary);">Constr&oacute;i o neg&oacute;cio.</strong>
+        </p>
+      </div>
+    </div>
+
+    <div class="grid-3 mt-4">
+      <div class="card card-accent-top text-center" style="padding:24px;">
+        <div class="mono" style="font-size:1.8rem; font-weight:700; color:var(--blue); line-height:1;">IA</div>
+        <p style="font-size:0.85rem; margin-top:8px;">Desenvolvimento acelerado por intelig&ecirc;ncia artificial em cada etapa</p>
+      </div>
+      <div class="card card-accent-top text-center" style="padding:24px;">
+        <div class="mono" style="font-size:1.8rem; font-weight:700; color:var(--purple); line-height:1;">EN/PT</div>
+        <p style="font-size:0.85rem; margin-top:8px;">Equipa bilingue com entrega completa em portugu&ecirc;s e ingl&ecirc;s</p>
+      </div>
+      <div class="card card-accent-top text-center" style="padding:24px;">
+        <div class="mono" style="font-size:1.8rem; font-weight:700; color:var(--accent); line-height:1;">SaaS</div>
+        <p style="font-size:0.85rem; margin-top:8px;">Experi&ecirc;ncia comprovada em plataformas SaaS de m&eacute;dia e conte&uacute;do</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="sig-line-full" style="margin:0 10vw;"></div>
+
+  <!-- ================================================================
+       SECTION 3 — O DESAFIO
+       ================================================================ -->
+  <section class="section" id="desafio">
+    <h3>O Desafio</h3>
+    <h2>Entendemos a opera&ccedil;&atilde;o editorial do 24horas.pt.</h2>
+    <div class="sig-line"></div>
+
+    <p style="max-width:750px; margin-bottom:2em;">
+      O 24horas.pt &eacute; um jornal digital de alta frequ&ecirc;ncia com presen&ccedil;a em m&uacute;ltiplas plataformas. A escala da opera&ccedil;&atilde;o editorial &mdash; 8 editorias com identidades distintas, 16 programas de v&iacute;deo, 9 canais de distribui&ccedil;&atilde;o &mdash; exige uma plataforma que automatize sem comprometer a qualidade jornal&iacute;stica.
+    </p>
+
+    <div class="grid-4 mt-3">
+      <div class="challenge-card">
+        <div class="challenge-num text-blue">8</div>
+        <h4>Editorias distintas</h4>
+        <p style="font-size:0.88rem;">NEWS, Buzz, Life, Sports, Motor 24H, eBrasil, Opini&atilde;o e TV &mdash; cada uma com tom, landmarks e identidade visual pr&oacute;prios.</p>
+      </div>
+
+      <div class="challenge-card">
+        <div class="challenge-num text-purple">16+</div>
+        <h4>Programas YouTube</h4>
+        <p style="font-size:0.88rem;">De an&aacute;lise pol&iacute;tica a gastronomia, cada programa requer conte&uacute;do cross-platform para promo&ccedil;&atilde;o e distribui&ccedil;&atilde;o.</p>
+      </div>
+
+      <div class="challenge-card">
+        <div class="challenge-num text-accent">9</div>
+        <h4>Plataformas sociais</h4>
+        <p style="font-size:0.88rem;">Facebook, Instagram, TikTok, X, YouTube, WhatsApp, LinkedIn, Spotify e o pr&oacute;prio site &mdash; cada canal com formato e regras espec&iacute;ficas.</p>
+      </div>
+
+      <div class="challenge-card">
+        <div class="challenge-num" style="color:#F59E0B;">2</div>
+        <h4>Sub-marcas independentes</h4>
+        <p style="font-size:0.88rem;">Motor 24H e eBrasil operam com logotipos, paletas de cores e identidades visuais pr&oacute;prias, distintas do 24horas principal.</p>
+      </div>
+    </div>
+
+    <div class="callout callout-blue mt-4">
+      <strong>O desafio central:</strong> escalar a produ&ccedil;&atilde;o editorial sem multiplicar a equipa, mantendo a qualidade jornal&iacute;stica, a identidade de cada editoria e a conformidade legal em cada conte&uacute;do publicado.
+    </div>
+  </section>
+
+  <div class="sig-line-full" style="margin:0 10vw;"></div>
+
+  <!-- ================================================================
+       SECTION 4 — A SOLUCAO PROPOSTA
+       ================================================================ -->
+  <section class="section" id="solucao">
+    <h3>A Solu&ccedil;&atilde;o</h3>
+    <h2>TheJournalist AI &mdash; plataforma editorial inteligente.</h2>
+    <div class="sig-line"></div>
+
+    <p style="max-width:750px; margin-bottom:2em;">
+      Uma plataforma constru&iacute;da do zero, desenhada para a opera&ccedil;&atilde;o do 24horas.pt. O sistema cobre o ciclo editorial completo &mdash; da capta&ccedil;&atilde;o de fontes &agrave; publica&ccedil;&atilde;o omnichannel &mdash; com intelig&ecirc;ncia artificial integrada em cada etapa.
+    </p>
+
+    <div class="grid-2 mt-3">
+      <div class="card card-accent-top">
+        <div class="cap-icon cap-icon-blue">&#9733;</div>
+        <h4>Capta&ccedil;&atilde;o inteligente de fontes</h4>
+        <p style="font-size:0.9rem;">Monitoriza&ccedil;&atilde;o autom&aacute;tica de fontes autorizadas &mdash; incluindo ag&ecirc;ncias como a Lusa e Reuters &mdash; com indexa&ccedil;&atilde;o e classifica&ccedil;&atilde;o em tempo real.</p>
+      </div>
+
+      <div class="card card-accent-top">
+        <div class="cap-icon cap-icon-purple">&#9881;</div>
+        <h4>Classifica&ccedil;&atilde;o editorial autom&aacute;tica</h4>
+        <p style="font-size:0.9rem;">Cada not&iacute;cia &eacute; automaticamente encaminhada para a editoria correcta com score de relev&acirc;ncia, geolocaliza&ccedil;&atilde;o e tags tem&aacute;ticas.</p>
+      </div>
+
+      <div class="card card-accent-top">
+        <div class="cap-icon cap-icon-blue">&#9998;</div>
+        <h4>Reescrita jornal&iacute;stica por editoria</h4>
+        <p style="font-size:0.9rem;">Gera&ccedil;&atilde;o de conte&uacute;do original que respeita o tom, os landmarks editoriais e os padr&otilde;es visuais de cada editoria &mdash; de NEWS factual a Buzz provocador.</p>
+      </div>
+
+      <div class="card card-accent-top">
+        <div class="cap-icon cap-icon-green">&#10003;</div>
+        <h4>Verifica&ccedil;&atilde;o anti-fake news</h4>
+        <p style="font-size:0.9rem;">Auditoria autom&aacute;tica contra m&uacute;ltiplas fontes, detec&ccedil;&atilde;o de pl&aacute;gio e an&aacute;lise de vi&eacute;s. Conte&uacute;do abaixo do limiar de confian&ccedil;a &eacute; bloqueado e escalado para revis&atilde;o humana.</p>
+      </div>
+
+      <div class="card card-accent-top">
+        <div class="cap-icon cap-icon-purple">&#9729;</div>
+        <h4>Publica&ccedil;&atilde;o omnichannel</h4>
+        <p style="font-size:0.9rem;">Distribui&ccedil;&atilde;o simult&acirc;nea para 9+ plataformas com adapta&ccedil;&atilde;o autom&aacute;tica de formato, tom e comprimento. Do Instagram ao Spotify, cada canal recebe conte&uacute;do optimizado.</p>
+      </div>
+
+      <div class="card card-accent-top">
+        <div class="cap-icon cap-icon-amber">&#9836;</div>
+        <h4>Gera&ccedil;&atilde;o multim&eacute;dia</h4>
+        <p style="font-size:0.9rem;">Imagens editoriais geradas por IA, narra&ccedil;&atilde;o &aacute;udio em portugu&ecirc;s europeu (e brasileiro para eBrasil), e templates visuais com branding por editoria.</p>
+      </div>
+
+      <div class="card card-accent-top">
+        <div class="cap-icon cap-icon-blue">&#9707;</div>
+        <h4>Dashboard editorial completo</h4>
+        <p style="font-size:0.9rem;">7 pain&eacute;is para opera&ccedil;&atilde;o editorial completa: trending topics, fila de aprova&ccedil;&atilde;o, calend&aacute;rio editorial, analytics por editoria e canal, e pr&eacute;via por plataforma.</p>
+      </div>
+
+      <div class="card card-accent-top">
+        <div class="cap-icon cap-icon-green">&#9872;</div>
+        <h4>Compliance integrado</h4>
+        <p style="font-size:0.9rem;">GDPR, Lei de Imprensa portuguesa e c&oacute;digo deontol&oacute;gico do jornalista incorporados na plataforma. Identifica&ccedil;&atilde;o de conte&uacute;do assistido por IA conforme o AI Act.</p>
+      </div>
+    </div>
+
+    <div class="note-block mt-4">
+      <strong style="color:var(--text-primary);">Nota:</strong> Todo o conte&uacute;do gerado passa por verifica&ccedil;&atilde;o autom&aacute;tica de qualidade e factos antes de publica&ccedil;&atilde;o. O editor humano mant&eacute;m sempre a &uacute;ltima palavra.
+    </div>
+  </section>
+
+  <div class="sig-line-full" style="margin:0 10vw;"></div>
+
+  <!-- ================================================================
+       SECTION 5 — FASES DE IMPLEMENTACAO
+       ================================================================ -->
+  <section class="section" id="fases">
+    <h3>Implementa&ccedil;&atilde;o</h3>
+    <h2>6 fases, da funda&ccedil;&atilde;o &agrave; opera&ccedil;&atilde;o completa.</h2>
+    <div class="sig-line"></div>
+
+    <p style="max-width:750px; margin-bottom:1em;">
+      A constru&ccedil;&atilde;o segue um modelo f&aacute;sico incremental. Cada fase entrega valor funcional e &eacute; validada antes do avan&ccedil;o. Ap&oacute;s a Fase 2, o pipeline editorial est&aacute; operacional para as editorias de maior volume &mdash; um ponto natural de valida&ccedil;&atilde;o.
+    </p>
+
+    <!-- Timeline visual -->
+    <div class="timeline">
+      <div class="timeline-step">
+        <div class="timeline-num">FASE 01</div>
+        <div class="timeline-dot"></div>
+        <div class="timeline-label">Funda&ccedil;&atilde;o</div>
+        <div class="timeline-desc">~2 semanas</div>
+      </div>
+      <div class="timeline-step">
+        <div class="timeline-num">FASE 02</div>
+        <div class="timeline-dot"></div>
+        <div class="timeline-label">Pipeline Core</div>
+        <div class="timeline-desc">~4 semanas</div>
+      </div>
+      <div class="timeline-step">
+        <div class="timeline-num">FASE 03</div>
+        <div class="timeline-dot"></div>
+        <div class="timeline-label">Expans&atilde;o</div>
+        <div class="timeline-desc">~8 semanas</div>
+      </div>
+      <div class="timeline-step">
+        <div class="timeline-num">FASE 04</div>
+        <div class="timeline-dot"></div>
+        <div class="timeline-label">Publica&ccedil;&atilde;o</div>
+        <div class="timeline-desc">~4 semanas</div>
+      </div>
+      <div class="timeline-step">
+        <div class="timeline-num">FASE 05</div>
+        <div class="timeline-dot"></div>
+        <div class="timeline-label">Dashboard</div>
+        <div class="timeline-desc">~2 semanas</div>
+      </div>
+      <div class="timeline-step">
+        <div class="timeline-num">FASE 06</div>
+        <div class="timeline-dot"></div>
+        <div class="timeline-label">Comercializa&ccedil;&atilde;o</div>
+        <div class="timeline-desc">~2 semanas</div>
+      </div>
+    </div>
+
+    <!-- Phase detail cards -->
+    <div class="grid-3 mt-4">
+      <div class="phase-card">
+        <div class="phase-num">FASE 01</div>
+        <div class="phase-title">Funda&ccedil;&atilde;o</div>
+        <div class="phase-duration">~2 semanas</div>
+        <ul>
+          <li>Infraestrutura cloud na Uni&atilde;o Europeia</li>
+          <li>Sistema de autentica&ccedil;&atilde;o e permiss&otilde;es</li>
+          <li>Base de dados e arquitectura core</li>
+          <li>Pipeline de deploy autom&aacute;tico (CI/CD)</li>
+          <li>Ambientes de staging e produ&ccedil;&atilde;o</li>
+        </ul>
+      </div>
+
+      <div class="phase-card">
+        <div class="phase-num">FASE 02</div>
+        <div class="phase-title">Pipeline editorial core</div>
+        <div class="phase-duration">~4 semanas</div>
+        <ul>
+          <li>Capta&ccedil;&atilde;o autom&aacute;tica de fontes autorizadas</li>
+          <li>Classifica&ccedil;&atilde;o editorial por IA</li>
+          <li>Reescrita para NEWS e Buzz (maior volume)</li>
+          <li>Pipeline completo: fonte &rarr; conte&uacute;do original</li>
+          <li style="color:var(--blue); font-weight:500;">Ponto de valida&ccedil;&atilde;o do MVP</li>
+        </ul>
+      </div>
+
+      <div class="phase-card">
+        <div class="phase-num">FASE 03</div>
+        <div class="phase-title">Expans&atilde;o editorial</div>
+        <div class="phase-duration">~8 semanas</div>
+        <ul>
+          <li>6 editorias restantes: Life, Sports, Motor 24H, eBrasil, Opini&atilde;o, TV</li>
+          <li>Verifica&ccedil;&atilde;o anti-fake news</li>
+          <li>Optimiza&ccedil;&atilde;o SEO automatizada</li>
+          <li>Landmarks editoriais por editoria</li>
+        </ul>
+      </div>
+
+      <div class="phase-card">
+        <div class="phase-num">FASE 04</div>
+        <div class="phase-title">Publica&ccedil;&atilde;o &amp; multim&eacute;dia</div>
+        <div class="phase-duration">~4 semanas</div>
+        <ul>
+          <li>Distribui&ccedil;&atilde;o omnichannel (9 plataformas)</li>
+          <li>Gera&ccedil;&atilde;o de imagens editoriais por IA</li>
+          <li>Narra&ccedil;&atilde;o &aacute;udio (PT-PT e PT-BR)</li>
+          <li>Templates visuais por editoria e plataforma</li>
+          <li>Revis&atilde;o editorial automatizada</li>
+        </ul>
+      </div>
+
+      <div class="phase-card">
+        <div class="phase-num">FASE 05</div>
+        <div class="phase-title">Dashboard &amp; experi&ecirc;ncia</div>
+        <div class="phase-duration">~2 semanas</div>
+        <ul>
+          <li>Painel editorial completo (7 vistas)</li>
+          <li>Calend&aacute;rio editorial com agendamento</li>
+          <li>Analytics por editoria, canal e per&iacute;odo</li>
+          <li>Pr&eacute;via de conte&uacute;do por plataforma</li>
+        </ul>
+      </div>
+
+      <div class="phase-card">
+        <div class="phase-num">FASE 06</div>
+        <div class="phase-title">Comercializa&ccedil;&atilde;o</div>
+        <div class="phase-duration">~2 semanas</div>
+        <ul>
+          <li>Sistema de billing e subscri&ccedil;&otilde;es</li>
+          <li>Landing page do produto</li>
+          <li>Personas jornal&iacute;sticas configur&aacute;veis</li>
+          <li>Notifica&ccedil;&otilde;es e alertas de urg&ecirc;ncia</li>
+          <li>Logs e auditoria imut&aacute;vel</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-blue mt-4">
+      <strong>Ponto de decis&atilde;o ap&oacute;s a Fase 2:</strong> Com o pipeline NEWS + Buzz operacional (~6 semanas), validamos o modelo antes de expandir para as restantes editorias. Isto permite ajustes baseados em resultados reais.
+    </div>
+  </section>
+
+  <div class="sig-line-full" style="margin:0 10vw;"></div>
+
+  <!-- ================================================================
+       SECTION 6 — INVESTIMENTO
+       ================================================================ -->
+  <section class="section" id="investimento">
+    <h3>Investimento</h3>
+    <h2>Valor por fase com entrega incremental.</h2>
+    <div class="sig-line"></div>
+
+    <p style="max-width:750px; margin-bottom:2em;">
+      O pagamento segue um modelo de valida&ccedil;&atilde;o progressiva com ponto de decis&atilde;o Go/No-Go integrado, minimizando o risco para ambas as partes.
+    </p>
+
+    <div style="overflow-x:auto;">
+      <table class="pricing-table" style="min-width:600px;">
+        <thead>
+          <tr>
+            <th style="width:10%;">Fase</th>
+            <th style="width:55%;">&Acirc;mbito</th>
+            <th style="width:15%;">Dura&ccedil;&atilde;o</th>
+            <th style="width:20%;">Investimento</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600; color:var(--text-primary);">01</td>
+            <td>Funda&ccedil;&atilde;o &mdash; infraestrutura, autentica&ccedil;&atilde;o, base de dados, CI/CD</td>
+            <td class="mono" style="font-size:0.85rem;">~2 sem.</td>
+            <td>&euro; 13.000</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:var(--text-primary);">02</td>
+            <td>Pipeline editorial core &mdash; capta&ccedil;&atilde;o de fontes, classifica&ccedil;&atilde;o, reescrita NEWS + Buzz</td>
+            <td class="mono" style="font-size:0.85rem;">~4 sem.</td>
+            <td>&euro; 25.000</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:var(--text-primary);">03</td>
+            <td>Expans&atilde;o editorial &mdash; 6 editorias restantes, anti-fake news, SEO</td>
+            <td class="mono" style="font-size:0.85rem;">~8 sem.</td>
+            <td>&euro; 45.000</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:var(--text-primary);">04</td>
+            <td>Publica&ccedil;&atilde;o &amp; multim&eacute;dia &mdash; omnichannel, gera&ccedil;&atilde;o de imagem, &aacute;udio, templates</td>
+            <td class="mono" style="font-size:0.85rem;">~4 sem.</td>
+            <td>&euro; 22.000</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:var(--text-primary);">05</td>
+            <td>Dashboard &amp; experi&ecirc;ncia &mdash; 7 pain&eacute;is, calend&aacute;rio editorial, analytics</td>
+            <td class="mono" style="font-size:0.85rem;">~2 sem.</td>
+            <td>&euro; 12.000</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600; color:var(--text-primary);">06</td>
+            <td>Comercializa&ccedil;&atilde;o &mdash; billing, landing page, personas, notifica&ccedil;&otilde;es</td>
+            <td class="mono" style="font-size:0.85rem;">~2 sem.</td>
+            <td>&euro; 11.000</td>
+          </tr>
+          <tr class="pricing-total">
+            <td></td>
+            <td>Total do projecto</td>
+            <td class="mono" style="font-size:0.85rem;">~22 sem.</td>
+            <td>&euro; 128.000</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Payment structure -->
+    <div class="grid-3 mt-4">
+      <div class="card card-accent-top" style="text-align:center;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:0.75rem; font-weight:600; color:var(--accent); letter-spacing:0.05em; margin-bottom:8px;">FASE 1 &mdash; ENTRADA</div>
+        <div style="font-size:2rem; font-weight:800; margin-bottom:4px;"><span class="gradient-text">&euro; 25.000</span></div>
+        <p style="font-size:0.88rem; margin-bottom:12px;">No acto da assinatura</p>
+        <div style="height:1px; background:var(--glass-border); margin:12px 0;"></div>
+        <p style="font-size:0.82rem;">Desenvolvimento do <strong style="color:var(--text-primary);">Core</strong> (Funda&ccedil;&atilde;o + Pipeline editorial) para avalia&ccedil;&atilde;o de viabilidade e custos com IAs.</p>
+        <div style="margin-top:16px; padding:10px 16px; background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.2); border-radius:8px;">
+          <span style="font-size:0.8rem; font-weight:600; color:var(--blue);">Ponto de decis&atilde;o Go / No-Go</span>
+        </div>
+      </div>
+
+      <div class="card card-accent-top" style="text-align:center;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:0.75rem; font-weight:600; color:var(--accent); letter-spacing:0.05em; margin-bottom:8px;">SE GO &mdash; IN&Iacute;CIO</div>
+        <div style="font-size:2rem; font-weight:800; margin-bottom:4px;"><span class="gradient-text">&euro; 51.500</span></div>
+        <p style="font-size:0.88rem; margin-bottom:12px;">50% no arranque das fases seguintes</p>
+        <div style="height:1px; background:var(--glass-border); margin:12px 0;"></div>
+        <p style="font-size:0.82rem;">Pagamento de <strong style="color:var(--text-primary);">50% do valor restante</strong> no acto do in&iacute;cio das Fases 3 a 6 (Expans&atilde;o, Publica&ccedil;&atilde;o, Dashboard e Comercializa&ccedil;&atilde;o).</p>
+      </div>
+
+      <div class="card card-accent-top" style="text-align:center;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:0.75rem; font-weight:600; color:var(--accent); letter-spacing:0.05em; margin-bottom:8px;">SE GO &mdash; ENTREGA</div>
+        <div style="font-size:2rem; font-weight:800; margin-bottom:4px;"><span class="gradient-text">&euro; 51.500</span></div>
+        <p style="font-size:0.88rem; margin-bottom:12px;">50% na entrega final</p>
+        <div style="height:1px; background:var(--glass-border); margin:12px 0;"></div>
+        <p style="font-size:0.82rem;">Pagamento dos <strong style="color:var(--text-primary);">50% restantes</strong> ap&oacute;s a entrega e valida&ccedil;&atilde;o da plataforma completa.</p>
+      </div>
+    </div>
+
+    <div class="callout callout-blue mt-3">
+      <strong>Risco zero na entrada:</strong> Os &euro; 25.000 iniciais entregam um pipeline funcional (NEWS + Buzz) que permite avaliar a qualidade da IA, os custos operacionais e a viabilidade do projecto antes de qualquer compromisso adicional.
+    </div>
+
+    <div class="grid-2 mt-3">
+      <div class="note-block" style="margin-top:0;">
+        <strong style="color:var(--text-primary);">Condi&ccedil;&otilde;es</strong>
+        <ul style="list-style:none; padding:0; margin-top:8px;">
+          <li style="font-size:0.85rem; padding:4px 0; padding-left:16px; position:relative;"><span style="position:absolute;left:0;">&#8226;</span> Valores em euros, isen&ccedil;&atilde;o de IVA para servi&ccedil;os internacionais</li>
+          <li style="font-size:0.85rem; padding:4px 0; padding-left:16px; position:relative;"><span style="position:absolute;left:0;">&#8226;</span> Proposta v&aacute;lida por 30 dias a partir da data de emiss&atilde;o</li>
+          <li style="font-size:0.85rem; padding:4px 0; padding-left:16px; position:relative;"><span style="position:absolute;left:0;">&#8226;</span> Em caso de No-Go, n&atilde;o h&aacute; obriga&ccedil;&otilde;es adicionais</li>
+        </ul>
+      </div>
+      <div class="note-block" style="margin-top:0;">
+        <strong style="color:var(--text-primary);">N&atilde;o inclui</strong>
+        <ul style="list-style:none; padding:0; margin-top:8px;">
+          <li style="font-size:0.85rem; padding:4px 0; padding-left:16px; position:relative;"><span style="position:absolute;left:0;">&#8226;</span> Custos de infraestrutura cloud (AWS/GCP)</li>
+          <li style="font-size:0.85rem; padding:4px 0; padding-left:16px; position:relative;"><span style="position:absolute;left:0;">&#8226;</span> APIs de terceiros (OpenAI, ElevenLabs, Stripe)</li>
+          <li style="font-size:0.85rem; padding:4px 0; padding-left:16px; position:relative;"><span style="position:absolute;left:0;">&#8226;</span> Licen&ccedil;as de fontes noticiosas (Lusa, Reuters)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="sig-line-full" style="margin:0 10vw;"></div>
+
+  <!-- ================================================================
+       SECTION 7 — COMPLIANCE COMO DIFERENCIAL
+       ================================================================ -->
+  <section class="section" id="compliance">
+    <h3>Compliance &amp; Diferencia&ccedil;&atilde;o</h3>
+    <h2>Conformidade legal constru&iacute;da desde o dia zero.</h2>
+    <div class="sig-line"></div>
+
+    <p style="max-width:750px; margin-bottom:2em;">
+      A plataforma n&atilde;o trata compliance como uma camada adicional &mdash; est&aacute; integrada na arquitectura. Isto &eacute; um diferencial competitivo real para opera&ccedil;&otilde;es jornal&iacute;sticas com IA.
+    </p>
+
+    <div class="grid-3 mt-3">
+      <div class="card card-accent-top">
+        <div class="compliance-icon" style="background:rgba(59, 130, 246, 0.1); border:1px solid rgba(59, 130, 246, 0.2);">
+          <span style="color:var(--blue);">&#9873;</span>
+        </div>
+        <h4>GDPR</h4>
+        <p style="font-size:0.9rem; margin-bottom:12px;">Regulamento Geral de Protec&ccedil;&atilde;o de Dados</p>
+        <ul style="list-style:none; padding:0;">
+          <li style="font-size:0.85rem; color:var(--text-secondary); padding:3px 0; padding-left:16px; position:relative;"><span style="position:absolute;left:0;color:var(--blue);">&#10003;</span> Dados armazenados exclusivamente na UE</li>
+          <li style="font-size:0.85rem; color:var(--text-secondary); padding:3px 0; padding-left:16px; position:relative;"><span style="position:absolute;left:0;color:var(--blue);">&#10003;</span> Consentimento expl&iacute;cito e direito ao esquecimento</li>
+          <li style="font-size:0.85rem; color:var(--text-secondary); padding:3px 0; padding-left:16px; position:relative;"><span style="position:absolute;left:0;color:var(--blue);">&#10003;</span> Encripta&ccedil;&atilde;o em repouso e em tr&acirc;nsito</li>
+          <li style="font-size:0.85rem; color:var(--text-secondary); padding:3px 0; padding-left:16px; position:relative;"><span style="position:absolute;left:0;color:var(--blue);">&#10003;</span> Pol&iacute;tica de reten&ccedil;&atilde;o de dados configur&aacute;vel</li>
+        </ul>
+      </div>
+
+      <div class="card card-accent-top">
+        <div class="compliance-icon" style="background:rgba(139, 92, 246, 0.1); border:1px solid rgba(139, 92, 246, 0.2);">
+          <span style="color:var(--purple);">&#9878;</span>
+        </div>
+        <h4>Lei de Imprensa</h4>
+        <p style="font-size:0.9rem; margin-bottom:12px;">Lei n.&ordm; 2/99 &amp; AI Act europeu</p>
+        <ul style="list-style:none; padding:0;">
+          <li style="font-size:0.85rem; color:var(--text-secondary); padding:3px 0; padding-left:16px; position:relative;"><span style="position:absolute;left:0;color:var(--purple);">&#10003;</span> Suporte ao direito de resposta (Art. 24&ordm;-27&ordm;)</li>
+          <li style="font-size:0.85rem; color:var(--text-secondary); padding:3px 0; padding-left:16px; position:relative;"><span style="position:absolute;left:0;color:var(--purple);">&#10003;</span> Responsabilidade editorial preservada</li>
+          <li style="font-size:0.85rem; color:var(--text-secondary); padding:3px 0; padding-left:16px; position:relative;"><span style="position:absolute;left:0;color:var(--purple);">&#10003;</span> Identifica&ccedil;&atilde;o de conte&uacute;do assistido por IA</li>
+          <li style="font-size:0.85rem; color:var(--text-secondary); padding:3px 0; padding-left:16px; position:relative;"><span style="position:absolute;left:0;color:var(--purple);">&#10003;</span> Protec&ccedil;&atilde;o de fontes jornal&iacute;sticas</li>
+        </ul>
+      </div>
+
+      <div class="card card-accent-top">
+        <div class="compliance-icon" style="background:rgba(34, 197, 94, 0.1); border:1px solid rgba(34, 197, 94, 0.2);">
+          <span style="color:#22C55E;">&#9888;</span>
+        </div>
+        <h4>Anti-fake news</h4>
+        <p style="font-size:0.9rem; margin-bottom:12px;">Verifica&ccedil;&atilde;o integrada no pipeline</p>
+        <ul style="list-style:none; padding:0;">
+          <li style="font-size:0.85rem; color:var(--text-secondary); padding:3px 0; padding-left:16px; position:relative;"><span style="position:absolute;left:0;color:#22C55E;">&#10003;</span> Verifica&ccedil;&atilde;o cruzada contra m&uacute;ltiplas fontes</li>
+          <li style="font-size:0.85rem; color:var(--text-secondary); padding:3px 0; padding-left:16px; position:relative;"><span style="position:absolute;left:0;color:#22C55E;">&#10003;</span> Detec&ccedil;&atilde;o de pl&aacute;gio e originalidade</li>
+          <li style="font-size:0.85rem; color:var(--text-secondary); padding:3px 0; padding-left:16px; position:relative;"><span style="position:absolute;left:0;color:#22C55E;">&#10003;</span> Bloqueio autom&aacute;tico abaixo do limiar de confian&ccedil;a</li>
+          <li style="font-size:0.85rem; color:var(--text-secondary); padding:3px 0; padding-left:16px; position:relative;"><span style="position:absolute;left:0;color:#22C55E;">&#10003;</span> Registo imut&aacute;vel de decis&otilde;es para auditoria</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="sig-line-full" style="margin:0 10vw;"></div>
+
+  <!-- ================================================================
+       SECTION 8 — PROXIMOS PASSOS
+       ================================================================ -->
+  <section class="section" id="proximos-passos">
+    <h3>Pr&oacute;ximos Passos</h3>
+    <h2>Tr&ecirc;s passos para come&ccedil;ar.</h2>
+    <div class="sig-line"></div>
+
+    <div style="max-width:600px; margin-top:2em;">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div>
+          <h4>Reuni&atilde;o de alinhamento</h4>
+          <p style="font-size:0.9rem;">Sess&atilde;o de kickoff para validar requisitos, definir prioridades editoriais e alinhar o calend&aacute;rio de entrega.</p>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div>
+          <h4>Assinatura e calend&aacute;rio</h4>
+          <p style="font-size:0.9rem;">Formaliza&ccedil;&atilde;o da proposta e defini&ccedil;&atilde;o do calend&aacute;rio de milestones com datas concretas.</p>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div>
+          <h4>Arranque da Fase 1</h4>
+          <p style="font-size:0.9rem;">In&iacute;cio da constru&ccedil;&atilde;o da funda&ccedil;&atilde;o t&eacute;cnica. Demos semanais e actualiza&ccedil;&otilde;es di&aacute;rias desde o primeiro dia.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:3em; text-align:center;">
+      <a href="mailto:hello@meldhq.ai" class="cta-btn" style="text-decoration:none;">
+        Agendar reuni&atilde;o de kickoff
+        <span style="font-size:1.2em;">&rarr;</span>
+      </a>
+    </div>
+
+    <div style="max-width:400px; margin:3em auto 0;">
+      <div class="contact-item">
+        <div class="contact-icon">
+          <span style="color:var(--blue); font-size:1rem;">@</span>
+        </div>
+        <div>
+          <div style="font-weight:600; color:var(--text-primary);">hello@meldhq.ai</div>
+          <div style="font-size:0.85rem; color:var(--text-secondary);">Meld &mdash; Digital Services</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">
+          <span style="color:var(--blue); font-size:0.9rem;">&#9741;</span>
+        </div>
+        <div>
+          <div style="font-weight:600; color:var(--text-primary);">meldhq.ai</div>
+          <div style="font-size:0.85rem; color:var(--text-secondary);">Onde mentes e m&aacute;quinas se fundem.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       FOOTER
+       ================================================================ -->
+  <footer class="footer">
+    <div class="sig-line-full" style="margin:0 0 2em 0;"></div>
+
+    <div class="footer-logo">
+      <div class="logo-rings">
+        <div class="ring ring-blue"></div>
+        <div class="ring ring-purple"></div>
+        <div class="ring-glow"></div>
+      </div>
+      <span class="footer-wordmark">MELD</span>
+    </div>
+
+    <p style="font-size:0.75rem; color:var(--text-secondary); opacity:0.5; margin-top:1em;">
+      Este documento &eacute; confidencial e destinado exclusivamente ao destinat&aacute;rio. A reprodu&ccedil;&atilde;o total ou parcial sem autoriza&ccedil;&atilde;o pr&eacute;via &eacute; proibida.
+    </p>
+    <p style="font-size:0.7rem; color:var(--text-secondary); opacity:0.4; margin-top:0.5em;">
+      Meld LLC &mdash; Tampa, FL &mdash; meldhq.ai &mdash; Mar&ccedil;o 2026
+    </p>
+  </footer>
+
+</body>
+</html>
