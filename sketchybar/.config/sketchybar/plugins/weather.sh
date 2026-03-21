@@ -5,9 +5,16 @@ source "$CONFIG_DIR/colors.sh"
 # Get weather from wttr.in (free, no API key needed)
 # Format: %c = condition icon, %t = temperature
 # Added --max-time 5 to prevent hanging on slow networks
-WEATHER=$(curl -s --max-time 5 "wttr.in/Sao+Paulo?format=%c+%t&m" 2>/dev/null | head -1)
+# --fail (-f) makes curl return empty output on HTTP 4xx/5xx errors
+WEATHER=$(curl -sf --max-time 5 "wttr.in/Sao+Paulo?format=%c+%t&m" 2>/dev/null | head -1)
 
-if [ -z "$WEATHER" ] || [[ "$WEATHER" == *"Unknown"* ]] || [[ "$WEATHER" == *"Sorry"* ]]; then
+if [ -z "$WEATHER" ] \
+    || [[ "$WEATHER" == *"Unknown"* ]] \
+    || [[ "$WEATHER" == *"Sorry"* ]] \
+    || [[ "$WEATHER" == *"error"* ]] \
+    || [[ "$WEATHER" == *"refused"* ]] \
+    || [[ "$WEATHER" == *"DOCTYPE"* ]] \
+    || [[ ${#WEATHER} -gt 30 ]]; then
     sketchybar --set "$NAME" icon="󰖐" label="--" icon.color="$GREY"
 else
     # Extract icon (first field) and temp (second field) - space separated
