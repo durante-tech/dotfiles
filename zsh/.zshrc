@@ -311,3 +311,6 @@ esac
 # PAI alias
 alias pai='bun /Users/lgertel/.claude/PAI/Tools/pai.ts'
 
+
+# Added by Antigravity
+export PATH="/Users/lgertel/.antigravity/antigravity/bin:$PATH"
