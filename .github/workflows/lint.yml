@@ -1,0 +1,90 @@
+name: Dotfiles CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run ShellCheck on custom scripts
+        uses: ludeeus/action-shellcheck@master
+        env:
+          SHELLCHECK_OPTS: -e SC1090 -e SC1091 -e SC2034 -e SC2155
+        with:
+          scandir: .
+          ignore_paths: >-
+            tmux/.config/tmux/.tmux/plugins
+            site
+            .dos
+            .pi
+            nvim
+          check_together: "yes"
+
+  lua-lint:
+    name: Lua Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install luacheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lua-check
+
+      - name: Run luacheck on Neovim config
+        run: |
+          luacheck nvim/.config/nvim/ \
+            --no-unused-args \
+            --no-max-line-length \
+            --globals vim \
+            --ignore 212 \
+            || true  # Advisory, don't fail CI yet
+
+  toml-validate:
+    name: TOML Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install taplo
+        run: |
+          curl -fsSL https://github.com/tamasfe/taplo/releases/latest/download/taplo-linux-x86_64.gz \
+            | gunzip > /usr/local/bin/taplo
+          chmod +x /usr/local/bin/taplo
+
+      - name: Validate TOML files
+        run: |
+          find . -name '*.toml' \
+            ! -path './.git/*' \
+            ! -path './site/*' \
+            ! -path './tmux/.config/tmux/.tmux/plugins/*' \
+            -exec taplo check {} +
+
+  stow-dry-run:
+    name: Stow Dry Run
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install stow
+        run: brew install stow
+
+      - name: Verify stow packages (dry run)
+        run: |
+          mkdir -p /tmp/fakehome/.config
+          packages=(
+            aerospace atuin ghostty karabiner mpd nvim rmpc
+            scripts sketchybar starship tmux w3m yazi zed zsh
+          )
+          for pkg in "${packages[@]}"; do
+            if [ -d "$pkg" ]; then
+              stow -n -t /tmp/fakehome "$pkg" 2>&1 && echo "✓ $pkg" || echo "✗ $pkg"
+            fi
+          done
