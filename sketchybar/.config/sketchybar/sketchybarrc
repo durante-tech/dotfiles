@@ -43,9 +43,10 @@ sketchybar --add event aerospace_workspace_change
 ##### Left Items #####
 source "$ITEM_DIR/space.sh"
 # adds layout background for workspaces
-sketchybar --add bracket workspaces space.1 space.2 space.B space.D space.F space.M space.N space.T \
+sketchybar --add bracket workspaces space.1 space.2 space.B space.D space.F space.M space.N space.T space.E \
            --set workspaces background.color="$PURE_BLACK" \
 
+source "$ITEM_DIR/aerospace_mode.sh"
 source "$ITEM_DIR/front_app.sh"
 source "$ITEM_DIR/docker.sh"
 source "$ITEM_DIR/macupdater.sh"
