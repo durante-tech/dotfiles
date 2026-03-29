@@ -21,3 +21,6 @@ tmux/.config/tmux/.pi/
 
 # Local overrides (create these for machine-specific config)
 *.local
+
+# DuranteOS internal state
+.dos/
