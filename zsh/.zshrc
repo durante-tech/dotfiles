@@ -308,9 +308,19 @@ case ":$PATH:" in
 esac
 # pnpm end
 
-# PAI alias
-alias pai='bun /Users/lgertel/.claude/PAI/Tools/pai.ts'
 
 
 # Added by Antigravity
 export PATH="/Users/lgertel/.antigravity/antigravity/bin:$PATH"
+
+# PAI alias
+alias pai='bun /Users/lgertel/.claude/PAI/Tools/pai.ts'
+
+# Added by Antigravity
+export PATH="/Users/lgertel/.antigravity/antigravity/bin:$PATH"
+
+# Durante CLI: distribution tool (install/upgrade/status/doctor)
+alias durante="node /Users/lgertel/Durante/npm-package/bin/dos.js"
+
+# DOS alias
+alias dos='bun /Users/lgertel/.claude/DOS/Tools/dos.ts'

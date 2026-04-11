@@ -127,7 +127,7 @@ alt-comma = 'layout accordion horizontal vertical'
 alt-period = 'layout floating tiling'
 alt-shift-space = 'fullscreen'
 alt-r = 'reload-config'
-alt-s = 'exec-and-forget sketchybar --bar hidden=toggle' # Toggle sketchybar
+# alt-s sketchybar toggle moved to Karabiner (Ctrl+Shift+\) — terminals swallow Option key
 alt-0 = 'workspace-back-and-forth'
 alt-shift-c = 'close'
 alt-enter = '''exec-and-forget open -na /Applications/Ghostty.app'''
@@ -274,6 +274,10 @@ run = "move-node-to-workspace B"
 
 [[on-window-detected]]
 if.app-id = 'company.thebrowser.Browser'
+run = "move-node-to-workspace B"
+
+[[on-window-detected]]
+if.app-id = 'company.thebrowser.dia'
 run = "move-node-to-workspace B"
 
 [[on-window-detected]]
