@@ -113,7 +113,7 @@ cd ~/dotfiles
 
 ## Key Bindings
 
-### Tmux (`Ctrl+B` prefix)
+### Tmux (`Ctrl+Space` prefix)
 
 | Key | Action |
 |-----|--------|
@@ -271,7 +271,7 @@ nvim +Lazy sync +qa
 <summary><b>Tmux plugins not loading</b></summary>
 
 ```bash
-# Inside tmux: prefix + I (Ctrl+B, Shift+I)
+# Inside tmux: prefix + I (Ctrl+Space, Shift+I)
 ```
 
 </details>

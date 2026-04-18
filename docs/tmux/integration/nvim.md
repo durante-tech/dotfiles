@@ -105,7 +105,7 @@ Navigation:
 3. **Reinstall plugins:**
    ```bash
    # Tmux:
-   C-b I (Shift+i)
+   C-Space I (Shift+i)
 
    # Neovim:
    :Lazy sync
@@ -123,7 +123,7 @@ Navigation:
 5. **Reload configs:**
    ```bash
    # Tmux:
-   C-b r
+   C-Space r
 
    # Neovim:
    :source $MYVIMRC
@@ -160,7 +160,7 @@ If empty, you're not in tmux! Start tmux first.
 ```bash
 # In tmux pane (outside Neovim):
 # Copy some output using copy mode
-C-b v                   # Enter copy mode
+C-Space v                   # Enter copy mode
 # Select text with v, copy with y
 
 # In Neovim:
@@ -173,7 +173,7 @@ Ctrl+r =system('tmux show-buffer')<CR>
 
 If your tmux is configured for system clipboard:
 ```bash
-# Copy in tmux (C-b v, v, y)
+# Copy in tmux (C-Space v, v, y)
 # Paste in Neovim:
 "+p                     # Paste from system clipboard
 ```
@@ -182,7 +182,7 @@ If your tmux is configured for system clipboard:
 
 ```bash
 # Copy file path in tmux
-C-b v
+C-Space v
 # Navigate to path, select it, y
 
 # In Neovim:
@@ -200,7 +200,7 @@ C-b v
 "+y                     " Copy to system clipboard
 
 " In tmux pane:
-C-b ]                   " Paste (if tmux has clipboard integration)
+C-Space ]                   " Paste (if tmux has clipboard integration)
 " Or just paste normally (Cmd+V on macOS)
 ```
 
@@ -309,13 +309,13 @@ Tmux Session: myproject
 
 3. **Create more tmux windows for other tasks:**
    ```
-   C-b c                   # New window for tests
-   C-b c                   # New window for server
+   C-Space c                   # New window for tests
+   C-Space c                   # New window for server
    ```
 
 4. **Detach when done:**
    ```
-   C-b D  # Detach (capital D!)
+   C-Space D  # Detach (capital D!)
    # Tmux session persists
    # Neovim session auto-saved
    ```
@@ -333,8 +333,8 @@ Tmux Session: myproject
 ```bash
 tmux ls                 # List tmux sessions
 tmux attach -t name     # Attach to session
-C-b o                   # SessionX (fuzzy find)
-C-b f                   # Sessionizer (find projects)
+C-Space o                   # SessionX (fuzzy find)
+C-Space f                   # Sessionizer (find projects)
 ```
 
 **Neovim sessions (auto-session):**
@@ -480,38 +480,38 @@ Window 4: tests
 
 1. **Edit code in Neovim** (Window 0)
    ```
-   C-b 1                   # Go to editor window
+   C-Space 1                   # Go to editor window
    # Edit files, use LSP, etc.
    :w                      # Save
    ```
 
 2. **Check backend logs** (Window 1)
    ```
-   C-b 1                   # Go to backend window
+   C-Space 1                   # Go to backend window
    # See server restart, check errors
    ```
 
 3. **Check frontend** (Window 2)
    ```
-   C-b 2                   # Go to frontend window
+   C-Space 2                   # Go to frontend window
    # See hot reload, check errors
    ```
 
 4. **Run database queries** (Window 3)
    ```
-   C-b 3                   # Go to database window
+   C-Space 3                   # Go to database window
    # Run queries, check data
    ```
 
 5. **Check tests** (Window 4)
    ```
-   C-b 4                   # Go to tests window
+   C-Space 4                   # Go to tests window
    # See test results, use git
    ```
 
 6. **Quick git commit** (from any window)
    ```
-   C-b C-g                 # Floating lazygit
+   C-Space C-g                 # Floating lazygit
    # Stage, commit, push
    Esc                     # Close
    ```
@@ -537,7 +537,7 @@ Window 0: dev
 1. **Split window:**
    ```
    nvim                    # Open Neovim
-   C-b |                   # Split right
+   C-Space |                   # Split right
    npm test -- --watch     # Run tests in right pane
    ```
 
@@ -609,13 +609,13 @@ nvim
    - Remote: Every 15 min (if configured)
 
 **Nested tmux:**
-- **Local prefix:** `C-b`
-- **Remote prefix:** `C-b b` (send prefix to inner tmux)
+- **Local prefix:** `C-Space`
+- **Remote prefix:** `C-Space b` (send prefix to inner tmux)
 
 **Example:**
 ```
-C-b c                   # New window in LOCAL tmux
-C-b b c                 # New window in REMOTE tmux
+C-Space c                   # New window in LOCAL tmux
+C-Space b c                 # New window in REMOTE tmux
 ```
 
 ### Workflow 4: Learning New Codebase
@@ -703,17 +703,17 @@ Window 2: git
 3. **Save and check tests** (Window 1)
    ```
    :w
-   C-b 1                   # See tests run
+   C-Space 1                   # See tests run
    ```
 
 4. **Review changes** (Window 2)
    ```
-   C-b 2                   # See git diff
+   C-Space 2                   # See git diff
    ```
 
 5. **Commit when done**
    ```
-   C-b C-g                 # Floating lazygit
+   C-Space C-g                 # Floating lazygit
    ```
 
 ## Tips & Tricks
@@ -723,9 +723,9 @@ Window 2: git
 **When you need full screen for editing:**
 
 ```
-C-b m                   # Maximize Neovim pane
+C-Space m                   # Maximize Neovim pane
 # Edit with full screen
-C-b m                   # Restore layout
+C-Space m                   # Restore layout
 ```
 
 **Or use Neovim's splits for focused work:**
@@ -778,7 +778,7 @@ vnoremap <leader>e :!tmux send-keys -t 2 "$(cat)" Enter<CR>
 bind-key C-n display-popup -w 80% -h 80% -E "nvim ~/notes.md"
 
 # Usage:
-C-b C-n                 # Floating Neovim for quick notes
+C-Space C-n                 # Floating Neovim for quick notes
 ```
 
 ### 5. Shared History
@@ -836,7 +836,7 @@ tmux attach -t $SESSION
 bind-key e command-prompt -p "Edit file:" "display-popup -E -w 80% -h 80% 'nvim %%'"
 
 # Usage:
-C-b e
+C-Space e
 # Type: config.js
 # Opens in popup Neovim!
 ```
@@ -898,7 +898,7 @@ nohup long-running-command > output.log 2>&1 &
 **Fix:**
 ```bash
 # Tmux:
-C-b I (reinstall plugins)
+C-Space I (reinstall plugins)
 
 # Neovim:
 :Lazy sync
@@ -932,7 +932,7 @@ set -ag terminal-overrides ",xterm-256color:RGB"
 vim.opt.termguicolors = true
 
 # Reload:
-C-b r (tmux)
+C-Space r (tmux)
 :source $MYVIMRC (Neovim)
 ```
 
@@ -945,7 +945,7 @@ C-b r (tmux)
 set -sg escape-time 10
 
 # Reload:
-C-b r
+C-Space r
 ```
 
 ### Problem: Mouse doesn't work
@@ -983,7 +983,7 @@ ls ~/.config/tmux/.tmux/resurrect/
 
 ```bash
 # Tmux: Save manually
-C-b Ctrl-s
+C-Space Ctrl-s
 
 # Neovim: Save manually
 :SaveSession
@@ -1037,7 +1037,7 @@ Window 1: Terminal tasks
 ### 3. Name Your Windows
 
 ```bash
-C-b ,                   # Rename window
+C-Space ,                   # Rename window
 # Type: editor, tests, server, etc.
 
 # Status bar shows:
@@ -1055,15 +1055,15 @@ C-b ,                   # Rename window
 
 **Tmux auto-saves every 15 min, but:**
 ```
-C-b Ctrl-s              " Manual save
+C-Space Ctrl-s              " Manual save
 ```
 
 ### 5. Use Floating Windows for Temporary Tasks
 
 ```
-C-b C-g                 " Lazygit (temporary)
-C-b C-y                 " File browser (temporary)
-C-b C-t                 " Quick shell (temporary)
+C-Space C-g                 " Lazygit (temporary)
+C-Space C-y                 " File browser (temporary)
+C-Space C-t                 " Quick shell (temporary)
 
 # Don't create permanent panes for these!
 ```
@@ -1072,8 +1072,8 @@ C-b C-t                 " Quick shell (temporary)
 
 **When switching projects:**
 ```
-C-b D                   " Detach (capital D!) (everything persists)
-# Not: exit, C-b &, etc.
+C-Space D                   " Detach (capital D!) (everything persists)
+# Not: exit, C-Space &, etc.
 ```
 
 **When changing branches:**

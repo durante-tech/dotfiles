@@ -103,14 +103,14 @@ Two themes, not one, because the editor should feel visually distinct from the s
 
 ```
 Layer 1: AeroSpace (Alt+key)     → Which workspace/window
-Layer 2: Tmux (Ctrl+B)           → Which terminal pane/session
+Layer 2: Tmux (Ctrl+Space)           → Which terminal pane/session
 Layer 3: Neovim (<Space>+key)    → Which file/action in editor
 Layer 4: Karabiner (Hyper+key)   → Global shortcuts from anywhere
 ```
 
 No conflicts between layers because each uses a different modifier:
 - **Alt** = Window management (AeroSpace)
-- **Ctrl+B** = Terminal management (Tmux)
+- **Ctrl+Space** = Terminal management (Tmux)
 - **Space** = Editor commands (Neovim leader)
 - **CapsLock (Hyper)** = Global shortcuts (Karabiner)
 

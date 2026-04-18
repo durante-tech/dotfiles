@@ -41,12 +41,12 @@ tmux new -s server -c ~/app "npm run dev"
 
 **Create new session:**
 ```
-C-b n                   # Prompts for session name
+C-Space n                   # Prompts for session name
 ```
 
 **Or use command:**
 ```
-C-b :new -s sessionname
+C-Space :new -s sessionname
 ```
 
 ## Attaching to Sessions
@@ -82,7 +82,7 @@ tmux attach -t myproject -r
 ### Method 1: SessionX (BEST - Your Config)
 
 ```
-C-b o                   # Opens SessionX fuzzy finder
+C-Space o                   # Opens SessionX fuzzy finder
 # Type partial name
 # Enter to switch
 ```
@@ -96,7 +96,7 @@ C-b o                   # Opens SessionX fuzzy finder
 ### Method 2: Sessionizer (Find & Create)
 
 ```
-C-b f                   # Opens tmux-sessionizer
+C-Space f                   # Opens tmux-sessionizer
 # Fuzzy find project directories
 # Creates session if doesn't exist
 # Switches to existing session if it does
@@ -111,27 +111,27 @@ C-b f                   # Opens tmux-sessionizer
 
 **Switch to next/previous:**
 ```
-C-b (                   # Previous session
-C-b )                   # Next session
+C-Space (                   # Previous session
+C-Space )                   # Next session
 ```
 
 **Switch to specific:**
 ```
-C-b s                   # Interactive session list
+C-Space s                   # Interactive session list
 # Use j/k to navigate
 # Enter to switch
 ```
 
 **Or by name:**
 ```
-C-b :switch-client -t myproject
+C-Space :switch-client -t myproject
 ```
 
 ## Detaching from Sessions
 
 **Detach (session keeps running):**
 ```
-C-b D                   # Detach from current session (capital D!)
+C-Space D                   # Detach from current session (capital D!)
 ```
 
 **Why detach instead of exit:**
@@ -141,15 +141,15 @@ C-b D                   # Detach from current session (capital D!)
 - Perfect for long-running tasks
 
 **Note:** Your config uses:
-- `C-b D` (capital D) - Detach session
-- `C-b d` (lowercase d) - Config menu (edit dotfiles)
+- `C-Space D` (capital D) - Detach session
+- `C-Space d` (lowercase d) - Config menu (edit dotfiles)
 
 ## Killing Sessions
 
 **Kill current session (from inside):**
 ```bash
 exit                    # In last pane/window, or
-C-b :kill-session
+C-Space :kill-session
 ```
 
 **Kill specific session (from outside):**
@@ -171,12 +171,12 @@ tmux kill-server
 
 **Rename current session:**
 ```
-C-b $                   # Prompts for new name
+C-Space $                   # Prompts for new name
 ```
 
 **Or from command:**
 ```
-C-b :rename-session newname
+C-Space :rename-session newname
 ```
 
 **From outside tmux:**
@@ -192,16 +192,16 @@ tmux rename-session -t oldname newname
 ```bash
 # Morning routine:
 tmux new -s work-api -c ~/work/api
-C-b D                   # Detach (capital D!)
+C-Space D                   # Detach (capital D!)
 
 tmux new -s work-frontend -c ~/work/frontend
-C-b D
+C-Space D
 
 tmux new -s personal-blog -c ~/projects/blog
-C-b D
+C-Space D
 
 tmux new -s dotfiles -c ~/dotfiles
-C-b D
+C-Space D
 
 # Now you have 4 projects ready
 tmux ls
@@ -209,9 +209,9 @@ tmux ls
 
 **Switch between them:**
 ```
-C-b o                   # SessionX - fuzzy find project
+C-Space o                   # SessionX - fuzzy find project
 # Or
-C-b f                   # Sessionizer - find by directory
+C-Space f                   # Sessionizer - find by directory
 ```
 
 **Visual Organization:**
@@ -240,7 +240,7 @@ Session: dotfiles
 
 ```bash
 # Currently in: feature-123 session
-C-b D                   # Detach (capital D! - feature work preserved)
+C-Space D                   # Detach (capital D! - feature work preserved)
 
 # Create hotfix session
 tmux new -s hotfix-456 -c ~/work/api
@@ -249,7 +249,7 @@ tmux new -s hotfix-456 -c ~/work/api
 # Deploy
 
 # Back to feature
-C-b o                   # SessionX
+C-Space o                   # SessionX
 # Type: feature
 # Enter
 
@@ -267,7 +267,7 @@ tmux new -s client-startup -c ~/clients/startup
 
 **Switch based on what you're working on:**
 ```
-C-b o                   # SessionX
+C-Space o                   # SessionX
 # Type client name
 ```
 
@@ -329,7 +329,7 @@ tmux attach -t production
 
 **Save current state:**
 ```
-C-b :save
+C-Space :save
 # Or happens automatically
 ```
 
@@ -340,7 +340,7 @@ tmux
 # Sessions auto-restore!
 
 # Or manually:
-C-b Ctrl-r              # Restore
+C-Space Ctrl-r              # Restore
 ```
 
 **Note:** Some programs won't restore perfectly:
@@ -379,8 +379,8 @@ ssh server
 tmux new -s remote
 
 # Now you have:
-# Local: C-b (outer commands)
-# Remote: C-b b (inner commands - prefix twice)
+# Local: C-Space (outer commands)
+# Remote: C-Space b (inner commands - prefix twice)
 ```
 
 ### Pattern 3: Session Templates
@@ -493,16 +493,16 @@ tmux kill-session -a
 
 | Keys | Action |
 |------|--------|
-| `C-b o` | SessionX (fuzzy find) |
-| `C-b f` | Sessionizer (find projects) |
-| `C-b n` | New session |
-| `C-b D` | **Detach** (capital D!) |
-| `C-b d` | **Config menu** (lowercase - edit dotfiles) |
-| `C-b s` | List sessions (interactive) |
-| `C-b (` | Previous session |
-| `C-b )` | Next session |
-| `C-b $` | Rename session |
-| `C-b L` | Last session (toggle) |
+| `C-Space o` | SessionX (fuzzy find) |
+| `C-Space f` | Sessionizer (find projects) |
+| `C-Space n` | New session |
+| `C-Space D` | **Detach** (capital D!) |
+| `C-Space d` | **Config menu** (lowercase - edit dotfiles) |
+| `C-Space s` | List sessions (interactive) |
+| `C-Space (` | Previous session |
+| `C-Space )` | Next session |
+| `C-Space $` | Rename session |
+| `C-Space L` | Last session (toggle) |
 
 ## Troubleshooting
 
@@ -513,7 +513,7 @@ tmux ls                 # List all sessions
 
 **"Attached to wrong session"**
 ```
-C-b o                   # SessionX to switch
+C-Space o                   # SessionX to switch
 ```
 
 **"Session name already exists"**

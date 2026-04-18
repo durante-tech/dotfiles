@@ -96,7 +96,7 @@ tmux select-window -t $1:1
 | Method | Where |
 |--------|-------|
 | `tns` | From any terminal |
-| `prefix + f` | From inside tmux (`Ctrl+B > f`) |
+| `prefix + f` | From inside tmux (`Ctrl+Space > f`) |
 
 ## Typical Session Layout
 
@@ -143,7 +143,7 @@ Tmux popup windows float over your work. Use them for quick tasks, then dismiss.
 
 ```
 1. Working in Neovim...
-2. Ctrl+B > Ctrl+G       ← Lazygit floats over everything
+2. Ctrl+Space > Ctrl+G       ← Lazygit floats over everything
 3. Stage, commit, push    ← Full git operations
 4. q                      ← Dismiss, back to Neovim
 ```
@@ -253,7 +253,7 @@ Quick layout switching for different tasks:
 tns                          # Pick project
 
 # 2. Create branch (from Neovim)
-Ctrl+B > Ctrl+G              # Open lazygit
+Ctrl+Space > Ctrl+G              # Open lazygit
 n                             # New branch → "feature/new-thing"
 q                             # Close lazygit
 
@@ -269,7 +269,7 @@ bun test                     # Run tests
 prefix + 1                   # Back to code
 
 # 5. Commit
-Ctrl+B > Ctrl+G              # Lazygit float
+Ctrl+Space > Ctrl+G              # Lazygit float
 Space                         # Stage files
 c                             # Commit
 p                             # Push
@@ -300,7 +300,7 @@ bun test                     # Run tests
 prefix + 1                   # Back to code
 
 # 5. Commit
-Ctrl+B > Ctrl+G              # Lazygit
+Ctrl+Space > Ctrl+G              # Lazygit
 # Stage → commit → push
 ```
 

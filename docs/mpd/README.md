@@ -43,7 +43,7 @@ All stored in `~/.config/mpd/`:
 Access rmpc (MPD client) as a floating popup:
 
 ```
-Ctrl+B > Ctrl+M    # Opens rmpc in floating window
+Ctrl+Space > Ctrl+M    # Opens rmpc in floating window
 ```
 
 ## Note

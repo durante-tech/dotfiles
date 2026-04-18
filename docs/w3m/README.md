@@ -1,6 +1,6 @@
 # w3m - Terminal Web Browser
 
-w3m is a text-mode web browser integrated into the tmux workflow. Access it via `Ctrl+B > Ctrl+W` as a floating tmux popup.
+w3m is a text-mode web browser integrated into the tmux workflow. Access it via `Ctrl+Space > Ctrl+W` as a floating tmux popup.
 
 ## Quick Reference
 
@@ -69,7 +69,7 @@ w3m is a text-mode web browser integrated into the tmux workflow. Access it via 
 Access w3m as a floating popup in tmux:
 
 ```
-Ctrl+B > Ctrl+W    # Opens w3m in floating window
+Ctrl+Space > Ctrl+W    # Opens w3m in floating window
 ```
 
 ## File Locations

@@ -2,22 +2,22 @@
 
 Quick reference for the most common tmux operations. Print this or keep it open!
 
-> **Prefix Key:** `Ctrl+b` (Press and release before each command)
+> **Prefix Key:** `Ctrl+Space` (Press and release before each command)
 
 ## 🎯 Top 10 Most Used
 
 | Action | Keys | Notes |
 |--------|------|-------|
-| Split vertical | `C-b \|` | Side by side |
-| Split horizontal | `C-b -` | Top and bottom |
-| Switch projects | `C-b o` | SessionX fuzzy finder |
-| New window | `C-b c` | Like a new tab |
-| Next/prev window | `C-b n/p` | Navigate tabs |
-| **Detach** | `C-b D` | **Capital D!** Leave running |
-| **Config menu** | `C-b d` | **Lowercase!** Edit dotfiles |
-| Maximize pane | `C-b m` | Zoom toggle |
-| Lazygit | `C-b C-g` | Git UI in float |
-| Copy mode | `C-b v` | Scroll and copy |
+| Split vertical | `C-Space \|` | Side by side |
+| Split horizontal | `C-Space -` | Top and bottom |
+| Switch projects | `C-Space o` | SessionX fuzzy finder |
+| New window | `C-Space c` | Like a new tab |
+| Next/prev window | `C-Space n/p` | Navigate tabs |
+| **Detach** | `C-Space D` | **Capital D!** Leave running |
+| **Config menu** | `C-Space d` | **Lowercase!** Edit dotfiles |
+| Maximize pane | `C-Space m` | Zoom toggle |
+| Lazygit | `C-Space C-g` | Git UI in float |
+| Copy mode | `C-Space v` | Scroll and copy |
 
 ## 🗂️ Sessions (Projects)
 
@@ -34,39 +34,39 @@ Quick reference for the most common tmux operations. Print this or keep it open!
 ### Inside Tmux
 | Keys | Action |
 |------|--------|
-| `C-b D` | **Detach** (capital D - keeps running) |
-| `C-b d` | **Config menu** (lowercase - edit dotfiles) |
-| `C-b o` | SessionX - switch between projects |
-| `C-b f` | Sessionizer - find project directories |
-| `C-b n` | New session (prompts for name) |
-| `C-b $` | Rename current session |
+| `C-Space D` | **Detach** (capital D - keeps running) |
+| `C-Space d` | **Config menu** (lowercase - edit dotfiles) |
+| `C-Space o` | SessionX - switch between projects |
+| `C-Space f` | Sessionizer - find project directories |
+| `C-Space n` | New session (prompts for name) |
+| `C-Space $` | Rename current session |
 
 ## 🪟 Windows (Tabs)
 
 ### Managing Windows
 | Keys | Action |
 |------|--------|
-| `C-b c` | Create window |
-| `C-b ,` | Rename window |
-| `C-b &` | Kill window |
-| `C-b w` | List windows (interactive) |
+| `C-Space c` | Create window |
+| `C-Space ,` | Rename window |
+| `C-Space &` | Kill window |
+| `C-Space w` | List windows (interactive) |
 
 ### Navigation
 | Keys | Action |
 |------|--------|
-| `C-b n` | Next window |
-| `C-b p` | Previous window |
-| `C-b l` | Last window (toggle) |
-| `C-b 1-9` | Go to window 1-9 (starts at 1!) |
-| `C-b '` | Prompt for window index |
+| `C-Space n` | Next window |
+| `C-Space p` | Previous window |
+| `C-Space l` | Last window (toggle) |
+| `C-Space 1-9` | Go to window 1-9 (starts at 1!) |
+| `C-Space '` | Prompt for window index |
 
 ## 📱 Panes (Splits)
 
 ### Creating Panes
 | Keys | Action |
 |------|--------|
-| `C-b \|` | Split vertically |
-| `C-b -` | Split horizontally |
+| `C-Space \|` | Split vertically |
+| `C-Space -` | Split horizontally |
 
 ### Navigation
 | Keys | Action |
@@ -75,34 +75,34 @@ Quick reference for the most common tmux operations. Print this or keep it open!
 | `C-j` | Move down |
 | `C-k` | Move up |
 | `C-l` | Move right |
-| `C-b q` | Show pane numbers |
-| `C-b q <num>` | Jump to pane number |
+| `C-Space q` | Show pane numbers |
+| `C-Space q <num>` | Jump to pane number |
 
 ### Resizing
 | Keys | Action |
 |------|--------|
-| `C-b h` | Resize left |
-| `C-b j` | Resize down |
-| `C-b k` | Resize up |
-| `C-b l` | Resize right |
-| `C-b z` | Toggle zoom (alias: `C-b m`) |
+| `C-Space h` | Resize left |
+| `C-Space j` | Resize down |
+| `C-Space k` | Resize up |
+| `C-Space l` | Resize right |
+| `C-Space z` | Toggle zoom (alias: `C-Space m`) |
 
 ### Managing
 | Keys | Action |
 |------|--------|
-| `C-b x` | Kill pane (confirm with y) |
-| `C-b !` | Break pane to new window |
-| `C-b {` | Move pane left |
-| `C-b }` | Move pane right |
-| `C-b Space` | Cycle through layouts |
-| `C-b C-o` | Rotate panes |
+| `C-Space x` | Kill pane (confirm with y) |
+| `C-Space !` | Break pane to new window |
+| `C-Space {` | Move pane left |
+| `C-Space }` | Move pane right |
+| `C-Space Space` | Cycle through layouts |
+| `C-Space C-o` | Rotate panes |
 
 ## 📋 Copy Mode (Vi-style)
 
 ### Entering/Exiting
 | Keys | Action |
 |------|--------|
-| `C-b v` | Enter copy mode |
+| `C-Space v` | Enter copy mode |
 | `q` | Exit copy mode |
 | `C-c` | Exit copy mode |
 
@@ -114,7 +114,7 @@ Quick reference for the most common tmux operations. Print this or keep it open!
 | `0/$` | Start/end of line |
 | `gg/G` | Top/bottom of buffer |
 | `C-u/C-d` | Half page up/down |
-| `C-b/C-f` | Full page up/down |
+| `C-Space/C-f` | Full page up/down |
 
 ### Searching
 | Keys | Action |
@@ -137,21 +137,21 @@ Quick reference for the most common tmux operations. Print this or keep it open!
 
 | Keys | Action |
 |------|--------|
-| `C-b C-g` | Lazygit (git UI) |
-| `C-b C-y` | Yazi (file manager) |
-| `C-b C-t` | Quick terminal |
-| `C-b C-m` | RMPC (music player) |
-| `C-b C-w` | W3m (web browser) |
+| `C-Space C-g` | Lazygit (git UI) |
+| `C-Space C-y` | Yazi (file manager) |
+| `C-Space C-t` | Quick terminal |
+| `C-Space C-m` | RMPC (music player) |
+| `C-Space C-w` | W3m (web browser) |
 | `Esc` | Close floating window |
 
 ## ⚙️ Configuration & Help
 
 | Keys | Action |
 |------|--------|
-| `C-b r` | Reload tmux config |
-| `C-b ?` | Show all keybindings |
-| `C-b d` | Config menu (dotfiles) |
-| `C-b :` | Enter command mode |
+| `C-Space r` | Reload tmux config |
+| `C-Space ?` | Show all keybindings |
+| `C-Space d` | Config menu (dotfiles) |
+| `C-Space :` | Enter command mode |
 
 ### Common Commands
 | Command | Action |
@@ -177,14 +177,14 @@ Quick reference for the most common tmux operations. Print this or keep it open!
 
 ### Quick Project Switch
 ```
-C-b o              # Open SessionX
+C-Space o              # Open SessionX
 Type project name
 Enter              # Switch instantly
 ```
 
 ### Git Workflow
 ```
-C-b C-g            # Open lazygit
+C-Space C-g            # Open lazygit
 # Stage, commit, push in UI
 Esc                # Close
 ```
@@ -192,25 +192,25 @@ Esc                # Close
 ### Code + Tests + Server
 ```
 Window 1: Editor
-  C-b c            # New window
+  C-Space c            # New window
   nvim
 
 Window 2: Tests
-  C-b c            # New window
-  C-b |            # Split
+  C-Space c            # New window
+  C-Space |            # Split
   Left: npm test
   Right: npm run dev
 
-C-b 1/2            # Switch between them
+C-Space 1/2            # Switch between them
 ```
 
 ### Multi-pane Setup
 ```
-C-b |              # Split vertical
-C-b -              # Split horizontal (right pane)
+C-Space |              # Split vertical
+C-Space -              # Split horizontal (right pane)
 C-h/j/k/l          # Navigate
-C-b h/j/k/l        # Resize
-C-b m              # Zoom one pane
+C-Space h/j/k/l        # Resize
+C-Space m              # Zoom one pane
 ```
 
 ## 🎓 Pro Tips
@@ -221,7 +221,7 @@ C-b m              # Zoom one pane
 
 ### Session Management
 - Always use named sessions: `tmux new -s projectname`
-- Use `C-b o` (SessionX) to switch - faster than `tmux attach`
+- Use `C-Space o` (SessionX) to switch - faster than `tmux attach`
 
 ### Window Naming
 - Name windows by task: "editor", "tests", "server", "logs"
@@ -232,9 +232,9 @@ C-b m              # Zoom one pane
 - `/pattern` to search, `n` for next, `v` to select, `y` to copy
 
 ### Detaching
-- **Always detach** (`C-b D` - capital D!) instead of closing tmux
+- **Always detach** (`C-Space D` - capital D!) instead of closing tmux
 - Your work persists - tmux auto-saves every 15 minutes
-- Note: `C-b d` (lowercase) opens the config menu
+- Note: `C-Space d` (lowercase) opens the config menu
 
 ### Floating Windows
 - Use for temporary tasks: git, file browsing
@@ -244,11 +244,11 @@ C-b m              # Zoom one pane
 
 | Situation | Solution |
 |-----------|----------|
-| Pane frozen | `C-b C-c` or `Ctrl+c` |
+| Pane frozen | `C-Space C-c` or `Ctrl+c` |
 | Wrong pane active | `C-h/j/k/l` to switch |
-| Panes messed up | `C-b Space` to cycle layouts |
+| Panes messed up | `C-Space Space` to cycle layouts |
 | Lost in copy mode | `q` to exit |
-| Want to start over | `C-b &` to kill window |
+| Want to start over | `C-Space &` to kill window |
 | Tmux unresponsive | `pkill -USR1 tmux` (from outside) |
 
 ## 🔢 Quick Reference Card
@@ -256,21 +256,21 @@ C-b m              # Zoom one pane
 **Print this section:**
 
 ```
-PREFIX: Ctrl+b
+PREFIX: Ctrl+Space
 
 SESSIONS              WINDOWS              PANES
-C-b D  Detach         C-b c  New           C-b |  Split vert
-C-b d  Config menu    C-b ,  Rename        C-b -  Split horiz
-C-b o  SessionX       C-b n  Next          C-b m  Maximize
-C-b f  Sessionizer    C-b p  Previous      C-b x  Close
-C-b n  New session    C-b 1-9 Go to #      C-h/j/k/l Navigate
-C-b $  Rename sess                         C-b h/j/k/l Resize
+C-Space D  Detach         C-Space c  New           C-Space |  Split vert
+C-Space d  Config menu    C-Space ,  Rename        C-Space -  Split horiz
+C-Space o  SessionX       C-Space n  Next          C-Space m  Maximize
+C-Space f  Sessionizer    C-Space p  Previous      C-Space x  Close
+C-Space n  New session    C-Space 1-9 Go to #      C-h/j/k/l Navigate
+C-Space $  Rename sess                         C-Space h/j/k/l Resize
 
 COPY MODE             FLOATING             SYSTEM
-C-b v  Enter          C-b C-g Lazygit      C-b r  Reload
-h/j/k/l Move          C-b C-y Yazi         C-b ?  Help
-/      Search         C-b C-t Terminal     C-b :  Command
-v      Select         C-b C-m Music        C-b d  Config menu
+C-Space v  Enter          C-Space C-g Lazygit      C-Space r  Reload
+h/j/k/l Move          C-Space C-y Yazi         C-Space ?  Help
+/      Search         C-Space C-t Terminal     C-Space :  Command
+v      Select         C-Space C-m Music        C-Space d  Config menu
 y      Copy           Esc     Close
 q      Exit
 
@@ -284,20 +284,20 @@ Click+drag: copy
 ## 🎯 Daily Practice Goals
 
 **Week 1:**
-- [ ] Use `C-b |` and `C-b -` for splits
+- [ ] Use `C-Space |` and `C-Space -` for splits
 - [ ] Use `C-h/j/k/l` for navigation
-- [ ] Detach (`C-b d`) and reattach (`tmux attach`)
-- [ ] Create windows (`C-b c`) and switch (`C-b n/p`)
+- [ ] Detach (`C-Space d`) and reattach (`tmux attach`)
+- [ ] Create windows (`C-Space c`) and switch (`C-Space n/p`)
 
 **Week 2:**
 - [ ] Use named sessions (`tmux new -s name`)
-- [ ] Master SessionX (`C-b o`) for switching
-- [ ] Use copy mode (`C-b v`) for scrolling
-- [ ] Try floating lazygit (`C-b C-g`)
+- [ ] Master SessionX (`C-Space o`) for switching
+- [ ] Use copy mode (`C-Space v`) for scrolling
+- [ ] Try floating lazygit (`C-Space C-g`)
 
 **Week 3:**
 - [ ] Create project-specific layouts
-- [ ] Use window naming (`C-b ,`)
+- [ ] Use window naming (`C-Space ,`)
 - [ ] Master copy mode selection (`v`, `y`)
 - [ ] Resize panes comfortably
 

@@ -54,14 +54,14 @@ Each configured tool has its own documentation:
 | Tool | Description | Key Features |
 |------|-------------|--------------|
 | **[Atuin](atuin/README.md)** | Shell history search | Fuzzy search, vim-mode, secrets filter |
-| **[w3m](w3m/README.md)** | Terminal web browser | Vi keybindings, tmux popup (`Ctrl+B > Ctrl+W`) |
+| **[w3m](w3m/README.md)** | Terminal web browser | Vi keybindings, tmux popup (`Ctrl+Space > Ctrl+W`) |
 
 ### Music
 
 | Tool | Description | Key Features |
 |------|-------------|--------------|
 | **[MPD](mpd/README.md)** | Music player daemon | CoreAudio, auto-update library |
-| **[rmpc](rmpc/README.md)** | MPD TUI client | Vim controls, tmux popup (`Ctrl+B > Ctrl+M`) |
+| **[rmpc](rmpc/README.md)** | MPD TUI client | Vim controls, tmux popup (`Ctrl+Space > Ctrl+M`) |
 
 ### Workflows & Integration
 
@@ -104,9 +104,9 @@ Configurations kept for reference or as backups:
 | **Neovim** | Find files | `<leader>pf` |
 | **Neovim** | Search in files | `<leader>ps` |
 | **Neovim** | File explorer | `-` |
-| **Tmux** | New session | `Ctrl+B > N` |
-| **Tmux** | Lazygit | `Ctrl+B > Ctrl+G` |
-| **Tmux** | Yazi | `Ctrl+B > Ctrl+Y` |
+| **Tmux** | New session | `Ctrl+Space > N` |
+| **Tmux** | Lazygit | `Ctrl+Space > Ctrl+G` |
+| **Tmux** | Yazi | `Ctrl+Space > Ctrl+Y` |
 | **AeroSpace** | Focus left/right | `Alt+H/L` |
 | **AeroSpace** | Workspace | `Alt+D/T/B/M` |
 | **Ghostty** | Split right | `Cmd+B > \` |

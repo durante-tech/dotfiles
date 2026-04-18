@@ -10,8 +10,8 @@ import LevelGateBanner from '../../../components/LevelGateBanner.tsx';
 
 Complete keyboard shortcut reference for your tmux configuration.
 
-> **Prefix Key:** `Ctrl+b` (referred to as `C-b` below)
-> **Usage:** Press `Ctrl+b`, release, then press the command key
+> **Prefix Key:** `Ctrl+Space` (referred to as `C-Space` below)
+> **Usage:** Press `Ctrl+Space`, release, then press the command key
 
 ## Quick Index
 
@@ -33,21 +33,21 @@ Complete keyboard shortcut reference for your tmux configuration.
 
 | Keys | Action | Notes |
 |------|--------|-------|
-| `C-b D` | **Detach from session** | **Capital D!** Session keeps running |
-| `C-b d` | **Config menu** | **Custom:** Quick edit dotfiles |
-| `C-b (` | Switch to previous session | Cycles backward |
-| `C-b )` | Switch to next session | Cycles forward |
-| `C-b L` | Switch to last session | Toggle between two sessions |
-| `C-b s` | List sessions | Interactive tree view |
-| `C-b $` | Rename current session | Prompts for new name |
-| `C-b n` | Create new session | **Custom:** Prompts for name |
+| `C-Space D` | **Detach from session** | **Capital D!** Session keeps running |
+| `C-Space d` | **Config menu** | **Custom:** Quick edit dotfiles |
+| `C-Space (` | Switch to previous session | Cycles backward |
+| `C-Space )` | Switch to next session | Cycles forward |
+| `C-Space L` | Switch to last session | Toggle between two sessions |
+| `C-Space s` | List sessions | Interactive tree view |
+| `C-Space $` | Rename current session | Prompts for new name |
+| `C-Space n` | Create new session | **Custom:** Prompts for name |
 
 ### Session Finding (Plugins)
 
 | Keys | Action | Plugin | Notes |
 |------|--------|--------|-------|
-| `C-b o` | SessionX fuzzy finder | sessionx | **Custom:** Switch/create sessions |
-| `C-b f` | Tmux sessionizer | script | **Custom:** Find projects, create sessions |
+| `C-Space o` | SessionX fuzzy finder | sessionx | **Custom:** Switch/create sessions |
+| `C-Space f` | Tmux sessionizer | script | **Custom:** Find projects, create sessions |
 
 **From terminal (outside tmux):**
 ```bash
@@ -66,24 +66,24 @@ tmux kill-session -t name      # Kill session
 
 | Keys | Action | Notes |
 |------|--------|-------|
-| `C-b c` | Create new window | Starts in current path |
-| `C-b ,` | Rename window | Prompts for new name |
-| `C-b &` | Kill window | Confirmation prompt (y/n) |
-| `C-b n` | Next window | Cycles forward |
-| `C-b p` | Previous window | Cycles backward |
-| `C-b l` | Last window | Toggle between two windows |
-| `C-b 1-9` | Switch to window N | Direct access to windows 1-9 (starts at 1!) |
-| `C-b '` | Prompt for window index | For windows beyond 9 |
-| `C-b w` | List windows | Interactive tree with preview |
-| `C-b f` | Find window | Search by name |
+| `C-Space c` | Create new window | Starts in current path |
+| `C-Space ,` | Rename window | Prompts for new name |
+| `C-Space &` | Kill window | Confirmation prompt (y/n) |
+| `C-Space n` | Next window | Cycles forward |
+| `C-Space p` | Previous window | Cycles backward |
+| `C-Space l` | Last window | Toggle between two windows |
+| `C-Space 1-9` | Switch to window N | Direct access to windows 1-9 (starts at 1!) |
+| `C-Space '` | Prompt for window index | For windows beyond 9 |
+| `C-Space w` | List windows | Interactive tree with preview |
+| `C-Space f` | Find window | Search by name |
 
 ### Window Management
 
 | Keys | Action | Notes |
 |------|--------|-------|
-| `C-b .` | Move window | Prompts for new index |
-| `C-b :swap-window -s 2 -t 5` | Swap window 2 with 5 | Command mode |
-| `C-b :move-window -t session:` | Move to another session | Command mode |
+| `C-Space .` | Move window | Prompts for new index |
+| `C-Space :swap-window -s 2 -t 5` | Swap window 2 with 5 | Command mode |
+| `C-Space :move-window -t session:` | Move to another session | Command mode |
 
 **Your config settings:**
 - Base index starts at **1** (not 0)
@@ -98,10 +98,10 @@ tmux kill-session -t name      # Kill session
 
 | Keys | Action | Notes |
 |------|--------|-------|
-| `C-b \|` | Split vertical | **Custom:** Side by side |
-| `C-b -` | Split horizontal | **Custom:** Top and bottom |
-| `C-b %` | Split vertical | Standard binding (unused) |
-| `C-b "` | Split horizontal | Standard binding (unused) |
+| `C-Space \|` | Split vertical | **Custom:** Side by side |
+| `C-Space -` | Split horizontal | **Custom:** Top and bottom |
+| `C-Space %` | Split vertical | Standard binding (unused) |
+| `C-Space "` | Split horizontal | Standard binding (unused) |
 
 **Your config:** New panes open in current directory (`#{pane_current_path}`)
 
@@ -113,10 +113,10 @@ tmux kill-session -t name      # Kill session
 | `C-j` | Move to pane below | **Plugin:** vim-tmux-navigator |
 | `C-k` | Move to pane above | **Plugin:** vim-tmux-navigator |
 | `C-l` | Move to right pane | **Plugin:** vim-tmux-navigator |
-| `C-b o` | Next pane | Cycles clockwise |
-| `C-b ;` | Last pane | Toggle between two panes |
-| `C-b q` | Show pane numbers | Brief display |
-| `C-b q 0-9` | Jump to pane N | While numbers showing |
+| `C-Space o` | Next pane | Cycles clockwise |
+| `C-Space ;` | Last pane | Toggle between two panes |
+| `C-Space q` | Show pane numbers | Brief display |
+| `C-Space q 0-9` | Jump to pane N | While numbers showing |
 
 **Note:** `C-h/j/k/l` works seamlessly between tmux panes and Neovim splits!
 
@@ -124,40 +124,40 @@ tmux kill-session -t name      # Kill session
 
 | Keys | Action | Notes |
 |------|--------|-------|
-| `C-b h` | Resize left (shrink right) | **Custom:** Repeatable |
-| `C-b j` | Resize down (shrink top) | **Custom:** Repeatable |
-| `C-b k` | Resize up (shrink bottom) | **Custom:** Repeatable |
-| `C-b l` | Resize right (shrink left) | **Custom:** Repeatable |
-| `C-b C-h/j/k/l` | Resize (arrow keys) | Standard bindings |
+| `C-Space h` | Resize left (shrink right) | **Custom:** Repeatable |
+| `C-Space j` | Resize down (shrink top) | **Custom:** Repeatable |
+| `C-Space k` | Resize up (shrink bottom) | **Custom:** Repeatable |
+| `C-Space l` | Resize right (shrink left) | **Custom:** Repeatable |
+| `C-Space C-h/j/k/l` | Resize (arrow keys) | Standard bindings |
 
 **Your config:**
 - Resize step: **5 cells**
 - **Repeatable (`-r` flag):** Can press quickly without prefix
-- Example: `C-b h h h h` (hold `C-b`, tap `h` multiple times)
+- Example: `C-Space h h h h` (hold `C-Space`, tap `h` multiple times)
 
 ### Pane Management
 
 | Keys | Action | Notes |
 |------|--------|-------|
-| `C-b m` | Maximize/zoom pane | **Custom:** Toggle |
-| `C-b z` | Maximize/zoom pane | Standard binding |
-| `C-b x` | Kill pane | Confirmation prompt (y/n) |
-| `C-b !` | Break pane to new window | Converts pane to window |
-| `C-b {` | Swap pane left | Swap with previous |
-| `C-b }` | Swap pane right | Swap with next |
-| `C-b Space` | Cycle through layouts | Cycles: even, vertical, horizontal, etc. |
-| `C-b C-o` | Rotate panes clockwise | All panes shift positions |
-| `C-b M-o` | Rotate panes counter-clockwise | All panes shift positions |
+| `C-Space m` | Maximize/zoom pane | **Custom:** Toggle |
+| `C-Space z` | Maximize/zoom pane | Standard binding |
+| `C-Space x` | Kill pane | Confirmation prompt (y/n) |
+| `C-Space !` | Break pane to new window | Converts pane to window |
+| `C-Space {` | Swap pane left | Swap with previous |
+| `C-Space }` | Swap pane right | Swap with next |
+| `C-Space Space` | Cycle through layouts | Cycles: even, vertical, horizontal, etc. |
+| `C-Space C-o` | Rotate panes clockwise | All panes shift positions |
+| `C-Space M-o` | Rotate panes counter-clockwise | All panes shift positions |
 
 ### Pane Layouts
 
 | Keys | Action | Layout Type |
 |------|--------|-------------|
-| `C-b M-1` | Even horizontal | All panes equal width, side by side |
-| `C-b M-2` | Even vertical | All panes equal height, stacked |
-| `C-b M-3` | Main horizontal | One large top, small panes below |
-| `C-b M-4` | Main vertical | One large left, small panes right |
-| `C-b M-5` | Tiled | Grid layout, all equal size |
+| `C-Space M-1` | Even horizontal | All panes equal width, side by side |
+| `C-Space M-2` | Even vertical | All panes equal height, stacked |
+| `C-Space M-3` | Main horizontal | One large top, small panes below |
+| `C-Space M-4` | Main vertical | One large left, small panes right |
+| `C-Space M-5` | Tiled | Grid layout, all equal size |
 
 **Your config settings:**
 - Pane base index starts at **1** (not 0)
@@ -171,8 +171,8 @@ tmux kill-session -t name      # Kill session
 
 | Keys | Action | Notes |
 |------|--------|-------|
-| `C-b v` | Enter copy mode | **Custom:** "v" for vim/visual |
-| `C-b [` | Enter copy mode | Standard binding |
+| `C-Space v` | Enter copy mode | **Custom:** "v" for vim/visual |
+| `C-Space [` | Enter copy mode | Standard binding |
 | `q` | Exit copy mode | In copy mode |
 | `C-c` | Exit copy mode | In copy mode |
 | `Escape` | Exit copy mode | In copy mode |
@@ -195,7 +195,7 @@ Your config uses **vi mode keys** (`mode-keys vi`)
 | `50%` | Go to 50% of buffer | |
 | `C-u` | Half page up | |
 | `C-d` | Half page down | |
-| `C-b` | Full page up | (Not prefix in copy mode!) |
+| `C-Space` | Full page up | (Not prefix in copy mode!) |
 | `C-f` | Full page down | |
 | `H` | Top of screen | High |
 | `M` | Middle of screen | |
@@ -232,8 +232,8 @@ Your config uses **vi mode keys** (`mode-keys vi`)
 
 | Keys | Action | Notes |
 |------|--------|-------|
-| `C-b ]` | Paste buffer | Outside copy mode |
-| `C-b =` | Choose buffer | List all buffers, select to paste |
+| `C-Space ]` | Paste buffer | Outside copy mode |
+| `C-Space =` | Choose buffer | List all buffers, select to paste |
 
 ---
 
@@ -243,11 +243,11 @@ Your config includes custom **popup/floating windows** for common tools.
 
 | Keys | Tool | Size | Notes |
 |------|------|------|-------|
-| `C-b C-g` | Lazygit | 90%x90% | **Custom:** Git UI |
-| `C-b C-y` | Yazi | 90%x90% | **Custom:** File manager |
-| `C-b C-t` | Zsh | 80%x80% | **Custom:** Quick terminal |
-| `C-b C-m` | RMPC | 95%x95% | **Custom:** Music player |
-| `C-b C-w` | W3m | 90%x90% | **Custom:** Text-based web browser |
+| `C-Space C-g` | Lazygit | 90%x90% | **Custom:** Git UI |
+| `C-Space C-y` | Yazi | 90%x90% | **Custom:** File manager |
+| `C-Space C-t` | Zsh | 80%x80% | **Custom:** Quick terminal |
+| `C-Space C-m` | RMPC | 95%x95% | **Custom:** Music player |
+| `C-Space C-w` | W3m | 90%x90% | **Custom:** Text-based web browser |
 
 **How to close floating windows:**
 - `Escape` - Close popup
@@ -268,7 +268,7 @@ Your config includes custom **popup/floating windows** for common tools.
 
 | Keys | Action | Notes |
 |------|--------|-------|
-| `C-b d` | Config menu | **Custom:** Quick access to dotfiles |
+| `C-Space d` | Config menu | **Custom:** Quick access to dotfiles |
 
 **Config menu options:**
 - `z` - Edit `.zshrc` (75% popup)
@@ -283,7 +283,7 @@ Your config includes custom **popup/floating windows** for common tools.
 source ~/.zshrc
 
 # For tmux:
-C-b r (reload config)
+C-Space r (reload config)
 
 # For nvim:
 :source % (or restart nvim)
@@ -293,13 +293,13 @@ C-b r (reload config)
 
 | Keys | Action | Notes |
 |------|--------|-------|
-| `C-b r` | Reload tmux config | **Custom:** Sources `~/.config/tmux/tmux.conf` |
-| `C-b ?` | Show all keybindings | Standard: Interactive list |
-| `C-b :` | Enter command mode | Type tmux commands |
-| `C-b t` | Show time | Large clock display |
-| `C-b ~` | Show messages | Recent tmux messages |
+| `C-Space r` | Reload tmux config | **Custom:** Sources `~/.config/tmux/tmux.conf` |
+| `C-Space ?` | Show all keybindings | Standard: Interactive list |
+| `C-Space :` | Enter command mode | Type tmux commands |
+| `C-Space t` | Show time | Large clock display |
+| `C-Space ~` | Show messages | Recent tmux messages |
 
-### Common Commands (via `C-b :`)
+### Common Commands (via `C-Space :`)
 
 | Command | Action |
 |---------|--------|
@@ -356,12 +356,12 @@ unbind -T copy-mode-vi MouseDragEnd1Pane
 ### Disabling Mouse (temporarily)
 
 ```
-C-b :set -g mouse off
+C-Space :set -g mouse off
 ```
 
 **Re-enable:**
 ```
-C-b :set -g mouse on
+C-Space :set -g mouse on
 ```
 
 **Why disable?**
@@ -429,14 +429,14 @@ set -g @plugin "christoomey/vim-tmux-navigator"
 
 1. **Check if plugin is installed:**
    ```
-   C-b :
+   C-Space :
    run-shell "echo $TMUX_PLUGIN_MANAGER_PATH"
    # Should show ~/.config/tmux/.tmux/plugins
    ```
 
 2. **Reinstall plugins:**
    ```
-   C-b I (Shift+i)
+   C-Space I (Shift+i)
    ```
 
 3. **Check Neovim has the plugin:**
@@ -448,7 +448,7 @@ set -g @plugin "christoomey/vim-tmux-navigator"
 4. **Reload configs:**
    ```
    # Tmux:
-   C-b r
+   C-Space r
 
    # Neovim:
    :source $MYVIMRC
@@ -462,7 +462,7 @@ set -g @plugin "christoomey/vim-tmux-navigator"
 
 | Keys | Action | Notes |
 |------|--------|-------|
-| `C-b o` | Open SessionX | **Custom:** Fuzzy find sessions |
+| `C-Space o` | Open SessionX | **Custom:** Fuzzy find sessions |
 
 **In SessionX interface:**
 - `Ctrl+n/p` or `j/k` - Navigate
@@ -483,8 +483,8 @@ set -g @sessionx-bind 'o'
 
 | Keys | Action | Plugin | Notes |
 |------|--------|--------|-------|
-| `C-b Ctrl-s` | Save session | resurrect | Manual save |
-| `C-b Ctrl-r` | Restore session | resurrect | Manual restore |
+| `C-Space Ctrl-s` | Save session | resurrect | Manual save |
+| `C-Space Ctrl-r` | Restore session | resurrect | Manual restore |
 
 **Your config:**
 - **Auto-save:** Every 15 minutes (continuum)
@@ -506,9 +506,9 @@ set -g @sessionx-bind 'o'
 
 | Keys | Action | Notes |
 |------|--------|-------|
-| `C-b I` | Install plugins | Shift+i: Fetches new plugins |
-| `C-b U` | Update plugins | Shift+u: Updates all plugins |
-| `C-b M-u` | Uninstall plugins | Removes unlisted plugins |
+| `C-Space I` | Install plugins | Shift+i: Fetches new plugins |
+| `C-Space U` | Update plugins | Shift+u: Updates all plugins |
+| `C-Space M-u` | Uninstall plugins | Removes unlisted plugins |
 
 **Plugin location:**
 ```
@@ -531,7 +531,7 @@ set -g @sessionx-bind 'o'
 
 | Keys | Action | Notes |
 |------|--------|-------|
-| `C-b f` | Run tmux-sessionizer | **Custom:** Find projects and create/switch sessions |
+| `C-Space f` | Run tmux-sessionizer | **Custom:** Find projects and create/switch sessions |
 
 **Your config:**
 ```bash
@@ -561,19 +561,19 @@ These are standard tmux bindings that still work (not overridden):
 
 | Keys | Action |
 |------|--------|
-| `C-b ?` | Show all keybindings |
-| `C-b t` | Show large clock |
-| `C-b i` | Display pane info |
+| `C-Space ?` | Show all keybindings |
+| `C-Space t` | Show large clock |
+| `C-Space i` | Display pane info |
 
 ### Advanced
 
 | Keys | Action |
 |------|--------|
-| `C-b C-z` | Suspend tmux client |
-| `C-b #` | List paste buffers |
-| `C-b -` | Delete paste buffer (standard) |
-| `C-b =` | Choose paste buffer |
-| `C-b Page Up` | Enter copy mode and scroll up |
+| `C-Space C-z` | Suspend tmux client |
+| `C-Space #` | List paste buffers |
+| `C-Space -` | Delete paste buffer (standard) |
+| `C-Space =` | Choose paste buffer |
+| `C-Space Page Up` | Enter copy mode and scroll up |
 
 ---
 
@@ -583,25 +583,25 @@ Some keys have **multiple functions** depending on context:
 
 | Key | Context | Action |
 |-----|---------|--------|
-| `C-b d` | **Your config** | **Config menu** (edit dotfiles) |
-| `C-b d` | Standard tmux | Detach session (overridden!) |
-| `C-b D` | **Your config** | **Detach session** (capital D!) |
-| `C-b o` | **Your config** | **SessionX** (fuzzy find) |
-| `C-b o` | Standard tmux | Next pane (overridden!) |
-| `C-b n` | **Your config** | **New session** (prompts for name) |
-| `C-b n` | Standard tmux | Next window (still works!) |
+| `C-Space d` | **Your config** | **Config menu** (edit dotfiles) |
+| `C-Space d` | Standard tmux | Detach session (overridden!) |
+| `C-Space D` | **Your config** | **Detach session** (capital D!) |
+| `C-Space o` | **Your config** | **SessionX** (fuzzy find) |
+| `C-Space o` | Standard tmux | Next pane (overridden!) |
+| `C-Space n` | **Your config** | **New session** (prompts for name) |
+| `C-Space n` | Standard tmux | Next window (still works!) |
 
 **To use these features:**
-- **Detach:** Use `C-b D` (capital D)
-- **Config menu:** Use `C-b d` (lowercase d)
+- **Detach:** Use `C-Space D` (capital D)
+- **Config menu:** Use `C-Space d` (lowercase d)
 - **Next pane:** Use `C-h/j/k/l` (vim-tmux-navigator) or mouse
-- **Next window:** `C-b n` still works for next window
+- **Next window:** `C-Space n` still works for next window
 
 **Check your bindings anytime:**
 ```
-C-b ?
+C-Space ?
 # Or
-C-b :list-keys
+C-Space :list-keys
 ```
 
 ---
@@ -611,24 +611,24 @@ C-b :list-keys
 **Print this section!**
 
 ```
-PREFIX: Ctrl+b (C-b)
+PREFIX: Ctrl+Space (C-Space)
 
 SESSIONS              WINDOWS              PANES
-C-b D  Detach         C-b c  New           C-b |  Split vert
-C-b d  Config menu    C-b ,  Rename        C-b -  Split horiz
-C-b o  SessionX       C-b n  Next          C-b m  Maximize
-C-b f  Sessionizer    C-b p  Previous      C-b x  Kill
-C-b n  New session    C-b 1-9 Go to #      C-b h/j/k/l Resize
-C-b $  Rename         C-b l  Last          C-h/j/k/l Navigate
-C-b s  List           C-b w  Tree          (no prefix!)
-C-b (  Previous       C-b &  Kill
-C-b )  Next
+C-Space D  Detach         C-Space c  New           C-Space |  Split vert
+C-Space d  Config menu    C-Space ,  Rename        C-Space -  Split horiz
+C-Space o  SessionX       C-Space n  Next          C-Space m  Maximize
+C-Space f  Sessionizer    C-Space p  Previous      C-Space x  Kill
+C-Space n  New session    C-Space 1-9 Go to #      C-Space h/j/k/l Resize
+C-Space $  Rename         C-Space l  Last          C-h/j/k/l Navigate
+C-Space s  List           C-Space w  Tree          (no prefix!)
+C-Space (  Previous       C-Space &  Kill
+C-Space )  Next
 
 COPY MODE             FLOATING             CONFIG
-C-b v  Enter          C-b C-g Lazygit      C-b r  Reload
-h/j/k/l Navigate      C-b C-y Yazi         C-b ?  Help
-/      Search         C-b C-t Terminal     C-b :  Command
-v      Select         C-b C-m Music        C-b d  Menu
+C-Space v  Enter          C-Space C-g Lazygit      C-Space r  Reload
+h/j/k/l Navigate      C-Space C-y Yazi         C-Space ?  Help
+/      Search         C-Space C-t Terminal     C-Space :  Command
+v      Select         C-Space C-m Music        C-Space d  Menu
 y      Copy           Esc     Close
 q      Exit
 
@@ -676,7 +676,7 @@ bind C-f display-popup -w 80% -h 80% -E "ranger"
 
 **After editing:**
 ```
-C-b r                   # Reload config
+C-Space r                   # Reload config
 ```
 
 ---
@@ -684,27 +684,27 @@ C-b r                   # Reload config
 ## Learning Path
 
 **Week 1: Core navigation**
-- Master `C-b |` and `C-b -` (splits)
+- Master `C-Space |` and `C-Space -` (splits)
 - Use `C-h/j/k/l` (pane navigation - no prefix!)
-- Practice `C-b c`, `C-b n/p` (windows)
-- Use `C-b D` (capital D!) to detach, `tmux attach` to return
-- Try `C-b d` (lowercase) for quick config edits
+- Practice `C-Space c`, `C-Space n/p` (windows)
+- Use `C-Space D` (capital D!) to detach, `tmux attach` to return
+- Try `C-Space d` (lowercase) for quick config edits
 
 **Week 2: Workflows**
-- Try `C-b o` (SessionX) for project switching
-- Use `C-b v` (copy mode) for scrolling
-- Practice `C-b m` (maximize) when focusing
+- Try `C-Space o` (SessionX) for project switching
+- Use `C-Space v` (copy mode) for scrolling
+- Practice `C-Space m` (maximize) when focusing
 - Create multi-pane layouts
 
 **Week 3: Advanced**
 - Learn copy mode selection (`v`, `y`)
-- Use floating windows (`C-b C-g` for git)
-- Try `C-b f` (sessionizer) for projects
-- Experiment with layouts (`C-b Space`)
+- Use floating windows (`C-Space C-g` for git)
+- Try `C-Space f` (sessionizer) for projects
+- Experiment with layouts (`C-Space Space`)
 
 **Week 4: Mastery**
 - Create custom keybindings
-- Use command mode (`C-b :`)
+- Use command mode (`C-Space :`)
 - Leverage mouse for quick actions
 - Integrate with other tools
 
