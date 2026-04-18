@@ -155,7 +155,7 @@ Work through the levels in order. Each level builds on the previous one. Don't s
 - Use `ya` to navigate files (cd on exit)
 - Use `procs` / `btm` / `dust` instead of old commands
 - Use `tns` (tmux-sessionizer) to manage projects
-- Use floating windows: `Ctrl+B > Ctrl+G` (lazygit)
+- Use floating windows: `Ctrl+Space > Ctrl+G` (lazygit)
 
 **Checkpoint:** You know every tool in the system and when to reach for each one.
 

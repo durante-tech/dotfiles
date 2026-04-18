@@ -23,7 +23,7 @@ Session → Windows → Panes
 
 **Create new window:**
 ```
-C-b c                   # Creates window, switches to it
+C-Space c                   # Creates window, switches to it
 ```
 
 **What happens:**
@@ -43,8 +43,8 @@ tmux new-window -n "dev" "npm run dev"           # With command
 
 **From inside tmux:**
 ```
-C-b :new-window -n "tests"                       # Named window
-C-b :new-window -c ~/other-project               # Different directory
+C-Space :new-window -n "tests"                       # Named window
+C-Space :new-window -c ~/other-project               # Different directory
 ```
 
 ## Navigating Windows
@@ -53,8 +53,8 @@ C-b :new-window -c ~/other-project               # Different directory
 
 **Next/previous window:**
 ```
-C-b n                   # Next window (number increases)
-C-b p                   # Previous window (number decreases)
+C-Space n                   # Next window (number increases)
+C-Space p                   # Previous window (number decreases)
 ```
 
 **How it works:**
@@ -65,18 +65,18 @@ C-b p                   # Previous window (number decreases)
 
 **Jump to specific window:**
 ```
-C-b 1                   # Go to window 1 (your config starts at 1!)
-C-b 2                   # Go to window 2
-C-b 3                   # Go to window 3
+C-Space 1                   # Go to window 1 (your config starts at 1!)
+C-Space 2                   # Go to window 2
+C-Space 3                   # Go to window 3
 ...
-C-b 9                   # Go to window 9
+C-Space 9                   # Go to window 9
 ```
 
 **Note:** Your config has `base-index 1`, so windows start at **1, not 0**.
 
 **For window numbers beyond 9:**
 ```
-C-b '                   # Prompts for window number
+C-Space '                   # Prompts for window number
 # Type: 15
 # Press: Enter
 ```
@@ -85,13 +85,13 @@ C-b '                   # Prompts for window number
 
 **Last window (toggle):**
 ```
-C-b l                   # Toggle between current and last window
+C-Space l                   # Toggle between current and last window
 # Like Alt+Tab in desktop
 ```
 
 **Interactive window list:**
 ```
-C-b w                   # Opens window tree
+C-Space w                   # Opens window tree
 # Use j/k or arrow keys
 # Press Enter to select
 ```
@@ -108,7 +108,7 @@ C-b w                   # Opens window tree
 
 **Rename current window:**
 ```
-C-b ,                   # Prompts for new name
+C-Space ,                   # Prompts for new name
 # Type name
 # Press Enter
 ```
@@ -120,13 +120,13 @@ C-b ,                   # Prompts for new name
 
 **From command:**
 ```
-C-b :rename-window newname
+C-Space :rename-window newname
 ```
 
 **Auto-naming:**
 Your config has automatic window renaming. If you want to disable it:
 ```
-C-b :setw automatic-rename off
+C-Space :setw automatic-rename off
 ```
 
 ### Closing Windows
@@ -134,17 +134,17 @@ C-b :setw automatic-rename off
 **Close current window:**
 ```
 exit                    # In last pane, or
-C-b &                   # Prompts for confirmation (y/n)
+C-Space &                   # Prompts for confirmation (y/n)
 ```
 
 **Kill without confirmation:**
 ```
-C-b :kill-window
+C-Space :kill-window
 ```
 
 **Kill specific window:**
 ```
-C-b :kill-window -t 2   # Kills window 2
+C-Space :kill-window -t 2   # Kills window 2
 ```
 
 **What happens when you close a window:**
@@ -157,18 +157,18 @@ C-b :kill-window -t 2   # Kills window 2
 
 **Swap windows:**
 ```
-C-b :swap-window -s 2 -t 5      # Swap window 2 with 5
-C-b :swap-window -t 1           # Swap current with window 1
+C-Space :swap-window -s 2 -t 5      # Swap window 2 with 5
+C-Space :swap-window -t 1           # Swap current with window 1
 ```
 
 **Move window to different number:**
 ```
-C-b :move-window -t 5           # Move current to position 5
+C-Space :move-window -t 5           # Move current to position 5
 ```
 
 **Move window to another session:**
 ```
-C-b :move-window -t othersession:    # Moves to "othersession"
+C-Space :move-window -t othersession:    # Moves to "othersession"
 ```
 
 **Useful for organizing:**
@@ -181,7 +181,7 @@ C-b :move-window -t othersession:    # Moves to "othersession"
 
 **Link window from another session:**
 ```
-C-b :link-window -s othersession:2  # Links window from other session
+C-Space :link-window -s othersession:2  # Links window from other session
 # Now appears in both sessions!
 ```
 
@@ -232,7 +232,7 @@ Window 3: logs
 set -g base-index 1
 
 # Reload config:
-C-b r
+C-Space r
 ```
 
 **Your config likely starts at 0** (check your tmux.conf)
@@ -241,7 +241,7 @@ C-b r
 
 **Renumber windows sequentially:**
 ```
-C-b :move-window -r     # Renumbers all windows (removes gaps)
+C-Space :move-window -r     # Renumbers all windows (removes gaps)
 # If you have: 0, 2, 5, 8
 # Becomes: 0, 1, 2, 3
 ```
@@ -283,10 +283,10 @@ Window 3: tests
 
 **Navigate:**
 ```
-C-b 1                   # Editor
-C-b 1                   # Commands/Git
-C-b 2                   # Check server logs
-C-b 3                   # Check tests
+C-Space 1                   # Editor
+C-Space 1                   # Commands/Git
+C-Space 2                   # Check server logs
+C-Space 3                   # Check tests
 ```
 
 **Why this works:**
@@ -316,11 +316,11 @@ Window 4: database
 
 **Quick switches:**
 ```
-C-b 1                   # Edit code
-C-b 1                   # Check frontend
-C-b 2                   # Check backend
-C-b 3                   # Debug logs
-C-b 4                   # Query database
+C-Space 1                   # Edit code
+C-Space 1                   # Check frontend
+C-Space 2                   # Check backend
+C-Space 3                   # Debug logs
+C-Space 4                   # Query database
 ```
 
 ### Workflow 3: Multi-Service Microservices
@@ -342,7 +342,7 @@ Window 6: database
 
 **Name windows by service:**
 ```
-C-b ,                   # Rename each window
+C-Space ,                   # Rename each window
 ```
 
 **Visual in status bar:**
@@ -371,11 +371,11 @@ Window 3: tests
 
 **Workflow:**
 ```
-C-b 1                   # Read docs
-C-b 1                   # Implement feature
-C-b 2                   # Test in REPL
-C-b 3                   # Run tests
-C-b l                   # Toggle between current and last
+C-Space 1                   # Read docs
+C-Space 1                   # Implement feature
+C-Space 2                   # Test in REPL
+C-Space 3                   # Run tests
+C-Space l                   # Toggle between current and last
 ```
 
 ### Workflow 5: Git-Heavy Development
@@ -403,7 +403,7 @@ Window 1: tests
 Window 2: server
 
 # Use floating lazygit:
-C-b C-g                 # Opens lazygit in float
+C-Space C-g                 # Opens lazygit in float
 # No permanent window needed!
 ```
 
@@ -425,10 +425,10 @@ Window 2: diff
 
 **Compare easily:**
 ```
-C-b 1                   # See main
-C-b 1                   # See feature
-C-b l                   # Toggle between them
-C-b 2                   # See diff
+C-Space 1                   # See main
+C-Space 1                   # See feature
+C-Space l                   # Toggle between them
+C-Space 2                   # See diff
 ```
 
 ### Workflow 7: Learning New Tech
@@ -504,19 +504,19 @@ tmux attach -t $SESSION
 
 **Monitor for activity:**
 ```
-C-b :setw monitor-activity on
+C-Space :setw monitor-activity on
 # Status bar shows when output happens in background window
 ```
 
 **Monitor for silence:**
 ```
-C-b :setw monitor-silence 60    # Alert after 60 seconds of no output
+C-Space :setw monitor-silence 60    # Alert after 60 seconds of no output
 # Useful for long-running builds
 ```
 
 **Bell monitoring:**
 ```
-C-b :setw monitor-bell on       # Alert on terminal bell
+C-Space :setw monitor-bell on       # Alert on terminal bell
 ```
 
 **Visual indicator in status bar:**
@@ -543,13 +543,13 @@ done
 
 **Save window layout:**
 ```
-C-b :list-windows       # Shows window info including layout string
+C-Space :list-windows       # Shows window info including layout string
 # Copy the layout string (long hex string)
 ```
 
 **Apply layout to window:**
 ```
-C-b :select-layout "layout-string-here"
+C-Space :select-layout "layout-string-here"
 ```
 
 **Use case:**
@@ -668,42 +668,42 @@ Window 3: 📊 logs
 | Keys | Action |
 |------|--------|
 | **Creating** | |
-| `C-b c` | Create window |
+| `C-Space c` | Create window |
 | **Navigating** | |
-| `C-b n` | Next window |
-| `C-b p` | Previous window |
-| `C-b 1-9` | Go to window N (starts at 1!) |
-| `C-b '` | Prompt for window number |
-| `C-b l` | Last window (toggle) |
-| `C-b w` | Interactive window list |
+| `C-Space n` | Next window |
+| `C-Space p` | Previous window |
+| `C-Space 1-9` | Go to window N (starts at 1!) |
+| `C-Space '` | Prompt for window number |
+| `C-Space l` | Last window (toggle) |
+| `C-Space w` | Interactive window list |
 | **Managing** | |
-| `C-b ,` | Rename window |
-| `C-b &` | Kill window |
-| `C-b .` | Move window (prompts for new index) |
+| `C-Space ,` | Rename window |
+| `C-Space &` | Kill window |
+| `C-Space .` | Move window (prompts for new index) |
 | **Advanced** | |
-| `C-b f` | Find window by name |
+| `C-Space f` | Find window by name |
 
 ## Troubleshooting
 
 **"Window disappeared"**
 ```
-C-b w                   # List all windows
+C-Space w                   # List all windows
 # Did you accidentally close it?
-# Create new one: C-b c
+# Create new one: C-Space c
 ```
 
 **"Lost track of which window is which"**
 ```
-C-b w                   # Shows tree with window names
+C-Space w                   # Shows tree with window names
 # Or rename them all:
-C-b 1 C-b , # Name: editor
-C-b 1 C-b , # Name: tests
+C-Space 1 C-Space , # Name: editor
+C-Space 1 C-Space , # Name: tests
 # etc.
 ```
 
 **"Wrong window numbers (gaps)"**
 ```
-C-b :move-window -r     # Renumber sequentially
+C-Space :move-window -r     # Renumber sequentially
 # Or enable auto-renumber in config
 ```
 
@@ -711,17 +711,17 @@ C-b :move-window -r     # Renumber sequentially
 ```
 # Process running that ignores SIGHUP
 # Force kill all panes:
-C-b :kill-window
+C-Space :kill-window
 # Or force kill window by number:
-C-b :kill-window -t 2
+C-Space :kill-window -t 2
 ```
 
 **"Accidentally closed important window"**
 ```
 # No undo, sorry!
 # Recreate it:
-C-b c
-C-b ,                   # Rename
+C-Space c
+C-Space ,                   # Rename
 # Re-run commands
 ```
 
@@ -740,14 +740,14 @@ C-b ,                   # Rename
 ```
 # Change base-index in tmux.conf:
 set -g base-index 1     # Start at 1 instead of 0
-C-b r                   # Reload config
+C-Space r                   # Reload config
 ```
 
-**"Want to switch faster than C-b n/p"**
+**"Want to switch faster than C-Space n/p"**
 ```
-# Use direct numbers: C-b 1, C-b 2, C-b 3
-# Or SessionX: C-b o
-# Or window tree: C-b w
+# Use direct numbers: C-Space 1, C-Space 2, C-Space 3
+# Or SessionX: C-Space o
+# Or window tree: C-Space w
 ```
 
 ## Best Practices
@@ -804,8 +804,8 @@ Session: frontend-project
 
 **When switching projects:**
 ```
-C-b d                   # Detach (preserves all windows)
-# Not: C-b & to kill windows
+C-Space d                   # Detach (preserves all windows)
+# Not: C-Space & to kill windows
 
 # Come back later:
 tmux attach -t myproject
@@ -815,14 +815,14 @@ tmux attach -t myproject
 ### 6. Monitor Important Windows
 
 ```
-C-b :setw -t 2 monitor-activity on     # Monitor window 2
+C-Space :setw -t 2 monitor-activity on     # Monitor window 2
 # Status bar shows when output happens
 ```
 
 ### 7. Use Window Tree for Overview
 
 ```
-C-b w                   # See all sessions, windows, panes
+C-Space w                   # See all sessions, windows, panes
 # Great for "where am I?" moments
 ```
 

@@ -125,7 +125,7 @@ Lazygit is a terminal UI for git that handles complex operations visually.
 | Method | Where |
 |--------|-------|
 | `lg` | Shell alias |
-| `Ctrl+B > Ctrl+G` | Tmux floating popup (90% screen) |
+| `Ctrl+Space > Ctrl+G` | Tmux floating popup (90% screen) |
 | `<leader>lg` | From Neovim (opens in tmux float) |
 
 The tmux popup is the recommended way — it floats over your work, and you dismiss it when done.
@@ -257,7 +257,7 @@ nvim .
 ga && gc "add feature" && gp
 
 # Method B: Lazygit (recommended for complex commits)
-lg                           # Or Ctrl+B > Ctrl+G in tmux
+lg                           # Or Ctrl+Space > Ctrl+G in tmux
 # Stage files, write commit message, push
 
 # 6. End of day
@@ -295,7 +295,7 @@ lg                           # Open lazygit
 | Stage specific hunks | Lazygit or `<leader>hs` in nvim |
 | Browse branches | `Ctrl+G Ctrl+B` or `<leader>gbr` |
 | Browse commits | `Ctrl+G Ctrl+H` or `<leader>gl` |
-| Complex git ops | `lg` or `Ctrl+B > Ctrl+G` |
+| Complex git ops | `lg` or `Ctrl+Space > Ctrl+G` |
 | Rename across files | `<leader>rn` (LSP, not git) |
 | See changed files | `<leader>gf` in nvim |
 | Blame a line | `<leader>hb` in nvim |

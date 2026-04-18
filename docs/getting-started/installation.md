@@ -132,7 +132,7 @@ source ~/.zprofile && source ~/.zshrc
 # Open tmux
 tmux
 
-# Press: Ctrl+B, then Shift+I
+# Press: Ctrl+Space, then Shift+I
 # Wait for plugins to install
 ```
 

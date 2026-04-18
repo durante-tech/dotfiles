@@ -34,7 +34,7 @@ q               # Quit - shell now in that directory
 
 ## Opening in Tmux
 
-`Ctrl+B > Ctrl+Y` opens yazi in a floating tmux popup.
+`Ctrl+Space > Ctrl+Y` opens yazi in a floating tmux popup.
 
 ## Aliases
 
