@@ -300,6 +300,44 @@
                                         "value": 1
                                     }
                                 ],
+                                "description": "Hyper + N -> AeroSpace workspace N (Notes)",
+                                "from": {
+                                    "key_code": "n"
+                                },
+                                "to": [
+                                    {
+                                        "shell_command": "/opt/homebrew/bin/aerospace workspace N"
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "name": "hyper",
+                                        "type": "variable_if",
+                                        "value": 1
+                                    }
+                                ],
+                                "description": "Hyper + E -> AeroSpace workspace E (Email)",
+                                "from": {
+                                    "key_code": "e"
+                                },
+                                "to": [
+                                    {
+                                        "shell_command": "/opt/homebrew/bin/aerospace workspace E"
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "name": "hyper",
+                                        "type": "variable_if",
+                                        "value": 1
+                                    }
+                                ],
                                 "description": "Hyper + . -> Raycast Notes",
                                 "from": {
                                     "key_code": "period"
@@ -1409,7 +1447,7 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "sketchybar --bar hidden=toggle"
+                                        "shell_command": "/opt/homebrew/bin/sketchybar --bar hidden=toggle"
                                     }
                                 ],
                                 "type": "basic"
