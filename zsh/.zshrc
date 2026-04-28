@@ -264,6 +264,7 @@ alias lfg="claude --dangerously-skip-permissions --model opus"
 alias cldpy="claude -p --dangerously-skip-permissions"
 alias cldpyo="claude -p --dangerously-skip-permissions --model opus"
 alias cldr="claude --resume"
+alias dosa="dos -l -m full --dangerously-skip-permissions"
 # ---------------------------------------
 
 # brew installations activation
