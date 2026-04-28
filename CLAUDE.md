@@ -38,13 +38,13 @@ stow -D -t ~ zsh
 source ~/.zprofile && source ~/.zshrc
 
 # Reload Tmux configuration
-# Inside tmux: prefix + r (Ctrl+Space, then r)
+# Inside tmux: prefix + r (Ctrl+b, then r)
 
 # Update Neovim plugins
 nvim +Lazy sync +qa
 
 # Install Tmux plugins
-# Inside tmux: prefix + I (Ctrl+Space, then Shift+i)
+# Inside tmux: prefix + I (Ctrl+b, then Shift+i)
 
 # Update Homebrew packages
 brew update && brew upgrade
@@ -589,7 +589,7 @@ vim.lsp.enable("server_name")
 
 ## Tmux Configuration
 
-**Prefix**: `Ctrl+Space`
+**Prefix**: `Ctrl+b` (tmux default)
 
 ### Core Bindings
 
@@ -1013,7 +1013,7 @@ nvim +Lazy sync +qa
 
 ```bash
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-# Inside tmux: prefix + I (Ctrl+Space, then Shift+i)
+# Inside tmux: prefix + I (Ctrl+b, then Shift+i)
 ```
 
 ### Scripts Not Executable
