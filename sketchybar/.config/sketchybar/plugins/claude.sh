@@ -1,99 +1,110 @@
 #!/usr/bin/env bash
-# Claude Code session indicator for SketchyBar.
+# Claude Code plan-usage indicator for SketchyBar.
 #
-# Shows current context window utilization + model. Reads the most recently
-# modified .jsonl session file under ~/.claude/projects/, parses the last
-# assistant message's `usage` block, and computes:
-#   total_input = input_tokens + cache_creation_input_tokens + cache_read_input_tokens
-# divided by the model's context budget.
+# Aggregates *all* active sessions (across every project) into 5-hour billing
+# blocks via ccusage. Shows current block's spend + remaining time. Solves the
+# "multiple parallel sessions" problem where per-session context % is meaningless.
 #
-# Color thresholds: green <70%, yellow 70–85%, red >85%.
-# Click action: copies the session file path to the clipboard.
+# Architecture: ccusage takes ~8s to enumerate JSONLs across all projects, so
+# we cache its output to /tmp/ccusage-cache.json with a 60s TTL. SketchyBar
+# polls the cache (instant); the plugin refreshes the cache in the background
+# when it's stale, never blocking the bar.
+#
+# Click handler: claude_click.sh shows projection in a macOS notification.
 
 source "$CONFIG_DIR/colors.sh"
 
-CLAUDE_PROJECTS="$HOME/.claude/projects"
+CACHE="/tmp/ccusage-cache.json"
+CCUSAGE="/Users/lgertel/.bun/bin/ccusage"
 
-# Pick most-recently-modified .jsonl across all projects (last 30 min only).
-# Note: stat -f is hijacked by GNU coreutils on this machine, so we use ls -t.
-LATEST=$(find "$CLAUDE_PROJECTS" -name "*.jsonl" -mmin -30 -print0 2>/dev/null \
-         | xargs -0 ls -1t 2>/dev/null \
-         | head -1)
+# ── Refresh cache in background if missing or > 60s old ─────────────────────
+NEEDS_REFRESH=0
+if [ ! -f "$CACHE" ] || [ ! -s "$CACHE" ]; then
+  NEEDS_REFRESH=1
+elif [ -n "$(find "$CACHE" -mmin +1 2>/dev/null)" ]; then
+  NEEDS_REFRESH=1
+fi
 
-if [ -z "$LATEST" ] || [ ! -f "$LATEST" ]; then
+if [ "$NEEDS_REFRESH" -eq 1 ] && [ -x "$CCUSAGE" ]; then
+  ( "$CCUSAGE" blocks --active --json > "$CACHE.tmp" 2>/dev/null \
+    && mv "$CACHE.tmp" "$CACHE" ) &
+fi
+
+# ── If cache still missing (first ever run), show loading state ─────────────
+if [ ! -f "$CACHE" ] || [ ! -s "$CACHE" ]; then
   sketchybar --set "$NAME" \
-    icon="󰚩" \
-    label="idle" \
-    label.color="$GREY" \
-    icon.color="$GREY"
+    icon="󰚩" label="..." \
+    label.color="$GREY" icon.color="$GREY"
   exit 0
 fi
 
-# Find last assistant message (has `message.usage`) and parse it.
-STATE=$(tail -200 "$LATEST" | python3 -c '
-import sys, json
-last = None
-for line in sys.stdin:
-    try:
-        d = json.loads(line)
-        msg = d.get("message") or {}
-        usage = msg.get("usage") or {}
-        if usage and msg.get("model"):
-            last = (msg.get("model"), usage)
-    except Exception:
-        continue
-if not last:
-    print("NONE")
+# ── Parse cache and format label ────────────────────────────────────────────
+STATE=$(python3 -c '
+import json, sys
+from datetime import datetime, timezone
+
+try:
+    d = json.load(sys.stdin)
+except Exception:
+    print("ERROR")
     sys.exit(0)
-model, u = last
-in_tokens = (u.get("input_tokens") or 0) \
-          + (u.get("cache_creation_input_tokens") or 0) \
-          + (u.get("cache_read_input_tokens") or 0)
-# Context budget heuristics by model family.
-m = model.lower()
-if "opus-4-7" in m or "[1m]" in m:
-    budget = 1_000_000
-elif "opus" in m or "sonnet" in m or "haiku" in m:
-    budget = 200_000
+
+blocks = d.get("blocks", [])
+active = [b for b in blocks if b.get("isActive")]
+if not active:
+    print("IDLE")
+    sys.exit(0)
+
+b = active[0]
+cost = b.get("costUSD", 0)
+proj_cost = (b.get("projection") or {}).get("totalCost", 0)
+
+# Remaining minutes in the 5-hour block.
+end = datetime.fromisoformat(b["endTime"].replace("Z", "+00:00"))
+now = datetime.now(timezone.utc)
+remaining = max(0, int((end - now).total_seconds() / 60))
+hours, mins = divmod(remaining, 60)
+if hours > 0:
+    time_left = f"{hours}h{mins:02d}m"
 else:
-    budget = 200_000
-pct = round(in_tokens * 100 / budget)
-short = (
-    "opus-4.7"  if "opus-4-7"  in m else
-    "opus-4.6"  if "opus-4-6"  in m else
-    "opus"      if "opus"      in m else
-    "sonnet-4.6"if "sonnet-4-6"in m else
-    "sonnet"    if "sonnet"    in m else
-    "haiku-4.5" if "haiku-4-5" in m else
-    "haiku"    if "haiku"     in m else
-    m[:10]
-)
-print(f"{pct}|{short}|{in_tokens}|{budget}")
-' 2>/dev/null)
+    time_left = f"{mins}m"
 
-if [ "$STATE" = "NONE" ] || [ -z "$STATE" ]; then
-  sketchybar --set "$NAME" \
-    icon="󰚩" \
-    label="idle" \
-    label.color="$GREY" \
-    icon.color="$GREY"
-  exit 0
-fi
+print(f"OK|{cost:.0f}|{proj_cost:.0f}|{time_left}|{remaining}")
+' < "$CACHE" 2>/dev/null)
 
-PCT=$(echo "$STATE" | cut -d'|' -f1)
-MODEL=$(echo "$STATE" | cut -d'|' -f2)
+case "$STATE" in
+  IDLE|"")
+    sketchybar --set "$NAME" \
+      icon="󰚩" label="idle" \
+      label.color="$GREY" icon.color="$GREY"
+    ;;
+  ERROR)
+    sketchybar --set "$NAME" \
+      icon="󰚩" label="?" \
+      label.color="$ORANGE" icon.color="$ORANGE"
+    ;;
+  *)
+    COST=$(echo "$STATE" | cut -d'|' -f2)
+    PROJ=$(echo "$STATE" | cut -d'|' -f3)
+    LEFT=$(echo "$STATE" | cut -d'|' -f4)
+    REMAINING=$(echo "$STATE" | cut -d'|' -f5)
 
-# Color thresholds.
-if   [ "$PCT" -ge 85 ]; then COLOR="$RED"
-elif [ "$PCT" -ge 70 ]; then COLOR="$YELLOW"
-else                          COLOR="$GREEN"
-fi
+    # Color thresholds by current block cost.
+    if   [ "$COST" -ge 100 ]; then COLOR="$RED"
+    elif [ "$COST" -ge 25  ]; then COLOR="$YELLOW"
+    else                            COLOR="$GREEN"
+    fi
 
-sketchybar --set "$NAME" \
-  icon="󰚩" \
-  label="${PCT}% • ${MODEL}" \
-  label.color="$COLOR" \
-  icon.color="$COLOR"
+    # If projection >> 2x current and burning fast, also flag.
+    if [ "$PROJ" -gt $((COST * 3)) ] && [ "$REMAINING" -gt 60 ]; then
+      COLOR="$YELLOW"
+    fi
 
-# Stash session path for click handler.
-echo "$LATEST" > "$HOME/.cache/sketchybar-claude-session.txt" 2>/dev/null
+    sketchybar --set "$NAME" \
+      icon="󰚩" label="\$${COST} • ${LEFT}" \
+      label.color="$COLOR" icon.color="$COLOR"
+
+    # Stash projection for click handler.
+    echo "${COST}|${PROJ}|${LEFT}" > "$HOME/.cache/sketchybar-claude-block.txt" 2>/dev/null
+    ;;
+esac

@@ -1,16 +1,12 @@
 #!/usr/bin/env bash
 # Click handler for the claude SketchyBar item.
-# Copies the active session file path to the clipboard.
+# Shows a macOS notification with current block spend + projection + time left.
 
-SESSION_FILE="$HOME/.cache/sketchybar-claude-session.txt"
+CACHE="$HOME/.cache/sketchybar-claude-block.txt"
 
-if [ -f "$SESSION_FILE" ]; then
-  SESSION_PATH=$(cat "$SESSION_FILE")
-  if [ -f "$SESSION_PATH" ]; then
-    echo -n "$SESSION_PATH" | pbcopy
-    osascript -e "display notification \"$(basename "$SESSION_PATH")\" with title \"Claude session path copied\"" 2>/dev/null
-    exit 0
-  fi
+if [ -f "$CACHE" ]; then
+  IFS='|' read -r COST PROJ LEFT < "$CACHE"
+  osascript -e "display notification \"\$$COST now → projected \$$PROJ • $LEFT remaining in this 5-hour block\" with title \"Claude Code usage\"" 2>/dev/null
+else
+  osascript -e 'display notification "No active Claude session in last 5h" with title "Claude Code usage"' 2>/dev/null
 fi
-
-osascript -e 'display notification "No active Claude session" with title "Claude"' 2>/dev/null
