@@ -37,9 +37,6 @@ unset _1password_sock
 # Starship PATH
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 
-# Tealdeer
-export TEALDEER_CONFIG_DIR="$HOME/.config/tealdeer/"
-
 # Using Starship for shell prompt
 
 # ------------FZF--------------

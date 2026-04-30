@@ -23,8 +23,6 @@ brew "biome"
 brew "bottom"
 # New way to see and navigate directory trees
 brew "broot"
-# Resource monitor. C++ version and continuation of bashtop and bpytop
-brew "btop"
 # GNU File, Shell, and Text utilities
 brew "coreutils"
 # Power of curl, ease of use of httpie
@@ -63,8 +61,6 @@ brew "gource"
 brew "graphviz"
 # Development framework for multimedia applications
 brew "gstreamer"
-# Improved top (interactive process viewer)
-brew "htop"
 # Tools and libraries to manipulate images in select formats
 brew "imagemagick"
 # Simple terminal UI for git commands
@@ -85,8 +81,6 @@ brew "navi"
 brew "neovim"
 # Open-source, cross-platform JavaScript runtime environment
 brew "node"
-# Manage multiple Node.js versions
-brew "nvm"
 # Command-line Git information tool
 brew "onefetch"
 # Outputs current CPU temperature for OSX
@@ -171,6 +165,8 @@ cask "claude-code"
 cask "font-hack-nerd-font"
 cask "font-jetbrains-mono-nerd-font"
 cask "font-sf-pro"
+# GPU-accelerated terminal emulator (primary terminal)
+cask "ghostty"
 # Open-source keystroke visualiser
 cask "keycastr"
 # Customise mouse behavior

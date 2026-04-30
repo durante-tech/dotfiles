@@ -38,6 +38,9 @@ eval "$(starship init zsh)"
 # Zoxide
 command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
 
+# Direnv — auto-load .envrc per directory
+command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
+
 # FNM auto-switch on cd (hook only - base env in .zprofile)
 autoload -U add-zsh-hook
 _fnm_autoload_hook() {
@@ -305,9 +308,8 @@ autoload -Uz compinit && compinit -C
 # bun completions (sourced in .zprofile, not duplicated here)
 
 # The following lines have been added by Docker Desktop to enable Docker CLI completions.
+# (compinit already ran cached above — don't re-run here)
 fpath=(/Users/lgertel/.docker/completions $fpath)
-autoload -Uz compinit
-compinit
 # End of Docker CLI completions
 
 # Added by LM Studio CLI (lms)
@@ -330,9 +332,6 @@ export PATH="/Users/lgertel/.antigravity/antigravity/bin:$PATH"
 
 # PAI alias
 alias pai='bun /Users/lgertel/.claude/PAI/Tools/pai.ts'
-
-# Added by Antigravity
-export PATH="/Users/lgertel/.antigravity/antigravity/bin:$PATH"
 
 # Durante CLI: distribution tool (install/upgrade/status/doctor)
 alias durante="node /Users/lgertel/Durante/npm-package/bin/dos.js"
