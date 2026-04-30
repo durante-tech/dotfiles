@@ -135,6 +135,21 @@ return {
                 },
                 img_dirs = { "img", "images", "assets", "static", "public", "media", "attachments", "~/Downloads" },
             },
+            -- Beautiful toast notifications (replaces default vim.notify;
+            -- noice.messages is disabled so no overlap).
+            notifier = {
+                enabled = true,
+                timeout = 4000,
+                style = "compact",
+                top_down = false,  -- bottom-up stack feels less intrusive
+            },
+            -- Visual indent guides (he had none — neither indent-blankline nor
+            -- mini.indentscope).
+            indent = {
+                enabled = true,
+                animate = { enabled = false },  -- avoid distracting animation
+                scope = { enabled = true },
+            },
             dashboard = {
                 enabled = true,
                 sections = {
