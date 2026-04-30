@@ -208,6 +208,9 @@ alias mpds="mpd ~/.config/mpd/mpd.conf"
 alias gm='glow'                              # glow current dir or file
 alias gmp='glow -p'                          # glow with paged output (large docs)
 
+# gh-dash — terminal PR/issue dashboard
+alias ghd='gh dash'                          # interactive PR/issue browser
+
 # Local LLM (Ollama daemon)
 # `brew services run` = current session only (no boot registration).
 # Use this when you want manual control. `brew services start` would persist
