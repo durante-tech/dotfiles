@@ -88,16 +88,21 @@ Download from [python.org](https://www.python.org/downloads/) or:
 brew install python@3.11
 ```
 
-### 2. Install Node.js via NVM
+### 2. Install Node.js + Python via mise
+
+mise is the polyglot version manager (replaces fnm + pyenv + nvm). It reads
+`mise.toml`, `.tool-versions`, `.nvmrc`, and `.python-version` natively.
 
 ```bash
-# Restart terminal first to load NVM
+# Restart terminal first
 source ~/.zprofile
 
-# Install Node
-nvm install v23.3.0  # or latest LTS
-nvm use v23.3.0
-nvm alias default v23.3.0
+# mise is configured globally via dotfiles/mise/.config/mise/config.toml.
+# Just run:
+mise install            # installs versions pinned in the global config
+
+# Or pin a specific version manually:
+mise use --global node@latest python@3.12
 ```
 
 ### 3. Install Tmux Plugin Manager
@@ -150,7 +155,7 @@ Mason will automatically install LSP servers on first launch. Wait for installat
 
 ### CLI Tools
 - **Core Utils**: coreutils, bat, fd, ripgrep, tree, fzf, zoxide
-- **Development**: neovim, git, lazygit, tmux, node, nvm, lua, sqlite
+- **Development**: neovim, git, lazygit, tmux, node, mise, fnm, pyenv, lua, sqlite
 - **Shell**: zsh-autosuggestions, zsh-syntax-highlighting, starship
 
 ### GUI Applications (via Homebrew Cask)
@@ -160,7 +165,9 @@ Mason will automatically install LSP servers on first launch. Wait for installat
 - **Fonts**: Hack Nerd Font, JetBrains Mono Nerd Font, SF Pro
 
 ### Language/Version Managers
-- **NVM**: Node.js version management
+- **mise**: Polyglot version manager (primary — replaces fnm + pyenv + nvm)
+- **fnm**: Fast Node manager (kept as fallback during mise rollout)
+- **pyenv**: Python version manager (kept as fallback)
 - **Bun**: Alternative JavaScript runtime
 - **Deno**: JavaScript/TypeScript runtime
 - **UV**: Python package manager
@@ -237,7 +244,8 @@ brew list
 
 ### Check environment managers:
 ```bash
-nvm --version
+mise --version
+node --version
 bun --version
 deno --version
 uv --version
@@ -269,12 +277,14 @@ source ~/.zprofile
 source ~/.zshrc
 ```
 
-### Issue: NVM command not found
+### Issue: `node` / `python` command not found
 
-**Solution**: Make sure Homebrew NVM is properly loaded:
+**Solution**: mise should have activated automatically via `eval "$(mise activate zsh)"`
+in `.zshrc`. If `which node` returns nothing:
 ```bash
-export NVM_DIR="$HOME/.nvm"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+mise doctor              # diagnose mise setup
+mise install             # install versions pinned in config
+mise use --global node@latest python@3.12   # pin globally if config absent
 ```
 
 ### Issue: Neovim LSP not working
