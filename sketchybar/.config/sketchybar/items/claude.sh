@@ -3,7 +3,7 @@
 claude=(
   script="$PLUGIN_DIR/claude.sh"
   icon="󰚩"
-  label="..."
+  label=""
   background.color="$PURE_BLACK"
   padding_right=5
   padding_left=5
