@@ -71,7 +71,13 @@ source "$ITEM_DIR/media_block.sh"
           
            
 sketchybar --hotload on
+
 ##### Force all scripts to run the first time (never do this in a script) #####
+# Note: items use label="" placeholders (not "...") so they render invisibly
+# until their plugin's first run populates them. This avoids the well-known
+# sketchybar issue where --update from inside the rc doesn't fully re-fire
+# plugins that have already been registered, leaving them stuck on the
+# placeholder for up to update_freq seconds.
 sketchybar --update
 
 echo "sketchybar configuation loaded.."

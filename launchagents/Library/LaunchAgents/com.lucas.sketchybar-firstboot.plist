@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.lucas.sketchybar-firstboot</string>
+
+    <!--
+      Fires `sketchybar --update` a few seconds after login to nudge
+      slow-first-fire plugins (github API, weather, macupdater) so they
+      populate within seconds of bar start instead of within their
+      update_freq cycle (5+ minutes).
+
+      Calling --update from inside sketchybar's own rc doesn't reliably
+      re-fire already-registered plugins, so we do it externally here.
+    -->
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-c</string>
+        <string>sleep 5; /opt/homebrew/bin/sketchybar --update; sleep 3; /opt/homebrew/bin/sketchybar --update</string>
+    </array>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <false/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/lgertel/Library/Logs/sketchybar-firstboot.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/lgertel/Library/Logs/sketchybar-firstboot.log</string>
+</dict>
+</plist>
