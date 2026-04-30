@@ -320,16 +320,16 @@ autoload -Uz compinit && compinit -C
 
 # The following lines have been added by Docker Desktop to enable Docker CLI completions.
 # (compinit already ran cached above — don't re-run here)
-fpath=(/Users/lgertel/.docker/completions $fpath)
+[[ -d "$HOME/.docker/completions" ]] && fpath=("$HOME/.docker/completions" $fpath)
 # End of Docker CLI completions
 
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/lgertel/.lmstudio/bin"
+# Added by LM Studio CLI (lms) — only if installed
+[[ -d "$HOME/.lmstudio/bin" ]] && export PATH="$PATH:$HOME/.lmstudio/bin"
 # End of LM Studio CLI section
 
 
 # pnpm
-export PNPM_HOME="/Users/lgertel/Library/pnpm"
+export PNPM_HOME="$HOME/Library/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
@@ -338,14 +338,10 @@ esac
 
 
 
-# Added by Antigravity
-export PATH="/Users/lgertel/.antigravity/antigravity/bin:$PATH"
+# Added by Antigravity — only if installed
+[[ -d "$HOME/.antigravity/antigravity/bin" ]] && export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 
-# PAI alias
-alias pai='bun /Users/lgertel/.claude/PAI/Tools/pai.ts'
-
-# Durante CLI: distribution tool (install/upgrade/status/doctor)
-alias durante="node /Users/lgertel/Durante/npm-package/bin/dos.js"
-
-# DOS alias
-alias dos='bun /Users/lgertel/.claude/DOS/Tools/dos.ts'
+# Personal tool aliases — guarded so this file works for other developers
+# who clone the repo but don't have these tools installed.
+[[ -f "$HOME/Durante/npm-package/bin/dos.js" ]] && alias durante="node $HOME/Durante/npm-package/bin/dos.js"
+[[ -f "$HOME/.claude/DOS/Tools/dos.ts" ]] && alias dos="bun $HOME/.claude/DOS/Tools/dos.ts"

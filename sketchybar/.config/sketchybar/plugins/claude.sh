@@ -15,7 +15,9 @@
 source "$CONFIG_DIR/colors.sh"
 
 CACHE="/tmp/ccusage-cache.json"
-CCUSAGE="/Users/lgertel/.bun/bin/ccusage"
+# Resolve ccusage binary across common install paths (bun-managed npm package)
+CCUSAGE="$HOME/.bun/bin/ccusage"
+[ -x "$CCUSAGE" ] || CCUSAGE="$(command -v ccusage 2>/dev/null)"
 
 # ── Refresh cache in background if missing or > 60s old ─────────────────────
 NEEDS_REFRESH=0

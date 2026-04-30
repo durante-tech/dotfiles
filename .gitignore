@@ -22,5 +22,15 @@ tmux/.config/tmux/.pi/
 # Local overrides (create these for machine-specific config)
 *.local
 
+# Zsh compinit cache (regenerated per-shell)
+.zcompdump*
+
+# macOS LaunchAgent log files
+Library/Logs/
+
+# Rendered LaunchAgent plists (templates live under launchagents/, rendered
+# plists are copied to ~/Library/LaunchAgents/ at install time by setup.sh)
+launchagents/.rendered/
+
 # DuranteOS internal state
 .dos/
