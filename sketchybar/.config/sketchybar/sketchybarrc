@@ -55,6 +55,9 @@ source "$ITEM_DIR/voice_server.sh"
 source "$ITEM_DIR/calendar.sh"
 
 ##### Right Items #####
+# Source order = right→left visually (first sourced sits rightmost).
+# Layout (right→left):
+#   clock | weather | cpu | memory | mic | network | github | claude | media_block
 source "$ITEM_DIR/clock.sh"
 source "$ITEM_DIR/weather.sh"
 source "$ITEM_DIR/cpu.sh"
@@ -62,6 +65,7 @@ source "$ITEM_DIR/memory.sh"
 source "$ITEM_DIR/mic.sh"
 source "$ITEM_DIR/network.sh"
 source "$ITEM_DIR/github.sh"
+source "$ITEM_DIR/claude.sh"
 
 source "$ITEM_DIR/media_block.sh"
           
