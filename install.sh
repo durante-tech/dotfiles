@@ -519,7 +519,7 @@ fi
 # Stow packages
 print_step "Stowing dotfiles packages..."
 
-STOW_OPTS="-t ~"
+STOW_OPTS="-t $HOME"
 if [ "$FORCE_STOW" = true ]; then
     STOW_OPTS="$STOW_OPTS --adopt"
     print_warn "Using --adopt flag (existing files will be adopted)"
