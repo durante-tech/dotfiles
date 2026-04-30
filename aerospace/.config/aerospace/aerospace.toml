@@ -79,26 +79,27 @@ outer.left = 15
 outer.bottom = 15
 # outer.top =        40
 outer.right = 15
-# Per-monitor top gap. Update to current monitor names detected by `aerospace list-monitors`.
-# Adjust values as desired per monitor; last number is the default fallback.
-outer.top = [
-  { monitor."Built-in Retina Display" = 15 },
-  { monitor."PORTRAIT-MONITOR" = 50 },
-  15,
-]
+# Single-monitor host (SAMSUNG 5K via `aerospace list-monitors`).
+# 50 = sketchybar height (40) + 10px breathing room. Query actual bar
+# height with: sketchybar --query bar | jq -r '.height'
+# When docking with an external/portrait monitor, replace this with the
+# per-monitor array form and restore [workspace-to-monitor-force-assignment]
+# below. Keep names matching what `aerospace list-monitors` reports.
+outer.top = 50
 
-# Pin key workspaces to monitors
+# Multi-monitor workspace pinning — DISABLED on this single-monitor host.
+# Re-enable by uncommenting AND updating monitor names to match
+# `aerospace list-monitors`.
 # See: https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
-[workspace-to-monitor-force-assignment]
-# Built-in display can't be renamed in BetterDisplay, use actual macOS name
-1 = 'Built-in Retina Display'  # Main workspace on laptop
-2 = '^PORTRAIT-MONITOR$'       # Secondary workspace on portrait
-B = 'Built-in Retina Display'  # Browser on laptop
-D = 'Built-in Retina Display'  # Development on laptop
-F = 'Built-in Retina Display'  # Finder on laptop (floats)
-M = 'Built-in Retina Display'  # Messaging on laptop
-N = 'Built-in Retina Display'  # Notes on laptop
-T = '^PORTRAIT-MONITOR$'       # Terminal on portrait
+# [workspace-to-monitor-force-assignment]
+# 1 = 'Built-in Retina Display'  # Main workspace on laptop
+# 2 = '^PORTRAIT-MONITOR$'       # Secondary workspace on portrait
+# B = 'Built-in Retina Display'  # Browser on laptop
+# D = 'Built-in Retina Display'  # Development on laptop
+# F = 'Built-in Retina Display'  # Finder on laptop (floats)
+# M = 'Built-in Retina Display'  # Messaging on laptop
+# N = 'Built-in Retina Display'  # Notes on laptop
+# T = '^PORTRAIT-MONITOR$'       # Terminal on portrait
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 # 'main' binding mode must be always presented
@@ -206,6 +207,7 @@ alt-shift-t = 'move-node-to-workspace T'
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
 alt-tab = 'workspace-back-and-forth'
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
+# No-op on single-monitor hosts — kept so it works automatically when docking.
 alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
