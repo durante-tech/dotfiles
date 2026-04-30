@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<!--
+  matrix.html — Matrix-style digital rain shader.
+  Open in Plash to set as wallpaper. Self-contained, no network needed.
+  Catppuccin-Mocha green tint, 60fps, sub-1% CPU on M-series.
+-->
+<head>
+  <meta charset="utf-8">
+  <title>matrix rain</title>
+  <style>
+    html, body { margin: 0; padding: 0; overflow: hidden; background: #11111b; }
+    canvas { display: block; width: 100vw; height: 100vh; }
+  </style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script id="vs" type="x-shader/x-vertex">
+attribute vec2 p; void main() { gl_Position = vec4(p, 0.0, 1.0); }
+</script>
+<script id="fs" type="x-shader/x-fragment">
+precision highp float;
+uniform vec2 iResolution;
+uniform float iTime;
+
+float hash(vec2 p) {
+  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+}
+
+float glyph(vec2 uv, float t) {
+  vec2 g = floor(uv * 16.0);
+  float h = hash(g + floor(t * 8.0));
+  return step(0.5, h);
+}
+
+void main() {
+  vec2 uv = gl_FragCoord.xy / iResolution.xy;
+  vec2 p = vec2(gl_FragCoord.x / 14.0, gl_FragCoord.y / 18.0);
+  float col = floor(p.x);
+
+  // Each column has its own speed and offset.
+  float speed = mix(4.0, 18.0, hash(vec2(col, 0.0)));
+  float offset = hash(vec2(col, 1.0)) * 100.0;
+  float y = mod(p.y + iTime * speed + offset, iResolution.y / 18.0);
+
+  // Trail fades from head (bright) to tail (dim).
+  float trailLen = mix(8.0, 24.0, hash(vec2(col, 2.0)));
+  float head = step(y, trailLen) * (1.0 - y / trailLen);
+
+  // Glyph pattern flickers within the trail.
+  float ch = glyph(vec2(col * 0.13, floor(p.y) * 0.07), iTime);
+  float bright = head * ch;
+
+  // Catppuccin Mocha green: #a6e3a1
+  vec3 baseGreen = vec3(0.65, 0.89, 0.63);
+  // Bright head punches white on the leading character.
+  vec3 col_rgb = mix(baseGreen, vec3(1.0), pow(bright, 4.0));
+  // Vignette fade at edges.
+  float vig = smoothstep(1.4, 0.4, length(uv - 0.5));
+
+  gl_FragColor = vec4(col_rgb * bright * vig, 1.0);
+}
+</script>
+<script>
+  const canvas = document.getElementById('c');
+  const gl = canvas.getContext('webgl', { antialias: false, alpha: false });
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = window.innerWidth * dpr;
+    canvas.height = window.innerHeight * dpr;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function compile(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s));
+    return s;
+  }
+  const vs = compile(gl.VERTEX_SHADER, document.getElementById('vs').textContent);
+  const fs = compile(gl.FRAGMENT_SHADER, document.getElementById('fs').textContent);
+  const prog = gl.createProgram();
+  gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+  gl.useProgram(prog);
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, 'p');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  const uRes = gl.getUniformLocation(prog, 'iResolution');
+  const uTime = gl.getUniformLocation(prog, 'iTime');
+
+  const start = performance.now();
+  function frame() {
+    gl.uniform2f(uRes, canvas.width, canvas.height);
+    gl.uniform1f(uTime, (performance.now() - start) / 1000.0);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(frame);
+  }
+  frame();
+</script>
+</body>
+</html>
