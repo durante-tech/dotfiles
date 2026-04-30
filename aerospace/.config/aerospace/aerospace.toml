@@ -18,9 +18,11 @@ after-startup-command = [
   'exec-and-forget borders active_color=0xff8aadf4 inactive_color=0xff939ab7 width=4.0'
 ]
 
-# Notify Sketchybar about workspace change
+# Notify Sketchybar about workspace change AND swap per-workspace wallpaper.
+# wallpaper-workspace.sh looks for ~/Pictures/Wallpapers/workspace-<NAME>.{jpg,png}
+# with a graceful fallback chain — missing files are a no-op, never a crash.
 exec-on-workspace-change = ['/bin/bash', '-c',
-    'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
+    'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE; ~/scripts/wallpaper-workspace.sh "$AEROSPACE_FOCUSED_WORKSPACE" &'
 ]
 
 # Notify when mode changes (v0.19+) - useful for visual feedback

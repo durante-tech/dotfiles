@@ -205,6 +205,17 @@ alias lg="lazygit"
 # mpd start alias
 alias mpds="mpd ~/.config/mpd/mpd.conf"
 
+# Wallpaper management (wallpaper-cli + per-workspace + Plash shaders)
+alias wp='wallpaper'                                              # wp [path] - get/set
+alias wpr='~/scripts/wallpaper-cycle.sh'                          # random pick from ~/Pictures/Wallpapers
+alias wpw='~/scripts/wallpaper-workspace.sh'                      # manual per-workspace trigger
+wps() {                                                           # open shader in Plash
+  local shader="${1:-matrix}"
+  local file="$HOME/dotfiles/wallpapers/shaders/${shader}.html"
+  [ -f "$file" ] || { echo "no shader: $shader (try: matrix|aurora|flowfield)"; return 1; }
+  open -a Plash "$file" 2>/dev/null || open "$file"
+}
+
 # obsidian icloud path (customize for your vault)
 # alias vault="cd ~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/YourVaultName/"
 

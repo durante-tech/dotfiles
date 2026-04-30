@@ -52,6 +52,9 @@
 | **[AeroSpace](docs/aerospace/README.md)** | i3-like tiling WM with workspace-to-monitor pinning |
 | **[Sketchybar](docs/sketchybar/README.md)** | Custom status bar — workspaces, weather, CPU, media, git |
 | **[Karabiner](docs/karabiner/README.md)** | Key remapping |
+| **[Wallpapers](wallpapers/README.md)** | Per-workspace switching + GLSL shaders (matrix/aurora/flowfield) for Plash |
+| **Übersicht** | Webview widgets above wallpaper, below windows |
+| **boring.notch** | Notch → Dynamic-Island-style music/calendar/camera (OSS) |
 
 ### CLI Tools
 
@@ -180,6 +183,7 @@ dotfiles/
 ├── starship/         → ~/.config/starship/
 ├── tmux/             → ~/.config/tmux/
 ├── w3m/              → ~/.w3m/
+├── wallpapers/       → GLSL shader pages for Plash + per-workspace asset notes
 ├── wezterm/          → ~/.config/wezterm/
 ├── yazi/             → ~/.config/yazi/
 ├── zed/              → ~/.config/zed/

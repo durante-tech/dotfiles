@@ -301,3 +301,10 @@ go "github.com/go-delve/delve/cmd/dlv"
 go "github.com/danielmiessler/fabric/cmd/fabric"
 go "github.com/projectdiscovery/naabu/v2/cmd/naabu"
 go "honnef.co/go/tools/cmd/staticcheck"
+
+# Wallpaper / desktop integration
+tap "theboredteam/boring-notch"
+brew "wallpaper"                                # CLI for desktop wallpaper (Sindre Sorhus)
+cask "ubersicht"                                # Webview widgets above wallpaper
+cask "boring-notch"                             # Notch utility (Dynamic-Island clone, OSS)
+# Note: Plash is Mac App Store only — install from https://sindresorhus.com/plash
