@@ -446,6 +446,21 @@ else
     fi
 fi
 
+# ccusage — Claude Code session/billing usage parser (used by SketchyBar
+# claude indicator). Requires bun (installed above).
+if cmd_exists bun; then
+    if cmd_exists ccusage; then
+        print_success "ccusage already installed"
+    else
+        if [ "$DRY_RUN" = true ]; then
+            print_dry "bun install -g ccusage"
+        else
+            print_step "Installing ccusage globally via bun..."
+            bun install -g ccusage 2>/dev/null || print_warn "ccusage install failed"
+        fi
+    fi
+fi
+
 # Fabric AI (requires Go)
 if cmd_exists fabric; then
     print_success "Fabric already installed"
@@ -530,6 +545,57 @@ done
 print_success "Dotfiles stowed"
 
 # -----------------------------------------------------------------------------
+# 6b. MISE — install pinned tool versions
+# -----------------------------------------------------------------------------
+# Runs AFTER stow so that mise/.config/mise/config.toml is in place.
+# Pulls node@25.5.0 + python@3.12.12 (or whatever is pinned in config).
+
+if cmd_exists mise; then
+    if [ "$DRY_RUN" = true ]; then
+        print_dry "mise install"
+    else
+        print_step "Installing pinned tool versions via mise..."
+        mise install 2>&1 | tail -5 || print_warn "mise install had issues"
+        print_success "mise versions installed"
+    fi
+else
+    print_warn "mise not found - skipping language version install"
+fi
+
+# -----------------------------------------------------------------------------
+# 6c. RENDER + BOOTSTRAP LaunchAgents
+# -----------------------------------------------------------------------------
+# Plists in launchagents/ are templates with __USER__ placeholders. Delegate
+# to setup.sh's render function which substitutes $USER and runs launchctl
+# bootstrap so wallpaper-rotate + sketchybar-firstboot fire on next login.
+
+if [ -f "$DOTFILES_DIR/setup.sh" ]; then
+    if [ "$DRY_RUN" = true ]; then
+        print_dry "$DOTFILES_DIR/setup.sh --configure"
+    else
+        print_step "Configuring environment (LaunchAgents, dirs, TPM)..."
+        # --configure runs configure_environment (which calls render_launchagents)
+        # + verify_config + post_update. It does NOT re-stow (we did that above).
+        bash "$DOTFILES_DIR/setup.sh" --configure 2>&1 | grep -vE "^$" | tail -30 || true
+    fi
+fi
+
+# -----------------------------------------------------------------------------
+# 6d. ESPANSO — register and start
+# -----------------------------------------------------------------------------
+
+if cmd_exists espanso; then
+    if [ "$DRY_RUN" = true ]; then
+        print_dry "espanso service register && espanso start"
+    else
+        print_step "Registering Espanso service..."
+        espanso service register 2>/dev/null || true
+        espanso start 2>/dev/null || \
+            print_warn "Espanso start failed — grant Accessibility in System Settings then run: espanso start"
+    fi
+fi
+
+# -----------------------------------------------------------------------------
 # 7. TMUX PLUGIN MANAGER (TPM)
 # -----------------------------------------------------------------------------
 
@@ -596,25 +662,18 @@ fi
 if [[ "$(uname)" == "Darwin" ]] && [ "$SKIP_MACOS_DEFAULTS" = false ]; then
     print_header "9. macOS Defaults"
 
-    if [ "$DRY_RUN" = true ]; then
-        print_dry "defaults write com.apple.Dock autohide -bool TRUE"
-        print_dry "defaults write NSGlobalDomain KeyRepeat -int 2"
-        print_dry "defaults write NSGlobalDomain InitialKeyRepeat -int 15"
-        print_dry "killall Dock"
+    # Run the full ./macos/.macos script (60+ defaults entries) instead of
+    # the 4-line subset that used to live here. Asks for sudo upfront.
+    if [ -x "$DOTFILES_DIR/macos/.macos" ]; then
+        if [ "$DRY_RUN" = true ]; then
+            print_dry "$DOTFILES_DIR/macos/.macos"
+        else
+            print_step "Applying full macOS defaults from ./macos/.macos..."
+            "$DOTFILES_DIR/macos/.macos" || print_warn "macOS defaults script had issues"
+            print_success "macOS defaults configured"
+        fi
     else
-        print_step "Configuring macOS settings..."
-
-        # Dock
-        defaults write com.apple.Dock autohide -bool TRUE
-
-        # Keyboard
-        defaults write NSGlobalDomain KeyRepeat -int 2
-        defaults write NSGlobalDomain InitialKeyRepeat -int 15
-
-        # Restart Dock to apply changes
-        killall Dock 2>/dev/null || true
-
-        print_success "macOS defaults configured"
+        print_warn "macos/.macos not found or not executable"
     fi
 
     # Check SIP status
