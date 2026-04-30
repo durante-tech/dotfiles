@@ -19,6 +19,12 @@ brew "atuin"
 brew "bat"
 # Toolchain of the web
 brew "biome"
+# Glamorous shell scripts (Charmbracelet)
+brew "gum"
+# Terminal markdown renderer (Charmbracelet)
+brew "glow"
+# Local LLM runtime (run via `brew services start ollama`)
+brew "ollama"
 # Yet another cross-platform graphical process/system monitor
 brew "bottom"
 # New way to see and navigate directory trees
@@ -171,6 +177,8 @@ cask "font-sf-pro"
 cask "ghostty"
 # Open-source keystroke visualiser
 cask "keycastr"
+# System-wide text expander (Rust)
+cask "espanso"
 # Customise mouse behavior
 cask "linearmouse"
 # System monitor for the menu bar
