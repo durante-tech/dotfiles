@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.lucas.wallpaper-rotate</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-lc</string>
+        <string>/Users/lgertel/scripts/wallpaper-rotate.sh</string>
+    </array>
+
+    <!-- Fire every 3600s (1 hour). -->
+    <key>StartInterval</key>
+    <integer>3600</integer>
+
+    <!-- Also fire once at load so the wallpaper updates immediately on login. -->
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/lgertel/Library/Logs/wallpaper-rotate.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/lgertel/Library/Logs/wallpaper-rotate.log</string>
+
+    <!-- Keep the launchd job alive across sleep/wake. -->
+    <key>KeepAlive</key>
+    <false/>
+
+    <!-- Reasonable nice value — wallpaper changes are not urgent. -->
+    <key>Nice</key>
+    <integer>10</integer>
+</dict>
+</plist>
