@@ -41,12 +41,9 @@ command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
 # Direnv — auto-load .envrc per directory
 command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
 
-# FNM auto-switch on cd (hook only - base env in .zprofile)
-autoload -U add-zsh-hook
-_fnm_autoload_hook() {
-    [[ -f .node-version || -f .nvmrc ]] && fnm use --silent-if-unchanged
-}
-add-zsh-hook chpwd _fnm_autoload_hook
+# mise — polyglot version manager (replaces fnm + pyenv + nvm)
+# Reads .mise.toml | .tool-versions | .nvmrc | .python-version per project
+command -v mise &>/dev/null && eval "$(mise activate zsh)"
 
 # FZF
 command -v fzf &>/dev/null && eval "$(fzf --zsh)"
@@ -61,8 +58,7 @@ command -v atuin &>/dev/null && eval "$(atuin init zsh)"
 # bindkey '^r' _atuin_search_widget
 bindkey '^r' atuin-up-search-viins
 
-# Pyenv
-command -v pyenv &>/dev/null && eval "$(pyenv init -)"
+# Pyenv replaced by mise (activated above). Pyenv binary remains as fallback.
 
 #User configuration
 # export MANPATH="/usr/local/man:$MANPATH"

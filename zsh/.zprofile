@@ -55,8 +55,7 @@ export FZF_ALT_C_OPTS="--preview 'eza --icons=always --tree --color=always {} | 
 export FZF_TMUX_OPTS=" -p90%,70% "  
 # -----------------------------
 
-# FNM (Fast Node Manager) - base env only (--use-on-cd moved to .zshrc to prevent duplicate init)
-command -v fnm &>/dev/null && eval "$(fnm env)"
+# FNM replaced by mise (activated in .zshrc). Binary stays as fallback for now.
 
 # Console Ninja
 export PATH=~/.console-ninja/.bin:$PATH
@@ -72,10 +71,8 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 #------------Langs------------
 
-# Pyenv
+# Pyenv replaced by mise. Keeping PYENV_ROOT for any tooling that still references it.
 export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-# Note: pyenv init is done in .zshrc for interactive shells
 
 # Golang
 export GOPATH=$HOME/go

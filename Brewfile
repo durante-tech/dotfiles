@@ -37,7 +37,9 @@ brew "dust"
 brew "eza"
 # Simple, fast and user-friendly alternative to find
 brew "fd"
-# Fast and simple Node.js version manager
+# mise — polyglot version manager (replaces fnm + pyenv)
+brew "mise"
+# Fast and simple Node.js version manager (kept as fallback during mise rollout)
 brew "fnm"
 # Terminal JSON viewer
 brew "fx"
