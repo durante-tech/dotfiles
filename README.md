@@ -1,3 +1,18 @@
+---
+name: dotfiles
+pack-id: durante-tech-dotfiles-v2.0.0
+version: 2.0.0
+author: durante-tech (Lucas Gertel)
+description: macOS terminal-first, keyboard-driven development environment. 18 stowable packages, ~67 brew formulas/casks, mise polyglot version manager, hourly Durante-themed wallpaper rotation, sketchybar Claude Code billing-block indicator, espanso :llm trigger to local Ollama. USE WHEN install dotfiles, set up new mac, clone dotfiles, install lucas dotfiles, configure new development machine, restore dotfiles, update dotfiles, repair dotfiles, fresh mac setup, dotfile installation, durante dotfiles, dotfiles new machine, terminal-first setup, install brewfile, mise migration, durante setup.
+type: dotfiles
+role: environment
+visibility: public
+category: DevEnvironment
+platform: macOS-AppleSilicon
+dependencies: [Homebrew, GNU Stow]
+keywords: [dotfiles, install dotfiles, set up new mac, clone dotfiles, install lucas dotfiles, configure new development machine, restore dotfiles, update dotfiles, repair dotfiles, fresh mac setup, durante dotfiles, mise, ollama, sketchybar, aerospace, espanso, neovim, tmux, ghostty]
+---
+
 <div align="center">
 
 # ⌨️ Dotfiles
@@ -6,7 +21,7 @@
 
 [![CI](https://github.com/Sin-cy/dotfiles/actions/workflows/lint.yml/badge.svg)](https://github.com/Sin-cy/dotfiles/actions/workflows/lint.yml)
 ![macOS](https://img.shields.io/badge/macOS-Sequoia-000000?logo=apple&logoColor=white)
-![Neovim](https://img.shields.io/badge/Neovim-0.11+-57A143?logo=neovim&logoColor=white)
+![Neovim](https://img.shields.io/badge/Neovim-0.12+-57A143?logo=neovim&logoColor=white)
 ![Shell](https://img.shields.io/badge/Shell-Zsh-4EAA25?logo=gnubash&logoColor=white)
 
 <!-- Replace with your actual screenshot -->
@@ -15,6 +30,30 @@
 *Catppuccin Mocha terminals · Rose-pine Neovim · Sketchybar · AeroSpace tiling*
 
 </div>
+
+---
+
+## For AI Agents — Install / Update / Repair
+
+**If you're an AI agent (Claude Code, etc.) and the user asked you to install, update, or repair this dotfiles environment, here's the contract:**
+
+1. **Read [`INSTALL.md`](INSTALL.md)** — wizard-style 5-phase guide (System Analysis → User Questions → Backup → Install → Verify) using `AskUserQuestion` + `TodoWrite`.
+2. **Drive [`install.sh`](install.sh)** with the right flags based on user's answers — don't re-implement install logic. The script is canonical and idempotent.
+3. **Walk [`VERIFY.md`](VERIFY.md)** end-to-end after install — 11 sections of bash one-liners that emit `OK` / `FAIL` / `WARN`. Each `FAIL` has a paired "If this fails" repair note.
+4. **Surface manual steps** the user must do (5 things that can't be automated): Accessibility grants for Espanso/Maccy/Übersicht/boring.notch/AeroSpace, `atuin register` (interactive password), `ollama pull qwen3-coder:30b`, install Plash from the Mac App Store, and 1Password account setup.
+
+### Quick agent-driven install
+
+```
+"Install Lucas's dotfiles from this repo" → Read INSTALL.md → run wizard
+"Update my dotfiles"                       → Read INSTALL.md → choose Update mode
+"Verify my dotfiles install"               → Read VERIFY.md → run all checks
+"Set up a fresh Mac with these dotfiles"   → Read INSTALL.md → choose Fresh install
+```
+
+The full 12-step install runs `install.sh` which internally drives: Xcode CLT → Homebrew → ~50 formulas → ~10 casks → Bun + ccusage + Fabric → stow 18 packages → `mise install` → `setup.sh --configure` (renders LaunchAgent templates with `__USER__` substitution) → Espanso service register → TPM tmux plugins → Neovim Lazy sync → `./macos/.macos` (60+ defaults entries) → verification.
+
+> **For human readers:** the rest of this README is the standard overview. AI agents can skip to `INSTALL.md`.
 
 ---
 
@@ -100,19 +139,30 @@
 
 ### Fresh Install (New Machine)
 
+**Option A — AI-assisted wizard (recommended):**
+After cloning, point your AI assistant at the repo and ask it to install. It reads [`INSTALL.md`](INSTALL.md) and walks you through a 5-phase wizard with confirmations at each step.
+
+```bash
+git clone https://github.com/Sin-cy/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+
+# Then in Claude Code:
+"Install these dotfiles using INSTALL.md"
+```
+
+**Option B — Manual one-shot:**
+
 ```bash
 # 1. Clone
 git clone https://github.com/Sin-cy/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 
-# 2. Install everything (Homebrew, packages, configs)
+# 2. Install everything (Homebrew, packages, configs, plugins, LaunchAgents,
+#    macOS defaults — all 12 phases auto-driven by install.sh)
 ./install.sh
 
-# 3. Apply macOS preferences
-./macos/.macos
-
-# 4. Configure for your machine
-./setup.sh --configure
+# 3. Verify (optional)
+# Use VERIFY.md as a checklist or ask your AI to walk it.
 ```
 
 ### Options
@@ -298,6 +348,62 @@ nvim +Lazy sync +qa
 
 <div align="center">
 
-**[Full Reference (CLAUDE.md)](CLAUDE.md)** · **[Docs Site](https://sin-cy.github.io/dotfiles/)** · **[Install Guide](README_NEW_MACOS.md)**
+**[INSTALL.md](INSTALL.md)** (wizard) · **[VERIFY.md](VERIFY.md)** (checks) · **[CLAUDE.md](CLAUDE.md)** (full reference) · **[README_NEW_MACOS.md](README_NEW_MACOS.md)** (manual onboarding) · **[Docs Site](https://sin-cy.github.io/dotfiles/)**
 
 </div>
+
+---
+
+## Customization
+
+User customizations live separately and are never overwritten by updates.
+
+For machine-specific overrides (gitignored):
+
+```bash
+~/.zshrc.local        # sourced after .zshrc
+~/.zprofile.local     # sourced after .zprofile
+```
+
+For agent-driven personalization (template substitutions, signature edits):
+
+```bash
+~/dotfiles/espanso/Library/Application Support/espanso/match/base.yml   # edit :sig trigger to your name/email
+~/dotfiles/launchagents/Library/LaunchAgents/*.plist.template            # __USER__ rendered at install time
+```
+
+---
+
+## Credits
+
+- **Pack family:** durante-tech / DOS
+- **Distribution protocol:** [RFC-0011](https://github.com/durante-tech/dos) (Packs Distribution)
+- **Forked from:** [Sin-cy/dotfiles](https://github.com/Sin-cy/dotfiles)
+- **Themes:** Catppuccin Mocha · Rose Pine
+- **AI installation:** wizard pattern after [MakerkitTeam](https://github.com/durante-tech/dos)
+
+---
+
+## Changelog
+
+### 2.0.0 — 2026-04-30
+
+- Added wizard-style AI installation: `INSTALL.md` + `VERIFY.md` for Claude Code-driven setup
+- Replaced fnm + pyenv with **mise** polyglot version manager (52% faster shell startup: 290ms → 140ms)
+- Added Tier 3 productivity stack: gum, glow, ollama, espanso, ccusage
+- Added Tier 5 stack: maccy, gh-dash, atuin sync support
+- New Sketchybar **Claude Code billing-block indicator** (5-hour rolling spend + time remaining)
+- New 10-piece Durante wallpaper gallery with hourly time-banded rotation (LaunchAgent)
+- 3 GLSL shaders for Plash live wallpapers (matrix / aurora / flowfield)
+- Ghostty added to Brewfile (was previously a manual install gap)
+- Espanso `:llm` + `:llmf` triggers wired to local `qwen3-coder:30b` Ollama model
+- LaunchAgent plists converted to `__USER__` templates rendered at install time (dev-agnostic)
+- All hardcoded `/Users/lgertel` paths replaced with `$HOME` + existence guards
+- Drift cleanup: removed nvm/htop/btop/duplicate compinit/duplicate Antigravity PATH
+- Updated `README_NEW_MACOS.md` to use mise instead of nvm
+- New documentation: `docs/zsh/aliases-and-functions.md` (Wallpaper / Charmbracelet / LLM / GitHub Dashboard sections), `docs/tier5-setup.md` (manual steps for Maccy + Atuin)
+- New stow packages: `mise/`, `espanso/`, `wallpapers/`, `launchagents/` (templated)
+
+### 1.x — pre-2026-04
+- Forked from Sin-cy/dotfiles
+- See git history for incremental changes
