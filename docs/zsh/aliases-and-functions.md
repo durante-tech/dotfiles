@@ -238,6 +238,50 @@ summarize < doc.txt          # Run the summarize pattern
 
 Each pattern name becomes its own command. There are 240+ patterns.
 
+## Wallpaper Management
+
+Tied to the Durante 10-piece gallery + hourly time-banded rotation.
+See [`wallpapers/README.md`](../../wallpapers/README.md) for full layout.
+
+| Alias | Command |
+|-------|---------|
+| `wp` | `wallpaper` (get/set current desktop image via wallpaper-cli) |
+| `wpn` | `~/scripts/wallpaper-rotate.sh` — rotate now (band-aware) |
+| `wpa` | `~/scripts/wallpaper-rotate.sh --all` — random pick from full gallery |
+| `wpr` | `~/scripts/wallpaper-cycle.sh` — random from any image in `~/Pictures/Wallpapers` |
+| `wpw` | `~/scripts/wallpaper-workspace.sh` — manual per-workspace trigger |
+| `wpl` | `tail -f ~/Library/Logs/wallpaper-rotate.log` — watch rotation log |
+
+The `wps <shader>` function (matrix / aurora / flowfield) opens a Plash-loadable
+GLSL shader as live wallpaper.
+
+## Charmbracelet (gum + glow)
+
+| Alias | Command |
+|-------|---------|
+| `gm` | `glow` — render markdown in the terminal |
+| `gmp` | `glow -p` — paged output for large docs |
+
+`gum` is used directly inside shell scripts (`gum confirm`, `gum choose`, etc.) — no aliases.
+
+## Local LLM (Ollama)
+
+| Alias | Command |
+|-------|---------|
+| `ollama-up` | `brew services run ollama` — start daemon for current session only (no boot persistence) |
+| `ollama-down` | `brew services stop ollama` — stop daemon |
+| `ollama-ls` | `ollama list` — show installed models |
+
+Pair with espanso's `:llm` and `:llmf` triggers (defined in [`espanso/Library/Application Support/espanso/match/base.yml`](../../espanso/Library/Application%20Support/espanso/match/base.yml)) for inline AI completions.
+
+## GitHub Dashboard
+
+| Alias | Command |
+|-------|---------|
+| `ghd` | `gh dash` — interactive PR/issue dashboard |
+
+See [`docs/tier5-setup.md`](../tier5-setup.md) for config customization.
+
 ## Shell Functions
 
 Functions are more powerful than aliases — they accept arguments and run logic.
