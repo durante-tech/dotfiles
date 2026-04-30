@@ -189,6 +189,58 @@ configure_environment() {
         git clone https://github.com/tmux-plugins/tpm "$HOME/.config/tmux/.tmux/plugins/tpm" 2>/dev/null || true
         print_success "TPM installed - press prefix + I in tmux to install plugins"
     fi
+
+    # Render LaunchAgent plists from templates and bootstrap them.
+    render_launchagents
+}
+
+# ============================================================================
+# LaunchAgent Templates
+# ============================================================================
+#
+# macOS launchd reads plists literally — no env var expansion. Repo holds
+# *.plist.template files with __USER__ placeholders; this function substitutes
+# the running user and copies real plists to ~/Library/LaunchAgents/, then
+# bootstraps each agent into the user's gui session.
+
+render_launchagents() {
+    print_header "Rendering LaunchAgent Plists"
+
+    local TPL_DIR="$DOTFILES_DIR/launchagents/Library/LaunchAgents"
+    local DEST_DIR="$HOME/Library/LaunchAgents"
+
+    if [[ ! -d "$TPL_DIR" ]]; then
+        print_info "No launchagents/ directory — skipping"
+        return 0
+    fi
+
+    mkdir -p "$DEST_DIR"
+    mkdir -p "$HOME/Library/Logs"
+
+    local rendered=0
+    for tpl in "$TPL_DIR"/*.plist.template; do
+        [[ -f "$tpl" ]] || continue
+        local base
+        base="$(basename "$tpl" .template)"
+        local dest="$DEST_DIR/$base"
+
+        sed "s|__USER__|$USER|g" "$tpl" > "$dest"
+
+        # Bootstrap (or re-bootstrap) the agent so changes take effect now.
+        launchctl bootout "gui/$(id -u)" "$dest" 2>/dev/null || true
+        if launchctl bootstrap "gui/$(id -u)" "$dest" 2>/dev/null; then
+            print_success "Loaded $base"
+        else
+            print_warning "Could not bootstrap $base (may already be loaded)"
+        fi
+        rendered=$((rendered + 1))
+    done
+
+    if [[ $rendered -eq 0 ]]; then
+        print_info "No .plist.template files found"
+    else
+        print_success "Rendered $rendered LaunchAgent plist(s)"
+    fi
 }
 
 # ============================================================================

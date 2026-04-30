@@ -326,9 +326,11 @@ if [ "$SKIP_BREW" = false ]; then
     brew_install make
 
     # Languages & Version Managers
+    # Note: mise is the primary polyglot manager (replaces fnm + pyenv).
+    # fnm + pyenv are kept as fallback during the mise rollout window.
     print_step "Installing languages & version managers..."
+    brew_install mise
     brew_install node
-    brew_install nvm
     brew_install fnm
     brew_install pyenv
     brew_install go
@@ -368,6 +370,10 @@ if [ "$SKIP_BREW" = false ]; then
     # AI & Productivity
     print_step "Installing AI/productivity tools..."
     brew_install aider
+    brew_install ollama          # local LLM runtime
+    brew_install gum             # glamorous shell scripts
+    brew_install glow            # terminal markdown renderer
+    brew_install wallpaper       # macOS wallpaper CLI (used by hourly rotation)
 
     # Misc
     brew_install qmk
@@ -392,6 +398,14 @@ if [ "$SKIP_CASKS" = false ]; then
     cask_install keycastr
     cask_install betterdisplay
     cask_install linearmouse
+    cask_install ubersicht       # webview widgets above wallpaper
+    cask_install espanso         # system-wide text expander
+    cask_install maccy           # clipboard history manager
+    # boring.notch — Dynamic-Island-style notch utility (custom tap)
+    if ! brew tap | grep -q "theboredteam/boring-notch"; then
+        run_cmd brew tap theboredteam/boring-notch
+    fi
+    cask_install boring-notch
 
     # Fonts
     print_step "Installing fonts..."
@@ -497,7 +511,9 @@ if [ "$FORCE_STOW" = true ]; then
 fi
 
 # Re-stow to handle updates (-R flag)
-PACKAGES="aerospace atuin ghostty karabiner kitty mpd nvim rmpc scripts sketchybar starship tmux w3m yazi zed zsh"
+PACKAGES="aerospace atuin espanso ghostty karabiner kitty mise mpd nvim rmpc scripts sketchybar starship tmux w3m wallpapers yazi zed zsh"
+# Note: launchagents/ is intentionally NOT in this list — it contains
+# .plist.template files rendered by setup.sh's render_launchagents().
 
 for pkg in $PACKAGES; do
     if [ -d "$DOTFILES_DIR/$pkg" ]; then

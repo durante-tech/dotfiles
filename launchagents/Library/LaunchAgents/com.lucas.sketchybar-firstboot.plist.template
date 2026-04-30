@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  TEMPLATE — rendered to real plist by setup.sh's render_launchagents().
+  __USER__ is substituted with the current $USER at install time.
+  The rendered file lands at ~/Library/LaunchAgents/<filename>.plist.
+-->
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
@@ -29,9 +34,9 @@
     <false/>
 
     <key>StandardOutPath</key>
-    <string>/Users/lgertel/Library/Logs/sketchybar-firstboot.log</string>
+    <string>/Users/__USER__/Library/Logs/sketchybar-firstboot.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/lgertel/Library/Logs/sketchybar-firstboot.log</string>
+    <string>/Users/__USER__/Library/Logs/sketchybar-firstboot.log</string>
 </dict>
 </plist>

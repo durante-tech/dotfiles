@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  TEMPLATE — rendered to real plist by setup.sh's render_launchagents().
+  __USER__ is substituted with the current $USER at install time.
+  The rendered file lands at ~/Library/LaunchAgents/<filename>.plist.
+-->
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
@@ -9,7 +14,7 @@
     <array>
         <string>/bin/bash</string>
         <string>-lc</string>
-        <string>/Users/lgertel/scripts/wallpaper-rotate.sh</string>
+        <string>/Users/__USER__/scripts/wallpaper-rotate.sh</string>
     </array>
 
     <!-- Fire every 3600s (1 hour). -->
@@ -21,10 +26,10 @@
     <true/>
 
     <key>StandardOutPath</key>
-    <string>/Users/lgertel/Library/Logs/wallpaper-rotate.log</string>
+    <string>/Users/__USER__/Library/Logs/wallpaper-rotate.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/lgertel/Library/Logs/wallpaper-rotate.log</string>
+    <string>/Users/__USER__/Library/Logs/wallpaper-rotate.log</string>
 
     <!-- Keep the launchd job alive across sleep/wake. -->
     <key>KeepAlive</key>
