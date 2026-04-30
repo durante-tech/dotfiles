@@ -208,8 +208,11 @@ alias mpds="mpd ~/.config/mpd/mpd.conf"
 alias gm='glow'                              # glow current dir or file
 alias gmp='glow -p'                          # glow with paged output (large docs)
 
-# Local LLM (Ollama daemon — start once with `brew services start ollama`)
-alias ollama-up='brew services start ollama'
+# Local LLM (Ollama daemon)
+# `brew services run` = current session only (no boot registration).
+# Use this when you want manual control. `brew services start` would persist
+# across reboots via LaunchAgent — avoid unless you want always-on ollama.
+alias ollama-up='brew services run ollama'
 alias ollama-down='brew services stop ollama'
 alias ollama-ls='ollama list'
 
