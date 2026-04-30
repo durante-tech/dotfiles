@@ -205,10 +205,13 @@ alias lg="lazygit"
 # mpd start alias
 alias mpds="mpd ~/.config/mpd/mpd.conf"
 
-# Wallpaper management (wallpaper-cli + per-workspace + Plash shaders)
+# Wallpaper management — Durante hourly rotation + Plash shaders + manual control
 alias wp='wallpaper'                                              # wp [path] - get/set
-alias wpr='~/scripts/wallpaper-cycle.sh'                          # random pick from ~/Pictures/Wallpapers
+alias wpn='~/scripts/wallpaper-rotate.sh'                         # rotate now (time-banded)
+alias wpa='~/scripts/wallpaper-rotate.sh --all'                   # rotate from FULL gallery (ignore band)
+alias wpr='~/scripts/wallpaper-cycle.sh'                          # random from any image in ~/Pictures/Wallpapers
 alias wpw='~/scripts/wallpaper-workspace.sh'                      # manual per-workspace trigger
+alias wpl='tail -f ~/Library/Logs/wallpaper-rotate.log'           # watch rotation log
 wps() {                                                           # open shader in Plash
   local shader="${1:-matrix}"
   local file="$HOME/dotfiles/wallpapers/shaders/${shader}.html"
