@@ -179,6 +179,8 @@ cask "ghostty"
 cask "keycastr"
 # System-wide text expander (Rust)
 cask "espanso"
+# Clipboard history manager (Cmd+Shift+C to open)
+cask "maccy"
 # Customise mouse behavior
 cask "linearmouse"
 # System monitor for the menu bar

@@ -90,6 +90,9 @@
 | **glow** | Terminal markdown renderer (`gm` alias, Charmbracelet) |
 | **ollama** | Local LLMs — `ollama-up` to start daemon |
 | **[espanso](espanso/README.md)** | System-wide text expander (`:dt`, `:ts`, `:sig`, `:llm`) |
+| **maccy** | Clipboard history manager (Cmd+Shift+C / Cmd+Shift+V) |
+| **gh-dash** | Terminal PR/issue dashboard (`ghd` alias) |
+| **atuin** | Encrypted shell-history sync ([setup](docs/tier5-setup.md)) |
 
 ---
 
