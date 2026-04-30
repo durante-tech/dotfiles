@@ -1,0 +1,15 @@
+# Global mise config — replaces fnm + pyenv defaults
+# Per-project versions are resolved from .mise.toml | .tool-versions | .nvmrc | .python-version
+# (mise reads all four formats natively, so existing project files keep working)
+
+[tools]
+node   = "25.5.0"      # matches former fnm default
+python = "3.12.12"     # matches former pyenv global
+
+[settings]
+# Auto-install pinned tool versions when entering a project (vs prompting)
+not_found_auto_install = true
+# Keep installed tool list lean
+experimental = false
+# Read .nvmrc / .python-version (mise calls these "idiomatic" files; opt-in by design)
+idiomatic_version_file_enable_tools = ["node", "python"]
