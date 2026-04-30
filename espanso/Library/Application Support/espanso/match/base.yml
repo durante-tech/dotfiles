@@ -26,13 +26,31 @@ matches:
       Lucas Gertel
       lgertel@altyaa.com
 
-  # Local LLM via Ollama — :llm <prompt><Enter> after ollama service is running
-  # Replace MODEL with a tag from `ollama list` (e.g. llama3.2:3b, qwen2.5-coder:7b)
-  # Then uncomment to enable:
-  # - trigger: ":llm "
-  #   replace: "{{output}}"
-  #   vars:
-  #     - name: output
-  #       type: shell
-  #       params:
-  #         cmd: "echo '{{clipboard}}' | ollama run llama3.2:3b"
+  # ─── Local LLM via Ollama (qwen3-coder:30b) ──────────────────────────────
+  # Requires: `ollama-up` running + qwen3-coder:30b pulled.
+  # Absolute paths used because espanso's shell context has minimal $PATH.
+
+  # :llm — pipes clipboard to qwen3-coder, reply replaces the trigger
+  # Workflow: copy any text → type ":llm" → wait → reply appears inline
+  - trigger: ":llm"
+    replace: "{{output}}"
+    vars:
+      - name: output
+        type: shell
+        params:
+          cmd: "/usr/bin/pbpaste | /opt/homebrew/bin/ollama run qwen3-coder:30b 2>/dev/null"
+
+  # :llmf — form popup, type prompt directly (no clipboard needed)
+  - trigger: ":llmf"
+    form: |
+      Prompt:
+      [[prompt]]
+    form_fields:
+      prompt:
+        multiline: true
+    replace: "{{output}}"
+    vars:
+      - name: output
+        type: shell
+        params:
+          cmd: "/opt/homebrew/bin/ollama run qwen3-coder:30b '{{form1.prompt}}' 2>/dev/null"

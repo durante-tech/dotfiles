@@ -33,23 +33,27 @@ Espanso needs **macOS Accessibility** permission to function. After installing:
 | `:dt`   | Today's ISO date — `2026-04-30` |
 | `:ts`   | ISO timestamp — `2026-04-30T14:32:01` |
 | `:sig`  | Email signature (`Lucas Gertel\nlgertel@altyaa.com`) |
-| `:llm ` | (commented) shell pipe to local Ollama — uncomment + pick model after `ollama pull <model>` |
+| `:llm` | Pipe clipboard to qwen3-coder:30b → reply pastes inline (copy prompt first, then type `:llm`) |
+| `:llmf` | Form popup → type prompt directly → reply pastes inline (no clipboard needed) |
 
-## The `:llm` trigger (Ollama)
+## The `:llm` and `:llmf` triggers (Ollama)
 
-Once you have Ollama running (`brew services start ollama`) and a model pulled (e.g. `ollama pull llama3.2:3b`), uncomment the `:llm` block in `match/base.yml`:
+Two patterns ship enabled:
 
-```yaml
-- trigger: ":llm "
-  replace: "{{output}}"
-  vars:
-    - name: output
-      type: shell
-      params:
-        cmd: "echo '{{clipboard}}' | ollama run llama3.2:3b"
-```
+- **`:llm` (clipboard-based)** — copy any text (Cmd+C), type `:llm` anywhere, qwen3-coder:30b processes the clipboard contents and pastes the reply inline. Best for "explain this", "rewrite this", "summarize this" workflows where the prompt is whatever you just selected.
 
-Workflow: copy a prompt to clipboard → type `:llm ` anywhere → Ollama processes it and pastes the response inline.
+- **`:llmf` (form-based)** — type `:llmf` anywhere, espanso opens a multiline form, you type the prompt, Enter submits, reply pastes inline. Best for spontaneous "what's the regex for X" questions where there's no source text.
+
+Prereqs:
+1. `ollama-up` to start the daemon (or it's already running)
+2. `ollama pull qwen3-coder:30b` (~19 GB; needed once)
+3. Espanso's Accessibility permission granted in System Settings
+
+To swap to a different model (e.g. qwen3.6:35b for general reasoning):
+- Edit `match/base.yml`, change `qwen3-coder:30b` to your tag
+- `espanso restart`
+
+Add a third trigger like `:llmg` if you want both models reachable without editing.
 
 ## Adding more snippets
 
