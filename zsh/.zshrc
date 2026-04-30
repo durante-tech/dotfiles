@@ -204,6 +204,15 @@ alias lg="lazygit"
 # mpd start alias
 alias mpds="mpd ~/.config/mpd/mpd.conf"
 
+# Charmbracelet — glamorous shell scripts + markdown rendering
+alias gm='glow'                              # glow current dir or file
+alias gmp='glow -p'                          # glow with paged output (large docs)
+
+# Local LLM (Ollama daemon — start once with `brew services start ollama`)
+alias ollama-up='brew services start ollama'
+alias ollama-down='brew services stop ollama'
+alias ollama-ls='ollama list'
+
 # Wallpaper management — Durante hourly rotation + Plash shaders + manual control
 alias wp='wallpaper'                                              # wp [path] - get/set
 alias wpn='~/scripts/wallpaper-rotate.sh'                         # rotate now (time-banded)

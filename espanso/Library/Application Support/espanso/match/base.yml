@@ -1,0 +1,38 @@
+# espanso base match file — minimal starter snippets
+# Add more triggers here. Reference: https://espanso.org/docs/matches/basics/
+
+matches:
+  # ISO date stamp — :dt -> 2026-04-30
+  - trigger: ":dt"
+    replace: "{{date}}"
+    vars:
+      - name: date
+        type: date
+        params:
+          format: "%Y-%m-%d"
+
+  # ISO timestamp — :ts -> 2026-04-30T14:32:01
+  - trigger: ":ts"
+    replace: "{{ts}}"
+    vars:
+      - name: ts
+        type: date
+        params:
+          format: "%Y-%m-%dT%H:%M:%S"
+
+  # Email signature — :sig
+  - trigger: ":sig"
+    replace: |
+      Lucas Gertel
+      lgertel@altyaa.com
+
+  # Local LLM via Ollama — :llm <prompt><Enter> after ollama service is running
+  # Replace MODEL with a tag from `ollama list` (e.g. llama3.2:3b, qwen2.5-coder:7b)
+  # Then uncomment to enable:
+  # - trigger: ":llm "
+  #   replace: "{{output}}"
+  #   vars:
+  #     - name: output
+  #       type: shell
+  #       params:
+  #         cmd: "echo '{{clipboard}}' | ollama run llama3.2:3b"

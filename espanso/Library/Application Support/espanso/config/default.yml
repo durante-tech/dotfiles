@@ -1,0 +1,8 @@
+# espanso default config — minimal setup
+# Full reference: https://espanso.org/docs/configuration/
+
+# Auto backend lets espanso pick the best for the current app context
+backend: Auto
+
+# Pre-paste delay (default 100ms is fine for most apps)
+# pre_paste_delay: 100

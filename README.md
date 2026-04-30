@@ -81,6 +81,16 @@
 | **Zed** | Editor config (lightweight alternative) |
 | **Scripts** | tmux-sessionizer, FZF helpers, git integrations |
 
+### AI / Productivity
+
+| Tool | Description |
+|------|-------------|
+| **mise** | Polyglot version manager — replaces fnm + pyenv |
+| **gum** | Glamorous shell-script TUI components (Charmbracelet) |
+| **glow** | Terminal markdown renderer (`gm` alias, Charmbracelet) |
+| **ollama** | Local LLMs — `ollama-up` to start daemon |
+| **[espanso](espanso/README.md)** | System-wide text expander (`:dt`, `:ts`, `:sig`, `:llm`) |
+
 ---
 
 ## Quick Start
