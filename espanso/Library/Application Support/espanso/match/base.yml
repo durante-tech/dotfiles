@@ -24,7 +24,7 @@ matches:
   - trigger: ":sig"
     replace: |
       Lucas Gertel
-      lgertel@altyaa.com
+      lucas.gertel@durante.tech
 
   # ─── Local LLM via Ollama (qwen3-coder:30b) ──────────────────────────────
   # Requires: `ollama-up` running + qwen3-coder:30b pulled.
