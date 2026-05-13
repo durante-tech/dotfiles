@@ -203,16 +203,19 @@ const ICONS: IconDef[] = [
   { key: "rec-pause",    title: "PAUSE",      idle: { centerText: "‖", color: TOKENS.fgMute,  centerSize: 60 }, active: { centerText: "‖", color: TOKENS.primary, centerSize: 60, ring: true } },
 
   // ── Screen modes (BetterDisplay mode-switching via bd-apply.sh through Raycast script-commands) ──
-  // Mood colors map to the bd-apply.sh curve: warm/observe for dawn, primary for day, dim/cool for evening/night.
-  { key: "screen-dawn",      title: "DAWN",      idle: { centerText: "Dw",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Dw",  italic: true, color: TOKENS.observe,    centerSize: 48, ring: true } },
-  { key: "screen-day",       title: "DAY",       idle: { centerText: "Dy",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Dy",  italic: true, color: TOKENS.primary,    centerSize: 48, ring: true } },
-  { key: "screen-afternoon", title: "AFTERNOON", idle: { centerText: "Af",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Af",  italic: true, color: TOKENS.primaryDim, centerSize: 48, ring: true } },
-  { key: "screen-evening",   title: "EVENING",   idle: { centerText: "Ev",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Ev",  italic: true, color: TOKENS.plan,       centerSize: 48, ring: true } },
-  { key: "screen-night",     title: "NIGHT",     idle: { centerText: "Nt",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Nt",  italic: true, color: TOKENS.build,      centerSize: 48, ring: true } },
-  { key: "screen-meeting",   title: "MEETING",   idle: { centerText: "Mt",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Mt",  italic: true, color: TOKENS.fg,         centerSize: 48, ring: true } },
-  { key: "screen-read",      title: "READ",      idle: { centerText: "Rd",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Rd",  italic: true, color: TOKENS.learn,      centerSize: 48, ring: true } },
-  { key: "screen-stream",    title: "STREAM",    idle: { centerText: "St",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "St",  italic: true, color: TOKENS.red,        centerSize: 48, ring: true } },
-  { key: "screen-cinema",    title: "CINEMA",    idle: { centerText: "Cn",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Cn",  italic: true, color: TOKENS.execute,    centerSize: 48, ring: true } },
+  // SVG fallbacks only — Flux rich-art PNGs in streamdeck-assets/ override these.
+  // Per DESIGN.md §01: cyan is the page's signature; stage palette is reserved
+  // for the 7-phase Algorithm (categorical), not for time-of-day or task modes.
+  // All screen-* actives use --primary for active-CTA, --fg-mute for idle.
+  { key: "screen-dawn",      title: "DAWN",      idle: { centerText: "Dw",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Dw",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
+  { key: "screen-day",       title: "DAY",       idle: { centerText: "Dy",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Dy",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
+  { key: "screen-afternoon", title: "AFTERNOON", idle: { centerText: "Af",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Af",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
+  { key: "screen-evening",   title: "EVENING",   idle: { centerText: "Ev",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Ev",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
+  { key: "screen-night",     title: "NIGHT",     idle: { centerText: "Nt",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Nt",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
+  { key: "screen-meeting",   title: "MEETING",   idle: { centerText: "Mt",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Mt",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
+  { key: "screen-read",      title: "READ",      idle: { centerText: "Rd",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Rd",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
+  { key: "screen-stream",    title: "STREAM",    idle: { centerText: "St",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "St",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
+  { key: "screen-cinema",    title: "CINEMA",    idle: { centerText: "Cn",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Cn",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
   { key: "folder-screens",   title: "SCREENS",   idle: { centerText: "scr", italic: true, color: TOKENS.primary, centerSize: 42 }, active: { centerText: "scr", italic: true, color: TOKENS.primary, centerSize: 42 } },
 ];
 
