@@ -126,11 +126,9 @@ return {
 				-- hcl = { "terraform_fmt" },
 			},
 
-			-- Format on save configuration
-			format_on_save = {
-				lsp_fallback = true, -- Use LSP formatter if conform formatter not available
-				async = true,        -- Async (non-blocking, better UX)
-				timeout_ms = 3000,   -- 3 second timeout for async completion
+			-- Format after save (async, non-blocking)
+			format_after_save = {
+				lsp_format = "fallback",
 			},
 		})
 
