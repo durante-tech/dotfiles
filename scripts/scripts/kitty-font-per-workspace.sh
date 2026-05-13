@@ -15,16 +15,19 @@
 WS="${1:-${AEROSPACE_FOCUSED_WORKSPACE:-}}"
 [[ -z "$WS" ]] && exit 0
 
-# Font size targets — edit to taste
+# Font size + window padding targets — edit to taste
 case "$WS" in
-    T|2)        SIZE=16 ;;
-    *)          SIZE=14 ;;
+    T|2)        SIZE=16; PAD=10 ;;
+    *)          SIZE=14; PAD=4 ;;
 esac
 
 shopt -s nullglob
 for sock in /tmp/kitty-*; do
     [[ -S "$sock" ]] || continue
-    kitty @ --to "unix:$sock" set-font-size "$SIZE" 2>/dev/null &
+    {
+        kitty @ --to "unix:$sock" set-font-size "$SIZE"
+        kitty @ --to "unix:$sock" set-spacing "padding=$PAD"
+    } 2>/dev/null &
 done
 wait
 exit 0
