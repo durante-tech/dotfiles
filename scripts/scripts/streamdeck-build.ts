@@ -190,6 +190,19 @@ const ICONS: IconDef[] = [
   { key: "replay-buffer",title: "REPLAY",     idle: { centerText: "↻", color: TOKENS.fgMute,  centerSize: 64 }, active: { centerText: "↻", color: TOKENS.primary, centerSize: 64, ring: true } },
   { key: "replay-save",  title: "SAVE",       idle: { centerText: "⇩", color: TOKENS.primary, centerSize: 64 }, active: { centerText: "⇩", color: TOKENS.primary, centerSize: 64, ring: true } },
   { key: "rec-pause",    title: "PAUSE",      idle: { centerText: "‖", color: TOKENS.fgMute,  centerSize: 60 }, active: { centerText: "‖", color: TOKENS.primary, centerSize: 60, ring: true } },
+
+  // ── Screen modes (BetterDisplay mode-switching via bd-apply.sh through Raycast script-commands) ──
+  // Mood colors map to the bd-apply.sh curve: warm/observe for dawn, primary for day, dim/cool for evening/night.
+  { key: "screen-dawn",      title: "DAWN",      idle: { centerText: "Dw",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Dw",  italic: true, color: TOKENS.observe,    centerSize: 48, ring: true } },
+  { key: "screen-day",       title: "DAY",       idle: { centerText: "Dy",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Dy",  italic: true, color: TOKENS.primary,    centerSize: 48, ring: true } },
+  { key: "screen-afternoon", title: "AFTERNOON", idle: { centerText: "Af",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Af",  italic: true, color: TOKENS.primaryDim, centerSize: 48, ring: true } },
+  { key: "screen-evening",   title: "EVENING",   idle: { centerText: "Ev",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Ev",  italic: true, color: TOKENS.plan,       centerSize: 48, ring: true } },
+  { key: "screen-night",     title: "NIGHT",     idle: { centerText: "Nt",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Nt",  italic: true, color: TOKENS.build,      centerSize: 48, ring: true } },
+  { key: "screen-meeting",   title: "MEETING",   idle: { centerText: "Mt",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Mt",  italic: true, color: TOKENS.fg,         centerSize: 48, ring: true } },
+  { key: "screen-read",      title: "READ",      idle: { centerText: "Rd",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Rd",  italic: true, color: TOKENS.learn,      centerSize: 48, ring: true } },
+  { key: "screen-stream",    title: "STREAM",    idle: { centerText: "St",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "St",  italic: true, color: TOKENS.red,        centerSize: 48, ring: true } },
+  { key: "screen-cinema",    title: "CINEMA",    idle: { centerText: "Cn",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Cn",  italic: true, color: TOKENS.execute,    centerSize: 48, ring: true } },
+  { key: "folder-screens",   title: "SCREENS",   idle: { centerText: "scr", italic: true, color: TOKENS.primary, centerSize: 42 }, active: { centerText: "scr", italic: true, color: TOKENS.primary, centerSize: 42 } },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -444,7 +457,7 @@ const landingManifest = {
       "0,1": actionMicMute(L["mic"]),
       "1,1": actionRecord(L["rec"]),
       "2,1": actionStream(L["stream"]),
-      "3,1": actionMarker(L["marker"]),
+      "3,1": actionOpenFolder(/* screens folder UUID set below */ "SCREENS_PLACEHOLDER", L["folder-screens"]),
       "4,1": actionOpenFolder(/* dev folder UUID set below */ "DEV_PLACEHOLDER", L["folder-dev"]),
       // Row 2 — source toggles + folder links
       "0,2": actionSourceVisibility("Webcam",       L["cam"]),
@@ -496,8 +509,40 @@ const devManifest = {
 // 7. Wire devUUID into landing's 4,1 button
 landingManifest.Controllers[0].Actions["4,1"].Settings.ProfileUUID = devUUID;
 
+// 7a. Build the SCREENS folder — BetterDisplay mode switching via Raycast.
+// Requires bd-{dawn,day,afternoon,evening,night,meeting,read,stream,cinema}.sh
+// in ~/Durante/scripts/raycast/ to be enabled in Raycast → Script Commands.
+const screensUUID = uuid();
+const screensDir = join(subProfilesDir, screensUUID.toUpperCase());
+mkdirSync(screensDir, { recursive: true });
+const SC = copyIconsTo(screensUUID.toUpperCase());
+const screensManifest = {
+  Controllers: [{
+    Actions: {
+      // Row 0 — time-of-day curve (matches bd-apply.sh schedule)
+      "0,0": actionOpenURL("raycast://script-commands/bd-dawn",      SC["screen-dawn"]),
+      "1,0": actionOpenURL("raycast://script-commands/bd-day",       SC["screen-day"]),
+      "2,0": actionOpenURL("raycast://script-commands/bd-afternoon", SC["screen-afternoon"]),
+      "3,0": actionOpenURL("raycast://script-commands/bd-evening",   SC["screen-evening"]),
+      "4,0": actionOpenURL("raycast://script-commands/bd-night",     SC["screen-night"]),
+      // Row 1 — task-named modes + back-to-parent
+      "0,1": actionOpenURL("raycast://script-commands/bd-meeting",   SC["screen-meeting"]),
+      "1,1": actionOpenURL("raycast://script-commands/bd-read",      SC["screen-read"]),
+      "2,1": actionOpenURL("raycast://script-commands/bd-stream",    SC["screen-stream"]),
+      "3,1": actionOpenURL("raycast://script-commands/bd-cinema",    SC["screen-cinema"]),
+      "4,1": actionBackToParent(SC["back-parent"]),
+      // Row 2 — reserved
+    },
+    Type: "Keypad",
+  }],
+  Icon: "",
+  Name: "Screens · Display Modes",
+};
+landingManifest.Controllers[0].Actions["3,1"].Settings.ProfileUUID = screensUUID;
+
 writeManifest(landingUUID, landingManifest);
 writeFileSync(join(devDir, "manifest.json"), JSON.stringify(devManifest));
+writeFileSync(join(screensDir, "manifest.json"), JSON.stringify(screensManifest));
 
 // 7b. Rewrite the Sources folder with our real OBS source-visibility toggles
 const sourcesUUID = Object.entries(profileRoles).find(([, r]) => r === "sources")?.[0];
@@ -573,7 +618,7 @@ const rootManifestPath = join(rootProfileDir, "manifest.json");
 const rootManifest = JSON.parse(readFileSync(rootManifestPath, "utf8"));
 rootManifest.Name = "DuranteOS";
 rootManifest.Pages.Default = landingUUID;
-rootManifest.Pages.Pages = [landingUUID, obsUUID, scenesUUID, audioUUID, devUUID.toUpperCase()];
+rootManifest.Pages.Pages = [landingUUID, obsUUID, scenesUUID, audioUUID, devUUID.toUpperCase(), screensUUID.toUpperCase()];
 writeFileSync(rootManifestPath, JSON.stringify(rootManifest));
 
 // 11. Re-zip → output .streamDeckProfile
