@@ -340,18 +340,19 @@ function actionBackToParent(icon: RenderedIcon): any {
 
 function actionOpenURL(url: string, icon: RenderedIcon, customTitle?: string): any {
   const title = customTitle ?? icon.title;
-  // openInBrowser: false → use system default app for URL scheme (raycast://, typefully://, etc.)
-  //                       NOT the default browser, which can't handle custom schemes.
+  // Stream Deck 7.x has separate native handlers:
+  // - system.open    -> KA_Execute, for files/apps/folders
+  // - system.website -> KA_Website, for URLs including custom schemes
   return {
     ActionID: uuid(),
     LinkedTitle: true,
-    Name: "Open",
-    Plugin: { Name: "Open", UUID: "com.elgato.streamdeck.system.open", Version: "1.0" },
+    Name: "Website",
+    Plugin: { Name: "Website", UUID: "com.elgato.streamdeck.system.website", Version: "1.0" },
     Resources: null,
-    Settings: { openInBrowser: false, path: url },
+    Settings: { openInBrowser: true, path: url },
     State: 0,
     States: [stateEntry(icon.idle, title), stateEntry(icon.active, title)],
-    UUID: "com.elgato.streamdeck.system.open",
+    UUID: "com.elgato.streamdeck.system.website",
   };
 }
 

@@ -72,7 +72,26 @@ async function obs(requestType: string, requestData: any = {}): Promise<any> {
   const pass = password();
   return new Promise((resolve, reject) => {
     const id = `req_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-    const t = setTimeout(() => { ws.close(); reject(new Error(`OBS timeout: ${requestType}`)); }, 5000);
+    let settled = false;
+    let t: ReturnType<typeof setTimeout>;
+    const close = () => {
+      try { ws.close(); } catch {}
+    };
+    const fail = (err: Error) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(t);
+      close();
+      reject(err);
+    };
+    const done = (data: any) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(t);
+      close();
+      resolve(data);
+    };
+    t = setTimeout(() => fail(new Error(`OBS timeout: ${requestType}`)), 5000);
     ws.addEventListener("message", (ev) => {
       const m = JSON.parse(ev.data as string);
       if (m.op === 0) {
@@ -82,14 +101,17 @@ async function obs(requestType: string, requestData: any = {}): Promise<any> {
       } else if (m.op === 2) {
         ws.send(JSON.stringify({ op: 6, d: { requestType, requestId: id, requestData } }));
       } else if (m.op === 7 && m.d.requestId === id) {
-        clearTimeout(t); ws.close();
-        if (m.d.requestStatus.result) resolve(m.d.responseData ?? {});
-        else reject(new Error(`${requestType}: ${m.d.requestStatus.comment} (${m.d.requestStatus.code})`));
+        if (m.d.requestStatus.result) done(m.d.responseData ?? {});
+        else fail(new Error(`${requestType}: ${m.d.requestStatus.comment} (${m.d.requestStatus.code})`));
       }
     });
+    ws.addEventListener("error", () => {
+      fail(new Error(`OBS WebSocket error while running ${requestType}`));
+    });
     ws.addEventListener("close", (e) => {
-      clearTimeout(t);
-      if (e.code === 4009) reject(new Error("Auth failed — wrong OBS WebSocket password"));
+      if (settled) return;
+      if (e.code === 4009) fail(new Error("Auth failed — wrong OBS WebSocket password"));
+      else fail(new Error(`OBS WebSocket closed before ${requestType} (${e.code})`));
     });
   });
 }
