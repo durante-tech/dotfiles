@@ -213,6 +213,7 @@ alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 # alt-shift-semicolon = 'mode service'
 
 alt-shift-r = 'mode resize'
+alt-shift-x = 'mode bd-mode'
 
 [mode.resize.binding]
 # Fine control (50px)
@@ -248,6 +249,20 @@ alt-shift-h = ['join-with left', 'mode main']
 alt-shift-j = ['join-with down', 'mode main']
 alt-shift-k = ['join-with up', 'mode main']
 alt-shift-l = ['join-with right', 'mode main']
+
+# BetterDisplay mode-switching chord. Entry: alt-shift-x. Single key picks the mode.
+[mode.bd-mode.binding]
+w = ['exec-and-forget /Users/lgertel/dotfiles/scripts/scripts/bd-apply.sh dawn', 'mode main']
+d = ['exec-and-forget /Users/lgertel/dotfiles/scripts/scripts/bd-apply.sh day', 'mode main']
+a = ['exec-and-forget /Users/lgertel/dotfiles/scripts/scripts/bd-apply.sh afternoon', 'mode main']
+e = ['exec-and-forget /Users/lgertel/dotfiles/scripts/scripts/bd-apply.sh evening', 'mode main']
+n = ['exec-and-forget /Users/lgertel/dotfiles/scripts/scripts/bd-apply.sh night', 'mode main']
+m = ['exec-and-forget /Users/lgertel/dotfiles/scripts/scripts/bd-apply.sh meeting', 'mode main']
+r = ['exec-and-forget /Users/lgertel/dotfiles/scripts/scripts/bd-apply.sh read', 'mode main']
+s = ['exec-and-forget /Users/lgertel/dotfiles/scripts/scripts/bd-apply.sh stream', 'mode main']
+c = ['exec-and-forget /Users/lgertel/dotfiles/scripts/scripts/bd-apply.sh cinema', 'mode main']
+esc = 'mode main'
+enter = 'mode main'
 
 [[on-window-detected]]
 if.app-id = 'com.apple.finder'

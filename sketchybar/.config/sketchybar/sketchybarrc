@@ -59,6 +59,7 @@ source "$ITEM_DIR/calendar.sh"
 # Layout (right→left):
 #   clock | weather | cpu | memory | mic | network | github | claude | media_block
 source "$ITEM_DIR/clock.sh"
+source "$ITEM_DIR/bd_mode.sh"
 source "$ITEM_DIR/weather.sh"
 source "$ITEM_DIR/cpu.sh"
 source "$ITEM_DIR/memory.sh"
