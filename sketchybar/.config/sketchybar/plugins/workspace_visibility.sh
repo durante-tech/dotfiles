@@ -22,11 +22,25 @@ fi
 
 # item_name → space-separated list of workspaces where item is VISIBLE.
 # Workspaces not listed → drawing=off.
+#
+# Items with their own auto-hide logic (obs, mic, docker) are NOT in this table
+# to avoid double-control. They remain always-eligible-to-draw; their plugins
+# decide based on internal state (recording? muted? container running?).
 declare -A VIS=(
-    [weather]="1 2 B N F E"
-    [calendar]="1 2 B M N F E"
-    [macupdater]="1 2 B M N F E"
-    [clearvpn]="1 2 B M N F E"
+    # ambient cluster — distractions during focus work
+    [weather]="1 2 N F"            # ambient/thinking context only
+    [calendar]="1 2 B M N F E"     # meeting-adjacent contexts
+    [macupdater]="1 2 F"           # never urgent
+    [clearvpn]="1 2 F"             # status only
+
+    # system_health cluster — relevant only on dev / transitional workspaces
+    [cpu]="1 2 D T F"
+    [memory]="1 2 D T F"
+    [network]="1 2 D T F"
+
+    # context-sensitive dev tools
+    [github]="1 2 B D T F E"       # dev + browser (PR review) + email
+    [claude]="1 2 D T F"           # active dev context only
 )
 
 for item in "${!VIS[@]}"; do
