@@ -462,8 +462,15 @@ const renderDir = join(work, "_icons");
 const renderedIcons = renderIcons(renderDir);
 
 // 4a. Rich-art overlay — landing scenes (01/04/05) + 9 Screens display-mode
-// icons get Flux-generated PNGs from streamdeck-assets/ (council pass: Artist
-// + Designer + Artist follow-up). Falls back to SVG glyphs if assets absent.
+// icons get Flux-generated rich art from streamdeck-assets/. Active state
+// prefers .webp (animated, generated via veo-3.1-fast image-to-video) over
+// .png (static fallback). Idle state stays static .png to reduce Stream Deck
+// CPU load and visually distinguish pressed vs unpressed. Falls back to SVG
+// glyphs if no asset exists for a (key, variant) pair.
+//
+// Stream Deck 6.1+ supports animated WebP per Elgato release notes; key file
+// extension is sniffed on import, so the .webp path is propagated through to
+// the manifest unchanged.
 const assetsDir = join(import.meta.dir, "streamdeck-assets");
 const richKeys = [
   "scene-01", "scene-04", "scene-05",
@@ -472,9 +479,16 @@ const richKeys = [
 ];
 for (const key of richKeys) {
   for (const variant of ["idle", "active"] as const) {
-    const richPath = join(assetsDir, `${key}-rich-${variant}.png`);
-    if (existsSync(richPath)) {
-      copyFileSync(richPath, renderedIcons[key][variant]);
+    const webpPath = join(assetsDir, `${key}-rich-${variant}.webp`);
+    const pngPath = join(assetsDir, `${key}-rich-${variant}.png`);
+    if (existsSync(webpPath)) {
+      // Animated WebP — copy alongside the SVG-rendered PNG and switch the
+      // rendered-icon path to the .webp so the manifest references it.
+      const dest = renderedIcons[key][variant].replace(/\.png$/, ".webp");
+      copyFileSync(webpPath, dest);
+      renderedIcons[key][variant] = dest;
+    } else if (existsSync(pngPath)) {
+      copyFileSync(pngPath, renderedIcons[key][variant]);
     }
   }
 }
@@ -493,8 +507,12 @@ function copyIconsTo(profileUUID: string): Record<string, RenderedIcon> {
   const imgDir = ensureImagesIn(profileUUID);
   const refs: Record<string, RenderedIcon> = {};
   for (const [k, ico] of Object.entries(renderedIcons)) {
-    const idleName = `${k}-idle.png`;
-    const activeName = `${k}-active.png`;
+    // Preserve source extension — Stream Deck sniffs animated WebP by .webp;
+    // renaming a multi-frame WebP to .png drops all frames past the first.
+    const idleExt = ico.idle.endsWith(".webp") ? "webp" : "png";
+    const activeExt = ico.active.endsWith(".webp") ? "webp" : "png";
+    const idleName = `${k}-idle.${idleExt}`;
+    const activeName = `${k}-active.${activeExt}`;
     copyFileSync(ico.idle, join(imgDir, idleName));
     copyFileSync(ico.active, join(imgDir, activeName));
     refs[k] = { idle: `Images/${idleName}`, active: `Images/${activeName}`, title: ico.title };
