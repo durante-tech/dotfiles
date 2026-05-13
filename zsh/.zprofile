@@ -78,6 +78,9 @@ export PYENV_ROOT="$HOME/.pyenv"
 export GOPATH=$HOME/go
 export PATH=$GOPATH/bin:$PATH
 
+# Flutter via fvm (global SDK) + Dart pub-cache executables (very_good_cli, etc.)
+export PATH="$HOME/fvm/default/bin:$HOME/.pub-cache/bin:$PATH"
+
 # Fabric AI
 export FABRIC_ROOT="$HOME/.config/fabric"
 

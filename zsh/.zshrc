@@ -295,6 +295,37 @@ alias cldr="claude --resume"
 alias dosa="dos -l -m full --dangerously-skip-permissions"
 # ---------------------------------------
 
+# BetterDisplay — dev display modes
+# Slot 1 = daylight default (current state)
+# Slot 2 = dev-night    | Slot 3 = dev-meeting
+# Slot 4 = dev-read     | Slot 5 = dev-stream
+# Populate slots 2-5 once via: bd-build-slots.sh
+if command -v betterdisplaycli >/dev/null 2>&1; then
+  bd-mode() { betterdisplaycli set --tagID=2 --favoriteMode=$1 && betterdisplaycli set --tagID=60 --favoriteMode=$1; }
+  alias bd-day='bd-mode 1'
+  alias bd-night='bd-mode 2'
+  alias bd-meeting='bd-mode 3'
+  alias bd-read='bd-mode 4'
+  bd-stream() {
+    bd-mode 5
+    betterdisplaycli set --tagID=163 --connected=on
+    echo "STREAM-CAPTURE connected — OBS can now capture the virtual screen."
+  }
+  bd-stream-stop() {
+    betterdisplaycli set --tagID=163 --connected=off
+    bd-day
+  }
+  # Quick brightness nudges across the synced display group
+  bd-up()   { betterdisplaycli set --tagID=2 --brightness=+10% --offset; }
+  bd-down() { betterdisplaycli set --tagID=2 --brightness=-10% --offset; }
+  # Snapshot current state to JSON (for diff / backup)
+  bd-snap() { betterdisplaycli get --identifiers > "$HOME/Documents/betterdisplay-$(date +%Y%m%d-%H%M%S).json" && echo "saved snapshot."; }
+  # DEV-MAIN colorspace toggles (preset + brightness move together; sRGB caps at 100%, XDR allows 160% via software upscaling)
+  bd-srgb() { betterdisplaycli set --tagID=2 --xdrPreset='Internet & Web (sRGB)' --brightness=100%; }
+  bd-xdr()  { betterdisplaycli set --tagID=2 --xdrPreset='Apple XDR Display (P3-1600 nits)' --brightness=160%; }
+fi
+# ---------------------------------------
+
 # brew installations activation
 BREW_PREFIX="${HOMEBREW_PREFIX:-/opt/homebrew}"
 [ -f "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ] && source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
@@ -345,3 +376,9 @@ esac
 # who clone the repo but don't have these tools installed.
 [[ -f "$HOME/Durante/npm-package/bin/dos.js" ]] && alias durante="node $HOME/Durante/npm-package/bin/dos.js"
 [[ -f "$HOME/.claude/DOS/Tools/dos.ts" ]] && alias dos="bun $HOME/.claude/DOS/Tools/dos.ts"
+
+## [Completion]
+## Completion scripts setup. Remove the following line to uninstall
+[[ -f /Users/lgertel/.dart-cli-completion/zsh-config.zsh ]] && . /Users/lgertel/.dart-cli-completion/zsh-config.zsh || true
+## [/Completion]
+
