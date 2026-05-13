@@ -153,6 +153,10 @@ const ICONS: IconDef[] = [
   // Folders unified to lowercase italic text (Artist's call — matches obs/dev/scr register).
   { key: "folder-audio",  title: "AUDIO",  idle: { centerText: "aud", italic: true, color: TOKENS.primary, centerSize: 42 }, active: { centerText: "aud", italic: true, color: TOKENS.primary, centerSize: 42 } },
   { key: "folder-scenes", title: "SCENES", idle: { centerText: "scn", italic: true, color: TOKENS.primary, centerSize: 42 }, active: { centerText: "scn", italic: true, color: TOKENS.primary, centerSize: 42 } },
+
+  // Page navigation arrows (used by Prev/Next Page actions on every page).
+  { key: "page-prev", title: "PREV", idle: { centerText: "←", color: TOKENS.fgMute, centerSize: 64 }, active: { centerText: "⇐", color: TOKENS.primary, centerSize: 64, ring: true } },
+  { key: "page-next", title: "NEXT", idle: { centerText: "→", color: TOKENS.fgMute, centerSize: 64 }, active: { centerText: "⇒", color: TOKENS.primary, centerSize: 64, ring: true } },
   { key: "back-parent",   title: "BACK",   idle: { centerText: "←",                 color: TOKENS.primary, centerSize: 64 }, active: { centerText: "←",                 color: TOKENS.primary, centerSize: 64 } },
 
   // ── Dev folder actions ──
@@ -345,6 +349,34 @@ function actionBackToParent(icon: RenderedIcon): any {
   };
 }
 
+// Native Stream Deck Pages plugin — survives the import-strips-folders bug
+// because page navigation is index-based (relative to Pages.Pages array)
+// rather than UUID-referenced.
+function actionPrevPage(icon: RenderedIcon): any {
+  return {
+    ActionID: uuid(),
+    LinkedTitle: true,
+    Name: "Previous Page",
+    Resources: null,
+    Settings: {},
+    State: 0,
+    States: [stateEntry(icon.idle, icon.title), stateEntry(icon.active, icon.title)],
+    UUID: "com.elgato.streamdeck.page.previous",
+  };
+}
+function actionNextPage(icon: RenderedIcon): any {
+  return {
+    ActionID: uuid(),
+    LinkedTitle: true,
+    Name: "Next Page",
+    Resources: null,
+    Settings: {},
+    State: 0,
+    States: [stateEntry(icon.idle, icon.title), stateEntry(icon.active, icon.title)],
+    UUID: "com.elgato.streamdeck.page.next",
+  };
+}
+
 function actionOpenURL(url: string, icon: RenderedIcon, customTitle?: string): any {
   const title = customTitle ?? icon.title;
   // Stream Deck 7.x has separate native handlers:
@@ -486,12 +518,12 @@ const landingManifest = {
       "2,1": actionScene("03_Terminal_Only", L["scene-03"]),
       "3,1": actionScene("04_Break",         L["scene-04"]),
       "4,1": actionScene("05_Outro",         L["scene-05"]),
-      // Row 2 — folder cluster + brb quickjump
-      "0,2": actionOpenFolder(scenesUUID,                                                  L["folder-scenes"]),
-      "1,2": actionOpenFolder(/* screens folder UUID set below */ "SCREENS_PLACEHOLDER",   L["folder-screens"]),
-      "2,2": actionOpenFolder(obsUUID,                                                     L["folder-obs"]),
-      "3,2": actionOpenFolder(/* dev folder UUID set below */     "DEV_PLACEHOLDER",       L["folder-dev"]),
-      "4,2": actionScene("04_Break",                                                       L["brb"]),
+      // Row 2 — Prev/Next page navigation + BRB quickjump (folders removed —
+      // Stream Deck 7.x strips Create-Folder actions on import. Native Pages
+      // plugin survives because it's index-relative, not UUID-referenced.)
+      "0,2": actionPrevPage(L["page-prev"]),
+      "2,2": actionScene("04_Break", L["brb"]),
+      "4,2": actionNextPage(L["page-next"]),
     },
     Type: "Keypad",
   }],
@@ -534,8 +566,8 @@ const devManifest = {
   Name: "Dev · DOS Stream Control",
 };
 
-// 7. Wire devUUID into landing's 3,2 button (folder-dev — Designer reshuffle)
-landingManifest.Controllers[0].Actions["3,2"].Settings.ProfileUUID = devUUID;
+// 7. Folder buttons removed — Stream Deck strips them on import. Pages plugin
+// (Prev/Next) replaces them. No UUID wiring needed for landing row 2.
 
 // 7a. Build the SCREENS folder — BetterDisplay mode switching via Raycast.
 // Requires bd-{dawn,day,afternoon,evening,night,meeting,read,stream,cinema}.sh
@@ -566,7 +598,7 @@ const screensManifest = {
   Icon: "",
   Name: "Screens · Display Modes",
 };
-landingManifest.Controllers[0].Actions["1,2"].Settings.ProfileUUID = screensUUID;
+// (screensUUID wiring also removed — folder buttons replaced by Page nav.)
 
 writeManifest(landingUUID, landingManifest);
 writeFileSync(join(devDir, "manifest.json"), JSON.stringify(devManifest));
