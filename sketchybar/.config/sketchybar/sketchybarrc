@@ -43,7 +43,7 @@ sketchybar --add event aerospace_workspace_change
 # Workspace-context visibility dispatcher — hides ambient items (weather, calendar,
 # macupdater, clearvpn) on DEV/T workspaces. Single source of truth in
 # plugins/workspace_visibility.sh — edit the VIS table there to add items.
-sketchybar --add item workspace_visibility q \
+sketchybar --add item workspace_visibility center \
            --set workspace_visibility drawing=off updates=on \
                                        script="$PLUGIN_DIR/workspace_visibility.sh" \
            --subscribe workspace_visibility aerospace_workspace_change
@@ -71,13 +71,21 @@ source "$ITEM_DIR/bd_mode.sh"
 source "$ITEM_DIR/weather.sh"
 source "$ITEM_DIR/cpu.sh"
 source "$ITEM_DIR/memory.sh"
-source "$ITEM_DIR/mic.sh"
 source "$ITEM_DIR/network.sh"
+# system_health bracket — cpu + memory + network as a "machine state" cluster
+sketchybar --add bracket system_health cpu memory network \
+           --set system_health background.color="$PURE_BLACK"
+
 source "$ITEM_DIR/github.sh"
 source "$ITEM_DIR/claude.sh"
+source "$ITEM_DIR/mic.sh"
 source "$ITEM_DIR/obs.sh"
+# comms bracket — mic + obs as the "embarrassment-preventer" cluster
+sketchybar --add bracket comms mic obs \
+           --set comms background.color="$PURE_BLACK"
 
 source "$ITEM_DIR/media_block.sh"
+
           
            
 sketchybar --hotload on
