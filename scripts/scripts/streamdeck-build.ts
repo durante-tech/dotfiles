@@ -536,12 +536,12 @@ const devUUID = uuid();
 const devDir = join(subProfilesDir, devUUID.toUpperCase());
 mkdirSync(devDir, { recursive: true });
 const D = copyIconsTo(devUUID.toUpperCase());
-// Dense Dev folder layout — 4 stream rituals + 7 phase swaps + 4 dev quickies.
+// Dev folder layout — Prev/Next nav replaces broken back-to-parent.
 const devManifest = {
   Controllers: [{
     Actions: {
-      // Row 0 — stream rituals + post
-      "0,0": actionBackToParent(D["back-parent"]),
+      // Row 0 — Prev nav + stream rituals + post
+      "0,0": actionPrevPage(D["page-prev"]),
       "1,0": actionOpenURL("raycast://script-commands/preshow",       D["preshow"]),
       "2,0": actionOpenURL("raycast://script-commands/endshow",       D["endshow"]),
       "3,0": actionOpenURL("raycast://script-commands/marker",        D["marker-label"]),
@@ -552,13 +552,12 @@ const devManifest = {
       "2,1": actionOpenURL("raycast://script-commands/phase-plan",    D["phase-pln"]),
       "3,1": actionOpenURL("raycast://script-commands/phase-build",   D["phase-bld"]),
       "4,1": actionOpenURL("raycast://script-commands/phase-execute", D["phase-exe"]),
-      // Row 2 — phase verify/learn + status + session. Designer dropped replay-save
-      // (mid-stream-only action — promote to landing or OBS folder, not Dev).
+      // Row 2 — phase verify/learn + status + session + Next page nav
       "0,2": actionOpenURL("raycast://script-commands/phase-verify",  D["phase-ver"]),
       "1,2": actionOpenURL("raycast://script-commands/phase-learn",   D["phase-lrn"]),
       "2,2": actionOpenURL("raycast://script-commands/status",        D["status"]),
       "3,2": actionOpenURL("raycast://script-commands/session-start", D["session-start"]),
-      // 4,2 intentionally empty — reserved for future Dev quickie
+      "4,2": actionNextPage(D["page-next"]),
     },
     Type: "Keypad",
   }],
@@ -585,13 +584,14 @@ const screensManifest = {
       "2,0": actionOpenURL("raycast://script-commands/bd-afternoon", SC["screen-afternoon"]),
       "3,0": actionOpenURL("raycast://script-commands/bd-evening",   SC["screen-evening"]),
       "4,0": actionOpenURL("raycast://script-commands/bd-night",     SC["screen-night"]),
-      // Row 1 — task-named modes + back-to-parent
+      // Row 1 — task-named modes
       "0,1": actionOpenURL("raycast://script-commands/bd-meeting",   SC["screen-meeting"]),
       "1,1": actionOpenURL("raycast://script-commands/bd-read",      SC["screen-read"]),
       "2,1": actionOpenURL("raycast://script-commands/bd-stream",    SC["screen-stream"]),
       "3,1": actionOpenURL("raycast://script-commands/bd-cinema",    SC["screen-cinema"]),
-      "4,1": actionBackToParent(SC["back-parent"]),
-      // Row 2 — reserved
+      // Row 2 — page nav (Prev / Next)
+      "0,2": actionPrevPage(SC["page-prev"]),
+      "4,2": actionNextPage(SC["page-next"]),
     },
     Type: "Keypad",
   }],
@@ -643,6 +643,9 @@ sceneNames.forEach((sceneName, i) => {
   // Row 1, cols 0-4
   newScenesActions[`${i},1`] = actionScene(sceneName, S[sceneIconKeys[i]]);
 });
+// Scenes page — add Prev/Next nav at row 2 ends
+newScenesActions["0,2"] = actionPrevPage(S["page-prev"]);
+newScenesActions["4,2"] = actionNextPage(S["page-next"]);
 scenesManifest.Controllers[0].Actions = newScenesActions;
 scenesManifest.Name = "Scenes";
 writeManifest(scenesUUID, scenesManifest);
@@ -656,8 +659,8 @@ const O = imageRefs[obsUUID];
 const obsManifest = readManifest(obsUUID);
 obsManifest.Name = "OBS Studio";
 obsManifest.Controllers[0].Actions = {
-  // Row 0 — back + transition tools (specialty OBS surface)
-  "0,0": actionBackToParent(O["back-parent"]),
+  // Row 0 — Prev nav + transition tools (specialty OBS surface)
+  "0,0": actionPrevPage(O["page-prev"]),
   "1,0": actionStudioMode(O["studio-mode"]),
   "2,0": actionTransitionStudio(O["transition"]),
   "3,0": actionSceneTransition("Fade",    O["scene-fade"]),
