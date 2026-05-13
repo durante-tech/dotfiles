@@ -536,12 +536,13 @@ const devUUID = uuid();
 const devDir = join(subProfilesDir, devUUID.toUpperCase());
 mkdirSync(devDir, { recursive: true });
 const D = copyIconsTo(devUUID.toUpperCase());
-// Dev folder layout — Prev/Next nav replaces broken back-to-parent.
+// Dev folder layout — Prev at (0,2), Next at (4,2) consistent with landing.
+// Phase-ver displaced to (0,0); phase row 1 stays intact.
 const devManifest = {
   Controllers: [{
     Actions: {
-      // Row 0 — Prev nav + stream rituals + post
-      "0,0": actionPrevPage(D["page-prev"]),
+      // Row 0 — phase-verify + stream rituals + post
+      "0,0": actionOpenURL("raycast://script-commands/phase-verify",  D["phase-ver"]),
       "1,0": actionOpenURL("raycast://script-commands/preshow",       D["preshow"]),
       "2,0": actionOpenURL("raycast://script-commands/endshow",       D["endshow"]),
       "3,0": actionOpenURL("raycast://script-commands/marker",        D["marker-label"]),
@@ -552,8 +553,8 @@ const devManifest = {
       "2,1": actionOpenURL("raycast://script-commands/phase-plan",    D["phase-pln"]),
       "3,1": actionOpenURL("raycast://script-commands/phase-build",   D["phase-bld"]),
       "4,1": actionOpenURL("raycast://script-commands/phase-execute", D["phase-exe"]),
-      // Row 2 — phase verify/learn + status + session + Next page nav
-      "0,2": actionOpenURL("raycast://script-commands/phase-verify",  D["phase-ver"]),
+      // Row 2 — Prev + phase learn + status + session + Next
+      "0,2": actionPrevPage(D["page-prev"]),
       "1,2": actionOpenURL("raycast://script-commands/phase-learn",   D["phase-lrn"]),
       "2,2": actionOpenURL("raycast://script-commands/status",        D["status"]),
       "3,2": actionOpenURL("raycast://script-commands/session-start", D["session-start"]),
@@ -659,24 +660,26 @@ const O = imageRefs[obsUUID];
 const obsManifest = readManifest(obsUUID);
 obsManifest.Name = "OBS Studio";
 obsManifest.Controllers[0].Actions = {
-  // Row 0 — Prev nav + transition tools (specialty OBS surface)
-  "0,0": actionPrevPage(O["page-prev"]),
+  // Row 0 — Webcam vis + transition tools (Webcam displaced from row 2 to make
+  // room for Prev. (0,1) had folder-scenes which Stream Deck strips on import
+  // — replaced with Intro Overlay vis).
+  "0,0": actionSourceVisibility("Webcam",        O["vis-eye"], "WEBCAM"),
   "1,0": actionStudioMode(O["studio-mode"]),
   "2,0": actionTransitionStudio(O["transition"]),
   "3,0": actionSceneTransition("Fade",    O["scene-fade"]),
   "4,0": actionSceneTransition("Stinger", O["scene-stinger"]),
-  // Row 1 — meta controls + scenes folder
-  "0,1": actionOpenFolder(scenesUUID, O["folder-scenes"]),
+  // Row 1 — Intro Overlay vis + meta controls
+  "0,1": actionSourceVisibility("Intro Overlay", O["vis-eye"], "INTRO"),
   "1,1": actionVirtCam(O["virtcam"]),
   "2,1": actionReplayBuffer(O["replay-buffer"]),
   "3,1": actionReplaySave(O["replay-save"]),
   "4,1": actionRecordPause(O["rec-pause"]),
-  // Row 2 — per-scene source-visibility toggles (Designer's specialization)
-  "0,2": actionSourceVisibility("Webcam",        O["vis-eye"], "WEBCAM"),
+  // Row 2 — Prev + per-scene source-visibility toggles + Next
+  "0,2": actionPrevPage(O["page-prev"]),
   "1,2": actionSourceVisibility("Coding Frame",  O["vis-eye"], "CODE-FR"),
   "2,2": actionSourceVisibility("Lower Third",   O["vis-eye"], "LOWER"),
   "3,2": actionSourceVisibility("BRB Overlay",   O["vis-eye"], "BRB"),
-  "4,2": actionSourceVisibility("Intro Overlay", O["vis-eye"], "INTRO"),
+  "4,2": actionNextPage(O["page-next"]),
 };
 writeManifest(obsUUID, obsManifest);
 
