@@ -458,15 +458,20 @@ const audioUUID = Object.entries(profileRoles).find(([, r]) => r === "audio")?.[
 const renderDir = join(work, "_icons");
 const renderedIcons = renderIcons(renderDir);
 
-// 4a. Rich-art overlay — scene-01/04/05 get Flux-generated triptych PNGs from
-// streamdeck-assets/ (council pass: Artist + Designer). Falls back to SVG
-// numerals if the asset isn't present (e.g., fresh checkout without assets).
+// 4a. Rich-art overlay — landing scenes (01/04/05) + 9 Screens display-mode
+// icons get Flux-generated PNGs from streamdeck-assets/ (council pass: Artist
+// + Designer + Artist follow-up). Falls back to SVG glyphs if assets absent.
 const assetsDir = join(import.meta.dir, "streamdeck-assets");
-for (const sceneKey of ["scene-01", "scene-04", "scene-05"]) {
+const richKeys = [
+  "scene-01", "scene-04", "scene-05",
+  "screen-dawn", "screen-day", "screen-afternoon", "screen-evening", "screen-night",
+  "screen-meeting", "screen-read", "screen-stream", "screen-cinema",
+];
+for (const key of richKeys) {
   for (const variant of ["idle", "active"] as const) {
-    const richPath = join(assetsDir, `${sceneKey}-rich-${variant}.png`);
+    const richPath = join(assetsDir, `${key}-rich-${variant}.png`);
     if (existsSync(richPath)) {
-      copyFileSync(richPath, renderedIcons[sceneKey][variant]);
+      copyFileSync(richPath, renderedIcons[key][variant]);
     }
   }
 }
