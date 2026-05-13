@@ -34,3 +34,9 @@ launchagents/.rendered/
 
 # DuranteOS internal state
 .dos/
+
+# Memory palace runtime state
+.mempalace/
+
+# Claude Code transcript dumps (ad-hoc, not source of truth)
+dotfiles-conversation.txt
