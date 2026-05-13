@@ -42,17 +42,35 @@ if [ -z "$PICK" ]; then
 fi
 [ -z "$PICK" ] && exit 0
 
+# Skip-if-same guard: prevents wallpaper-cli from re-painting (and macOS
+# WindowServer from cross-fading) when the focused screen already shows
+# this image. Many workspaces symlink to the same source — without this
+# guard every switch causes a visible blink.
+STATE_DIR="$HOME/.cache/wallpaper-workspace"
+mkdir -p "$STATE_DIR"
+NEW_REAL=$(realpath "$PICK" 2>/dev/null || /usr/bin/python3 -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$PICK")
+
 # Resolve which screen index to set.
 # AeroSpace returns "N | NAME"; subtract 1 for wallpaper-cli's 0-indexed --screen.
 if [ -x "$AEROSPACE" ]; then
   AERO_IDX="$($AEROSPACE list-monitors --focused 2>/dev/null | awk -F'|' '{gsub(/ /,"",$1); print $1}')"
   if [[ "$AERO_IDX" =~ ^[0-9]+$ ]]; then
     SCREEN_IDX=$((AERO_IDX - 1))
-    "$WALLPAPER" set "$PICK" --screen "$SCREEN_IDX" >/dev/null 2>&1 &
+    STATE_FILE="$STATE_DIR/screen-$SCREEN_IDX"
+    LAST=$([ -f "$STATE_FILE" ] && cat "$STATE_FILE" || echo "")
+    if [ "$LAST" != "$NEW_REAL" ]; then
+      "$WALLPAPER" set "$PICK" --screen "$SCREEN_IDX" >/dev/null 2>&1 &
+      echo "$NEW_REAL" > "$STATE_FILE"
+    fi
     exit 0
   fi
 fi
 
 # Fallback: set on all screens if monitor lookup failed.
-"$WALLPAPER" set "$PICK" >/dev/null 2>&1 &
+STATE_FILE="$STATE_DIR/all"
+LAST=$([ -f "$STATE_FILE" ] && cat "$STATE_FILE" || echo "")
+if [ "$LAST" != "$NEW_REAL" ]; then
+  "$WALLPAPER" set "$PICK" >/dev/null 2>&1 &
+  echo "$NEW_REAL" > "$STATE_FILE"
+fi
 exit 0
