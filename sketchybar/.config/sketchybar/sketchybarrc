@@ -40,6 +40,14 @@ default=(
 sketchybar --default "${default[@]}"
 sketchybar --add event aerospace_workspace_change
 
+# Workspace-context visibility dispatcher — hides ambient items (weather, calendar,
+# macupdater, clearvpn) on DEV/T workspaces. Single source of truth in
+# plugins/workspace_visibility.sh — edit the VIS table there to add items.
+sketchybar --add item workspace_visibility q \
+           --set workspace_visibility drawing=off updates=on \
+                                       script="$PLUGIN_DIR/workspace_visibility.sh" \
+           --subscribe workspace_visibility aerospace_workspace_change
+
 ##### Left Items #####
 source "$ITEM_DIR/space.sh"
 # adds layout background for workspaces
