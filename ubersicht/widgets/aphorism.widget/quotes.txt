@@ -1,0 +1,25 @@
+"The map is not the territory." — Korzybski
+"What I cannot create, I do not understand." — Feynman
+"Premature optimization is the root of all evil." — Knuth
+"Make it work, make it right, make it fast." — Kent Beck
+"Things should be made as simple as possible, but no simpler." — Einstein
+"Slow is smooth, smooth is fast."
+"Festina lente." — make haste slowly
+"Per aspera ad astra."
+"Memento mori."
+"Amor fati."
+"The cave you fear to enter holds the treasure you seek." — Campbell
+"Discipline equals freedom." — Willink
+"You can do anything, but not everything." — Allen
+"Simplicity is the ultimate sophistication." — Da Vinci
+"Code is read more often than it is written." — van Rossum
+"Worse is better." — Gabriel
+"Perfection is achieved not when there is nothing more to add, but when there is nothing left to take away." — Saint-Exupéry
+"The best way to predict the future is to invent it." — Kay
+"Talk is cheap. Show me the code." — Torvalds
+"Hofstadter's Law: It always takes longer than you expect, even when you take into account Hofstadter's Law."
+"In theory there is no difference between theory and practice. In practice there is." — Yogi Berra
+"The function of good software is to make the complex appear to be simple." — Booch
+"First, solve the problem. Then, write the code." — Johnson
+"Walking on water and developing software from a specification are easy if both are frozen." — Reeves
+"It is not the critic who counts." — Roosevelt
