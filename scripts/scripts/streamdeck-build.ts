@@ -18,7 +18,7 @@
  * No external deps. Uses rsvg-convert for SVG→PNG.
  */
 
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, copyFileSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, copyFileSync, rmSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { execSync } from "node:child_process";
@@ -118,11 +118,12 @@ function svg(spec: IconSpec): string {
 const ICONS: IconDef[] = [
   // ── Scenes (5 build-in-public scenes) ──
   // Idle = grey number, active = cyan italic with ring (scene-is-current)
-  { key: "scene-01", title: "01 INTRO",    idle: { centerText: "01",  italic: true, color: TOKENS.fgMute }, active: { centerText: "01",  italic: true, color: TOKENS.primary, ring: true } },
-  { key: "scene-02", title: "02 CODING",   idle: { centerText: "</>",               color: TOKENS.fgMute, centerSize: 52 }, active: { centerText: "</>",               color: TOKENS.primary, centerSize: 52, ring: true } },
-  { key: "scene-03", title: "03 TERMINAL", idle: { centerText: "$_",                color: TOKENS.fgMute, centerSize: 56 }, active: { centerText: "$_",                color: TOKENS.primary, centerSize: 56, ring: true } },
-  { key: "scene-04", title: "04 BREAK",    idle: { centerText: "04",  italic: true, color: TOKENS.fgMute }, active: { centerText: "04",  italic: true, color: TOKENS.primary, ring: true } },
-  { key: "scene-05", title: "05 OUTRO",    idle: { centerText: "→",                 color: TOKENS.fgMute, centerSize: 64 }, active: { centerText: "→",                 color: TOKENS.primary, centerSize: 64, ring: true } },
+  // Scene numerals — Artist call: unify the rhythm; title overlay carries meaning.
+  { key: "scene-01", title: "01 INTRO",    idle: { centerText: "01", italic: true, color: TOKENS.fgMute }, active: { centerText: "01", italic: true, color: TOKENS.primary, ring: true } },
+  { key: "scene-02", title: "02 CODING",   idle: { centerText: "02", italic: true, color: TOKENS.fgMute }, active: { centerText: "02", italic: true, color: TOKENS.primary, ring: true } },
+  { key: "scene-03", title: "03 TERMINAL", idle: { centerText: "03", italic: true, color: TOKENS.fgMute }, active: { centerText: "03", italic: true, color: TOKENS.primary, ring: true } },
+  { key: "scene-04", title: "04 BREAK",    idle: { centerText: "04", italic: true, color: TOKENS.fgMute }, active: { centerText: "04", italic: true, color: TOKENS.primary, ring: true } },
+  { key: "scene-05", title: "05 OUTRO",    idle: { centerText: "05", italic: true, color: TOKENS.fgMute }, active: { centerText: "05", italic: true, color: TOKENS.primary, ring: true } },
 
   // ── Mic mute (state 0 = audio on, state 1 = muted) ──
   // Different glyphs per state — clearer visual signal than just color
@@ -135,7 +136,8 @@ const ICONS: IconDef[] = [
   { key: "stream", title: "STREAM", idle: { centerText: "▷", color: TOKENS.fgMute, centerSize: 56 }, active: { centerText: "●", color: TOKENS.primary, centerSize: 56, ring: true } },
 
   // ── Marker (chapter) — single-state visual, but provide both ──
-  { key: "marker", title: "MARKER", idle: { centerText: "❰", color: TOKENS.primary, italic: true, centerSize: 64 }, active: { centerText: "❰", color: TOKENS.primary, italic: true, centerSize: 64, ring: true } },
+  // Marker — Artist: glyph SHAPE must swap, not just ring. Idle = bracket, active = filled bookmark.
+  { key: "marker", title: "MARKER", idle: { centerText: "❰", color: TOKENS.fgMute, italic: true, centerSize: 64 }, active: { centerText: "▌", color: TOKENS.primary, centerSize: 72, ring: true } },
 
   // ── Source visibility toggles ──
   { key: "cam",  title: "CAM",  idle: { centerText: "○", color: TOKENS.fgMute, centerSize: 60 }, active: { centerText: "◉", color: TOKENS.primary, centerSize: 60, ring: true } },
@@ -148,21 +150,25 @@ const ICONS: IconDef[] = [
   // ── Folder links — stateless visually ──
   { key: "folder-obs",    title: "OBS",    idle: { centerText: "obs", italic: true, color: TOKENS.primary, centerSize: 42 }, active: { centerText: "obs", italic: true, color: TOKENS.primary, centerSize: 42 } },
   { key: "folder-dev",    title: "DEV",    idle: { centerText: "dev", italic: true, color: TOKENS.primary, centerSize: 42 }, active: { centerText: "dev", italic: true, color: TOKENS.primary, centerSize: 42 } },
-  { key: "folder-audio",  title: "AUDIO",  idle: { centerText: "♪",                 color: TOKENS.primary, centerSize: 64 }, active: { centerText: "♪",                 color: TOKENS.primary, centerSize: 64 } },
-  { key: "folder-scenes", title: "SCENES", idle: { centerText: "◫",                 color: TOKENS.primary, centerSize: 60 }, active: { centerText: "◫",                 color: TOKENS.primary, centerSize: 60 } },
+  // Folders unified to lowercase italic text (Artist's call — matches obs/dev/scr register).
+  { key: "folder-audio",  title: "AUDIO",  idle: { centerText: "aud", italic: true, color: TOKENS.primary, centerSize: 42 }, active: { centerText: "aud", italic: true, color: TOKENS.primary, centerSize: 42 } },
+  { key: "folder-scenes", title: "SCENES", idle: { centerText: "scn", italic: true, color: TOKENS.primary, centerSize: 42 }, active: { centerText: "scn", italic: true, color: TOKENS.primary, centerSize: 42 } },
   { key: "back-parent",   title: "BACK",   idle: { centerText: "←",                 color: TOKENS.primary, centerSize: 64 }, active: { centerText: "←",                 color: TOKENS.primary, centerSize: 64 } },
 
   // ── Dev folder actions ──
-  { key: "dev-post-x", title: "POST",   idle: { centerText: "𝕏",   color: TOKENS.fg,      centerSize: 60 }, active: { centerText: "𝕏",   color: TOKENS.primary, centerSize: 60, ring: true } },
-  { key: "dev-push",   title: "PUSH",   idle: { centerText: "↑",   color: TOKENS.primary, centerSize: 64 }, active: { centerText: "↑",   color: TOKENS.primary, centerSize: 64, ring: true } },
-  { key: "dev-server", title: "SERVER", idle: { centerText: "▶",   color: TOKENS.fgMute,  centerSize: 56 }, active: { centerText: "▶",   color: TOKENS.primary, centerSize: 56, ring: true } },
-  { key: "dev-lfg",    title: "lfg",    idle: { centerText: "lfg", italic: true, color: TOKENS.primary, centerSize: 40 }, active: { centerText: "lfg", italic: true, color: TOKENS.primary, centerSize: 40, ring: true } },
-  { key: "dev-popup",  title: "POPUP",  idle: { centerText: "◰",   color: TOKENS.primary, centerSize: 56 }, active: { centerText: "◰",   color: TOKENS.primary, centerSize: 56, ring: true } },
+  // Dev folder buttons — Artist: idle should be primaryDim (not primary) so the
+  // press-to-primary state actually feels like a press. Active also swaps glyph.
+  { key: "dev-post-x", title: "POST",   idle: { centerText: "𝕏",   color: TOKENS.fgMute,    centerSize: 60 }, active: { centerText: "𝕏",   color: TOKENS.primary, centerSize: 60, ring: true } },
+  { key: "dev-push",   title: "PUSH",   idle: { centerText: "↑",   color: TOKENS.primaryDim, centerSize: 64 }, active: { centerText: "⇧", color: TOKENS.primary, centerSize: 64, ring: true } },
+  { key: "dev-server", title: "SERVER", idle: { centerText: "▷",   color: TOKENS.fgMute,    centerSize: 56 }, active: { centerText: "▶", color: TOKENS.primary, centerSize: 56, ring: true } },
+  { key: "dev-lfg",    title: "lfg",    idle: { centerText: "lfg", italic: true, color: TOKENS.primaryDim, centerSize: 40 }, active: { centerText: "LFG", italic: true, color: TOKENS.primary, centerSize: 40, ring: true } },
+  { key: "dev-popup",  title: "POPUP",  idle: { centerText: "◰",   color: TOKENS.primaryDim, centerSize: 56 }, active: { centerText: "◳", color: TOKENS.primary, centerSize: 56, ring: true } },
 
   // ── Stream ritual buttons ──
-  { key: "preshow",     title: "PRE-SHOW",  idle: { centerText: "⚡", color: TOKENS.fgMute,  centerSize: 56 }, active: { centerText: "⚡", color: TOKENS.primary, centerSize: 56, ring: true } },
+  // Preshow — Artist: ⚡ glyph is anemic; swap to ▲ filled triangle on active for stronger silhouette.
+  { key: "preshow",     title: "PRE-SHOW",  idle: { centerText: "⚡", color: TOKENS.fgMute,  centerSize: 56 }, active: { centerText: "▲", color: TOKENS.primary, centerSize: 64, ring: true } },
   { key: "endshow",     title: "END",       idle: { centerText: "▣", color: TOKENS.fgMute,  centerSize: 52 }, active: { centerText: "▣", color: TOKENS.primary, centerSize: 52, ring: true } },
-  { key: "marker-label",title: "MARK ＋",   idle: { centerText: "❰", italic: true, color: TOKENS.primary, centerSize: 60 }, active: { centerText: "❰", italic: true, color: TOKENS.primary, centerSize: 60, ring: true } },
+  { key: "marker-label",title: "MARK ＋",   idle: { centerText: "❰", italic: true, color: TOKENS.fgMute, centerSize: 60 }, active: { centerText: "❰❰", italic: true, color: TOKENS.primary, centerSize: 56, ring: true } },
 
   // ── New Dev row 2 actions (replacing the missing lfg/push/server) ──
   { key: "status",        title: "STATUS",  idle: { centerText: "ⓘ", color: TOKENS.fgMute,  centerSize: 56 }, active: { centerText: "ⓘ", color: TOKENS.primary, centerSize: 56, ring: true } },
@@ -183,9 +189,10 @@ const ICONS: IconDef[] = [
 
   // ── OBS folder controls ──
   { key: "studio-mode",  title: "STUDIO",     idle: { centerText: "▢", color: TOKENS.fgMute,  centerSize: 56 }, active: { centerText: "▣", color: TOKENS.primary, centerSize: 56, ring: true } },
-  { key: "transition",   title: "TRANSITION", idle: { centerText: "⇄", color: TOKENS.primary, centerSize: 56 }, active: { centerText: "⇄", color: TOKENS.primary, centerSize: 56, ring: true } },
-  { key: "scene-fade",   title: "FADE",       idle: { centerText: "≈", color: TOKENS.primary, centerSize: 56 }, active: { centerText: "≈", color: TOKENS.primary, centerSize: 56, ring: true } },
-  { key: "scene-stinger",title: "STINGER",    idle: { centerText: "✦", color: TOKENS.primary, centerSize: 56 }, active: { centerText: "✦", color: TOKENS.primary, centerSize: 56, ring: true } },
+  // Transitions — Artist: every active state swaps glyph SHAPE (idle = thin, active = bold/filled).
+  { key: "transition",   title: "TRANSITION", idle: { centerText: "⇄", color: TOKENS.fgMute,  centerSize: 56 }, active: { centerText: "⇆", color: TOKENS.primary, centerSize: 56, ring: true } },
+  { key: "scene-fade",   title: "FADE",       idle: { centerText: "≈", color: TOKENS.fgMute,  centerSize: 56 }, active: { centerText: "≣", color: TOKENS.primary, centerSize: 60, ring: true } },
+  { key: "scene-stinger",title: "STINGER",    idle: { centerText: "✦", color: TOKENS.fgMute,  centerSize: 56 }, active: { centerText: "✯", color: TOKENS.primary, centerSize: 60, ring: true } },
   { key: "virtcam",      title: "VCAM",       idle: { centerText: "▢", color: TOKENS.fgMute,  centerSize: 56 }, active: { centerText: "◉", color: TOKENS.primary, centerSize: 56, ring: true } },
   { key: "replay-buffer",title: "REPLAY",     idle: { centerText: "↻", color: TOKENS.fgMute,  centerSize: 64 }, active: { centerText: "↻", color: TOKENS.primary, centerSize: 64, ring: true } },
   { key: "replay-save",  title: "SAVE",       idle: { centerText: "⇩", color: TOKENS.primary, centerSize: 64 }, active: { centerText: "⇩", color: TOKENS.primary, centerSize: 64, ring: true } },
@@ -409,11 +416,28 @@ console.log("Profile roles:", profileRoles);
 const landingUUID = Object.entries(profileRoles).find(([, r]) => r === "landing")![0];
 const obsUUID = Object.entries(profileRoles).find(([, r]) => r === "obs")![0];
 const scenesUUID = Object.entries(profileRoles).find(([, r]) => r === "scenes")![0];
-const audioUUID = Object.entries(profileRoles).find(([, r]) => r === "audio")![0];
+// Audio sub-profile from the source pack is killed below — solo build-in-public
+// stream uses mic toggle (on landing) and OBS-folder volume controls; a 14-button
+// Audio Mixer page is cargo-culted overhead. Optional re-introduction would be
+// 3 channels (mic / system / music), but for now: hard kill.
+const audioUUID = Object.entries(profileRoles).find(([, r]) => r === "audio")?.[0];
 
 // 4. Render all icons to a temp dir, then copy to each sub-profile's Images/ dir
 const renderDir = join(work, "_icons");
 const renderedIcons = renderIcons(renderDir);
+
+// 4a. Rich-art overlay — scene-01/04/05 get Flux-generated triptych PNGs from
+// streamdeck-assets/ (council pass: Artist + Designer). Falls back to SVG
+// numerals if the asset isn't present (e.g., fresh checkout without assets).
+const assetsDir = join(import.meta.dir, "streamdeck-assets");
+for (const sceneKey of ["scene-01", "scene-04", "scene-05"]) {
+  for (const variant of ["idle", "active"] as const) {
+    const richPath = join(assetsDir, `${sceneKey}-rich-${variant}.png`);
+    if (existsSync(richPath)) {
+      copyFileSync(richPath, renderedIcons[sceneKey][variant]);
+    }
+  }
+}
 
 function ensureImagesIn(profileUUID: string): string {
   const imgDir = join(subProfilesDir, profileUUID, "Images");
@@ -439,7 +463,7 @@ function copyIconsTo(profileUUID: string): Record<string, RenderedIcon> {
 }
 
 const imageRefs: Record<string, Record<string, RenderedIcon>> = {};
-for (const profileUUID of [landingUUID, obsUUID, scenesUUID, audioUUID]) {
+for (const profileUUID of [landingUUID, obsUUID, scenesUUID]) {
   imageRefs[profileUUID] = copyIconsTo(profileUUID);
 }
 
@@ -448,24 +472,26 @@ const L = imageRefs[landingUUID];
 const landingManifest = {
   Controllers: [{
     Actions: {
-      // Row 0 — 5 scene direct jumps (col 0-4) — title overlays show "01 INTRO" etc.
-      "0,0": actionScene("01_Intro",         L["scene-01"]),
-      "1,0": actionScene("02_Coding",        L["scene-02"]),
-      "2,0": actionScene("03_Terminal_Only", L["scene-03"]),
-      "3,0": actionScene("04_Break",         L["scene-04"]),
-      "4,0": actionScene("05_Outro",         L["scene-05"]),
-      // Row 1 — primary controls (state-pair toggles where applicable)
-      "0,1": actionMicMute(L["mic"]),
-      "1,1": actionRecord(L["rec"]),
-      "2,1": actionStream(L["stream"]),
-      "3,1": actionOpenFolder(/* screens folder UUID set below */ "SCREENS_PLACEHOLDER", L["folder-screens"]),
-      "4,1": actionOpenFolder(/* dev folder UUID set below */ "DEV_PLACEHOLDER", L["folder-dev"]),
-      // Row 2 — source toggles + folder links
-      "0,2": actionSourceVisibility("Webcam",       L["cam"]),
-      "1,2": actionSourceVisibility("Coding Frame", L["chat"]),  // brand strips toggle
-      "2,2": actionSourceVisibility("Lower Third",  L["lt"]),
-      "3,2": actionScene("04_Break",                L["brb"]),
-      "4,2": actionOpenFolder(obsUUID,              L["folder-obs"]),
+      // Designer-recommended rows: high-freq toggles on row 0 (thumb home),
+      // 5 scenes on row 1 (muscle-memory middle), folder cluster on row 2.
+      // Row 0 — primary toggles
+      "0,0": actionMicMute(L["mic"]),
+      "1,0": actionRecord(L["rec"]),
+      "2,0": actionStream(L["stream"]),
+      "3,0": actionMarker(L["marker"]),
+      "4,0": actionSourceVisibility("Webcam", L["cam"]),
+      // Row 1 — 5 scenes (muscle-memory home)
+      "0,1": actionScene("01_Intro",         L["scene-01"]),
+      "1,1": actionScene("02_Coding",        L["scene-02"]),
+      "2,1": actionScene("03_Terminal_Only", L["scene-03"]),
+      "3,1": actionScene("04_Break",         L["scene-04"]),
+      "4,1": actionScene("05_Outro",         L["scene-05"]),
+      // Row 2 — folder cluster + brb quickjump
+      "0,2": actionOpenFolder(scenesUUID,                                                  L["folder-scenes"]),
+      "1,2": actionOpenFolder(/* screens folder UUID set below */ "SCREENS_PLACEHOLDER",   L["folder-screens"]),
+      "2,2": actionOpenFolder(obsUUID,                                                     L["folder-obs"]),
+      "3,2": actionOpenFolder(/* dev folder UUID set below */     "DEV_PLACEHOLDER",       L["folder-dev"]),
+      "4,2": actionScene("04_Break",                                                       L["brb"]),
     },
     Type: "Keypad",
   }],
@@ -494,12 +520,13 @@ const devManifest = {
       "2,1": actionOpenURL("raycast://script-commands/phase-plan",    D["phase-pln"]),
       "3,1": actionOpenURL("raycast://script-commands/phase-build",   D["phase-bld"]),
       "4,1": actionOpenURL("raycast://script-commands/phase-execute", D["phase-exe"]),
-      // Row 2 — phase verify/learn + new ritual quickies (status, session restart, replay save)
+      // Row 2 — phase verify/learn + status + session. Designer dropped replay-save
+      // (mid-stream-only action — promote to landing or OBS folder, not Dev).
       "0,2": actionOpenURL("raycast://script-commands/phase-verify",  D["phase-ver"]),
       "1,2": actionOpenURL("raycast://script-commands/phase-learn",   D["phase-lrn"]),
       "2,2": actionOpenURL("raycast://script-commands/status",        D["status"]),
       "3,2": actionOpenURL("raycast://script-commands/session-start", D["session-start"]),
-      "4,2": actionOpenURL("raycast://script-commands/replay-save",   D["replay-save"]),
+      // 4,2 intentionally empty — reserved for future Dev quickie
     },
     Type: "Keypad",
   }],
@@ -507,8 +534,8 @@ const devManifest = {
   Name: "Dev · DOS Stream Control",
 };
 
-// 7. Wire devUUID into landing's 4,1 button
-landingManifest.Controllers[0].Actions["4,1"].Settings.ProfileUUID = devUUID;
+// 7. Wire devUUID into landing's 3,2 button (folder-dev — Designer reshuffle)
+landingManifest.Controllers[0].Actions["3,2"].Settings.ProfileUUID = devUUID;
 
 // 7a. Build the SCREENS folder — BetterDisplay mode switching via Raycast.
 // Requires bd-{dawn,day,afternoon,evening,night,meeting,read,stream,cinema}.sh
@@ -539,7 +566,7 @@ const screensManifest = {
   Icon: "",
   Name: "Screens · Display Modes",
 };
-landingManifest.Controllers[0].Actions["3,1"].Settings.ProfileUUID = screensUUID;
+landingManifest.Controllers[0].Actions["1,2"].Settings.ProfileUUID = screensUUID;
 
 writeManifest(landingUUID, landingManifest);
 writeFileSync(join(devDir, "manifest.json"), JSON.stringify(devManifest));
@@ -588,29 +615,33 @@ scenesManifest.Controllers[0].Actions = newScenesActions;
 scenesManifest.Name = "Scenes";
 writeManifest(scenesUUID, scenesManifest);
 
-// 9. Rebuild the OBS Profile manifest with new icons
+// 9. Rebuild the OBS Profile manifest — Designer-recommended specialization:
+// drop stream/rec/mic/marker duplicates (already on landing) and use the
+// reclaimed row for per-scene source-visibility toggles. OBS folder becomes
+// "things you can't do from landing" — studio mode, transitions, replay
+// buffer, virtual cam, source visibility.
 const O = imageRefs[obsUUID];
 const obsManifest = readManifest(obsUUID);
 obsManifest.Name = "OBS Studio";
 obsManifest.Controllers[0].Actions = {
-  // Row 0
-  "0,0": actionOpenFolder(audioUUID, O["folder-audio"]),
+  // Row 0 — back + transition tools (specialty OBS surface)
+  "0,0": actionBackToParent(O["back-parent"]),
   "1,0": actionStudioMode(O["studio-mode"]),
-  "2,0": actionStream(O["stream"]),
-  "3,0": actionRecord(O["rec"]),
-  "4,0": actionRecordPause(O["rec-pause"]),
-  // Row 1
+  "2,0": actionTransitionStudio(O["transition"]),
+  "3,0": actionSceneTransition("Fade",    O["scene-fade"]),
+  "4,0": actionSceneTransition("Stinger", O["scene-stinger"]),
+  // Row 1 — meta controls + scenes folder
   "0,1": actionOpenFolder(scenesUUID, O["folder-scenes"]),
-  "1,1": actionTransitionStudio(O["transition"]),
-  "2,1": actionSceneTransition("Fade",    O["scene-fade"]),
-  "3,1": actionSceneTransition("Stinger", O["scene-stinger"]),
-  "4,1": actionMarker(O["marker"]),
-  // Row 2
-  "0,2": actionBackToParent(O["back-parent"]),
-  "1,2": actionMicMute(O["mic"]),
-  "2,2": actionVirtCam(O["virtcam"]),
-  "3,2": actionReplayBuffer(O["replay-buffer"]),
-  "4,2": actionReplaySave(O["replay-save"]),
+  "1,1": actionVirtCam(O["virtcam"]),
+  "2,1": actionReplayBuffer(O["replay-buffer"]),
+  "3,1": actionReplaySave(O["replay-save"]),
+  "4,1": actionRecordPause(O["rec-pause"]),
+  // Row 2 — per-scene source-visibility toggles (Designer's specialization)
+  "0,2": actionSourceVisibility("Webcam",        O["vis-eye"], "WEBCAM"),
+  "1,2": actionSourceVisibility("Coding Frame",  O["vis-eye"], "CODE-FR"),
+  "2,2": actionSourceVisibility("Lower Third",   O["vis-eye"], "LOWER"),
+  "3,2": actionSourceVisibility("BRB Overlay",   O["vis-eye"], "BRB"),
+  "4,2": actionSourceVisibility("Intro Overlay", O["vis-eye"], "INTRO"),
 };
 writeManifest(obsUUID, obsManifest);
 
@@ -619,7 +650,14 @@ const rootManifestPath = join(rootProfileDir, "manifest.json");
 const rootManifest = JSON.parse(readFileSync(rootManifestPath, "utf8"));
 rootManifest.Name = "DuranteOS";
 rootManifest.Pages.Default = landingUUID;
-rootManifest.Pages.Pages = [landingUUID, obsUUID, scenesUUID, audioUUID, devUUID.toUpperCase(), screensUUID.toUpperCase()];
+// Designer-ordered swipe path: landing → dev → screens → scenes → obs.
+// Audio sub-profile dropped entirely (was 14 empty Mixer actions, cargo-culted from pack).
+rootManifest.Pages.Pages = [landingUUID, devUUID.toUpperCase(), screensUUID.toUpperCase(), scenesUUID, obsUUID];
+
+// 10a. Delete the orphan Audio sub-profile dir from the work tree so it doesn't end up in the output zip.
+if (audioUUID) {
+  rmSync(join(subProfilesDir, audioUUID), { recursive: true, force: true });
+}
 writeFileSync(rootManifestPath, JSON.stringify(rootManifest));
 
 // 11. Re-zip → output .streamDeckProfile
