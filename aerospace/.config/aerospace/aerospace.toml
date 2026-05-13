@@ -14,8 +14,10 @@ after-login-command = []
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
 after-startup-command = [
   'exec-and-forget sketchybar',
-  # JankyBorders: Catppuccin colors (blue=active, grey=inactive)
-  'exec-and-forget borders active_color=0xff8aadf4 inactive_color=0xff939ab7 width=4.0'
+  # JankyBorders: only draw on focused window. Transparent inactive_color
+  # prevents borders from being drawn around tile-hidden windows on other
+  # workspaces (which otherwise bleed into the bottom-left as a sliver).
+  'exec-and-forget borders active_color=0xff8aadf4 inactive_color=0x00000000 width=4.0'
 ]
 
 # Notify Sketchybar about workspace change AND swap per-workspace wallpaper.
