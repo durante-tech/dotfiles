@@ -46,6 +46,11 @@ set_dev() {
     sleep 0.3
     bd set --tagID="$DEV_TAG" --hardwareBrightness=100% >/dev/null && \
         log "DEV hwBrightness=100%" || log "WARN DEV hwBrightness=100% FAILED"
+    # BetterDisplay 4.3.0 async EDR-headroom recalc: setting hardwareBrightness
+    # kicks off a pipeline that auto-boosts softwareBrightness toward the EDR
+    # ceiling (~1.658 with P3-1600 preset). Firing softwareBrightness without
+    # waiting lets that recalc clobber our value. 0.3s is enough headroom.
+    sleep 0.3
     bd set --tagID="$DEV_TAG" --softwareBrightness="${pct}%" >/dev/null && \
         log "DEV swBrightness=${pct}%" || log "WARN DEV swBrightness=${pct}% FAILED"
 }
