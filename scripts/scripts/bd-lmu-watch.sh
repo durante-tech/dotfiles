@@ -21,11 +21,20 @@ set -u
 
 APPLY="$HOME/dotfiles/scripts/scripts/bd-apply.sh"
 BUCKET_FILE="/tmp/bd-lmu-bucket"
+LOG_FILE="/tmp/bd-lmu-watch.log"
 POLL_S=60
 
+log() { printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >> "$LOG_FILE"; }
+
+# Try multiple IOReg classes — Apple silicon and Intel macs expose ambient via
+# different keys. AppleLMUController is the legacy/Intel path; on M-series the
+# sensor surface moved to AppleSMC or AOPSensorHub on some channels.
 read_lmu() {
     local raw
     raw="$(ioreg -r -c AppleLMUController 2>/dev/null | awk '/"brightness"/ {gsub(/[^0-9.]/,"",$NF); print $NF; exit}')"
+    if [[ -z "$raw" ]]; then
+        raw="$(ioreg -r -c AppleSMC 2>/dev/null | awk '/"ambient[Bb]rightness"/ {gsub(/[^0-9.]/,"",$NF); print $NF; exit}')"
+    fi
     [[ -z "$raw" ]] && { echo -1; return; }
     echo "$raw"
 }
@@ -50,19 +59,34 @@ bucket_to_mode() {
 }
 
 last_bucket=-1
-[[ -r "$BUCKET_FILE" ]] && last_bucket="$(cat "$BUCKET_FILE")"
+# Bucket file format: <bucket>|<lux>|<iso-ts> — first field is bucket for
+# back-compat with prior cut -f1 readers; pipe-delimited tail adds observability.
+[[ -r "$BUCKET_FILE" ]] && last_bucket="$(cut -d'|' -f1 "$BUCKET_FILE")"
+
+log "bd-lmu-watch started, poll=${POLL_S}s, last_bucket=$last_bucket"
+sensor_missing_warned=0
 
 while true; do
     lux="$(read_lmu)"
     if [[ "$lux" == "-1" ]]; then
+        if (( sensor_missing_warned == 0 )); then
+            log "WARN ambient sensor unavailable (AppleLMUController + AppleSMC both empty). Check Screen Recording permission for launchd, or sensor key may have moved on this hardware."
+            sensor_missing_warned=1
+        fi
+        printf 'unavailable|-1|%s\n' "$(date -u +%FT%TZ)" > "$BUCKET_FILE"
         sleep "$POLL_S"
         continue
     fi
+    if (( sensor_missing_warned == 1 )); then
+        log "ambient sensor came back: lux=$lux"
+        sensor_missing_warned=0
+    fi
     bucket="$(raw_to_bucket "$lux")"
+    printf '%s|%s|%s\n' "$bucket" "$lux" "$(date -u +%FT%TZ)" > "$BUCKET_FILE"
     if [[ "$bucket" != "$last_bucket" ]]; then
-        echo "$bucket" > "$BUCKET_FILE"
         mode="$(bucket_to_mode "$bucket")"
-        "$APPLY" "$mode" >/dev/null 2>&1 || true
+        log "transition lux=$lux bucket=$last_bucket→$bucket mode=$mode"
+        BD_SOURCE=lmu "$APPLY" "$mode" >>"$LOG_FILE" 2>&1 || log "WARN apply $mode failed"
         last_bucket="$bucket"
     fi
     sleep "$POLL_S"

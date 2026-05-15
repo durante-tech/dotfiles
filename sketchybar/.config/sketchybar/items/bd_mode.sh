@@ -11,7 +11,7 @@ bd_mode=(
     label.font="$FONT:Bold:12.0"
     update_freq=0
     script="$PLUGIN_DIR/bd_mode.sh"
-    click_script="$HOME/dotfiles/scripts/scripts/bd-cycle.sh"
+    click_script="if [ \"\$BUTTON\" = right ]; then $HOME/dotfiles/scripts/scripts/bd-cycle.sh prev; else $HOME/dotfiles/scripts/scripts/bd-cycle.sh next; fi"
 )
 
 sketchybar --add event bd_mode_changed
