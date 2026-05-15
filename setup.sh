@@ -107,6 +107,7 @@ stow_packages() {
         sketchybar
         starship
         tmux
+        ubersicht
         w3m
         yazi
         zed
@@ -115,6 +116,8 @@ stow_packages() {
 
     # Ensure .config exists
     mkdir -p "$HOME/.config"
+    # Ensure deep parent dirs exist for non-XDG stow packages
+    mkdir -p "$HOME/Library/Application Support/Übersicht"
 
     for pkg in "${packages[@]}"; do
         if [[ -d "$DOTFILES_DIR/$pkg" ]]; then
@@ -127,6 +130,16 @@ stow_packages() {
             print_info "Skipping $pkg (directory not found)"
         fi
     done
+
+    # Übersicht caveat: its internal server.js doesn't follow relative
+    # symlinks. Stow produces ../../../dotfiles/... which crashes the app.
+    # Replace with an absolute symlink so server.js can resolve it.
+    local uber_link="$HOME/Library/Application Support/Übersicht/widgets"
+    local uber_target="$DOTFILES_DIR/ubersicht/Library/Application Support/Übersicht/widgets"
+    if [[ -L "$uber_link" && -d "$uber_target" ]]; then
+        ln -sfn "$uber_target" "$uber_link"
+        print_success "Übersicht widgets symlink rewritten to absolute"
+    fi
 }
 
 # ============================================================================

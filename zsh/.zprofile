@@ -57,17 +57,11 @@ export FZF_TMUX_OPTS=" -p90%,70% "
 
 # FNM replaced by mise (activated in .zshrc). Binary stays as fallback for now.
 
-# Console Ninja
-export PATH=~/.console-ninja/.bin:$PATH
-
 # bun
 # bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
-
-# 010 Hex Editor (macOS only)
-[[ "$(uname)" == "Darwin" ]] && export PATH="$PATH:/Applications/010 Editor.app/Contents/CmdLine"
 
 #------------Langs------------
 

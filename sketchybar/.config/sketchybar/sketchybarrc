@@ -65,7 +65,8 @@ source "$ITEM_DIR/calendar.sh"
 ##### Right Items #####
 # Source order = right→left visually (first sourced sits rightmost).
 # Layout (right→left):
-#   clock | weather | cpu | memory | mic | network | github | claude | media_block
+#   battery | clock | bd_mode | weather | cpu | memory | network | github | claude | mic | volume | obs | spotify | media_block
+source "$ITEM_DIR/battery.sh"
 source "$ITEM_DIR/clock.sh"
 source "$ITEM_DIR/bd_mode.sh"
 source "$ITEM_DIR/weather.sh"
@@ -79,11 +80,13 @@ sketchybar --add bracket system_health cpu memory network \
 source "$ITEM_DIR/github.sh"
 source "$ITEM_DIR/claude.sh"
 source "$ITEM_DIR/mic.sh"
+source "$ITEM_DIR/volume.sh"
 source "$ITEM_DIR/obs.sh"
-# comms bracket — mic + obs as the "embarrassment-preventer" cluster
-sketchybar --add bracket comms mic obs \
+# comms bracket — mic + volume + obs as the audio + capture cluster
+sketchybar --add bracket comms mic volume obs \
            --set comms background.color="$PURE_BLACK"
 
+source "$ITEM_DIR/spotify.sh"
 source "$ITEM_DIR/media_block.sh"
 
           

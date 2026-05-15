@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  TEMPLATE — rendered to real plist by setup.sh's render_launchagents().
+  __USER__ is substituted with the current $USER at install time.
+  The rendered file lands at ~/Library/LaunchAgents/<filename>.plist.
+
+  Time-of-day BetterDisplay mode scheduler. Mode parameter is the second
+  argument to bd-apply.sh (dawn/day/afternoon/evening/night).
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.lucas.bd-lmu-watch</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/__USER__/dotfiles/scripts/scripts/bd-lmu-watch.sh</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/tmp/bd-lmu-watch.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/bd-lmu-watch.log</string>
+</dict>
+</plist>
