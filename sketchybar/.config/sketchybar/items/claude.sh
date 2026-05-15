@@ -12,5 +12,5 @@ claude=(
   click_script="$PLUGIN_DIR/claude_click.sh"
 )
 
-sketchybar --add item claude right \
+sketchybar --add item claude left \
            --set claude "${claude[@]}"
