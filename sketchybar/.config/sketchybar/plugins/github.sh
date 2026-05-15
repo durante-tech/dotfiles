@@ -2,8 +2,8 @@
 
 source "$CONFIG_DIR/colors.sh"
 
-# Nerd Font GitHub mark.
-ICON=""
+# Nerd Font GitHub mark (Font Awesome U+F09B — works in Hack Nerd Font).
+ICON=""
 
 # Bare-icon path: gh not installed or not authenticated → grey icon, no label.
 if ! command -v gh &> /dev/null; then
