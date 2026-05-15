@@ -101,4 +101,9 @@ sketchybar --hotload on
 # placeholder for up to update_freq seconds.
 sketchybar --update
 
+# Bootstrap the volume item — it has update_freq=30, so without this trigger
+# it would show as a blank box for the first 30s after boot. Fire volume_change
+# with the current OS volume so the icon + label populate immediately.
+sketchybar --trigger volume_change INFO="$(osascript -e 'output volume of (get volume settings)' 2>/dev/null || echo 50)"
+
 echo "sketchybar configuation loaded.."

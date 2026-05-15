@@ -1,9 +1,13 @@
 #!/bin/sh
 
-volume_icon=(
+# volume item — icon + percentage label, click to open Sound prefs.
+# Originally a slider with width=0 (icon-only effectively); converted to a
+# regular item so update_freq actually fires the script on first load.
+volume=(
   script="$PLUGIN_DIR/volume.sh"
   click_script="$PLUGIN_DIR/volume_click.sh"
   updates=on
+  update_freq=5
   padding_left=5
   padding_right=5
   icon.align=center
@@ -13,15 +17,8 @@ volume_icon=(
   icon.color=$WHITE
   label.color=$WHITE
   label.padding_right=8
-  slider.highlight_color=$WHITE
-  slider.background.height=5
-  slider.background.corner_radius=3
-  slider.background.color=$GREY
-  slider.knob=󰀁
-  slider.knob.drawing=on
-  slider.width=0
 )
 
-sketchybar --add slider volume left 100 \
-           --set volume "${volume_icon[@]}" \
-           --subscribe volume volume_change mouse.clicked
+sketchybar --add item volume right \
+           --set volume "${volume[@]}" \
+           --subscribe volume volume_change mouse.clicked system_woke
