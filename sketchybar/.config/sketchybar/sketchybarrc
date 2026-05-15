@@ -56,6 +56,7 @@ sketchybar --add bracket workspaces space.1 space.2 space.B space.D space.F spac
 
 source "$ITEM_DIR/aerospace_mode.sh"
 source "$ITEM_DIR/front_app.sh"
+source "$ITEM_DIR/claude.sh"
 source "$ITEM_DIR/docker.sh"
 source "$ITEM_DIR/macupdater.sh"
 source "$ITEM_DIR/clearvpn.sh"
@@ -78,7 +79,6 @@ sketchybar --add bracket system_health cpu memory network \
            --set system_health background.color="$PURE_BLACK"
 
 source "$ITEM_DIR/github.sh"
-source "$ITEM_DIR/claude.sh"
 source "$ITEM_DIR/mic.sh"
 source "$ITEM_DIR/volume.sh"
 source "$ITEM_DIR/obs.sh"

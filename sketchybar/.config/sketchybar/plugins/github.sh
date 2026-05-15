@@ -2,16 +2,26 @@
 
 source "$CONFIG_DIR/colors.sh"
 
-# GitHub notifications (requires gh CLI to be authenticated)
+# Nerd Font GitHub mark.
+ICON=""
+
+# Bare-icon path: gh not installed or not authenticated → grey icon, no label.
 if ! command -v gh &> /dev/null; then
-    sketchybar --set "$NAME" icon="" label="?" icon.color="$GREY"
+    sketchybar --set "$NAME" icon="$ICON" label="" icon.color="$GREY" label.drawing=off
     exit 0
 fi
 
-COUNT=$(gh api notifications 2>/dev/null | grep -c '"id"' || echo "0")
+# `grep -c '"id"'` exits with status 1 (and output "0") when there are no
+# matches. The prior `|| echo "0"` then appended a second "0", producing a
+# multi-line value that broke `[ "$COUNT" -eq 0 ]` with "integer expression
+# expected". Capture cleanly and default to 0.
+COUNT=$(gh api notifications 2>/dev/null | grep -c '"id"' 2>/dev/null)
+COUNT=${COUNT:-0}
 
-if [ "$COUNT" -eq 0 ]; then
-    sketchybar --set "$NAME" icon="" label="0" icon.color="$GREY"
-elif [ "$COUNT" -gt 0 ]; then
-    sketchybar --set "$NAME" icon="" label="$COUNT" icon.color="$ORANGE"
+if [ "$COUNT" -gt 0 ]; then
+    sketchybar --set "$NAME" icon="$ICON" label="$COUNT" icon.color="$ORANGE" label.drawing=on
+else
+    # Zero unread — show the icon only, no label (keeps the item compact
+    # instead of rendering as a wide PURE_BLACK rectangle).
+    sketchybar --set "$NAME" icon="$ICON" label="" icon.color="$GREY" label.drawing=off
 fi
