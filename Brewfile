@@ -160,10 +160,8 @@ brew "thezoraiz/ascii-image-converter/ascii-image-converter"
 brew "tursodatabase/tap/turso"
 # Command-line interface for 1Password
 cask "1password-cli"
-# AeroSpace is an i3-like tiling window manager for macOS
-cask "nikitabobko/tap/aerospace"
-# GPU-accelerated terminal emulator
-cask "alacritty"
+# AeroSpace is an i3-like tiling window manager for macOS (tap declared above)
+cask "aerospace"
 # Compact TeX distribution as alternative to the full TeX Live / MacTeX
 cask "basictex"
 # Display management tool
@@ -187,6 +185,16 @@ cask "linearmouse"
 cask "stats"
 # Menu bar customization tool
 cask "swiftbar"
+# Inter sans-serif typeface (used by sketchybar / design tokens)
+cask "font-inter"
+# Manrope sans-serif typeface (used by design tokens / site)
+cask "font-manrope"
+# GPU-accelerated terminal emulator (alternate, used for streamdeck workflows)
+cask "kitty"
+# Xcode project generator (Swift / iOS dev)
+cask "tuist"
+# Apache Ant build tool (Java legacy build chain)
+cask "ant"
 vscode "aaravb.chrome-extension-developer-tools"
 vscode "aaron-bond.better-comments"
 vscode "anthropic.claude-code"

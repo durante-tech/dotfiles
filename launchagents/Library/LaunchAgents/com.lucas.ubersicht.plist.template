@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  TEMPLATE — rendered to real plist by setup.sh's render_launchagents().
+  __USER__ is substituted with the current $USER at install time.
+  The rendered file lands at ~/Library/LaunchAgents/<filename>.plist.
+
+  Starts Übersicht at login so the desktop widgets (clock, calendar,
+  aphorism, mempalace, dailybrief, etc.) survive reboots without manual
+  app launch. Widgets are sourced from ~/Library/Application Support/Übersicht/widgets
+  which is a symlink into ~/dotfiles/ubersicht/widgets.
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.lucas.ubersicht</string>
+
+    <!-- `open -gj -a` launches the GUI app cleanly via LaunchServices.
+         Direct-binary launch races on app-nap and Screen Recording perms;
+         going through `open` is the bulletproof path. -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/open</string>
+        <string>-gj</string>
+        <string>-a</string>
+        <string>Übersicht</string>
+    </array>
+
+    <!-- Fire once at login. KeepAlive=false because Übersicht's WKWebView
+         restart loop is brittle; if the user quits intentionally, respect that. -->
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <false/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/__USER__/Library/Logs/ubersicht-launch.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/__USER__/Library/Logs/ubersicht-launch.log</string>
+
+    <key>Nice</key>
+    <integer>5</integer>
+</dict>
+</plist>
