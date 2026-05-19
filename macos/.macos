@@ -44,6 +44,12 @@ defaults write NSGlobalDomain KeyRepeat -int 2
 # Short delay until key repeat (15 = 225ms)
 defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
+# Disable press-and-hold for accents (so Esc + repeated j/k work for vim)
+defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
+
+# Full keyboard access — Tab moves focus through every dialog button, not just text inputs
+defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
+
 ###############################################################################
 # Trackpad & Mouse                                                            #
 ###############################################################################
@@ -53,6 +59,23 @@ defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
 # Mouse tracking speed
 defaults write NSGlobalDomain com.apple.mouse.scaling -float 1.5
+
+###############################################################################
+# Screenshots                                                                 #
+###############################################################################
+
+# Save screenshots to ~/Pictures/Screenshots instead of Desktop
+mkdir -p "${HOME}/Pictures/Screenshots"
+defaults write com.apple.screencapture location -string "${HOME}/Pictures/Screenshots"
+
+# Save as PNG (other options: jpg, gif, pdf, tiff)
+defaults write com.apple.screencapture type -string "png"
+
+# Drop the drop-shadow on window screenshots
+defaults write com.apple.screencapture disable-shadow -bool true
+
+# Rename screenshots to "Screenshot ..." (Apple already does this; explicit lock)
+defaults write com.apple.screencapture name -string "Screenshot"
 
 ###############################################################################
 # Dock                                                                        #
@@ -66,6 +89,18 @@ defaults write com.apple.dock autohide-delay -float 0
 
 # Speed up the auto-hide animation
 defaults write com.apple.dock autohide-time-modifier -float 0.3
+
+# Minimize windows into their app icon (cleaner Dock — no separate minimized tiles)
+defaults write com.apple.dock minimize-to-application -bool true
+
+# Don't show Recents section in the Dock
+defaults write com.apple.dock show-recents -bool false
+
+# No bouncing on app launch
+defaults write com.apple.dock launchanim -bool false
+
+# Faster Mission Control animation
+defaults write com.apple.dock expose-animation-duration -float 0.15
 
 ###############################################################################
 # Finder                                                                      #
@@ -88,6 +123,20 @@ defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
 
 # Keep folders on top when sorting by name
 defaults write com.apple.finder _FXSortFoldersFirst -bool true
+
+# Show the status bar (item count + free space at bottom of window)
+defaults write com.apple.finder ShowStatusBar -bool true
+
+# Default search scope = current folder (not whole Mac)
+defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
+
+# New Finder windows open in Home, not Recents
+defaults write com.apple.finder NewWindowTarget -string "PfHm"
+defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/"
+
+# Don't write .DS_Store on network or USB volumes
+defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
+defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
 
 ###############################################################################
 # Hot Corners                                                                 #
@@ -133,7 +182,3 @@ defaults write -g NSWindowShouldDragOnGesture -bool true
 
 # Kill window open animations (snappier tiling)
 defaults write -g NSAutomaticWindowAnimationsEnabled -bool false
-
-# Don't automatically rearrange Spaces based on most recent use
-# (Critical for AeroSpace workspace pinning)
-defaults write com.apple.dock mru-spaces -bool false
