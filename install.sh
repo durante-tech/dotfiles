@@ -15,7 +15,7 @@ set -e  # Exit on error
 # CONFIGURATION
 # =============================================================================
 
-DOTFILES_REPO="https://github.com/Sin-cy/dotfiles.git"
+DOTFILES_REPO="https://github.com/durante-tech/dotfiles.git"
 DOTFILES_DIR="$HOME/dotfiles"
 TPM_DIR="$HOME/.tmux/plugins/tpm"
 
@@ -526,9 +526,10 @@ if [ "$FORCE_STOW" = true ]; then
 fi
 
 # Re-stow to handle updates (-R flag)
-PACKAGES="aerospace atuin espanso ghostty karabiner kitty mise mpd nvim rmpc scripts sketchybar starship tmux w3m wallpapers yazi zed zsh"
+PACKAGES="aerospace atuin espanso fastfetch ghostty karabiner kitty mise mpd nvim rmpc scripts sketchybar starship tmux ubersicht w3m wallpapers wezterm yazi zed zsh"
 # Note: launchagents/ is intentionally NOT in this list — it contains
 # .plist.template files rendered by setup.sh's render_launchagents().
+# wallpapers/ stows the shaders/README into ~/Pictures (not strictly XDG).
 
 for pkg in $PACKAGES; do
     if [ -d "$DOTFILES_DIR/$pkg" ]; then

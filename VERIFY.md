@@ -11,7 +11,7 @@ Designed for AI agents to walk top-to-bottom. Every check is a single bash comma
 These are load-bearing — if any fail, basic shell features break.
 
 ```bash
-for tool in zsh stow starship atuin zoxide fzf bat fd ripgrep eza nvim tmux git lazygit mise ghostty wallpaper espanso ollama gum glow ccusage gh; do
+for tool in zsh stow starship atuin zoxide fzf bat fd ripgrep eza nvim tmux git lazygit mise node python bun ghostty wallpaper espanso ollama gum glow ccusage gh; do
   if command -v "$tool" &>/dev/null; then
     echo "OK $tool"
   else
@@ -306,7 +306,7 @@ After running all checks, report to user:
 
 ```
 "Verification complete:
-  • Critical tools: <N>/24 OK
+  • Critical tools: <N>/26 OK
   • Shell setup: <X>/5 OK
   • Symlinks: <Y>/9 OK
   • LaunchAgents: <Z>/4 OK

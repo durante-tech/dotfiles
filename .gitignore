@@ -5,8 +5,9 @@
 .DS_Store
 **/.DS_Store
 
-# Backup files
+# Backup files (any extension after .bak counts — e.g. .bak.20260518-123431)
 *.bak
+*.bak.*
 *.backup
 *~
 
@@ -37,6 +38,12 @@ launchagents/.rendered/
 
 # Memory palace runtime state
 .mempalace/
+
+# DOS session-state spill (baselines, intel-context cache, fired events).
+# Surfaces in the repo root when an agent runs here; nothing in MEMORY/ is
+# meant to be tracked. Different from the curated MEMORY/WORK/ tree that
+# lives under ~/Durante.
+MEMORY/
 
 # Claude Code transcript dumps (ad-hoc, not source of truth)
 dotfiles-conversation.txt

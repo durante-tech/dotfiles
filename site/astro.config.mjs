@@ -13,10 +13,10 @@ export default defineConfig({
         title: 'Dotfiles Mastery',
         description: 'A structured learning path from fresh macOS to keyboard-driven productivity.',
         social: [
-            { icon: 'github', label: 'GitHub', href: 'https://github.com/Sin-cy/dotfiles' },
+            { icon: 'github', label: 'GitHub', href: 'https://github.com/durante-tech/dotfiles' },
         ],
         editLink: {
-            baseUrl: 'https://github.com/Sin-cy/dotfiles/edit/main/site/',
+            baseUrl: 'https://github.com/durante-tech/dotfiles/edit/main/site/',
         },
         components: {
             Sidebar: './src/components/overrides/CustomSidebar.astro',
