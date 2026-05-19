@@ -2,7 +2,7 @@
 
 **This guide is designed for AI agents installing/updating these dotfiles on a user's Mac.**
 
-The repo is the personal dev environment for Lucas Gertel: terminal-first, keyboard-driven macOS setup with Neovim, Tmux, AeroSpace, Sketchybar, and a Catppuccin/Rose-pine theme stack. Includes a Claude Code session indicator on the bar, hourly Durante-themed wallpaper rotation, espanso `:llm` triggers piped to local Ollama, and ~67 brew packages.
+The repo is the personal dev environment for Lucas Gertel: terminal-first, keyboard-driven macOS setup with Neovim, Tmux, AeroSpace, Sketchybar, and a Catppuccin/Rose-pine theme stack. Includes a Claude Code session indicator on the bar, hourly Durante-themed wallpaper rotation, espanso `:llm` triggers piped to local Ollama, and 99 brew packages (77 formulas + 22 casks).
 
 ---
 
@@ -31,7 +31,7 @@ Before starting, greet the user:
   • Hourly Durante-themed wallpaper rotation (10-piece gallery)
   • Sketchybar Claude Code 5-hour billing block indicator (via ccusage)
 
-This pack installs ~67 Homebrew packages, ~10 GUI casks, and 18 stowable dotfile directories. Plus 2 LaunchAgents (rendered from templates with your $USER), tmux plugins, and Neovim plugins.
+This pack installs 77 Homebrew formulas, 22 GUI casks, and 22 stowable dotfile directories. Plus 9 LaunchAgents — BetterDisplay time-of-day chord (5 modes), display-monitor watcher, Sketchybar firstboot, Übersicht, and hourly wallpaper rotation — all rendered from templates with your $USER.
 
 Let me analyze your system and guide you through installation."
 ```
@@ -143,7 +143,7 @@ Tell the user what you found. Highlight any WARNING or ERROR lines specifically.
 ```json
 {
   "header": "macOS Defaults",
-  "question": "The repo includes a 60+ entry ./macos/.macos script that configures Dock, Finder, keyboard, trackpad, screenshots, and more. Apply it?",
+  "question": "The repo includes a 44-entry ./macos/.macos script that configures Dock, Finder, keyboard, trackpad, screenshots, and more. Apply it?",
   "multiSelect": false,
   "options": [
     {"label": "Yes, apply all (Recommended)", "description": "Runs ./macos/.macos. Asks for sudo. Will modify Finder/Dock/keyboard preferences."},
@@ -242,7 +242,7 @@ cd "$HOME/dotfiles"
 ./install.sh --skip-casks
 
 # OR — Skip macOS defaults
-./install.sh --skip-macos-defaults
+./install.sh --skip-macos
 
 # OR — Preview only
 ./install.sh --dry-run
@@ -254,16 +254,16 @@ cd "$HOME/dotfiles"
 |---|-------|------|
 | 1 | Xcode CLT | Installs if missing |
 | 2 | Homebrew | Installs if missing |
-| 3 | Brew formulae | ~50 CLI tools (mise, neovim, tmux, fzf, atuin, ollama, gum, glow, wallpaper, etc.) |
-| 4 | Brew casks | ~10 GUI apps (Ghostty, Espanso, Maccy, Übersicht, boring.notch, etc.) |
+| 3 | Brew formulae | 77 CLI tools (mise, neovim, tmux, fzf, atuin, ollama, gum, glow, wallpaper, etc.) |
+| 4 | Brew casks | 22 GUI apps (Ghostty, Espanso, Maccy, Übersicht, boring.notch, etc.) |
 | 5 | Bun + ccusage + Fabric | Non-Homebrew tools |
-| 6 | Stow dotfiles | Symlinks 18 packages into `~/.config/` and `~/` |
+| 6 | Stow dotfiles | Symlinks 22 packages into `~/.config/`, `~/Library/`, and `~/` |
 | 6b | `mise install` | Pulls Node + Python versions pinned in `mise/.config/mise/config.toml` |
 | 6c | `setup.sh --configure` | Renders LaunchAgent plists from templates (substitutes `$USER`), creates dirs, installs TPM |
 | 6d | Espanso service | `espanso service register && espanso start` |
 | 7 | TPM tmux plugins | Auto-installs via `~/.tmux/plugins/tpm/bin/install_plugins` |
 | 8 | Neovim plugins | `nvim --headless +Lazy! sync +qa` |
-| 9 | macOS defaults | Runs `./macos/.macos` (60+ entries) — needs sudo |
+| 9 | macOS defaults | Runs `./macos/.macos` (44 entries) — needs sudo |
 | 10 | Verification | Checks critical CLI tools resolve |
 
 **Mark todo as completed after install.sh finishes.**
@@ -391,7 +391,7 @@ brew bundle cleanup --force   # actually remove (destructive)
 - `INSTALL.md` — this file
 - `VERIFY.md` — verification checks (companion)
 - `CLAUDE.md` — full reference for AI assistants
-- `macos/.macos` — 60+ macOS defaults entries
+- `macos/.macos` — 44 macOS defaults entries
 
 ### Stowable packages (18)
 - `aerospace/` → `~/.config/aerospace/` — i3-like tiling window manager
@@ -409,16 +409,34 @@ brew bundle cleanup --force   # actually remove (destructive)
 - `starship/` → `~/.config/starship/` — shell prompt
 - `tmux/` → `~/.config/tmux/` — multiplexer config + TPM plugins
 - `w3m/` → `~/.w3m/` — terminal browser
-- `wallpapers/` → in-repo only — shaders/ for Plash + Durante gallery README
+- `wallpapers/` → stowed (Plash shaders + gallery README live in-repo; the 10-piece JPG gallery itself is NOT in the repo — regenerate via Media skill or copy from another machine)
 - `yazi/` → `~/.config/yazi/` — terminal file manager
 - `zed/` → `~/.config/zed/` — editor config
 - `zsh/` → `~/.zshrc`, `~/.zprofile` — shell init
 
 ### Templates rendered at install time
-- `launchagents/Library/LaunchAgents/com.lucas.wallpaper-rotate.plist.template` → `~/Library/LaunchAgents/`
-- `launchagents/Library/LaunchAgents/com.lucas.sketchybar-firstboot.plist.template` → `~/Library/LaunchAgents/`
 
-(Both have `__USER__` placeholders substituted with current `$USER` by `setup.sh::render_launchagents()`. macOS launchd doesn't expand env vars in plist contents — templating is the only way.)
+All nine `.plist.template` files in `launchagents/Library/LaunchAgents/` are
+rendered into `~/Library/LaunchAgents/` with `__USER__` substituted for the
+current `$USER` (macOS launchd doesn't expand env vars in plist contents —
+templating is the only way). `setup.sh::render_launchagents()` handles this
+and `launchctl bootstrap`s each agent so they fire on next login.
+
+| Template | What it does |
+|----------|--------------|
+| `com.lucas.bd-dawn.plist.template` | BetterDisplay → dawn mode (early morning) |
+| `com.lucas.bd-day.plist.template` | BetterDisplay → day mode |
+| `com.lucas.bd-afternoon.plist.template` | BetterDisplay → afternoon mode |
+| `com.lucas.bd-evening.plist.template` | BetterDisplay → evening mode |
+| `com.lucas.bd-night.plist.template` | BetterDisplay → night mode |
+| `com.lucas.bd-lmu-watch.plist.template` | Light-metering watcher (sets bd mode on ambient-light change) |
+| `com.lucas.sketchybar-firstboot.plist.template` | Sketchybar warm-up at first login |
+| `com.lucas.ubersicht.plist.template` | Übersicht autostart |
+| `com.lucas.wallpaper-rotate.plist.template` | Hourly wallpaper rotation |
+
+> Note: filenames carry the `com.lucas.` prefix. Renaming to `com.${USER}.`
+> is on the roadmap (would require coordinated changes in setup.sh,
+> VERIFY.md, and the wallpaper README) — not done yet.
 
 ### Documentation pack
 - `docs/README.md` — docs index

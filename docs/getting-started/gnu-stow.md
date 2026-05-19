@@ -158,7 +158,7 @@ To create your own dotfiles based on this system:
 
 ```bash
 # 1. Fork on GitHub (or clone and change remote)
-git clone https://github.com/Sin-cy/dotfiles.git ~/dotfiles
+git clone https://github.com/durante-tech/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 git remote set-url origin git@github.com:YOUR_USER/dotfiles.git
 

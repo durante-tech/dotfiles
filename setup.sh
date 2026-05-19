@@ -94,12 +94,16 @@ stow_packages() {
 
     cd "$DOTFILES_DIR" || exit 1
 
-    # List of packages to stow
+    # List of packages to stow — keep in sync with install.sh PACKAGES.
     local packages=(
         aerospace
         atuin
+        espanso
+        fastfetch
         ghostty
         karabiner
+        kitty
+        mise
         mpd
         nvim
         rmpc
@@ -109,6 +113,8 @@ stow_packages() {
         tmux
         ubersicht
         w3m
+        wallpapers
+        wezterm
         yazi
         zed
         zsh

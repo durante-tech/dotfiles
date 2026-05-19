@@ -1024,7 +1024,7 @@ chmod +x ~/scripts/*
 
 ## References
 
-- Repository: [Sin-cy/dotfiles](https://github.com/Sin-cy/dotfiles)
+- Repository: [durante-tech/dotfiles](https://github.com/durante-tech/dotfiles) (forked from [Sin-cy/dotfiles](https://github.com/Sin-cy/dotfiles))
 - Main branch: `main`
 - Installation guide: `README_NEW_MACOS.md`
 - Install script: `install.sh`

@@ -15,7 +15,7 @@ Complete installation guide for setting up a new Apple Silicon Mac with these do
 Run this one-liner to install everything:
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Sin-cy/dotfiles/main/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/durante-tech/dotfiles/main/install.sh)"
 ```
 
 This will:
@@ -50,7 +50,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 
 ```bash
 brew install git
-git clone https://github.com/Sin-cy/dotfiles.git ~/dotfiles
+git clone https://github.com/durante-tech/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 ```
 
