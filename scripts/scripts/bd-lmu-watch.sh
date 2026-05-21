@@ -20,9 +20,9 @@
 set -u
 
 APPLY="$HOME/dotfiles/scripts/scripts/bd-apply.sh"
+WAKE="$HOME/dotfiles/scripts/scripts/bd-wake.sh"
 BUCKET_FILE="/tmp/bd-lmu-bucket"
 LOG_FILE="/tmp/bd-lmu-watch.log"
-STATE_FILE="$HOME/.cache/bd-state"
 CLI="/opt/homebrew/bin/betterdisplaycli"
 PORT_TAG=60
 POLL_S=60
@@ -85,21 +85,18 @@ sensor_missing_warned=0
 
 while true; do
     # Wake handler — when the portrait monitor recovers from display sleep,
-    # re-apply the current mode. DDC writes scheduled while the monitor was
-    # asleep silently no-op (betterdisplaycli's `set` still exits 0), so the
-    # only way to correct stale brightness is to re-fire after wake. Runs
-    # before the ambient-sensor read so it works even when the sensor is
-    # unavailable (the loop would otherwise `continue` past the rest).
+    # delegate re-apply to bd-wake.sh. DDC writes scheduled while the monitor
+    # was asleep silently no-op (betterdisplaycli's `set` still exits 0), so
+    # the only way to correct stale brightness is to re-fire after wake. We
+    # call bd-wake.sh (the canonical sleepwatcher-ready re-apply) rather than
+    # re-implement its 5s settle + 3-retry backoff inline. Runs before the
+    # ambient-sensor read so it works even when the sensor is unavailable
+    # (the loop would otherwise `continue` past the rest).
     if port_awake; then
         if (( last_port_awake == 0 )); then
-            if [[ -r "$STATE_FILE" ]]; then
-                cur_mode="$(cut -d'|' -f1 "$STATE_FILE")"
-                log "PORT wake detected — re-applying mode=$cur_mode"
-                BD_SOURCE=wake "$APPLY" "$cur_mode" >>"$LOG_FILE" 2>&1 \
-                    || log "WARN wake re-apply $cur_mode failed"
-            else
-                log "PORT wake detected — no state file, nothing to re-apply"
-            fi
+            log "PORT wake detected — invoking bd-wake.sh"
+            BD_SOURCE=wake "$WAKE" >>"$LOG_FILE" 2>&1 \
+                || log "WARN bd-wake.sh failed"
         fi
         last_port_awake=1
     else
