@@ -77,15 +77,38 @@ set_dev() {
     fi
 }
 
+# set_port_feature <feature> <pct> — write one DDC feature and confirm it
+# landed via readback, retrying (with a connection reinitialize) on drift.
+# `betterdisplaycli set` exits 0 even when a DDC write silently no-ops against
+# a sleeping external monitor, so the exit code is worthless — the readback is
+# the only honest success signal. This is why a mode change scheduled while
+# the portrait monitor sleeps used to be lost permanently.
+set_port_feature() {
+    local feat="$1" pct="$2"
+    local exp cur attempt
+    exp="$(awk -v p="$pct" 'BEGIN{printf "%.2f", p/100}')"
+    for (( attempt=1; attempt<=3; attempt++ )); do
+        bd set --tagID="$PORT_TAG" --"$feat"="${pct}%" >/dev/null
+        sleep 0.7
+        cur="$(bd get --tagID="$PORT_TAG" --"$feat" 2>/dev/null)"
+        if [[ "$cur" =~ ^-?[0-9]*\.?[0-9]+$ ]] && \
+           awk -v a="$exp" -v b="$cur" 'BEGIN{d=a-b;if(d<0)d=-d;exit(d<=0.02)?0:1}'; then
+            log "PORT $feat=${pct}% (verified=$cur attempt=$attempt)"
+            return 0
+        fi
+        log "PORT $feat=${pct}% drift (want=$exp got=${cur:-?} attempt=$attempt) — reinitialize + retry"
+        bd perform --tagID="$PORT_TAG" --reinitialize >/dev/null 2>&1 || true
+        sleep 1.0
+    done
+    log "WARN PORT $feat=${pct}% FAILED after 3 attempts (monitor asleep or DDC down)"
+    return 1
+}
+
 # set_port <brightness%> <contrast%> <temperature%>
 set_port() {
-    local b="$1" c="$2" t="$3"
-    bd set --tagID="$PORT_TAG" --hardwareBrightness="${b}%" >/dev/null && \
-        log "PORT hwBrightness=${b}%" || log "WARN PORT brightness FAILED"
-    bd set --tagID="$PORT_TAG" --hardwareContrast="${c}%" >/dev/null && \
-        log "PORT hwContrast=${c}%" || log "WARN PORT contrast FAILED"
-    bd set --tagID="$PORT_TAG" --temperature="${t}%" >/dev/null && \
-        log "PORT temperature=${t}%" || log "WARN PORT temperature FAILED"
+    set_port_feature hardwareBrightness "$1"
+    set_port_feature hardwareContrast  "$2"
+    set_port_feature temperature       "$3"
 }
 
 apply_mode() {
@@ -210,18 +233,31 @@ verify_mode() {
     exp_port_c="$(awk -v p="$port_c"   'BEGIN{printf "%.2f", p/100}')"
     exp_port_t="$(awk -v p="$port_t"   'BEGIN{printf "%.2f", p/100}')"
 
-    local drift=0
+    # drift is accumulated in the parent scope here. The prior version set
+    # `drift=1` inside a $(...) command substitution — a subshell — so the
+    # assignment never propagated and verify always reported "all match".
+    local drift=0 st
     printf 'mode: %s\n\n' "$mode"
+
+    st=ok; diff_ok "$exp_dev_sw" "$cur_dev_sw" >/dev/null || { st=DRIFT; drift=1; }
     printf '  %-22s expect=%-8s actual=%-8s %s\n' "DEV softwareBrightness" \
-        "$exp_dev_sw" "$cur_dev_sw" "$(diff_ok "$exp_dev_sw" "$cur_dev_sw" || { drift=1; echo DRIFT; })"
+        "$exp_dev_sw" "$cur_dev_sw" "$st"
+
+    st=ok; [[ "$dev_preset" == "$cur_dev_preset" ]] || { st=DRIFT; drift=1; }
     printf '  %-22s expect=%-40s actual=%-40s %s\n' "DEV xdrPreset" \
-        "$dev_preset" "$cur_dev_preset" "$([[ "$dev_preset" == "$cur_dev_preset" ]] && echo ok || { drift=1; echo DRIFT; })"
+        "$dev_preset" "$cur_dev_preset" "$st"
+
+    st=ok; diff_ok "$exp_port_b" "$cur_port_b" >/dev/null || { st=DRIFT; drift=1; }
     printf '  %-22s expect=%-8s actual=%-8s %s\n' "PORT hardwareBrightness" \
-        "$exp_port_b" "$cur_port_b" "$(diff_ok "$exp_port_b" "$cur_port_b" || { drift=1; echo DRIFT; })"
+        "$exp_port_b" "$cur_port_b" "$st"
+
+    st=ok; diff_ok "$exp_port_c" "$cur_port_c" >/dev/null || { st=DRIFT; drift=1; }
     printf '  %-22s expect=%-8s actual=%-8s %s\n' "PORT hardwareContrast" \
-        "$exp_port_c" "$cur_port_c" "$(diff_ok "$exp_port_c" "$cur_port_c" || { drift=1; echo DRIFT; })"
+        "$exp_port_c" "$cur_port_c" "$st"
+
+    st=ok; diff_ok "$exp_port_t" "$cur_port_t" >/dev/null || { st=DRIFT; drift=1; }
     printf '  %-22s expect=%-8s actual=%-8s %s\n' "PORT temperature" \
-        "$exp_port_t" "$cur_port_t" "$(diff_ok "$exp_port_t" "$cur_port_t" || { drift=1; echo DRIFT; })"
+        "$exp_port_t" "$cur_port_t" "$st"
 
     (( drift == 0 )) && echo $'\nall values match intent.' && return 0
     echo $'\ndrift detected — re-apply or investigate.' >&2
