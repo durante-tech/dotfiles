@@ -22,6 +22,9 @@ set -u
 APPLY="$HOME/dotfiles/scripts/scripts/bd-apply.sh"
 BUCKET_FILE="/tmp/bd-lmu-bucket"
 LOG_FILE="/tmp/bd-lmu-watch.log"
+STATE_FILE="$HOME/.cache/bd-state"
+CLI="/opt/homebrew/bin/betterdisplaycli"
+PORT_TAG=60
 POLL_S=60
 
 log() { printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >> "$LOG_FILE"; }
@@ -58,15 +61,51 @@ bucket_to_mode() {
     esac
 }
 
+# port_awake — probe whether the portrait monitor is reachable via DDC.
+# Returns 0 (awake) if hardwareBrightness reads back as a numeric value, 1
+# (asleep / DDC down) otherwise. Drives the wake-triggered re-apply below.
+port_awake() {
+    local v
+    v="$("$CLI" get --tagID="$PORT_TAG" --hardwareBrightness 2>/dev/null)"
+    [[ "$v" =~ ^-?[0-9]*\.?[0-9]+$ ]]
+}
+
 last_bucket=-1
 # Bucket file format: <bucket>|<lux>|<iso-ts> — first field is bucket for
 # back-compat with prior cut -f1 readers; pipe-delimited tail adds observability.
 [[ -r "$BUCKET_FILE" ]] && last_bucket="$(cut -d'|' -f1 "$BUCKET_FILE")"
 
+# Assume the monitor is awake at startup. We only fire a re-apply on a real
+# asleep→awake transition, so an initial 1→1 (or 1→1 via no-op) is silent;
+# missing a stale state from before the script started is the deliberate cost.
+last_port_awake=1
+
 log "bd-lmu-watch started, poll=${POLL_S}s, last_bucket=$last_bucket"
 sensor_missing_warned=0
 
 while true; do
+    # Wake handler — when the portrait monitor recovers from display sleep,
+    # re-apply the current mode. DDC writes scheduled while the monitor was
+    # asleep silently no-op (betterdisplaycli's `set` still exits 0), so the
+    # only way to correct stale brightness is to re-fire after wake. Runs
+    # before the ambient-sensor read so it works even when the sensor is
+    # unavailable (the loop would otherwise `continue` past the rest).
+    if port_awake; then
+        if (( last_port_awake == 0 )); then
+            if [[ -r "$STATE_FILE" ]]; then
+                cur_mode="$(cut -d'|' -f1 "$STATE_FILE")"
+                log "PORT wake detected — re-applying mode=$cur_mode"
+                BD_SOURCE=wake "$APPLY" "$cur_mode" >>"$LOG_FILE" 2>&1 \
+                    || log "WARN wake re-apply $cur_mode failed"
+            else
+                log "PORT wake detected — no state file, nothing to re-apply"
+            fi
+        fi
+        last_port_awake=1
+    else
+        last_port_awake=0
+    fi
+
     lux="$(read_lmu)"
     if [[ "$lux" == "-1" ]]; then
         if (( sensor_missing_warned == 0 )); then
