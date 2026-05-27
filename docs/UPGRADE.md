@@ -5,40 +5,58 @@ so a `git pull` actually takes effect across all the tools that don't auto-reloa
 
 ## The one-shot upgrade
 
-Two paths — pick the one that matches how you work.
+Two paths — pick the one that matches how you work. Both end up at the same place.
 
-### Path A — Deterministic (no AI required)
+### Path A — Just pull (recommended)
+
+```bash
+cd ~/dotfiles && git pull
+```
+
+That's it. The `post-merge` hook (activated automatically by `install.sh`)
+prints a copy-pasteable upgrade prompt to your terminal:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  DOS upgrade prompt for <commit-range>
+  Copy everything between the two ┄┄┄ lines and paste into Claude/DOS.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+┄┄┄ PROMPT START ┄┄┄
+I just ran `git pull` in `~/dotfiles`. The commit range is ...
+... (full prompt with file list + diffstat) ...
+┄┄┄ PROMPT END ┄┄┄
+```
+
+Select the text between the `┄┄┄` lines, paste into your **already-open
+Claude / DOS session** (your choice of mode, agents, context). The prompt
+instructs Claude to read this doc, classify the changes, run `./update.sh`
+for you, surface a checklist, and ask only about decisions it can't safely
+make on its own (hardware-specific values, destructive cleanup, API keys).
+
+**Disable per-pull:** `git -c core.hooksPath=/dev/null pull`.
+**Disable permanently:** `git -C ~/dotfiles config --unset core.hooksPath`.
+**Customize the prompt:** edit [`docs/POSTPULL_PROMPT.md`](POSTPULL_PROMPT.md).
+
+### Path B — Deterministic only (no AI)
 
 ```bash
 cd ~/dotfiles && git pull && ./update.sh
 ```
 
-`update.sh` is a thin wrapper over `./install.sh --update`. It skips the slow
-full reinstall, runs `brew bundle install` (idempotent), syncs Tmux + Neovim
-plugins, and re-stows packages. Safe to run repeatedly. Extra flags are
-forwarded — `./update.sh --dry-run` shows what would change.
+Skip the AI entirely. `update.sh` does the deterministic work (brew bundle,
+stow, plugin sync). Read the rest of this doc for the manual-reload table.
+The hook still prints the prompt — just ignore it.
 
-This path is **complete and self-sufficient** — you don't need Claude Code or
-any AI to upgrade. The rest of this doc tells you what manual reloads are
-needed after `update.sh` finishes.
-
-### Path B — DOS-orchestrated (Claude reads the diff and decides)
+### Path C — Auto-open Claude (power user)
 
 ```bash
 cd ~/dotfiles && ./smart-pull.sh
 ```
 
-Does the pull, then opens an interactive Claude Code session with a prompt
-that includes the commit range, changed files, and diff stat. Claude then
-reads `UPGRADE.md` + `PERSONALIZE.md`, classifies the changes, runs
-`./update.sh`, surfaces a post-pull checklist, and asks you only about
-decisions it can't safely make on its own (hardware-specific values,
-destructive cleanup, new API keys).
-
-The prompt template is at [`docs/POSTPULL_PROMPT.md`](POSTPULL_PROMPT.md) —
-edit it to tune what DOS focuses on. Useful flags:
-- `./smart-pull.sh --print-prompt` — see what DOS would receive without opening a session
-- `./smart-pull.sh --no-pull` — open DOS for the last 5 commits (e.g. re-process a pull you forgot to act on)
+Pulls AND spawns a fresh Claude Code session with the prompt pre-filled.
+Useful if you don't have a Claude session already open. Caveat: starts a
+brand-new session (no carried-over context). Most of the time Path A is
+nicer because you keep your context.
 
 ## What needs manual attention after a pull
 

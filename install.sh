@@ -595,6 +595,27 @@ done
 print_success "Dotfiles stowed"
 
 # -----------------------------------------------------------------------------
+# 6-hooks. Activate the tracked post-merge hook on the dotfiles repo
+# -----------------------------------------------------------------------------
+# After this, every `git pull` in this repo fires hooks/post-merge, which
+# prints a copy-pasteable upgrade prompt to the terminal. Idempotent.
+# Bypass per-pull with: `git -c core.hooksPath=/dev/null pull`.
+
+if [ -d "$DOTFILES_DIR/hooks" ] && [ -d "$DOTFILES_DIR/.git" ]; then
+    expected="$DOTFILES_DIR/hooks"
+    current=$(git -C "$DOTFILES_DIR" config --get core.hooksPath 2>/dev/null || echo "")
+    if [ "$current" != "$expected" ]; then
+        if [ "$DRY_RUN" = true ]; then
+            print_dry "git -C $DOTFILES_DIR config core.hooksPath $expected"
+        else
+            print_step "Activating tracked hooks (core.hooksPath -> $expected)"
+            git -C "$DOTFILES_DIR" config core.hooksPath "$expected"
+            print_success "Post-pull upgrade prompt will fire on next git pull"
+        fi
+    fi
+fi
+
+# -----------------------------------------------------------------------------
 # 6a. PERSONALIZATION — invite the user to set machine-specific values
 # -----------------------------------------------------------------------------
 # Only fires on fresh installs (UPDATE_ONLY=false), when personal.env doesn't

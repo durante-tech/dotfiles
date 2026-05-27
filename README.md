@@ -185,6 +185,12 @@ of machine-specific values (monitor names, BetterDisplay hardware tagIDs,
 keyboard layout, personal app preferences). Run `./personalize.sh` for an
 interactive prompt that writes `~/.config/dotfiles/personal.env` for you.
 
+**Pulling updates?** Just `git pull` — the tracked `post-merge` hook prints
+a copy-pasteable upgrade prompt to your terminal. Paste it into your
+already-open Claude / DOS session and it'll classify the changes, run
+`./update.sh`, and ask you only about decisions it can't safely make
+on its own. See [`docs/UPGRADE.md`](docs/UPGRADE.md) for paths A/B/C.
+
 ---
 
 ## Key Bindings
