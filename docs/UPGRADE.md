@@ -79,7 +79,7 @@ not (and why):
 
 When you pull and the changelog mentions one of these, do the matching step:
 
-- **Brewfile changed** → already covered by `./update.sh`. Standalone: `brew bundle install --file=~/dotfiles/Brewfile --no-lock`.
+- **Brewfile changed** → already covered by `./update.sh`. Standalone: `brew bundle install --file=~/dotfiles/Brewfile`.
 - **`mise` version-manager changes** → `mise install` (per project) or `mise use -g <tool>@<version>` (global).
 - **New Neovim plugin** → `:Lazy sync` inside nvim. For plugins with a `build` step (avante.nvim's `make`), wait for the build to complete.
 - **AeroSpace binding or workspace map changed** → `aerospace reload-config`.
