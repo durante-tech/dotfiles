@@ -24,7 +24,7 @@ import { join, dirname } from "node:path";
 import { execSync } from "node:child_process";
 
 // ─────────────────────────────────────────────────────────────────────────
-// Design tokens (synced with /Users/lgertel/Downloads/Durante Studio/theme.css)
+// Design tokens (synced with $HOME/Downloads/Durante Studio/theme.css — maintainer-private)
 // ─────────────────────────────────────────────────────────────────────────
 const TOKENS = {
   bg: "#0a0d0f",

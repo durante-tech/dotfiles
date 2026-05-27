@@ -326,13 +326,11 @@ if [ "$SKIP_BREW" = false ]; then
     brew_install make
 
     # Languages & Version Managers
-    # Note: mise is the primary polyglot manager (replaces fnm + pyenv).
-    # fnm + pyenv are kept as fallback during the mise rollout window.
+    # mise is the polyglot manager — replaces fnm + pyenv + nvm + asdf.
+    # node here is just the bootstrap binary; per-project versions managed by mise.
     print_step "Installing languages & version managers..."
     brew_install mise
     brew_install node
-    brew_install fnm
-    brew_install pyenv
     brew_install go
     brew_install deno
     brew_install sqlite
@@ -377,6 +375,20 @@ if [ "$SKIP_BREW" = false ]; then
 
     # Misc
     brew_install qmk
+
+    # Brewfile catch-up: install anything in the Brewfile that wasn't covered
+    # by the explicit list above (e.g. gptcommit, osv-scanner, taps, casks
+    # added without an install.sh entry). Idempotent — brew bundle skips
+    # already-installed packages.
+    if [ -f "$DOTFILES_DIR/Brewfile" ]; then
+        print_step "Reconciling against Brewfile (brew bundle)..."
+        if [ "$DRY_RUN" = true ]; then
+            print_dry "brew bundle install --file=$DOTFILES_DIR/Brewfile --no-lock"
+        else
+            brew bundle install --file="$DOTFILES_DIR/Brewfile" --no-lock || \
+                print_warning "brew bundle had failures (check output above)"
+        fi
+    fi
 
     print_success "Homebrew formulae complete"
 else
@@ -458,6 +470,34 @@ if cmd_exists bun; then
             print_step "Installing ccusage globally via bun..."
             bun install -g ccusage 2>/dev/null || print_warn "ccusage install failed"
         fi
+    fi
+fi
+
+# gh-dash — terminal PR/issue dashboard (used by `ghd` alias in .zshrc).
+# Installed as a `gh` extension (not a brew formula). Requires `gh` from §3.
+if cmd_exists gh; then
+    if gh extension list 2>/dev/null | grep -q dlvhdr/gh-dash; then
+        print_success "gh-dash extension already installed"
+    else
+        if [ "$DRY_RUN" = true ]; then
+            print_dry "gh extension install dlvhdr/gh-dash"
+        else
+            print_step "Installing gh-dash extension..."
+            gh extension install dlvhdr/gh-dash 2>/dev/null || \
+                print_warn "gh-dash install failed (gh auth required first?)"
+        fi
+    fi
+fi
+
+# opencode — multi-provider AI CLI (sst/opencode). Requires bun OR npm.
+if cmd_exists opencode; then
+    print_success "opencode already installed ($(opencode --version 2>/dev/null | head -1))"
+elif cmd_exists npm; then
+    if [ "$DRY_RUN" = true ]; then
+        print_dry "npm install -g opencode-ai"
+    else
+        print_step "Installing opencode globally via npm..."
+        npm install -g opencode-ai 2>/dev/null || print_warn "opencode install failed"
     fi
 fi
 
