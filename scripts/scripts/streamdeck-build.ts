@@ -382,19 +382,21 @@ function actionNextPage(icon: RenderedIcon): any {
 
 function actionOpenURL(url: string, icon: RenderedIcon, customTitle?: string): any {
   const title = customTitle ?? icon.title;
-  // Stream Deck 7.x has separate native handlers:
-  // - system.open    -> KA_Execute, for files/apps/folders
-  // - system.website -> KA_Website, for URLs including custom schemes
+  // Routed through ThoughtAsylum's Mac Automation `runopen` action, which shells out to
+  // macOS `open` directly. Stream Deck's built-in `system.website` action started routing
+  // through the Default Browser in Stream Deck 7.x, breaking custom URL schemes (raycast://,
+  // shortcuts://, etc.) because browsers won't dispatch them silently. `runopen` keeps the
+  // LaunchServices path and works for every registered scheme. `-g` keeps focus where it is.
   return {
     ActionID: uuid(),
     LinkedTitle: true,
-    Name: "Website",
-    Plugin: { Name: "Website", UUID: "com.elgato.streamdeck.system.website", Version: "1.0" },
+    Name: "Run Open",
+    Plugin: { Name: "Mac Automation", UUID: "com.thoughtasylum.macauto", Version: "1.2.1" },
     Resources: null,
-    Settings: { openInBrowser: true, path: url },
+    Settings: { openItem: url, openParam: "-g" },
     State: 0,
     States: [stateEntry(icon.idle, title), stateEntry(icon.active, title)],
-    UUID: "com.elgato.streamdeck.system.website",
+    UUID: "com.thoughtasylum.macauto.runopen",
   };
 }
 
