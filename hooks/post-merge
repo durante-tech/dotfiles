@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# post-merge — runs after `git pull` (and any `git merge`) on this repo.
+#
+# Prints the post-pull upgrade prompt to the terminal, so the dev can copy
+# and paste it into their already-open Claude / DOS session. We deliberately
+# do NOT auto-open Claude here — the dev keeps full control of which session
+# (which mode, which agents, which context) handles the prompt.
+#
+# Activated by: `git config core.hooksPath hooks` on this repo. install.sh
+# does this for fresh clones; existing devs can run `setup.sh --configure`.
+#
+# Skips silently when the pull was a no-op (BEFORE == AFTER).
+# Bypass: `git -c core.hooksPath=/dev/null pull` (when you really don't want it).
+
+set -e
+
+# Resolve repo root from the hook context
+DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+TEMPLATE="$DOTFILES_DIR/docs/POSTPULL_PROMPT.md"
+
+[ ! -f "$TEMPLATE" ] && exit 0   # no template → silent no-op (don't break pulls)
+
+BEFORE=$(git rev-parse ORIG_HEAD 2>/dev/null || echo "")
+AFTER=$(git rev-parse HEAD)
+
+# No-op pull → nothing to surface
+if [ -z "$BEFORE" ] || [ "$BEFORE" = "$AFTER" ]; then
+    exit 0
+fi
+
+RANGE="${BEFORE}..${AFTER}"
+
+# Colors only if stdout is a TTY (so piped output stays clean)
+if [ -t 1 ]; then
+    B='\033[0;34m'; G='\033[0;32m'; Y='\033[1;33m'; D='\033[2m'; N='\033[0m'
+else
+    B=''; G=''; Y=''; D=''; N=''
+fi
+
+CHANGED_FILES=$(git diff --name-only "$RANGE")
+DIFFSTAT=$(git diff --stat "$RANGE" | tail -20)
+
+# Extract the prompt body (everything after the "## PROMPT" marker)
+PROMPT=$(awk '/^## PROMPT \(everything below this line\)/{flag=1; next} flag' "$TEMPLATE")
+PROMPT="${PROMPT//__COMMIT_RANGE__/$RANGE}"
+PROMPT="${PROMPT//__CHANGED_FILES__/$CHANGED_FILES}"
+PROMPT="${PROMPT//__DIFFSTAT__/$DIFFSTAT}"
+
+# Banner + prompt + footer. Designed so a triple-click + select-all in any
+# terminal gets exactly the prompt body (no banner / no footer noise).
+printf "\n${B}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${N}\n"
+printf "${B}  DOS upgrade prompt for ${RANGE}${N}\n"
+printf "${B}  Copy everything between the two ${G}┄┄┄${B} lines and paste into Claude/DOS.${N}\n"
+printf "${D}  (Disable: \`git -c core.hooksPath=/dev/null pull\`. See docs/UPGRADE.md.)${N}\n"
+printf "${B}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${N}\n"
+printf "${G}┄┄┄ PROMPT START ┄┄┄${N}\n"
+printf "%s\n" "$PROMPT"
+printf "${G}┄┄┄ PROMPT END ┄┄┄${N}\n\n"
