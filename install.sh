@@ -422,6 +422,7 @@ if [ "$SKIP_CASKS" = false ]; then
     cask_install ubersicht       # webview widgets above wallpaper
     cask_install espanso         # system-wide text expander
     cask_install maccy           # clipboard history manager
+    cask_install claude-code     # AI coding assistant (Anthropic)
     # boring.notch — Dynamic-Island-style notch utility (custom tap)
     if ! brew tap | grep -q "theboredteam/boring-notch"; then
         run_cmd brew tap theboredteam/boring-notch
