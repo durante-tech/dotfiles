@@ -295,19 +295,22 @@ alias cldr="claude --resume"
 alias dosa="dos -l -m full --dangerously-skip-permissions"
 # ---------------------------------------
 
-# BetterDisplay — dev display modes
-# Slot 1 = daylight default (current state)
-# Slot 2 = dev-night    | Slot 3 = dev-meeting
-# Slot 4 = dev-read     | Slot 5 = dev-stream
-# Populate slots 2-5 once via: bd-build-slots.sh
+# BetterDisplay — time-of-day & task display modes (route through bd-apply.sh
+# for direct DDC writes; --favoriteMode slot mechanism is broken on BetterDisplay
+# 4.3.0 pre-release, see bd-apply.sh header).
 if command -v betterdisplaycli >/dev/null 2>&1; then
-  bd-mode() { betterdisplaycli set --tagID=2 --favoriteMode=$1 && betterdisplaycli set --tagID=60 --favoriteMode=$1; }
-  alias bd-day='bd-mode 1'
-  alias bd-night='bd-mode 2'
-  alias bd-meeting='bd-mode 3'
-  alias bd-read='bd-mode 4'
+  alias bd-apply="$HOME/dotfiles/scripts/scripts/bd-apply.sh"
+  alias bd-dawn='bd-apply dawn'
+  alias bd-day='bd-apply day'
+  alias bd-afternoon='bd-apply afternoon'
+  alias bd-evening='bd-apply evening'
+  alias bd-night='bd-apply night'
+  alias bd-meeting='bd-apply meeting'
+  alias bd-read='bd-apply read'
+  alias bd-cinema='bd-apply cinema'
+  alias bd-status='bd-apply status'
   bd-stream() {
-    bd-mode 5
+    bd-apply stream
     betterdisplaycli set --tagID=163 --connected=on
     echo "STREAM-CAPTURE connected — OBS can now capture the virtual screen."
   }
@@ -382,3 +385,7 @@ esac
 [[ -f "$HOME/.dart-cli-completion/zsh-config.zsh" ]] && . "$HOME/.dart-cli-completion/zsh-config.zsh" || true
 ## [/Completion]
 
+
+# >>> localcan >>>
+export PATH="/Users/lgertel/.localcan/bin:$PATH"
+# <<< localcan <<<
