@@ -278,6 +278,28 @@
                                         "value": 1
                                     }
                                 ],
+                                "description": "Hyper + d -> Alt+D (workspace D)",
+                                "from": {
+                                    "key_code": "a"
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "a",
+                                        "modifiers": [
+                                            "left_option"
+                                        ]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "name": "hyper",
+                                        "type": "variable_if",
+                                        "value": 1
+                                    }
+                                ],
                                 "description": "Hyper + m -> Alt+M (workspace M)",
                                 "from": {
                                     "key_code": "m"
