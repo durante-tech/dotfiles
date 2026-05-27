@@ -1,3 +1,7 @@
+# Shell startup profiling — enable with `ZSH_PROFILE=1 zsh -i -c exit`
+# Pair with hyperfine for wall-clock baseline: `hyperfine --warmup 3 'zsh -i -c exit'`
+[[ -n "$ZSH_PROFILE" ]] && zmodload zsh/zprof
+
 # Kitty-in-tmux: propagate KITTY env vars so kitty graphics protocol works
 if [[ -n "$TMUX" && -z "$KITTY_PID" ]]; then
     local _kitty_pid
@@ -57,8 +61,6 @@ export ATUIN_NOBIND="true"
 command -v atuin &>/dev/null && eval "$(atuin init zsh)"
 # bindkey '^r' _atuin_search_widget
 bindkey '^r' atuin-up-search-viins
-
-# Pyenv replaced by mise (activated above). Pyenv binary remains as fallback.
 
 #User configuration
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -385,7 +387,5 @@ esac
 [[ -f "$HOME/.dart-cli-completion/zsh-config.zsh" ]] && . "$HOME/.dart-cli-completion/zsh-config.zsh" || true
 ## [/Completion]
 
-
-# >>> localcan >>>
-export PATH="/Users/lgertel/.localcan/bin:$PATH"
-# <<< localcan <<<
+# Shell startup profiling output (matches the zmodload at top)
+[[ -n "$ZSH_PROFILE" ]] && zprof

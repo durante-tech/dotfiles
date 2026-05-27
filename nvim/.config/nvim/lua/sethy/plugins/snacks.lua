@@ -26,6 +26,13 @@ return {
                 enabled = true,
                 exclude = { "latex" },
             },
+            -- Graceful handling for files >1.5MB; complements faster.lua (which
+            -- disables features wholesale) by lazily skipping treesitter/LSP/etc.
+            bigfile = {
+                enabled = true,
+                notify = true,
+                size = 1.5 * 1024 * 1024,
+            },
             -- HACK: read picker docs @ https://github.com/folke/snacks.nvim/blob/main/docs/picker.md
             picker = {
                 enabled = true,

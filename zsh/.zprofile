@@ -55,8 +55,6 @@ export FZF_ALT_C_OPTS="--preview 'eza --icons=always --tree --color=always {} | 
 export FZF_TMUX_OPTS=" -p90%,70% "  
 # -----------------------------
 
-# FNM replaced by mise (activated in .zshrc). Binary stays as fallback for now.
-
 # bun
 # bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
@@ -65,8 +63,7 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 #------------Langs------------
 
-# Pyenv replaced by mise. Keeping PYENV_ROOT for any tooling that still references it.
-export PYENV_ROOT="$HOME/.pyenv"
+# Node + Python managed by mise (activated in .zshrc); fnm + pyenv fully retired.
 
 # Golang
 export GOPATH=$HOME/go
@@ -77,10 +74,6 @@ export PATH="$HOME/fvm/default/bin:$HOME/.pub-cache/bin:$PATH"
 
 # Fabric AI
 export FABRIC_ROOT="$HOME/.config/fabric"
-
-# Python managed by pyenv (see PYENV_ROOT above)
-
-
 
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
@@ -93,3 +86,7 @@ export FABRIC_ROOT="$HOME/.config/fabric"
 # Added by OrbStack: command-line tools and integration
 # This won't be added again if you remove it.
 source ~/.orbstack/shell/init.zsh 2>/dev/null || :
+
+# >>> localcan >>>
+export PATH="$HOME/.localcan/bin:$PATH"
+# <<< localcan <<<
