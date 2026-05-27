@@ -14,9 +14,11 @@
 
 set -e
 
-DEV=2          # DEV-MAIN tagID
-PORT=60        # PORTRAIT-MONITOR tagID
-STREAM=163     # STREAM-CAPTURE virtual screen tagID
+[ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
+
+DEV="${DOTFILES_BD_DEV_TAG:-2}"          # DEV-MAIN tagID (default: MBP 14")
+PORT="${DOTFILES_BD_PORT_TAG:-60}"       # PORTRAIT-MONITOR tagID (default: Dell U2718Q)
+STREAM=163                                # STREAM-CAPTURE virtual screen tagID
 
 bd() { betterdisplaycli "$@" >/dev/null 2>&1 || true; }
 

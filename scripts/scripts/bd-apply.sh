@@ -19,8 +19,11 @@
 
 set -u
 
-DEV_TAG=2          # DEV-MAIN (MacBook Pro 14" XDR)
-PORT_TAG=60        # PORTRAIT-MONITOR (Dell U2718Q, DDC)
+# Personal values override the defaults below. See docs/PERSONALIZE.md.
+[ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
+
+DEV_TAG="${DOTFILES_BD_DEV_TAG:-2}"          # DEV-MAIN (default: MacBook Pro 14" XDR)
+PORT_TAG="${DOTFILES_BD_PORT_TAG:-60}"       # PORTRAIT-MONITOR (default: Dell U2718Q, DDC)
 STATE_FILE="$HOME/.cache/bd-state"
 LOG_FILE="/tmp/bd-apply.log"
 CLI="/opt/homebrew/bin/betterdisplaycli"

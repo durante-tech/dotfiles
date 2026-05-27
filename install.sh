@@ -595,6 +595,29 @@ done
 print_success "Dotfiles stowed"
 
 # -----------------------------------------------------------------------------
+# 6a. PERSONALIZATION — invite the user to set machine-specific values
+# -----------------------------------------------------------------------------
+# Only fires on fresh installs (UPDATE_ONLY=false), when personal.env doesn't
+# yet exist, and only if we're attached to a TTY (so non-interactive CI runs
+# don't hang on the prompt). The maintainer's defaults work standalone — this
+# is purely an invitation to personalize, not a requirement.
+
+PERSONAL_ENV_PATH="$HOME/.config/dotfiles/personal.env"
+if [ "$UPDATE_ONLY" = false ] && [ ! -f "$PERSONAL_ENV_PATH" ] && [ -t 0 ] && [ "$DRY_RUN" = false ]; then
+    print_header "6a. Personalization (optional)"
+    echo "This repo ships with the maintainer's monitor + hardware values."
+    echo "Run ./personalize.sh now to set yours (you can also do this later)."
+    echo "See docs/PERSONALIZE.md for the full catalog of machine-specific values."
+    echo
+    read -r -p "Run ./personalize.sh now? [Y/n]: " run_p
+    if [ -z "$run_p" ] || [ "$run_p" = "y" ] || [ "$run_p" = "Y" ]; then
+        "$DOTFILES_DIR/personalize.sh" || print_warning "personalize.sh exited non-zero (skip is fine)"
+    else
+        print_info "Skipping personalize.sh — run it later with ./personalize.sh"
+    fi
+fi
+
+# -----------------------------------------------------------------------------
 # 6b. MISE — install pinned tool versions
 # -----------------------------------------------------------------------------
 # Runs AFTER stow so that mise/.config/mise/config.toml is in place.

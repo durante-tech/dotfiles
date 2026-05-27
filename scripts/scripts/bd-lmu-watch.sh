@@ -19,12 +19,14 @@
 
 set -u
 
+[ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
+
 APPLY="$HOME/dotfiles/scripts/scripts/bd-apply.sh"
 WAKE="$HOME/dotfiles/scripts/scripts/bd-wake.sh"
 BUCKET_FILE="/tmp/bd-lmu-bucket"
 LOG_FILE="/tmp/bd-lmu-watch.log"
 CLI="/opt/homebrew/bin/betterdisplaycli"
-PORT_TAG=60
+PORT_TAG="${DOTFILES_BD_PORT_TAG:-60}"
 POLL_S=60
 
 log() { printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >> "$LOG_FILE"; }

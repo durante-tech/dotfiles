@@ -178,6 +178,11 @@ cd ~/dotfiles
 See `docs/UPGRADE.md` for the post-pull checklist (which tools auto-reload,
 which need a manual nudge, how to clean up tools retired between versions).
 
+**Forking?** See [`docs/PERSONALIZE.md`](docs/PERSONALIZE.md) for the catalog
+of machine-specific values (monitor names, BetterDisplay hardware tagIDs,
+keyboard layout, personal app preferences). Run `./personalize.sh` for an
+interactive prompt that writes `~/.config/dotfiles/personal.env` for you.
+
 ---
 
 ## Key Bindings
