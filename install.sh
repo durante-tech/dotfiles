@@ -147,6 +147,7 @@ Options:
 Examples:
     ./install.sh                    # Full fresh install
     ./install.sh --dry-run          # Preview what would be installed
+    ./update.sh                     # Quick update (alias of --update)
     ./install.sh --update           # Quick update (plugins only)
     ./install.sh --skip-casks       # Install without GUI apps
     ./install.sh --force-stow       # Re-stow and adopt existing configs
@@ -778,7 +779,7 @@ Next steps:
   4. Configure monitors: See README.md for AeroSpace setup
 
 For updates, run:
-  ./install.sh --update
+  ./update.sh                   # or: ./install.sh --update
 
 EOF
 
