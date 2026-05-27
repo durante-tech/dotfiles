@@ -376,23 +376,31 @@ if [ "$SKIP_BREW" = false ]; then
     # Misc
     brew_install qmk
 
-    # Brewfile catch-up: install anything in the Brewfile that wasn't covered
-    # by the explicit list above (e.g. gptcommit, osv-scanner, taps, casks
-    # added without an install.sh entry). Idempotent — brew bundle skips
-    # already-installed packages.
-    if [ -f "$DOTFILES_DIR/Brewfile" ]; then
-        print_step "Reconciling against Brewfile (brew bundle)..."
-        if [ "$DRY_RUN" = true ]; then
-            print_dry "brew bundle install --file=$DOTFILES_DIR/Brewfile --no-lock"
-        else
-            brew bundle install --file="$DOTFILES_DIR/Brewfile" --no-lock || \
-                print_warning "brew bundle had failures (check output above)"
-        fi
-    fi
-
     print_success "Homebrew formulae complete"
 else
     print_header "3. Homebrew Formulae (SKIPPED)"
+fi
+
+# -----------------------------------------------------------------------------
+# 3.5 BREWFILE RECONCILIATION (fires in BOTH full-install AND --update modes)
+# -----------------------------------------------------------------------------
+# Idempotent — brew bundle skips already-installed packages. This is what
+# picks up new additions (gptcommit, osv-scanner, custom taps, casks) for
+# existing devs running `./install.sh --update` after a git pull.
+#
+# Note: brew bundle is ADDITIVE only — it does not uninstall tools that were
+# removed from the Brewfile. See docs/UPGRADE.md "Removing retired tools" for
+# the opt-in cleanup path.
+
+if cmd_exists brew && [ -f "$DOTFILES_DIR/Brewfile" ]; then
+    print_header "3.5 Brewfile Reconciliation"
+    if [ "$DRY_RUN" = true ]; then
+        print_dry "brew bundle install --file=$DOTFILES_DIR/Brewfile --no-lock"
+    else
+        print_step "Installing anything missing from Brewfile..."
+        brew bundle install --file="$DOTFILES_DIR/Brewfile" --no-lock || \
+            print_warning "brew bundle had failures (check output above)"
+    fi
 fi
 
 # -----------------------------------------------------------------------------

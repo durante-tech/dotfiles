@@ -43,6 +43,33 @@ When you pull and the changelog mentions one of these, do the matching step:
 - **`bd-apply.sh` or BetterDisplay plist changed** → `launchctl unload && launchctl load` the affected plist. The wake handler (sleepwatcher) picks up changes automatically.
 - **Stream Deck profile generator (`streamdeck-build.ts`) changed** → rebuild + re-import the profile (see table above).
 
+## Removing tools retired in recent commits
+
+`brew bundle` is **additive** — it installs what's in the Brewfile but never
+uninstalls what was removed. After a pull that drops tools, clean them up
+explicitly:
+
+### Migration 2026-05-27: mise replaces fnm + pyenv
+
+```bash
+brew uninstall fnm pyenv
+rm -rf ~/.fnm ~/.pyenv         # remove orphan data dirs (~150 MB)
+```
+
+mise already manages your node + python versions; nothing else to do.
+
+### Nuclear option (use only if you trust the Brewfile as source of truth)
+
+`brew bundle cleanup --force --file=~/dotfiles/Brewfile` will uninstall
+**anything** on your system that's not in the Brewfile. This is destructive —
+it will catch tools you installed manually outside the Brewfile (cli-foo,
+experimental kegs, etc.). Always run without `--force` first to see the diff:
+
+```bash
+brew bundle cleanup --file=~/dotfiles/Brewfile      # dry-run, prints what would go
+brew bundle cleanup --force --file=~/dotfiles/Brewfile   # actually removes
+```
+
 ## API keys (only if you haven't already)
 
 Export in `~/.zshrc.local` (not tracked in git):
