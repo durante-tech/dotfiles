@@ -169,11 +169,14 @@ cd ~/dotfiles
 
 ```bash
 ./install.sh --dry-run       # Preview without changes
-./install.sh --update        # Update only (skip installs)
+./update.sh                  # Update existing install (wraps install.sh --update)
 ./install.sh --skip-casks    # Skip GUI apps
 ./setup.sh --check           # Verify dependencies
 ./setup.sh --stow            # Re-stow all packages
 ```
+
+See `docs/UPGRADE.md` for the post-pull checklist (which tools auto-reload,
+which need a manual nudge, how to clean up tools retired between versions).
 
 ---
 
