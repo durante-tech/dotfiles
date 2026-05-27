@@ -6,12 +6,14 @@ so a `git pull` actually takes effect across all the tools that don't auto-reloa
 ## The one-shot upgrade
 
 ```bash
-cd ~/dotfiles && git pull && ./install.sh --update
+cd ~/dotfiles && git pull && ./update.sh
 ```
 
-The `--update` flag skips Homebrew cask reinstalls and runs `brew bundle install`
-(idempotent — only installs what's missing or out of date), syncs Tmux plugins,
-updates Neovim plugins, and re-stows packages. Safe to run repeatedly.
+`update.sh` is a thin wrapper over `./install.sh --update` (same script,
+discoverable name). It skips the slow full reinstall, runs `brew bundle
+install` (idempotent — only installs what's missing or out of date), syncs
+Tmux + Neovim plugins, and re-stows packages. Safe to run repeatedly. Extra
+flags are forwarded — `./update.sh --dry-run` shows what would change.
 
 ## What needs manual attention after a pull
 
@@ -34,7 +36,7 @@ not (and why):
 
 When you pull and the changelog mentions one of these, do the matching step:
 
-- **Brewfile changed** → already covered by `./install.sh --update`. Standalone: `brew bundle install --file=~/dotfiles/Brewfile --no-lock`.
+- **Brewfile changed** → already covered by `./update.sh`. Standalone: `brew bundle install --file=~/dotfiles/Brewfile --no-lock`.
 - **`mise` version-manager changes** → `mise install` (per project) or `mise use -g <tool>@<version>` (global).
 - **New Neovim plugin** → `:Lazy sync` inside nvim. For plugins with a `build` step (avante.nvim's `make`), wait for the build to complete.
 - **AeroSpace binding or workspace map changed** → `aerospace reload-config`.
@@ -82,7 +84,7 @@ export OPENAI_API_KEY="sk-..."          # gptcommit + opencode
 ## Sanity check after upgrade
 
 ```bash
-~/dotfiles/install.sh --update --dry-run    # see what would change
+~/dotfiles/update.sh --dry-run             # see what would change
 sketchybar --query bar | head              # confirm bar is responsive
 aerospace list-workspaces --all            # confirm workspaces match aerospace.toml
 zsh -i -c 'type bd-day bd-stream'          # confirm shell aliases load
