@@ -46,8 +46,6 @@ brew "eza"
 brew "fd"
 # mise — polyglot version manager (replaces fnm + pyenv)
 brew "mise"
-# Fast and simple Node.js version manager (kept as fallback during mise rollout)
-brew "fnm"
 # Terminal JSON viewer
 brew "fx"
 # Command-line fuzzy finder written in Go
@@ -110,8 +108,6 @@ brew "poppler"
 brew "prettier"
 # Modern replacement for ps written in Rust
 brew "procs"
-# Python version management
-brew "pyenv"
 # Command-line interface for Render
 brew "render"
 # Search tool like grep and The Silver Searcher

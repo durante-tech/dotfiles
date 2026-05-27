@@ -9,6 +9,7 @@
 *.bak
 *.bak.*
 *.backup
+*.before-*
 *~
 
 # Tmux plugins (managed by TPM at runtime)

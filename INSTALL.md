@@ -299,6 +299,29 @@ ollama pull qwen3-coder:30b        # for the espanso :llm trigger
 
 Visit https://apps.apple.com/app/plash/id1494023538, install, then drag `~/dotfiles/wallpapers/shaders/*.html` files into Plash for live shader wallpapers.
 
+**API keys for AI tooling** (export in `~/.zshrc.local` so they survive pulls):
+
+| Var | Used by | Required for |
+|-----|---------|--------------|
+| `ANTHROPIC_API_KEY` | `avante.nvim` (`<leader>v*` keys) | In-buffer Claude editing inside Neovim |
+| `OPENAI_API_KEY` | `gptcommit`, `opencode` (when routed to OpenAI) | AI commit messages + multi-provider terminal agent |
+
+```bash
+# in ~/.zshrc.local (NOT tracked in git)
+export ANTHROPIC_API_KEY="sk-ant-..."
+export OPENAI_API_KEY="sk-..."
+```
+
+Per-tool one-time setup (opt-in):
+- `gptcommit install` inside any repo where you want auto-generated commit messages (writes a `prepare-commit-msg` hook to that repo only).
+- `opencode auth login` first time you run `opencode` (provider picker).
+
+**Stream Deck profile + Mac Automation plugin** (only if you use a Stream Deck):
+
+1. Install the Stream Deck app from Elgato.
+2. Install the **Mac Automation** plugin (free): https://marketplace.elgato.com/product/mac-automation-8468fc12-644b-427a-84cb-127c82c5bb30 — required because Stream Deck 7.x broke custom URL schemes like `raycast://` in the built-in Website action.
+3. Build the profile: `bun ~/dotfiles/scripts/scripts/streamdeck-build.ts <source.streamDeckProfile> <output.streamDeckProfile>` then `open <output>` to import.
+
 ---
 
 ## Phase 5: Verification
