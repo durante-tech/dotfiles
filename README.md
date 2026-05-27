@@ -170,9 +170,11 @@ cd ~/dotfiles
 ```bash
 ./install.sh --dry-run       # Preview without changes
 ./update.sh                  # Update existing install (wraps install.sh --update)
+./smart-pull.sh              # Pull + open DOS with upgrade prompt (Claude reads diff, runs update.sh, asks smart questions)
 ./install.sh --skip-casks    # Skip GUI apps
 ./setup.sh --check           # Verify dependencies
 ./setup.sh --stow            # Re-stow all packages
+./personalize.sh             # Interactive: write ~/.config/dotfiles/personal.env (monitor names, BD tagIDs, keyboard layout)
 ```
 
 See `docs/UPGRADE.md` for the post-pull checklist (which tools auto-reload,

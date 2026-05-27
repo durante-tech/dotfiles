@@ -5,15 +5,40 @@ so a `git pull` actually takes effect across all the tools that don't auto-reloa
 
 ## The one-shot upgrade
 
+Two paths — pick the one that matches how you work.
+
+### Path A — Deterministic (no AI required)
+
 ```bash
 cd ~/dotfiles && git pull && ./update.sh
 ```
 
-`update.sh` is a thin wrapper over `./install.sh --update` (same script,
-discoverable name). It skips the slow full reinstall, runs `brew bundle
-install` (idempotent — only installs what's missing or out of date), syncs
-Tmux + Neovim plugins, and re-stows packages. Safe to run repeatedly. Extra
-flags are forwarded — `./update.sh --dry-run` shows what would change.
+`update.sh` is a thin wrapper over `./install.sh --update`. It skips the slow
+full reinstall, runs `brew bundle install` (idempotent), syncs Tmux + Neovim
+plugins, and re-stows packages. Safe to run repeatedly. Extra flags are
+forwarded — `./update.sh --dry-run` shows what would change.
+
+This path is **complete and self-sufficient** — you don't need Claude Code or
+any AI to upgrade. The rest of this doc tells you what manual reloads are
+needed after `update.sh` finishes.
+
+### Path B — DOS-orchestrated (Claude reads the diff and decides)
+
+```bash
+cd ~/dotfiles && ./smart-pull.sh
+```
+
+Does the pull, then opens an interactive Claude Code session with a prompt
+that includes the commit range, changed files, and diff stat. Claude then
+reads `UPGRADE.md` + `PERSONALIZE.md`, classifies the changes, runs
+`./update.sh`, surfaces a post-pull checklist, and asks you only about
+decisions it can't safely make on its own (hardware-specific values,
+destructive cleanup, new API keys).
+
+The prompt template is at [`docs/POSTPULL_PROMPT.md`](POSTPULL_PROMPT.md) —
+edit it to tune what DOS focuses on. Useful flags:
+- `./smart-pull.sh --print-prompt` — see what DOS would receive without opening a session
+- `./smart-pull.sh --no-pull` — open DOS for the last 5 commits (e.g. re-process a pull you forgot to act on)
 
 ## What needs manual attention after a pull
 
