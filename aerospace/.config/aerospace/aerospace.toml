@@ -116,6 +116,7 @@ outer.top = [
 # Built-in display can't be renamed in BetterDisplay, use actual macOS name
 1 = 'Built-in Retina Display'  # Main workspace on laptop
 2 = '^PORTRAIT-MONITOR$'       # Secondary workspace on portrait
+A = 'Built-in Retina Display'  # AI engineer apps (Claude, Codex) on laptop
 B = 'Built-in Retina Display'  # Browser on laptop
 D = 'Built-in Retina Display'  # Development on laptop
 F = 'Built-in Retina Display'  # Finder on laptop (floats)
@@ -193,6 +194,7 @@ alt-2 = 'workspace 2'
 # alt-7 = 'workspace 7'
 # alt-8 = 'workspace 8'
 # alt-9 = 'workspace 9'
+alt-a = 'workspace A' # for AI engineer apps (Claude, Codex) — also fires on Caps+A via Karabiner Hyper→alt rewrite
 alt-b = 'workspace B' # for browser
 # COMMENTED OUT FOR BRAZILIAN ACCENTS - ROLLBACK: uncomment line below
 # alt-e = 'workspace E' # for email
@@ -215,6 +217,7 @@ alt-shift-2 = 'move-node-to-workspace 2'
 # alt-shift-7 = 'move-node-to-workspace 7'
 # alt-shift-8 = 'move-node-to-workspace 8'
 # alt-shift-9 = 'move-node-to-workspace 9'
+alt-shift-a = 'move-node-to-workspace A'
 alt-shift-b = 'move-node-to-workspace B'
 # COMMENTED OUT FOR BRAZILIAN ACCENTS - ROLLBACK: uncomment line below
 # alt-shift-e = 'move-node-to-workspace E'
@@ -350,7 +353,11 @@ run = ['layout floating', 'move-node-to-workspace N']
 
 [[on-window-detected]]
 if.app-id = 'com.anthropic.claudefordesktop'
-run = "move-node-to-workspace N"
+run = "move-node-to-workspace A"
+
+[[on-window-detected]]
+if.app-id = 'com.openai.codex'
+run = "move-node-to-workspace A"
 
 [[on-window-detected]]
 if.app-id = 'ai.perplexity.mac'
