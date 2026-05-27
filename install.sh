@@ -396,11 +396,11 @@ fi
 if cmd_exists brew && [ -f "$DOTFILES_DIR/Brewfile" ]; then
     print_header "3.5 Brewfile Reconciliation"
     if [ "$DRY_RUN" = true ]; then
-        print_dry "brew bundle install --file=$DOTFILES_DIR/Brewfile --no-lock"
+        print_dry "brew bundle install --file=$DOTFILES_DIR/Brewfile"
     else
         print_step "Installing anything missing from Brewfile..."
-        brew bundle install --file="$DOTFILES_DIR/Brewfile" --no-lock || \
-            print_warning "brew bundle had failures (check output above)"
+        brew bundle install --file="$DOTFILES_DIR/Brewfile" || \
+            print_warn "brew bundle had failures (check output above)"
     fi
 fi
 
@@ -632,7 +632,7 @@ if [ "$UPDATE_ONLY" = false ] && [ ! -f "$PERSONAL_ENV_PATH" ] && [ -t 0 ] && [ 
     echo
     read -r -p "Run ./personalize.sh now? [Y/n]: " run_p
     if [ -z "$run_p" ] || [ "$run_p" = "y" ] || [ "$run_p" = "Y" ]; then
-        "$DOTFILES_DIR/personalize.sh" || print_warning "personalize.sh exited non-zero (skip is fine)"
+        "$DOTFILES_DIR/personalize.sh" || print_warn "personalize.sh exited non-zero (skip is fine)"
     else
         print_info "Skipping personalize.sh — run it later with ./personalize.sh"
     fi
