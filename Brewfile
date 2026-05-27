@@ -4,6 +4,7 @@ tap "nikitabobko/tap"
 tap "osx-cross/arm"
 tap "osx-cross/avr"
 tap "qmk/qmk"
+tap "zurawiki/brews"
 tap "supabase/tap"
 tap "thezoraiz/ascii-image-converter"
 tap "tursodatabase/tap"
@@ -65,6 +66,8 @@ brew "git-filter-repo"
 brew "go"
 # Version Control Visualization Tool
 brew "gource"
+# AI-generated commit messages as a prepare-commit-msg git hook
+brew "zurawiki/brews/gptcommit"
 # Graph visualization software from AT&T and Bell Labs
 brew "graphviz"
 # Development framework for multimedia applications
@@ -91,6 +94,8 @@ brew "neovim"
 brew "node"
 # Command-line Git information tool
 brew "onefetch"
+# Google's OSV-database vulnerability scanner (audit installed packages + lockfiles)
+brew "osv-scanner"
 # Outputs current CPU temperature for OSX
 brew "osx-cpu-temp"
 # Swiss-army knife of markup format conversion
