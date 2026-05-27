@@ -34,13 +34,13 @@ declare -A VIS=(
     [clearvpn]="1 2 F"             # status only
 
     # system_health cluster — relevant only on dev / transitional workspaces
-    [cpu]="1 2 D T F"
-    [memory]="1 2 D T F"
-    [network]="1 2 D T F"
+    [cpu]="1 2 A D T F"
+    [memory]="1 2 A D T F"
+    [network]="1 2 A D T F"
 
     # context-sensitive dev tools
-    [github]="1 2 B D T F E"       # dev + browser (PR review) + email
-    [claude]="1 2 D T F"           # active dev context only
+    [github]="1 2 A B D T F E"     # dev + AI + browser (PR review) + email
+    [claude]="1 2 A D T F"         # active dev / AI context
 )
 
 for item in "${!VIS[@]}"; do
