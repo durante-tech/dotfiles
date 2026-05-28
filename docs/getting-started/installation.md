@@ -77,7 +77,7 @@ Installs all CLI tools in categories:
 ### Step 5: Non-Homebrew Tools
 
 - **Bun** — Fast JavaScript runtime (`curl -fsSL https://bun.sh/install | bash`)
-- **Fabric AI** — AI patterns tool (`go install github.com/danielmiessler/fabric@latest`)
+- **Fabric AI** — AI patterns tool (`go install github.com/danielmiessler/fabric/cmd/fabric@latest`)
 
 ### Step 6: Dotfiles Clone & Stow
 

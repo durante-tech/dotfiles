@@ -516,19 +516,19 @@ if cmd_exists fabric; then
     print_success "Fabric already installed"
     if [ "$UPDATE_ONLY" = true ]; then
         if [ "$DRY_RUN" = true ]; then
-            print_dry "go install github.com/danielmiessler/fabric@latest"
+            print_dry "go install github.com/danielmiessler/fabric/cmd/fabric@latest"
         else
             print_step "Updating Fabric..."
-            go install github.com/danielmiessler/fabric@latest || true
+            go install github.com/danielmiessler/fabric/cmd/fabric@latest || true
         fi
     fi
 else
     if cmd_exists go; then
         if [ "$DRY_RUN" = true ]; then
-            print_dry "go install github.com/danielmiessler/fabric@latest"
+            print_dry "go install github.com/danielmiessler/fabric/cmd/fabric@latest"
         else
             print_step "Installing Fabric AI..."
-            go install github.com/danielmiessler/fabric@latest
+            go install github.com/danielmiessler/fabric/cmd/fabric@latest
         fi
     else
         print_warn "Go not found - skipping Fabric installation"

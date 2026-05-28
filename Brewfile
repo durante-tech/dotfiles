@@ -10,6 +10,8 @@ tap "thezoraiz/ascii-image-converter"
 tap "tursodatabase/tap"
 # Run your GitHub Actions locally
 brew "act"
+# Apache Ant build tool (Java legacy build chain)
+brew "ant"
 # Command-line interface for SQLite
 brew "sqlite"
 # AI pair programming in your terminal
@@ -194,8 +196,6 @@ cask "font-manrope"
 cask "kitty"
 # Xcode project generator (Swift / iOS dev)
 cask "tuist"
-# Apache Ant build tool (Java legacy build chain)
-cask "ant"
 vscode "aaravb.chrome-extension-developer-tools"
 vscode "aaron-bond.better-comments"
 vscode "anthropic.claude-code"
@@ -283,7 +283,6 @@ vscode "redhat.vscode-yaml"
 vscode "ritwickdey.liveserver"
 vscode "runem.lit-plugin"
 vscode "scala-lang.scala"
-vscode "selcuk-usta.code-complexity-report-generator"
 vscode "seojunyoo.react-component-preview"
 vscode "shd101wyy.markdown-preview-enhanced"
 vscode "snappify.snappify"
