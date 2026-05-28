@@ -575,6 +575,18 @@ if [ "$FORCE_STOW" = true ]; then
     print_warn "Using --adopt flag (existing files will be adopted)"
 fi
 
+# Render aerospace.toml from template + personal.env BEFORE stowing so the
+# symlink target exists. AeroSpace TOML can't read env vars, so monitor names
+# are sentinelized in aerospace.toml.template and substituted here.
+if [ -f "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" ]; then
+    if [ "$DRY_RUN" = true ]; then
+        print_dry "render-aerospace.sh"
+    else
+        DOTFILES_DIR="$DOTFILES_DIR" "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" || \
+            print_warn "render-aerospace.sh failed — aerospace.toml may be stale"
+    fi
+fi
+
 # Re-stow to handle updates (-R flag)
 PACKAGES="aerospace atuin espanso fastfetch ghostty karabiner kitty mise mpd nvim rmpc scripts sketchybar starship tmux ubersicht w3m wallpapers wezterm yazi zed zsh"
 # Note: launchagents/ is intentionally NOT in this list — it contains
