@@ -323,7 +323,7 @@ run = "move-node-to-workspace B"
 
 [[on-window-detected]]
 if.app-id = 'company.thebrowser.dia'
-run = "move-node-to-workspace T"
+run = "move-node-to-workspace B"
 
 [[on-window-detected]]
 if.app-id = 'com.apple.Safari'
@@ -347,10 +347,7 @@ run = "move-node-to-workspace N"
 if.app-id = 'com.apple.Notes'
 run = "move-node-to-workspace N"
 
-[[on-window-detected]]
-if.app-id = 'com.openai.chat'
-run = ['layout floating', 'move-node-to-workspace N']
-
+# AI apps → A (Claude, Codex, ChatGPT, Perplexity, wispr-flow)
 [[on-window-detected]]
 if.app-id = 'com.anthropic.claudefordesktop'
 run = "move-node-to-workspace A"
@@ -360,12 +357,16 @@ if.app-id = 'com.openai.codex'
 run = "move-node-to-workspace A"
 
 [[on-window-detected]]
+if.app-id = 'com.openai.chat'
+run = ['layout floating', 'move-node-to-workspace A']
+
+[[on-window-detected]]
 if.app-id = 'ai.perplexity.mac'
-run = "move-node-to-workspace N"
+run = "move-node-to-workspace A"
 
 [[on-window-detected]]
 if.app-id = 'com.electron.wispr-flow'
-run = "move-node-to-workspace N"
+run = "move-node-to-workspace A"
 
 # Terminals → T
 [[on-window-detected]]
@@ -411,6 +412,14 @@ run = 'layout floating'
 if.app-id = 'net.whatsapp.WhatsApp'
 run = "move-node-to-workspace M"
 
+[[on-window-detected]]
+if.app-id = 'com.apple.MobileSMS'
+run = "move-node-to-workspace M"
+
+[[on-window-detected]]
+if.app-id = 'org.whispersystems.signal-desktop'
+run = "move-node-to-workspace M"
+
 # IDEs → Development workspace (D) on Built-in display
 [[on-window-detected]]
 if.app-id = 'com.microsoft.VSCode'
@@ -438,6 +447,10 @@ run = ['layout tiling', 'move-node-to-workspace D']
 
 [[on-window-detected]]
 if.app-name-regex-substring = 'intellij|clion|pycharm|webstorm|rider|goland|datagrip|rubymine|phpstorm|fleet'
+run = ['layout tiling', 'move-node-to-workspace D']
+
+[[on-window-detected]]
+if.app-id = 'dev.zed.Zed'
 run = ['layout tiling', 'move-node-to-workspace D']
 
 # Docker Desktop → floating (accessible from any workspace)
