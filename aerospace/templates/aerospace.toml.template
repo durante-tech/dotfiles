@@ -380,6 +380,10 @@ run = "move-node-to-workspace T"
 if.app-id = 'com.github.wez.wezterm'
 run = "move-node-to-workspace T"
 
+[[on-window-detected]]
+if.app-id = 'net.kovidgoyal.kitty'
+run = "move-node-to-workspace T"
+
 # Messaging → M
 [[on-window-detected]]
 if.app-name-regex-substring = 'slack|discord|telegram|teams'
