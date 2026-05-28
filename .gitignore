@@ -34,6 +34,10 @@ Library/Logs/
 # plists are copied to ~/Library/LaunchAgents/ at install time by setup.sh)
 launchagents/.rendered/
 
+# Rendered AeroSpace config (template lives at aerospace.toml.template,
+# render-aerospace.sh produces aerospace.toml from personal.env at install time)
+aerospace/.config/aerospace/aerospace.toml
+
 # DuranteOS internal state
 .dos/
 

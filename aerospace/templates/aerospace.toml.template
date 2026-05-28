@@ -79,34 +79,34 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 # estate; PORTRAIT (Dell 4K rotated) keeps the breathier 15px because there's
 # more pixel headroom and the eye expects more breathing room on a 27" panel.
 inner.horizontal = [
-  { monitor."Built-in Retina Display" = 10 },
-  { monitor."PORTRAIT-MONITOR" = 15 },
+  { monitor."@DOTFILES_MONITOR_BUILTIN@" = 10 },
+  { monitor."@DOTFILES_MONITOR_EXTERNAL@" = 15 },
   15,
 ]
 inner.vertical = [
-  { monitor."Built-in Retina Display" = 10 },
-  { monitor."PORTRAIT-MONITOR" = 15 },
+  { monitor."@DOTFILES_MONITOR_BUILTIN@" = 10 },
+  { monitor."@DOTFILES_MONITOR_EXTERNAL@" = 15 },
   15,
 ]
 outer.left = [
-  { monitor."Built-in Retina Display" = 10 },
-  { monitor."PORTRAIT-MONITOR" = 15 },
+  { monitor."@DOTFILES_MONITOR_BUILTIN@" = 10 },
+  { monitor."@DOTFILES_MONITOR_EXTERNAL@" = 15 },
   15,
 ]
 outer.right = [
-  { monitor."Built-in Retina Display" = 10 },
-  { monitor."PORTRAIT-MONITOR" = 15 },
+  { monitor."@DOTFILES_MONITOR_BUILTIN@" = 10 },
+  { monitor."@DOTFILES_MONITOR_EXTERNAL@" = 15 },
   15,
 ]
 outer.bottom = [
-  { monitor."Built-in Retina Display" = 15 },
-  { monitor."PORTRAIT-MONITOR" = 15 },
+  { monitor."@DOTFILES_MONITOR_BUILTIN@" = 15 },
+  { monitor."@DOTFILES_MONITOR_EXTERNAL@" = 15 },
   15,
 ]
 # Per-monitor top gap. PORTRAIT needs extra clearance for sketchybar at its scale.
 outer.top = [
-  { monitor."Built-in Retina Display" = 15 },
-  { monitor."PORTRAIT-MONITOR" = 50 },
+  { monitor."@DOTFILES_MONITOR_BUILTIN@" = 15 },
+  { monitor."@DOTFILES_MONITOR_EXTERNAL@" = 50 },
   15,
 ]
 
@@ -114,15 +114,15 @@ outer.top = [
 # See: https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
 [workspace-to-monitor-force-assignment]
 # Built-in display can't be renamed in BetterDisplay, use actual macOS name
-1 = 'Built-in Retina Display'  # Main workspace on laptop
-2 = '^PORTRAIT-MONITOR$'       # Secondary workspace on portrait
-A = 'Built-in Retina Display'  # AI engineer apps (Claude, Codex) on laptop
-B = 'Built-in Retina Display'  # Browser on laptop
-D = 'Built-in Retina Display'  # Development on laptop
-F = 'Built-in Retina Display'  # Finder on laptop (floats)
-M = 'Built-in Retina Display'  # Messaging on laptop
-N = 'Built-in Retina Display'  # Notes on laptop
-T = '^PORTRAIT-MONITOR$'       # Terminal on portrait
+1 = '@DOTFILES_MONITOR_BUILTIN@'  # Main workspace on laptop
+2 = '^@DOTFILES_MONITOR_EXTERNAL@$'       # Secondary workspace on portrait
+A = '@DOTFILES_MONITOR_BUILTIN@'  # AI engineer apps (Claude, Codex) on laptop
+B = '@DOTFILES_MONITOR_BUILTIN@'  # Browser on laptop
+D = '@DOTFILES_MONITOR_BUILTIN@'  # Development on laptop
+F = '@DOTFILES_MONITOR_BUILTIN@'  # Finder on laptop (floats)
+M = '@DOTFILES_MONITOR_BUILTIN@'  # Messaging on laptop
+N = '@DOTFILES_MONITOR_BUILTIN@'  # Notes on laptop
+T = '^@DOTFILES_MONITOR_EXTERNAL@$'       # Terminal on portrait
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 # 'main' binding mode must be always presented
@@ -323,7 +323,7 @@ run = "move-node-to-workspace B"
 
 [[on-window-detected]]
 if.app-id = 'company.thebrowser.dia'
-run = "move-node-to-workspace T"
+run = "move-node-to-workspace B"
 
 [[on-window-detected]]
 if.app-id = 'com.apple.Safari'
@@ -347,10 +347,7 @@ run = "move-node-to-workspace N"
 if.app-id = 'com.apple.Notes'
 run = "move-node-to-workspace N"
 
-[[on-window-detected]]
-if.app-id = 'com.openai.chat'
-run = ['layout floating', 'move-node-to-workspace N']
-
+# AI apps → A (Claude, Codex, ChatGPT, Perplexity, wispr-flow)
 [[on-window-detected]]
 if.app-id = 'com.anthropic.claudefordesktop'
 run = "move-node-to-workspace A"
@@ -360,12 +357,16 @@ if.app-id = 'com.openai.codex'
 run = "move-node-to-workspace A"
 
 [[on-window-detected]]
+if.app-id = 'com.openai.chat'
+run = ['layout floating', 'move-node-to-workspace A']
+
+[[on-window-detected]]
 if.app-id = 'ai.perplexity.mac'
-run = "move-node-to-workspace N"
+run = "move-node-to-workspace A"
 
 [[on-window-detected]]
 if.app-id = 'com.electron.wispr-flow'
-run = "move-node-to-workspace N"
+run = "move-node-to-workspace A"
 
 # Terminals → T
 [[on-window-detected]]
@@ -378,6 +379,10 @@ run = "move-node-to-workspace T"
 
 [[on-window-detected]]
 if.app-id = 'com.github.wez.wezterm'
+run = "move-node-to-workspace T"
+
+[[on-window-detected]]
+if.app-id = 'net.kovidgoyal.kitty'
 run = "move-node-to-workspace T"
 
 # Messaging → M
@@ -407,6 +412,14 @@ run = 'layout floating'
 if.app-id = 'net.whatsapp.WhatsApp'
 run = "move-node-to-workspace M"
 
+[[on-window-detected]]
+if.app-id = 'com.apple.MobileSMS'
+run = "move-node-to-workspace M"
+
+[[on-window-detected]]
+if.app-id = 'org.whispersystems.signal-desktop'
+run = "move-node-to-workspace M"
+
 # IDEs → Development workspace (D) on Built-in display
 [[on-window-detected]]
 if.app-id = 'com.microsoft.VSCode'
@@ -434,6 +447,10 @@ run = ['layout tiling', 'move-node-to-workspace D']
 
 [[on-window-detected]]
 if.app-name-regex-substring = 'intellij|clion|pycharm|webstorm|rider|goland|datagrip|rubymine|phpstorm|fleet'
+run = ['layout tiling', 'move-node-to-workspace D']
+
+[[on-window-detected]]
+if.app-id = 'dev.zed.Zed'
 run = ['layout tiling', 'move-node-to-workspace D']
 
 # Docker Desktop → floating (accessible from any workspace)

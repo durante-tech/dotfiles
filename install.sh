@@ -516,19 +516,19 @@ if cmd_exists fabric; then
     print_success "Fabric already installed"
     if [ "$UPDATE_ONLY" = true ]; then
         if [ "$DRY_RUN" = true ]; then
-            print_dry "go install github.com/danielmiessler/fabric@latest"
+            print_dry "go install github.com/danielmiessler/fabric/cmd/fabric@latest"
         else
             print_step "Updating Fabric..."
-            go install github.com/danielmiessler/fabric@latest || true
+            go install github.com/danielmiessler/fabric/cmd/fabric@latest || true
         fi
     fi
 else
     if cmd_exists go; then
         if [ "$DRY_RUN" = true ]; then
-            print_dry "go install github.com/danielmiessler/fabric@latest"
+            print_dry "go install github.com/danielmiessler/fabric/cmd/fabric@latest"
         else
             print_step "Installing Fabric AI..."
-            go install github.com/danielmiessler/fabric@latest
+            go install github.com/danielmiessler/fabric/cmd/fabric@latest
         fi
     else
         print_warn "Go not found - skipping Fabric installation"
@@ -573,6 +573,18 @@ STOW_OPTS="-t ~"
 if [ "$FORCE_STOW" = true ]; then
     STOW_OPTS="$STOW_OPTS --adopt"
     print_warn "Using --adopt flag (existing files will be adopted)"
+fi
+
+# Render aerospace.toml from template + personal.env BEFORE stowing so the
+# symlink target exists. AeroSpace TOML can't read env vars, so monitor names
+# are sentinelized in aerospace.toml.template and substituted here.
+if [ -f "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" ]; then
+    if [ "$DRY_RUN" = true ]; then
+        print_dry "render-aerospace.sh"
+    else
+        DOTFILES_DIR="$DOTFILES_DIR" "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" || \
+            print_warn "render-aerospace.sh failed — aerospace.toml may be stale"
+    fi
 fi
 
 # Re-stow to handle updates (-R flag)
