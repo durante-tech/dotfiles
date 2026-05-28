@@ -186,8 +186,6 @@ cask "maccy"
 cask "linearmouse"
 # System monitor for the menu bar
 cask "stats"
-# Menu bar customization tool
-cask "swiftbar"
 # Inter sans-serif typeface (used by sketchybar / design tokens)
 cask "font-inter"
 # Manrope sans-serif typeface (used by design tokens / site)
