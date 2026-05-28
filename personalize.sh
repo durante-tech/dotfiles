@@ -138,16 +138,16 @@ ok "Wrote $PERSONAL_ENV"
 # -----------------------------------------------------------------------------
 # Follow-up suggestions
 # -----------------------------------------------------------------------------
-hdr "Follow-up — values that can't be externalized to env vars"
+hdr "Follow-up"
 
-cat <<EOF
-${Y}AeroSpace${N} (TOML — no env-var substitution; manual edit required):
-  Edit ~/dotfiles/aerospace/.config/aerospace/aerospace.toml around line 117-124.
-  Replace 'Built-in Retina Display' with: ${G}${MONITOR_BUILTIN}${N}
-  Replace '^PORTRAIT-MONITOR\$' with: ${G}${MONITOR_EXTERNAL}${N}
-  Then: cd ~/dotfiles && stow -R -t ~ aerospace && aerospace reload-config
-
-EOF
+# Auto-render aerospace.toml so the new monitor names take effect immediately.
+if [ -x "$HOME/dotfiles/scripts/scripts/render-aerospace.sh" ]; then
+    say "Rendering aerospace.toml from new monitor values..."
+    DOTFILES_DIR="$HOME/dotfiles" "$HOME/dotfiles/scripts/scripts/render-aerospace.sh" || \
+        warn "render-aerospace.sh failed — re-run manually"
+    command -v aerospace >/dev/null 2>&1 && aerospace reload-config 2>/dev/null && ok "AeroSpace reloaded"
+fi
+echo
 
 if [ "$KEYBOARD" != "pt-br" ]; then
     cat <<EOF
