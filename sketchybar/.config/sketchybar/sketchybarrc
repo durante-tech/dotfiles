@@ -56,7 +56,6 @@ sketchybar --add bracket workspaces space.1 space.2 space.B space.D space.F spac
 
 source "$ITEM_DIR/aerospace_mode.sh"
 source "$ITEM_DIR/front_app.sh"
-source "$ITEM_DIR/claude.sh"
 source "$ITEM_DIR/docker.sh"
 source "$ITEM_DIR/macupdater.sh"
 source "$ITEM_DIR/clearvpn.sh"
@@ -66,7 +65,7 @@ source "$ITEM_DIR/calendar.sh"
 ##### Right Items #####
 # Source order = right→left visually (first sourced sits rightmost).
 # Layout (right→left):
-#   battery | clock | bd_mode | weather | cpu | memory | network | github | claude | mic | volume | obs | spotify | media_block
+#   battery | clock | bd_mode | weather | cpu | memory | network | github | mic | volume | obs | spotify | media_block
 source "$ITEM_DIR/battery.sh"
 source "$ITEM_DIR/clock.sh"
 source "$ITEM_DIR/bd_mode.sh"
