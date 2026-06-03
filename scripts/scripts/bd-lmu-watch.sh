@@ -29,6 +29,15 @@ CLI="/opt/homebrew/bin/betterdisplaycli"
 PORT_TAG="${DOTFILES_BD_PORT_TAG:-60}"
 POLL_S=60
 
+# Ambient bucket boundaries in raw AppleLMUController units (NOT lux — see
+# read_lmu; thresholds are nominal, calibrate by eye). THRESHOLDS[i] is the
+# boundary between bucket i and i+1. Hysteresis: a bucket change requires
+# crossing a boundary by HYST_FRAC in the direction of travel, so a reading
+# sitting on a boundary can't flap modes. Bands (±15%) are non-overlapping
+# given the 50/200/600 spacing.
+THRESHOLDS=(50 200 600)
+HYST_FRAC=0.15
+
 log() { printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >> "$LOG_FILE"; }
 
 # Try multiple IOReg classes — Apple silicon and Intel macs expose ambient via
@@ -44,13 +53,38 @@ read_lmu() {
     echo "$raw"
 }
 
+# raw_to_bucket <lux> <last_bucket> — map a raw reading to bucket 0..3, applying
+# a direction-aware dead-band around each boundary relative to the current
+# bucket. With a valid last_bucket we only rise past boundary i when lux exceeds
+# THRESHOLDS[i]*(1+H) and only drop below it when lux falls under *(1-H); inside
+# the band we hold. With no prior bucket (startup / sensor gap) we fall back to
+# plain thresholds.
 raw_to_bucket() {
-    local lux="$1"
-    if   (( $(echo "$lux <= 50" | bc -l) ));   then echo 0
-    elif (( $(echo "$lux <= 200" | bc -l) ));  then echo 1
-    elif (( $(echo "$lux <= 600" | bc -l) ));  then echo 2
-    else echo 3
+    local lux="$1" last="${2:--1}"
+    local i t hi lo b=0
+
+    if [[ "$last" =~ ^[0-3]$ ]]; then
+        for i in "${!THRESHOLDS[@]}"; do
+            t="${THRESHOLDS[$i]}"
+            if (( last > i )); then
+                # currently above boundary i — only drop if lux < t*(1-H)
+                lo="$(awk -v t="$t" -v h="$HYST_FRAC" 'BEGIN{printf "%.4f", t*(1-h)}')"
+                (( $(echo "$lux >= $lo" | bc -l) )) && b=$((i + 1))
+            else
+                # currently at/below boundary i — only rise if lux > t*(1+H)
+                hi="$(awk -v t="$t" -v h="$HYST_FRAC" 'BEGIN{printf "%.4f", t*(1+h)}')"
+                (( $(echo "$lux > $hi" | bc -l) )) && b=$((i + 1))
+            fi
+        done
+        echo "$b"
+        return
     fi
+
+    # No valid prior bucket — plain thresholds (boundary value → lower bucket).
+    for i in "${!THRESHOLDS[@]}"; do
+        (( $(echo "$lux > ${THRESHOLDS[$i]}" | bc -l) )) && b=$((i + 1))
+    done
+    echo "$b"
 }
 
 bucket_to_mode() {
@@ -119,7 +153,7 @@ while true; do
         log "ambient sensor came back: lux=$lux"
         sensor_missing_warned=0
     fi
-    bucket="$(raw_to_bucket "$lux")"
+    bucket="$(raw_to_bucket "$lux" "$last_bucket")"
     printf '%s|%s|%s\n' "$bucket" "$lux" "$(date -u +%FT%TZ)" > "$BUCKET_FILE"
     if [[ "$bucket" != "$last_bucket" ]]; then
         mode="$(bucket_to_mode "$bucket")"
