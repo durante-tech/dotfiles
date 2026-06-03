@@ -34,20 +34,30 @@ CLI="/opt/homebrew/bin/betterdisplaycli"
 # Row format: dev_sw% | port_brightness% | port_contrast% | port_temp% | glyph | label
 # dev_sw% is softwareBrightness (may exceed 100 — EDR software upscale).
 DEV_PRESET='Apple XDR Display (P3-1600 nits)'
-declare -A MODES=(
-    [dawn]="100|55|70|-2|󰖚|Dawn"
-    [day]="130|85|70|-1|󰖙|Day"
-    [afternoon]="110|70|75|-1|󰖕|Afternoon"
-    [evening]="80|55|70|-5|󰖔|Evening"
-    [night]="60|35|60|-10|󰖔|Night"
-    [meeting]="130|100|75|0|󰍫|Meeting"
-    [read]="100|70|70|-3|󰂺|Read"
-    [stream]="120|90|75|0|󰕧|Stream"
-    [cinema]="150|80|80|-2|󰎁|Cinema"
-)
-# Canonical cycle sequence for bd-cycle next/prev. Kept explicit (not derived
-# from MODES) because associative-array key order is undefined and this order is
-# time/task-meaningful, not alphabetical.
+# Pipe-delimited string table (NOT an associative array): launchd runs these via
+# macOS stock /bin/bash 3.2, which has no `declare -A`. Add a mode = add a row.
+# Row: mode|dev_sw%|port_brightness%|port_contrast%|port_temp%|glyph|label
+MODES_TABLE='dawn|100|55|70|-2|󰖚|Dawn
+day|130|85|70|-1|󰖙|Day
+afternoon|110|70|75|-1|󰖕|Afternoon
+evening|80|55|70|-5|󰖔|Evening
+night|60|35|60|-10|󰖔|Night
+meeting|130|100|75|0|󰍫|Meeting
+read|100|70|70|-3|󰂺|Read
+stream|120|90|75|0|󰕧|Stream
+cinema|150|80|80|-2|󰎁|Cinema'
+
+# mode_row <mode> — echo the row with the key stripped ("dev|b|c|t|glyph|label"),
+# or empty if the mode is unknown. The trailing `|` anchor stops day/dawn-style
+# prefix collisions. Single source of truth for apply_mode + verify_mode.
+mode_row() {
+    local line
+    line="$(grep -m1 "^$1|" <<< "$MODES_TABLE")"
+    [[ -n "$line" ]] && printf '%s' "${line#*|}"
+}
+
+# Canonical cycle sequence for bd-cycle next/prev. Indexed array (3.2-safe);
+# explicit because the order is time/task-meaningful, not alphabetical.
 # shellcheck disable=SC2034  # consumed by bd-cycle.sh, which sources this file
 ORDER=(dawn day afternoon evening night meeting read stream cinema)
 
@@ -160,7 +170,7 @@ set_port() {
 
 apply_mode() {
     local mode="$1"
-    local row="${MODES[$mode]:-}"
+    local row; row="$(mode_row "$mode")"
     if [[ -z "$row" ]]; then
         echo "unknown mode: $mode" >&2; return 2
     fi
@@ -210,7 +220,7 @@ verify_mode() {
 
     # Intent comes from the same MODES table apply_mode() writes from — one
     # source of truth, so verify can no longer agree with a stale duplicate.
-    local row="${MODES[$mode]:-}"
+    local row; row="$(mode_row "$mode")"
     if [[ -z "$row" ]]; then
         echo "unknown mode: $mode" >&2; return 2
     fi
