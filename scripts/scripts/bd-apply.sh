@@ -28,6 +28,29 @@ STATE_FILE="$HOME/.cache/bd-state"
 LOG_FILE="/tmp/bd-apply.log"
 CLI="/opt/homebrew/bin/betterdisplaycli"
 
+# Single source of truth for every mode. apply_mode() AND verify_mode() both
+# read this table, so verify can no longer silently agree with a stale copy.
+# bd-cycle.sh sources this file for ORDER. Add a mode = add one row here.
+# Row format: dev_sw% | port_brightness% | port_contrast% | port_temp% | glyph | label
+# dev_sw% is softwareBrightness (may exceed 100 — EDR software upscale).
+DEV_PRESET='Apple XDR Display (P3-1600 nits)'
+declare -A MODES=(
+    [dawn]="100|55|70|-2|󰖚|Dawn"
+    [day]="130|85|70|-1|󰖙|Day"
+    [afternoon]="110|70|75|-1|󰖕|Afternoon"
+    [evening]="80|55|70|-5|󰖔|Evening"
+    [night]="60|35|60|-10|󰖔|Night"
+    [meeting]="130|100|75|0|󰍫|Meeting"
+    [read]="100|70|70|-3|󰂺|Read"
+    [stream]="120|90|75|0|󰕧|Stream"
+    [cinema]="150|80|80|-2|󰎁|Cinema"
+)
+# Canonical cycle sequence for bd-cycle next/prev. Kept explicit (not derived
+# from MODES) because associative-array key order is undefined and this order is
+# time/task-meaningful, not alphabetical.
+# shellcheck disable=SC2034  # consumed by bd-cycle.sh, which sources this file
+ORDER=(dawn day afternoon evening night meeting read stream cinema)
+
 mkdir -p "$(dirname "$STATE_FILE")"
 
 log() { printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >> "$LOG_FILE"; }
@@ -35,6 +58,33 @@ log() { printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >> "$LOG_FILE"; }
 bd() {
     [[ -x "$CLI" ]] || return 127
     "$CLI" "$@" 2>>"$LOG_FILE"
+}
+
+# set_dev_sw <brightness%> — write DEV softwareBrightness and confirm it landed
+# via readback, re-asserting on drift. softwareBrightness rides above hardware
+# (values > 1.0 are valid EDR upscale: 130% → 1.30), so compare against the
+# float, not a 0..1 clamp. The failure mode this guards: BD's async EDR-headroom
+# recalc overwriting sw with the headroom ceiling (~1.658) — only a readback
+# catches it. `betterdisplaycli set` exits 0 regardless, so the exit code lies.
+# Mirror of set_port_feature's discipline; the built-in lacked it.
+set_dev_sw() {
+    local pct="$1"
+    local exp cur attempt
+    exp="$(awk -v p="$pct" 'BEGIN{printf "%.2f", p/100}')"
+    for (( attempt=1; attempt<=3; attempt++ )); do
+        bd set --tagID="$DEV_TAG" --softwareBrightness="${pct}%" >/dev/null
+        sleep 0.5
+        cur="$(bd get --tagID="$DEV_TAG" --softwareBrightness 2>/dev/null)"
+        if [[ "$cur" =~ ^-?[0-9]*\.?[0-9]+$ ]] && \
+           awk -v a="$exp" -v b="$cur" 'BEGIN{d=a-b;if(d<0)d=-d;exit(d<=0.02)?0:1}'; then
+            log "DEV swBrightness=${pct}% (verified=$cur attempt=$attempt)"
+            return 0
+        fi
+        log "DEV swBrightness=${pct}% drift (want=$exp got=${cur:-?} attempt=$attempt) — re-assert"
+        sleep 0.5
+    done
+    log "WARN DEV swBrightness=${pct}% FAILED after 3 attempts (EDR recalc clobber?)"
+    return 1
 }
 
 # set_dev <brightness%> <xdrPreset>
@@ -45,13 +95,12 @@ bd() {
 # By short-circuiting unchanged values, the recalc never fires.
 set_dev() {
     local pct="$1" preset="$2"
-    local cur_preset cur_hw preset_changed=0
+    local cur_preset cur_hw
 
     cur_preset="$(bd get --tagID="$DEV_TAG" --xdrPreset 2>/dev/null || true)"
     if [[ "$cur_preset" != "$preset" ]]; then
         bd set --tagID="$DEV_TAG" --xdrPreset="$preset" >/dev/null && \
             log "DEV xdrPreset=$preset" || log "WARN DEV xdrPreset=$preset FAILED"
-        preset_changed=1
         # Recalc only happens on real preset change. Wait for it to settle
         # (1s observed sufficient; 0.3s was not) before overwriting sw.
         sleep 1.0
@@ -68,16 +117,11 @@ set_dev() {
         log "DEV hwBrightness=100% (unchanged, skip)"
     fi
 
-    bd set --tagID="$DEV_TAG" --softwareBrightness="${pct}%" >/dev/null && \
-        log "DEV swBrightness=${pct}%" || log "WARN DEV swBrightness=${pct}% FAILED"
-
-    # Belt-and-suspenders: if a recalc did fire (preset changed), re-assert sw
-    # after a second settle window to win any late-arriving auto-boost.
-    if (( preset_changed )); then
-        sleep 0.5
-        bd set --tagID="$DEV_TAG" --softwareBrightness="${pct}%" >/dev/null && \
-            log "DEV swBrightness=${pct}% (re-asserted)" || true
-    fi
+    # softwareBrightness is the EDR-sensitive value — close the loop (read back,
+    # re-assert on drift) instead of the prior fire-and-one-reassert open loop.
+    # The 1s settle above lets the recalc land before we write, so our value
+    # wins; set_dev_sw then guards against any late residual.
+    set_dev_sw "$pct"
 }
 
 # set_port_feature <feature> <pct> — write one DDC feature and confirm it
@@ -116,59 +160,19 @@ set_port() {
 
 apply_mode() {
     local mode="$1"
-    local glyph label
+    local row="${MODES[$mode]:-}"
+    if [[ -z "$row" ]]; then
+        echo "unknown mode: $mode" >&2; return 2
+    fi
 
-    case "$mode" in
-        # DEV-MAIN uses XDR P3-1600 by default for EDR headroom (brightness > 100%
-        # via software upscale on top of 100% hardware). sRGB preset reserved for
-        # color-accurate work (meeting / read / stream) where gamut accuracy beats nits.
-        dawn)
-            glyph='󰖚'; label='Dawn'
-            set_dev 100 'Apple XDR Display (P3-1600 nits)'
-            set_port 55 70 -2
-            ;;
-        day)
-            glyph='󰖙'; label='Day'
-            set_dev 130 'Apple XDR Display (P3-1600 nits)'
-            set_port 85 70 -1
-            ;;
-        afternoon)
-            glyph='󰖕'; label='Afternoon'
-            set_dev 110 'Apple XDR Display (P3-1600 nits)'
-            set_port 70 75 -1
-            ;;
-        evening)
-            glyph='󰖔'; label='Evening'
-            set_dev 80 'Apple XDR Display (P3-1600 nits)'
-            set_port 55 70 -5
-            ;;
-        night)
-            glyph='󰖔'; label='Night'
-            set_dev 60 'Apple XDR Display (P3-1600 nits)'
-            set_port 35 60 -10
-            ;;
-        meeting)
-            glyph='󰍫'; label='Meeting'
-            set_dev 130 'Apple XDR Display (P3-1600 nits)'
-            set_port 100 75 0
-            ;;
-        read)
-            glyph='󰂺'; label='Read'
-            set_dev 100 'Apple XDR Display (P3-1600 nits)'
-            set_port 70 70 -3
-            ;;
-        stream)
-            glyph='󰕧'; label='Stream'
-            set_dev 120 'Apple XDR Display (P3-1600 nits)'
-            set_port 90 75 0
-            ;;
-        cinema)
-            glyph='󰎁'; label='Cinema'
-            set_dev 150 'Apple XDR Display (P3-1600 nits)'
-            set_port 80 80 -2
-            ;;
-        *) echo "unknown mode: $mode" >&2; return 2 ;;
-    esac
+    local dev_pct port_b port_c port_t glyph label
+    IFS='|' read -r dev_pct port_b port_c port_t glyph label <<< "$row"
+
+    # DEV-MAIN uses XDR P3-1600 for EDR headroom (sw upscale on 100% hw) across
+    # all modes. DEV_PRESET is constant today — if meeting/read/stream should
+    # switch to sRGB for color accuracy, add a per-row preset field to MODES.
+    set_dev "$dev_pct" "$DEV_PRESET"
+    set_port "$port_b" "$port_c" "$port_t"
 
     local source="${BD_SOURCE:-manual}"
     local ts
@@ -204,22 +208,15 @@ verify_mode() {
     local mode
     mode="$(cut -d'|' -f1 "$STATE_FILE")"
 
-    # Intent table — mirror of apply_mode(). Kept inline to avoid factoring
-    # before T4.1 externalizes the whole table to TOML.
+    # Intent comes from the same MODES table apply_mode() writes from — one
+    # source of truth, so verify can no longer agree with a stale duplicate.
+    local row="${MODES[$mode]:-}"
+    if [[ -z "$row" ]]; then
+        echo "unknown mode: $mode" >&2; return 2
+    fi
     local dev_pct dev_preset port_b port_c port_t
-    case "$mode" in
-        dawn)      dev_pct=100; port_b=55;  port_c=70; port_t=-2  ;;
-        day)       dev_pct=130; port_b=85;  port_c=70; port_t=-1  ;;
-        afternoon) dev_pct=110; port_b=70;  port_c=75; port_t=-1  ;;
-        evening)   dev_pct=80;  port_b=55;  port_c=70; port_t=-5  ;;
-        night)     dev_pct=60;  port_b=35;  port_c=60; port_t=-10 ;;
-        meeting)   dev_pct=130; port_b=100; port_c=75; port_t=0   ;;
-        read)      dev_pct=100; port_b=70;  port_c=70; port_t=-3  ;;
-        stream)    dev_pct=120; port_b=90;  port_c=75; port_t=0   ;;
-        cinema)    dev_pct=150; port_b=80;  port_c=80; port_t=-2  ;;
-        *) echo "unknown mode: $mode" >&2; return 2 ;;
-    esac
-    dev_preset='Apple XDR Display (P3-1600 nits)'
+    IFS='|' read -r dev_pct port_b port_c port_t _ _ <<< "$row"
+    dev_preset="$DEV_PRESET"
 
     local cur_dev_sw cur_dev_preset cur_port_b cur_port_c cur_port_t
     cur_dev_sw="$(bd get --tagID="$DEV_TAG" --softwareBrightness 2>/dev/null || echo ?)"
@@ -288,4 +285,8 @@ main() {
     esac
 }
 
-main "$@"
+# Run main only when executed directly. bd-cycle.sh sources this file for the
+# MODES / ORDER tables and must not apply a mode as a side effect of sourcing.
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi

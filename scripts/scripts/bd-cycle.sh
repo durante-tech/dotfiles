@@ -10,7 +10,10 @@ STATE_FILE="$HOME/.cache/bd-state"
 APPLY="$HOME/dotfiles/scripts/scripts/bd-apply.sh"
 DIR="${1:-next}"
 
-ORDER=(dawn day afternoon evening night meeting read stream cinema)
+# Source bd-apply.sh for the canonical ORDER table (its source-guard prevents it
+# from applying a mode on source). Single source of truth for the cycle order.
+# shellcheck source=/dev/null
+source "$APPLY"
 N="${#ORDER[@]}"
 
 current=""
