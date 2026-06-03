@@ -25,6 +25,7 @@ set -u
 DEV_TAG="${DOTFILES_BD_DEV_TAG:-2}"          # DEV-MAIN (default: MacBook Pro 14" XDR)
 PORT_TAG="${DOTFILES_BD_PORT_TAG:-60}"       # PORTRAIT-MONITOR (default: Dell U2718Q, DDC)
 STATE_FILE="$HOME/.cache/bd-state"
+LOCK_DIR="$HOME/.cache/bd-apply.lock"
 LOG_FILE="/tmp/bd-apply.log"
 CLI="/opt/homebrew/bin/betterdisplaycli"
 
@@ -68,6 +69,29 @@ log() { printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >> "$LOG_FILE"; }
 bd() {
     [[ -x "$CLI" ]] || return 127
     "$CLI" "$@" 2>>"$LOG_FILE"
+}
+
+# acquire_lock — serialize concurrent apply_mode runs. The five launchd timers,
+# bd-lmu-watch, bd-wake (sleepwatcher), and a manual bd-cycle can fire near
+# simultaneously and would otherwise interleave DDC writes + STATE_FILE writes.
+# macOS ships no flock(1), so use an atomic mkdir mutex with PID-based stale-lock
+# reclaim. Blocks up to 30s, then proceeds rather than dropping the apply.
+acquire_lock() {
+    local waited=0 pid
+    while ! mkdir "$LOCK_DIR" 2>/dev/null; do
+        pid="$(cat "$LOCK_DIR/pid" 2>/dev/null || true)"
+        if [[ -n "$pid" ]] && ! kill -0 "$pid" 2>/dev/null; then
+            log "lock stale (pid=$pid gone) — reclaiming"
+            rm -rf "$LOCK_DIR"; continue
+        fi
+        if (( waited >= 30 )); then
+            log "WARN lock held ${waited}s by pid=${pid:-?} — proceeding without it"
+            return 0
+        fi
+        sleep 1; waited=$((waited + 1))
+    done
+    echo "$$" > "$LOCK_DIR/pid"
+    trap 'rm -rf "$LOCK_DIR"' EXIT
 }
 
 # set_dev_sw <brightness%> — write DEV softwareBrightness and confirm it landed
@@ -177,6 +201,9 @@ apply_mode() {
 
     local dev_pct port_b port_c port_t glyph label
     IFS='|' read -r dev_pct port_b port_c port_t glyph label <<< "$row"
+
+    # Serialize against other apply_mode invokers before touching displays.
+    acquire_lock
 
     # DEV-MAIN uses XDR P3-1600 for EDR headroom (sw upscale on 100% hw) across
     # all modes. DEV_PRESET is constant today — if meeting/read/stream should
