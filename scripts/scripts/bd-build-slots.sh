@@ -1,79 +1,56 @@
 #!/usr/bin/env bash
-# Build BetterDisplay favorite mode slots 2-5 for software development.
+# Build BetterDisplay favorite-mode slots from the live bd-apply.sh modes.
 #
-# Slot 1 is already saved as your daylight default — this script populates:
-#   2 = dev-night      (warm, dim, low ambient)
-#   3 = dev-meeting    (sRGB-accurate, bright, predictable color for video calls)
-#   4 = dev-read       (larger text, calmer brightness for long-form reading)
-#   5 = dev-stream     (sRGB-accurate, bright, STREAM-CAPTURE connected for OBS)
+# IMPORTANT: slot-load is broken on BetterDisplay 4.3.0 pre-release, so bd-apply.sh
+# sets display values DIRECTLY and does NOT use favoriteMode. This builder exists
+# only to keep the slots in sync for if/when BD fixes slot-load. Day to day,
+# switch modes with `bd-apply.sh <mode>` or `bd-cycle.sh` — NOT favoriteMode.
 #
-# Each slot save briefly switches DEV-MAIN and PORTRAIT-MONITOR into that mode.
-# The script returns to slot 1 at the end so you're back where you started.
+# Each slot is built by APPLYING the live mode through bd-apply.sh (the single
+# source of truth — the MODES_TABLE) and then saving the result as a favorite,
+# so a slot can never drift from its mode again. Slot -> mode:
+#   1 = day   2 = night   3 = meeting   4 = read   5 = stream
 #
-# Run interactively. Apps may re-layout during slot 4 (resolution change).
+# Reconciled 2026-06: previously this set its own divergent values (different
+# brightness, bGain, sRGB presets, per-mode resolution + STREAM-CAPTURE for OBS).
+# Those were not part of the live modes, so they are gone — if you want any of
+# them back, add them to bd-apply.sh's mode table, not here.
+#
+# Run interactively. Restores the day mode at the end.
 
-set -e
+set -u
 
 [ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
 
+APPLY="$HOME/dotfiles/scripts/scripts/bd-apply.sh"
 DEV="${DOTFILES_BD_DEV_TAG:-2}"          # DEV-MAIN tagID (default: MBP 14")
 PORT="${DOTFILES_BD_PORT_TAG:-60}"       # PORTRAIT-MONITOR tagID (default: Dell U2718Q)
-STREAM=163                                # STREAM-CAPTURE virtual screen tagID
 
-bd() { betterdisplaycli "$@" >/dev/null 2>&1 || true; }
+# Slot order — index i maps to favoriteMode slot (i+1).
+SLOTS=(day night meeting read stream)
 
-echo "BetterDisplay slot builder — populating 2 through 5."
-echo "Current state is preserved in slot 1; restoring at the end."
+save_slot() {   # <slot-number> — persist current display state to both monitors
+    betterdisplaycli set --tagID="$DEV"  --saveFavoriteMode="$1" >/dev/null 2>&1 || true
+    betterdisplaycli set --tagID="$PORT" --saveFavoriteMode="$1" >/dev/null 2>&1 || true
+}
+
+echo "BetterDisplay slot builder — replaying live bd-apply modes into slots 1-5."
+echo "NOTE: slot-load is broken on BD 4.3.0; this only keeps the slots in sync."
 echo
 read -r -p "Proceed? [y/N] " yn
 [[ "$yn" =~ ^[Yy]$ ]] || { echo "Aborted."; exit 0; }
 
-echo
-echo "[2/5] dev-night — warm, dim, evening coding"
-bd set --tagID=$DEV  --brightness=50%
-bd set --tagID=$PORT --hardwareBrightness=35%
-bd set --tagID=$PORT --temperature=-3%
-bd set --tagID=$PORT --bGain=-5%
-sleep 1
-bd set --tagID=$DEV  --saveFavoriteMode=2
-bd set --tagID=$PORT --saveFavoriteMode=2
-echo "    saved."
-
-echo "[3/5] dev-meeting — sRGB-accurate, bright, video-call ready"
-bd set --tagID=$PORT --temperature=0%
-bd set --tagID=$PORT --bGain=0%
-bd set --tagID=$PORT --hardwareBrightness=100%
-bd set --tagID=$DEV  --brightness=100%
-bd set --tagID=$DEV  --xdrPreset='Internet & Web (sRGB)'
-sleep 1
-bd set --tagID=$DEV  --saveFavoriteMode=3
-bd set --tagID=$PORT --saveFavoriteMode=3
-echo "    saved."
-
-echo "[4/5] dev-read — larger text, calmer brightness for long-form"
-bd set --tagID=$DEV  --resolution=1496x969 --refreshRate=ProMotion --hiDPI=on
-bd set --tagID=$DEV  --brightness=70%
-bd set --tagID=$DEV  --xdrPreset='Photography (P3-D65)'
-bd set --tagID=$PORT --hardwareBrightness=65%
-bd set --tagID=$PORT --temperature=-2%
-sleep 2
-bd set --tagID=$DEV  --saveFavoriteMode=4
-bd set --tagID=$PORT --saveFavoriteMode=4
-echo "    saved."
-
-echo "[5/5] dev-stream — sRGB-accurate for OBS, STREAM-CAPTURE connected"
-bd set --tagID=$DEV  --resolution=1728x1117 --refreshRate=ProMotion --hiDPI=on
-bd set --tagID=$DEV  --brightness=90%
-bd set --tagID=$DEV  --xdrPreset='Internet & Web (sRGB)'
-bd set --tagID=$PORT --hardwareBrightness=90%
-bd set --tagID=$PORT --temperature=0%
-sleep 1
-bd set --tagID=$DEV  --saveFavoriteMode=5
-bd set --tagID=$PORT --saveFavoriteMode=5
-echo "    saved."
+for i in "${!SLOTS[@]}"; do
+    slot=$((i + 1))
+    mode="${SLOTS[$i]}"
+    echo "[slot $slot] applying '$mode' then saving favorite..."
+    "$APPLY" "$mode"
+    sleep 1
+    save_slot "$slot"
+    echo "    saved."
+done
 
 echo
-echo "Restoring slot 1 (daylight default)..."
-bd set --tagID=$DEV  --favoriteMode=1
-bd set --tagID=$PORT --favoriteMode=1
-echo "Done. Use bd-day / bd-night / bd-meeting / bd-read / bd-stream to switch."
+echo "Restoring day mode..."
+"$APPLY" day
+echo "Done. Switch modes with bd-apply.sh <mode> or bd-cycle.sh (favoriteMode unused)."
