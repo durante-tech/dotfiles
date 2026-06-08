@@ -44,10 +44,8 @@ defaults write NSGlobalDomain KeyRepeat -int 2
 # Short delay until key repeat (15 = 225ms)
 defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
-# Keep press-and-hold ENABLED (macOS default) so hold-key accent popups work
-# for pt-BR (á é ã ç ...) on the US keyboard. Terminal key-repeat (vim j/k) is
-# unaffected — terminals receive raw key events regardless of this setting.
-defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool true
+# Disable press-and-hold for accents (so Esc + repeated j/k work for vim)
+defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
 
 # Full keyboard access — Tab moves focus through every dialog button, not just text inputs
 defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
