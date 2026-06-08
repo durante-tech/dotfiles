@@ -24,10 +24,7 @@ cursor-invert-fg-bg = true
 cursor-color = #ffff00
 
 macos-titlebar-style = hidden
-# Left Option = Alt/Meta (tmux M-1..5 layouts, FZF Alt+C, readline word-motion).
-# Right Option = macOS compose key for pt-BR accents (Opt+C -> ç, Opt+E e -> é,
-#   Opt+N a -> ã, Opt+` a -> à, Opt+I e -> ê).
-macos-option-as-alt = left
+macos-option-as-alt = true
 mouse-hide-while-typing = true
 
 confirm-close-surface = false
