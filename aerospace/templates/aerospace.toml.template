@@ -103,9 +103,11 @@ outer.bottom = [
   { monitor."@DOTFILES_MONITOR_EXTERNAL@" = 15 },
   15,
 ]
-# Per-monitor top gap. PORTRAIT needs extra clearance for sketchybar at its scale.
+# Per-monitor top gap. Sketchybar (height=28) self-reserves its strip, so this is
+# pure padding below the bar — not bar clearance. Built-in at 10 matches its 10px
+# side gaps (snug, balanced vs the 15px bottom); PORTRAIT keeps 50 for its scale.
 outer.top = [
-  { monitor."@DOTFILES_MONITOR_BUILTIN@" = 15 },
+  { monitor."@DOTFILES_MONITOR_BUILTIN@" = 10 },
   { monitor."@DOTFILES_MONITOR_EXTERNAL@" = 50 },
   15,
 ]
