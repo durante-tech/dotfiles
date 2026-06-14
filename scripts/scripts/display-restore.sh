@@ -5,15 +5,19 @@
 # Display reconfigurations silently wreck this layout: sleep/wake drops the
 # built-in to a wide scaled mode (so the OBS capture goes small + soft) and a
 # monitor or BetterDisplay virtual-screen connect/disconnect knocks PORTRAIT out
-# of its 90 rotation. This restores the known-good layout so the OBS capture
-# stays 1080p-sharp (built-in at "looks like 1728x1080", height == OBS canvas, a
-# clean 2:1 downscale) and the portrait panel stays upright.
+# of its 90 rotation. This restores the known-good layout so daily work stays
+# true-2x sharp (built-in "looks like 1728x1117", backing == native 3456x2234;
+# portrait "looks like 1080x1920", backing == native 2160x3840 — zero scaling)
+# and the portrait panel stays upright. The --stream profile swaps the built-in
+# to "looks like 1728x1080" so the OBS capture is a clean 2:1 downscale to a
+# 1080 canvas (height == OBS canvas) for the duration of a stream.
 #
 # Idempotent by default: only calls displayplacer when the live layout has
 # drifted from target, because a redundant apply can itself flicker / disturb the
 # window manager. --force applies unconditionally.
 #
-# Usage: display-restore.sh [--force | --dry-run]
+# Usage: display-restore.sh [--stream] [--force | --dry-run]
+#   --stream : built-in at 1728x1080 (OBS-clean 2:1). Default is 1728x1117 (sharp).
 #
 # Personal override (~/.config/dotfiles/personal.env): display UUIDs are
 # machine-specific, so override the WHOLE layout there as a newline-separated
@@ -28,10 +32,30 @@ DP="$(command -v displayplacer || echo /opt/homebrew/bin/displayplacer)"
 LOG="/tmp/display-restore.log"
 log() { printf '[%s] %s\n' "$(date '+%F %T')" "$*" >> "$LOG"; }
 
+# Profile: daily (default) drives the built-in at true integer-2x (1728x1117 →
+# backing == native 3456x2234, zero scaling, sharpest). --stream drops it to
+# 1728x1080 so the OBS screen capture is a clean 2:1 downscale to a 1080 canvas.
+# The portrait stays true-2x 1080x1920 (backing == native 2160x3840) on the
+# RIGHT in both profiles. Action flags (--force/--dry-run) compose with --stream.
+PROFILE=daily
+ACTION=""
+for a in "$@"; do
+  case "$a" in
+    --stream)          PROFILE=stream ;;
+    --force|--dry-run) ACTION="$a" ;;
+  esac
+done
+
+if [[ "$PROFILE" == stream ]]; then
+  BUILTIN_RES=1728x1080
+else
+  BUILTIN_RES=1728x1117
+fi
+
 # Maintainer default (this rig). Override via DOTFILES_DISPLAY_LAYOUT.
 DEFAULT_LAYOUT=(
-  'id:37D8832A-2D66-02CA-B9F7-8F30A301B230 res:1728x1080 hz:120 color_depth:8 enabled:true scaling:on origin:(0,0) degree:0'
-  'id:E3434867-5A33-48E9-8FAE-B8DC6CC682B6 res:2160x3840 hz:60 color_depth:8 enabled:true scaling:on origin:(-2160,0) degree:90'
+  "id:37D8832A-2D66-02CA-B9F7-8F30A301B230 res:$BUILTIN_RES hz:120 color_depth:8 enabled:true scaling:on origin:(0,0) degree:0"
+  'id:E3434867-5A33-48E9-8FAE-B8DC6CC682B6 res:1080x1920 hz:60 color_depth:8 enabled:true scaling:on origin:(1728,-402) degree:90'
 )
 
 if [[ -n "${DOTFILES_DISPLAY_LAYOUT:-}" ]]; then
@@ -42,7 +66,7 @@ fi
 
 [[ -x "$DP" ]] || { log "displayplacer not found at $DP"; exit 127; }
 
-[[ "${1:-}" == "--dry-run" ]] && { printf 'would apply:\n'; printf '  %s\n' "${args[@]}"; exit 0; }
+[[ "$ACTION" == "--dry-run" ]] && { printf 'would apply:\n'; printf '  %s\n' "${args[@]}"; exit 0; }
 
 # drifted — true if any target screen's live res|rotation differs from the target.
 drifted() {
@@ -57,7 +81,7 @@ drifted() {
   return 1
 }
 
-if drifted "${1:-}"; then
+if drifted "$ACTION"; then
   log "restoring canonical layout"
   if "$DP" "${args[@]}" >>"$LOG" 2>&1; then log "restored OK"; else log "WARN displayplacer failed"; fi
 else
