@@ -29,6 +29,14 @@ LOCK_DIR="$HOME/.cache/bd-apply.lock"
 LOG_FILE="/tmp/bd-apply.log"
 CLI="/opt/homebrew/bin/betterdisplaycli"
 
+# Samsung (PORT) is a COLOR-REFERENCE display (operator decision 2026-06-13):
+# pin its white point + contrast to neutral/native on EVERY mode so time-of-day
+# never warps color fidelity. Only brightness follows the mode ("color locked,
+# brightness adapts"). These override the port_contrast/port_temp MODES columns
+# for the Samsung; override per-rig via the env vars below.
+PORT_REF_CONTRAST="${DOTFILES_BD_PORT_REF_CONTRAST:-75}"  # Samsung native contrast (OSD default)
+PORT_REF_TEMP="${DOTFILES_BD_PORT_REF_TEMP:-0}"           # neutral white point (no DDC warm shift)
+
 # Single source of truth for every mode. apply_mode() AND verify_mode() both
 # read this table, so verify can no longer silently agree with a stale copy.
 # bd-cycle.sh sources this file for ORDER. Add a mode = add one row here.
@@ -185,11 +193,15 @@ set_port_feature() {
     return 1
 }
 
-# set_port <brightness%> <contrast%> <temperature%>
+# set_port <brightness%> [contrast% temp% — ignored] — Samsung is a color-
+# reference display: only brightness follows the mode; contrast + temperature
+# are pinned to the neutral PORT_REF_* values on every mode to preserve color
+# fidelity. The port_contrast/port_temp args are accepted (call-site stability)
+# but intentionally NOT applied to the Samsung.
 set_port() {
     set_port_feature hardwareBrightness "$1"
-    set_port_feature hardwareContrast  "$2"
-    set_port_feature temperature       "$3"
+    set_port_feature hardwareContrast  "$PORT_REF_CONTRAST"
+    set_port_feature temperature       "$PORT_REF_TEMP"
 }
 
 apply_mode() {
@@ -266,9 +278,11 @@ verify_mode() {
     # Convert intent percent → expected float for comparison.
     local exp_dev_sw exp_port_b exp_port_c exp_port_t
     exp_dev_sw="$(awk -v p="$dev_pct"  'BEGIN{printf "%.2f", p/100}')"
-    exp_port_b="$(awk -v p="$port_b"   'BEGIN{printf "%.2f", p/100}')"
-    exp_port_c="$(awk -v p="$port_c"   'BEGIN{printf "%.2f", p/100}')"
-    exp_port_t="$(awk -v p="$port_t"   'BEGIN{printf "%.2f", p/100}')"
+    # Samsung contrast + temperature are pinned to the color-reference values on
+    # every mode (not the per-mode columns), so verify against PORT_REF_*, not port_c/port_t.
+    exp_port_b="$(awk -v p="$port_b"           'BEGIN{printf "%.2f", p/100}')"
+    exp_port_c="$(awk -v p="$PORT_REF_CONTRAST" 'BEGIN{printf "%.2f", p/100}')"
+    exp_port_t="$(awk -v p="$PORT_REF_TEMP"     'BEGIN{printf "%.2f", p/100}')"
 
     # drift is accumulated in the parent scope here. The prior version set
     # `drift=1` inside a $(...) command substitution — a subshell — so the
