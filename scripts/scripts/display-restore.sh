@@ -4,11 +4,11 @@
 #
 # Display reconfigurations silently wreck this layout: sleep/wake drops the
 # built-in to a wide scaled mode (so the OBS capture goes small + soft) and a
-# monitor or BetterDisplay virtual-screen connect/disconnect knocks PORTRAIT out
-# of its 90 rotation. This restores the known-good layout so daily work stays
+# monitor or BetterDisplay virtual-screen connect/disconnect knocks the external
+# out of its rotation. This restores the known-good layout so daily work stays
 # true-2x sharp (built-in "looks like 1728x1117", backing == native 3456x2234;
-# portrait "looks like 1080x1920", backing == native 2160x3840 — zero scaling)
-# and the portrait panel stays upright. The --stream profile swaps the built-in
+# external "looks like 1920x1080" landscape, backing == native 3840x2160 — zero
+# scaling). The --stream profile swaps the built-in
 # to "looks like 1728x1080" so the OBS capture is a clean 2:1 downscale to a
 # 1080 canvas (height == OBS canvas) for the duration of a stream.
 #
@@ -35,8 +35,9 @@ log() { printf '[%s] %s\n' "$(date '+%F %T')" "$*" >> "$LOG"; }
 # Profile: daily (default) drives the built-in at true integer-2x (1728x1117 →
 # backing == native 3456x2234, zero scaling, sharpest). --stream drops it to
 # 1728x1080 so the OBS screen capture is a clean 2:1 downscale to a 1080 canvas.
-# The portrait stays true-2x 1080x1920 (backing == native 2160x3840) on the
-# RIGHT in both profiles. Action flags (--force/--dry-run) compose with --stream.
+# The external stays true-2x landscape 1920x1080 (backing == native 3840x2160)
+# centered ABOVE the built-in in both profiles. Action flags (--force/--dry-run)
+# compose with --stream.
 PROFILE=daily
 ACTION=""
 for a in "$@"; do
@@ -55,7 +56,7 @@ fi
 # Maintainer default (this rig). Override via DOTFILES_DISPLAY_LAYOUT.
 DEFAULT_LAYOUT=(
   "id:37D8832A-2D66-02CA-B9F7-8F30A301B230 res:$BUILTIN_RES hz:120 color_depth:8 enabled:true scaling:on origin:(0,0) degree:0"
-  'id:E3434867-5A33-48E9-8FAE-B8DC6CC682B6 res:1080x1920 hz:60 color_depth:8 enabled:true scaling:on origin:(1728,-402) degree:90'
+  'id:E3434867-5A33-48E9-8FAE-B8DC6CC682B6 res:1920x1080 hz:60 color_depth:8 enabled:true scaling:on origin:(-96,-1080) degree:0'
 )
 
 if [[ -n "${DOTFILES_DISPLAY_LAYOUT:-}" ]]; then
