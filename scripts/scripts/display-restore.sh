@@ -16,8 +16,10 @@
 # drifted from target, because a redundant apply can itself flicker / disturb the
 # window manager. --force applies unconditionally.
 #
-# Usage: display-restore.sh [--stream] [--force | --dry-run]
+# Usage: display-restore.sh [--stream | --hires] [--force | --dry-run]
 #   --stream : built-in at 1728x1080 (OBS-clean 2:1). Default is 1728x1117 (sharp).
+#   --hires  : Samsung external at 2560x1440 HiDPI (~78% more desktop area, stays
+#              retina-scaled). Default is 1920x1080 true integer-2x (sharpest).
 #
 # Personal override (~/.config/dotfiles/personal.env): display UUIDs are
 # machine-specific, so override the WHOLE layout there as a newline-separated
@@ -43,20 +45,35 @@ ACTION=""
 for a in "$@"; do
   case "$a" in
     --stream)          PROFILE=stream ;;
+    --hires)           PROFILE=hires ;;
     --force|--dry-run) ACTION="$a" ;;
   esac
 done
 
+# Built-in resolution per profile. --stream drops it to 1728x1080 for a clean OBS
+# 2:1 downscale; daily + hires keep the sharp true integer-2x 1728x1117.
 if [[ "$PROFILE" == stream ]]; then
   BUILTIN_RES=1728x1080
 else
   BUILTIN_RES=1728x1117
 fi
 
+# External Samsung 4K resolution + origin per profile. daily/stream run true
+# integer-2x (1920x1080 logical, backing == native 3840x2160 — sharpest). --hires
+# drives it at 2560x1440 HiDPI: ~78% more desktop area, still retina-scaled, with a
+# slight non-integer softness (5120x2880 supersampled down to the 3840x2160 panel).
+# Origin keeps the Samsung centered horizontally ABOVE the 1728-wide built-in and
+# stacked on top: left = 864 - extWidth/2 ; top = -extHeight.
+if [[ "$PROFILE" == hires ]]; then
+  EXT_RES=2560x1440; EXT_ORIGIN='(-416,-1440)'
+else
+  EXT_RES=1920x1080; EXT_ORIGIN='(-96,-1080)'
+fi
+
 # Maintainer default (this rig). Override via DOTFILES_DISPLAY_LAYOUT.
 DEFAULT_LAYOUT=(
   "id:37D8832A-2D66-02CA-B9F7-8F30A301B230 res:$BUILTIN_RES hz:120 color_depth:8 enabled:true scaling:on origin:(0,0) degree:0"
-  'id:E3434867-5A33-48E9-8FAE-B8DC6CC682B6 res:1920x1080 hz:60 color_depth:8 enabled:true scaling:on origin:(-96,-1080) degree:0'
+  "id:E3434867-5A33-48E9-8FAE-B8DC6CC682B6 res:$EXT_RES hz:60 color_depth:8 enabled:true scaling:on origin:$EXT_ORIGIN degree:0"
 )
 
 if [[ -n "${DOTFILES_DISPLAY_LAYOUT:-}" ]]; then
