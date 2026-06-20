@@ -16,10 +16,14 @@
 # drifted from target, because a redundant apply can itself flicker / disturb the
 # window manager. --force applies unconditionally.
 #
-# Usage: display-restore.sh [--stream | --hires] [--force | --dry-run]
-#   --stream : built-in at 1728x1080 (OBS-clean 2:1). Default is 1728x1117 (sharp).
-#   --hires  : Samsung external at 2560x1440 HiDPI (~78% more desktop area, stays
-#              retina-scaled). Default is 1920x1080 true integer-2x (sharpest).
+# Usage: display-restore.sh [--stream | --hires | --native | --portrait] [--force | --dry-run]
+#   --stream  : built-in at 1728x1080 (OBS-clean 2:1). Default is 1728x1117 (sharp).
+#   --hires   : Samsung external at 2560x1440 HiDPI (~78% more desktop area, stays
+#               retina-scaled). Default is 1920x1080 true integer-2x (sharpest).
+#   --native  : BOTH panels at 1x native (built-in 3456x2234, Samsung 3840x2160),
+#               scaling:off — pixel-perfect 1:1, zero scaling, but UI renders tiny.
+#   --portrait: Samsung rotated 90 to true-2x 1080x1920 portrait (backing 2160x3840
+#               == native — pixel-perfect, 1920px of crisp vertical space).
 #
 # Personal override (~/.config/dotfiles/personal.env): display UUIDs are
 # machine-specific, so override the WHOLE layout there as a newline-separated
@@ -46,13 +50,20 @@ for a in "$@"; do
   case "$a" in
     --stream)          PROFILE=stream ;;
     --hires)           PROFILE=hires ;;
+    --native)          PROFILE=native ;;
+    --portrait)        PROFILE=portrait ;;
     --force|--dry-run) ACTION="$a" ;;
   esac
 done
 
-# Built-in resolution per profile. --stream drops it to 1728x1080 for a clean OBS
-# 2:1 downscale; daily + hires keep the sharp true integer-2x 1728x1117.
-if [[ "$PROFILE" == stream ]]; then
+# Built-in resolution per profile. --native runs 1x native 3456x2234 (scaling:off,
+# pixel-perfect 1:1, UI renders tiny); --stream drops to 1728x1080 for a clean OBS
+# 2:1 downscale; daily + hires keep the sharp true integer-2x 1728x1117. SCALING is
+# shared by both panels: off only for --native, on otherwise.
+SCALING=on
+if [[ "$PROFILE" == native ]]; then
+  BUILTIN_RES=3456x2234; SCALING=off
+elif [[ "$PROFILE" == stream ]]; then
   BUILTIN_RES=1728x1080
 else
   BUILTIN_RES=1728x1117
@@ -62,18 +73,27 @@ fi
 # integer-2x (1920x1080 logical, backing == native 3840x2160 — sharpest). --hires
 # drives it at 2560x1440 HiDPI: ~78% more desktop area, still retina-scaled, with a
 # slight non-integer softness (5120x2880 supersampled down to the 3840x2160 panel).
-# Origin keeps the Samsung centered horizontally ABOVE the 1728-wide built-in and
-# stacked on top: left = 864 - extWidth/2 ; top = -extHeight.
-if [[ "$PROFILE" == hires ]]; then
+# --native runs 1x native 3840x2160 (scaling:off, pixel-perfect 1:1, UI tiny).
+# --portrait rotates the Samsung 90 to true-2x 1080x1920 (res:1920x1080 degree:90,
+# backing 2160x3840 == native — pixel-perfect, 1920px crisp vertical). EXT_DEGREE
+# carries the rotation (0 for every landscape profile, 90 for portrait).
+# Origin keeps the Samsung centered horizontally ABOVE the built-in and stacked on
+# top: left = builtinWidth/2 - extWidth/2 ; top = -extHeight.
+EXT_DEGREE=0
+if [[ "$PROFILE" == native ]]; then
+  EXT_RES=3840x2160; EXT_ORIGIN='(-192,-2160)'
+elif [[ "$PROFILE" == hires ]]; then
   EXT_RES=2560x1440; EXT_ORIGIN='(-416,-1440)'
+elif [[ "$PROFILE" == portrait ]]; then
+  EXT_RES=1920x1080; EXT_ORIGIN='(324,-1920)'; EXT_DEGREE=90
 else
   EXT_RES=1920x1080; EXT_ORIGIN='(-96,-1080)'
 fi
 
 # Maintainer default (this rig). Override via DOTFILES_DISPLAY_LAYOUT.
 DEFAULT_LAYOUT=(
-  "id:37D8832A-2D66-02CA-B9F7-8F30A301B230 res:$BUILTIN_RES hz:120 color_depth:8 enabled:true scaling:on origin:(0,0) degree:0"
-  "id:E3434867-5A33-48E9-8FAE-B8DC6CC682B6 res:$EXT_RES hz:60 color_depth:8 enabled:true scaling:on origin:$EXT_ORIGIN degree:0"
+  "id:37D8832A-2D66-02CA-B9F7-8F30A301B230 res:$BUILTIN_RES hz:120 color_depth:8 enabled:true scaling:$SCALING origin:(0,0) degree:0"
+  "id:E3434867-5A33-48E9-8FAE-B8DC6CC682B6 res:$EXT_RES hz:60 color_depth:8 enabled:true scaling:$SCALING origin:$EXT_ORIGIN degree:$EXT_DEGREE"
 )
 
 if [[ -n "${DOTFILES_DISPLAY_LAYOUT:-}" ]]; then
