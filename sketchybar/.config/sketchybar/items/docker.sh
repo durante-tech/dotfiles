@@ -1,5 +1,9 @@
 #!/bin/bash
 
+source "$CONFIG_DIR/colors.sh"
+
+# Left-click opens the Docker Desktop dashboard; right-click / shift-click opens
+# a popup listing running containers (rebuilt on each open, mic/volume-style).
 docker=(
   script="$PLUGIN_DIR/docker.sh"
   icon="󰡨"
@@ -9,7 +13,14 @@ docker=(
   padding_left=5
   update_freq=30
   updates=on
-  click_script="open -a 'Docker Desktop' && sleep 0.3 && open docker-desktop://dashboard/containers"
+  click_script="$PLUGIN_DIR/docker_click.sh"
+  popup.background.color="$POPUP_BACKGROUND_COLOR"
+  popup.background.border_color="$POPUP_BORDER_COLOR"
+  popup.background.border_width=2
+  popup.background.corner_radius=6
+  popup.horizontal=off
+  popup.align=left
+  popup.y_offset=5
 )
 
 sketchybar --add item docker left \
