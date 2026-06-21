@@ -138,3 +138,10 @@ if drifted "$ACTION"; then
 else
   log "layout already canonical — no-op"
 fi
+
+# Re-pin the Übersicht dashboard to the external monitor in case this layout change
+# drifted its NSScreenNumber (Übersicht keys selected-screens on it; it is not
+# stable). Best-effort + backgrounded so it never blocks the layout apply; the sync
+# is a cheap no-op unless the number actually changed.
+SYNC="$HOME/dotfiles/scripts/scripts/ubersicht-screen-sync.sh"
+[[ -x "$SYNC" ]] && "$SYNC" >/dev/null 2>&1 &
