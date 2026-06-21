@@ -1028,3 +1028,13 @@ chmod +x ~/scripts/*
 - Main branch: `main`
 - Installation guide: `README_NEW_MACOS.md`
 - Install script: `install.sh`
+
+## Sentinel Conventions
+<!-- Auto-generated body lives in docs/Sentinel/SNAPSHOT.md. Next sentinel scan writes there, not back into this section. -->
+
+- **Stack:** macOS-only dotfiles deployed via GNU Stow across ~22 packages; polyglot — Zsh/Bash (config + automation), Lua (Neovim/lazy.nvim), TOML (AeroSpace/Starship), plus Bun-run TypeScript scripts and an Astro/React docs site under `site/`.
+- **Test:** `# no automated suite — verify manually`. **Lint:** `# CI: .github/workflows/lint.yml`.
+- **Health:** 100% (18 healthy / 18 conventions, 4 debt indicators) — last scan 2026-06-18.
+- **Enforced patterns:** kebab-case script names; `snake_case()` shell functions; `DOTFILES_`-prefixed override vars; `set -e`/`set -u` after shebang; `#!/usr/bin/env bash` (`#!/bin/bash` for launchd/bash-3.2 scripts); `#!/usr/bin/env bun` for TS scripts; `command -v <tool> && eval` guards in `.zshrc`; one-file-per-plugin `return { ... }` Neovim specs; `personal.env` existence-guarded sourcing.
+- **Full snapshot** (Tech Stack, Architecture, Conventions, Key Decisions, Setup, Health, open debt): [`docs/Sentinel/SNAPSHOT.md`](docs/Sentinel/SNAPSHOT.md).
+- **Architecture artifacts:** `docs/Sentinel/MODULE-MAP.md`, `C4-CONTEXT.md`, `C4-CONTAINER.md`, `ADRS.md`, `TECH-DEBT.md`.

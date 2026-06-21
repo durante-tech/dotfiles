@@ -41,6 +41,13 @@ aerospace/.config/aerospace/aerospace.toml
 # DuranteOS internal state
 .dos/
 
+# Karabiner-Elements auto-generated config backups (machine-local, timestamped)
+karabiner/.config/karabiner/automatic_backups/
+
+# Sentinel scan scratch (scan-report.json, conventions.json, health.json).
+# Curated artifacts live in docs/Sentinel/ and are tracked; .sentinel/ is machine-local.
+.sentinel/
+
 # Memory palace runtime state
 .mempalace/
 
