@@ -1,10 +1,18 @@
 #!/usr/bin/env bash
 # bd-apply.sh — BetterDisplay mode-switching entrypoint.
 #
-# Sets display parameters DIRECTLY rather than via --favoriteMode slot loads,
-# because the slot-load mechanism is broken on BetterDisplay 4.3.0 pre-release
-# (see bd-build-slots.sh + memory notes). This is the bulletproof path until
-# the channel is reverted (Tier 1.2).
+# Sets display parameters DIRECTLY rather than via --favoriteMode slot loads.
+# This is NOT a temporary workaround pending a favoriteMode migration — the
+# direct-set path is the deliberately-preferred mechanism: it adds per-feature
+# readback verification (set_port_feature's DDC reinit + 3x retry against a
+# sleeping external; set_dev_sw's guard on BD's async EDR-headroom clobber).
+# favoriteMode is a single set that exits 0 even on a silent DDC no-op, with no
+# closed-loop verify — re-adopting it would re-introduce "mode lost while monitor
+# asleep". favoriteMode slots are kept only as a manual recovery fallback
+# (bd-build-slots.sh). Version note: the running app is 4.4.0 (build 51969, via
+# Sparkle), though the Homebrew cask metadata is pinned at 4.1.1 — `betterdisplaycli
+# version` currently hangs (launches a 2nd app instance), so the skew is cosmetic
+# but worth tracking. The 4.3.0-era slot-load breakage was never re-verified on 4.4.0.
 #
 # Usage:
 #   bd-apply.sh <mode>
@@ -72,7 +80,12 @@ ORDER=(dawn day afternoon evening night meeting read stream cinema)
 
 mkdir -p "$(dirname "$STATE_FILE")"
 
-log() { printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >> "$LOG_FILE"; }
+# In-place truncate at 1MB (never mv/gzip — that swaps the inode and breaks any
+# running `>>` redirect or launchd StandardOutPath fd pointed at this file).
+log() {
+  [ -f "$LOG_FILE" ] && [ "$(wc -c <"$LOG_FILE" 2>/dev/null || echo 0)" -gt 1048576 ] && : > "$LOG_FILE"
+  printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >> "$LOG_FILE"
+}
 
 bd() {
     [[ -x "$CLI" ]] || return 127
@@ -309,6 +322,17 @@ verify_mode() {
     st=ok; diff_ok "$exp_port_t" "$cur_port_t" >/dev/null || { st=DRIFT; drift=1; }
     printf '  %-22s expect=%-8s actual=%-8s %s\n' "PORT temperature" \
         "$exp_port_t" "$cur_port_t" "$st"
+
+    # EDR headroom diagnostic (read-only, informational — NOT a pass/fail check).
+    # When 'Headroom' == 'Max Headroom' the built-in sits at its EDR ceiling, which
+    # is the state where BD's async recalc can clobber softwareBrightness (the
+    # failure set_dev_sw guards). Surfaced here to correlate a DEV sw drift above
+    # with headroom-at-ceiling; no heuristic is asserted.
+    local edr
+    edr="$(bd get --tagID="$DEV_TAG" --appleBrightnessReport 2>/dev/null \
+        | grep -E 'EDR State / (Headroom|Max Headroom|Available Headroom|Requested Headroom):' \
+        | sed -E 's#.*/ ([A-Za-z ]+): *#\1=#' | tr '\n' ' ')"
+    [[ -n "$edr" ]] && printf '  %-22s %s\n' "DEV EDR (info)" "$edr"
 
     (( drift == 0 )) && echo $'\nall values match intent.' && return 0
     echo $'\ndrift detected — re-apply or investigate.' >&2

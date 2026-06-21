@@ -16,7 +16,8 @@
 # drifted from target, because a redundant apply can itself flicker / disturb the
 # window manager. --force applies unconditionally.
 #
-# Usage: display-restore.sh [--stream | --hires | --native | --portrait] [--force | --dry-run]
+# Usage: display-restore.sh [--daily | --stream | --hires | --native | --portrait] [--force | --dry-run]
+#   --daily   : explicit alias for the default (built-in 1728x1117 + Samsung 1920x1080).
 #   --stream  : built-in at 1728x1080 (OBS-clean 2:1). Default is 1728x1117 (sharp).
 #   --hires   : Samsung external at 2560x1440 HiDPI (~78% more desktop area, stays
 #               retina-scaled). Default is 1920x1080 true integer-2x (sharpest).
@@ -36,7 +37,12 @@ set -u
 
 DP="$(command -v displayplacer || echo /opt/homebrew/bin/displayplacer)"
 LOG="/tmp/display-restore.log"
-log() { printf '[%s] %s\n' "$(date '+%F %T')" "$*" >> "$LOG"; }
+# In-place truncate at 1MB (never mv/gzip — that swaps the inode and breaks any
+# running `>>` redirect or launchd StandardOutPath fd pointed at this file).
+log() {
+  [ -f "$LOG" ] && [ "$(wc -c <"$LOG" 2>/dev/null || echo 0)" -gt 1048576 ] && : > "$LOG"
+  printf '[%s] %s\n' "$(date '+%F %T')" "$*" >> "$LOG"
+}
 
 # Profile: daily (default) drives the built-in at true integer-2x (1728x1117 →
 # backing == native 3456x2234, zero scaling, sharpest). --stream drops it to
@@ -48,6 +54,7 @@ PROFILE=daily
 ACTION=""
 for a in "$@"; do
   case "$a" in
+    --daily)           PROFILE=daily ;;
     --stream)          PROFILE=stream ;;
     --hires)           PROFILE=hires ;;
     --native)          PROFILE=native ;;
@@ -105,6 +112,12 @@ fi
 [[ -x "$DP" ]] || { log "displayplacer not found at $DP"; exit 127; }
 
 [[ "$ACTION" == "--dry-run" ]] && { printf 'would apply:\n'; printf '  %s\n' "${args[@]}"; exit 0; }
+
+# Persist the active profile so bd-wake.sh re-applies it on wake. Without this,
+# sleep/wake silently reverts to daily, losing --portrait/--stream/--hires/--native.
+# Real applies only (dry-run exits above). Best-effort — never block the apply.
+mkdir -p "$HOME/.cache" 2>/dev/null || true
+printf '%s\n' "$PROFILE" > "$HOME/.cache/bd-profile" 2>/dev/null || true
 
 # drifted — true if any target screen's live res|rotation differs from the target.
 drifted() {
