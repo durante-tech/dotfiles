@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 # bd-lmu-watch.sh — ambient-light bridge.
 #
-# BetterDisplay reports the MacBook ambient sensor unavailable (likely Screen
-# Recording permission gap on pre-release channel). Bridge via IORegistry:
-# AppleLMUController exposes "brightness" as a hex value.
+# Primary ambient source is BetterDisplay's own `get --ambientLight` (the ONLY
+# working ambient surface on this Apple Silicon Mac — verified 2026-06-20: every
+# ioreg ALS class is empty here, including the legacy Intel-era AppleLMUController
+# and the AppleSPUALS* family). The earlier "Screen Recording permission gap"
+# theory was wrong: ioreg is not TCC-gated; the sensor simply isn't exposed via
+# IORegistry on this hardware. The ioreg ladder is retained only as a best-effort
+# fallback for other rigs. See [[display-color-refresh-already-optimal]].
 #
 # Polls every 60s, buckets into 4 ambient levels with hysteresis (±15%),
 # triggers bd-apply.sh on bucket TRANSITION only (not every read).
@@ -38,18 +42,27 @@ POLL_S=60
 THRESHOLDS=(50 200 600)
 HYST_FRAC=0.15
 
-log() { printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >> "$LOG_FILE"; }
+# In-place truncate at 1MB (never mv/gzip — that swaps the inode and breaks any
+# running `>>` redirect). The launchd-captured StandardOut stream is a separate
+# fd this guard can't reach; this only bounds the script's own LOG_FILE.
+log() {
+  [ -f "$LOG_FILE" ] && [ "$(wc -c <"$LOG_FILE" 2>/dev/null || echo 0)" -gt 1048576 ] && : > "$LOG_FILE"
+  printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >> "$LOG_FILE"
+}
 
-# Try multiple IOReg classes — Apple silicon and Intel macs expose ambient via
-# different keys. AppleLMUController is the legacy/Intel path; on M-series the
-# sensor surface moved to AppleSMC or AOPSensorHub on some channels.
+# read_lmu — PRIMARY: BetterDisplay `get --ambientLight` (global flag, returns a
+# lux-like float; the only live source on this Apple Silicon rig). FALLBACK: the
+# ioreg ladder (AppleLMUController = legacy/Intel; AppleSMC) for other hardware —
+# both empty here, harmless to try. Returns -1 if no source yields a number.
 read_lmu() {
     local raw
+    raw="$("$CLI" get --ambientLight 2>/dev/null)"
+    [[ "$raw" =~ ^-?[0-9]*\.?[0-9]+$ ]] && { echo "$raw"; return; }
     raw="$(ioreg -r -c AppleLMUController 2>/dev/null | awk '/"brightness"/ {gsub(/[^0-9.]/,"",$NF); print $NF; exit}')"
     if [[ -z "$raw" ]]; then
         raw="$(ioreg -r -c AppleSMC 2>/dev/null | awk '/"ambient[Bb]rightness"/ {gsub(/[^0-9.]/,"",$NF); print $NF; exit}')"
     fi
-    [[ -z "$raw" ]] && { echo -1; return; }
+    [[ "$raw" =~ ^-?[0-9]*\.?[0-9]+$ ]] || { echo -1; return; }
     echo "$raw"
 }
 
@@ -118,6 +131,8 @@ last_port_awake=1
 
 log "bd-lmu-watch started, poll=${POLL_S}s, last_bucket=$last_bucket"
 sensor_missing_warned=0
+sensor_missing_count=0
+SENSOR_ALERT_AFTER=5   # consecutive misses (~5min at 60s poll) before user-visible alert
 
 while true; do
     # Wake handler — when the portrait monitor recovers from display sleep,
@@ -141,9 +156,16 @@ while true; do
 
     lux="$(read_lmu)"
     if [[ "$lux" == "-1" ]]; then
+        sensor_missing_count=$((sensor_missing_count + 1))
         if (( sensor_missing_warned == 0 )); then
-            log "WARN ambient sensor unavailable (AppleLMUController + AppleSMC both empty). Check Screen Recording permission for launchd, or sensor key may have moved on this hardware."
+            log "WARN ambient sensor unavailable (betterdisplaycli --ambientLight + ioreg ladder all empty). Auto mode-switching is paused until it returns."
             sensor_missing_warned=1
+        fi
+        # The dead sensor went unnoticed from 2026-06-19 because the failure was
+        # log-only. Surface it on the bd_mode sketchybar item after ~5min so it
+        # can't silently rot again. Fires once at the threshold, not every poll.
+        if (( sensor_missing_count == SENSOR_ALERT_AFTER )) && command -v sketchybar >/dev/null 2>&1; then
+            sketchybar --set bd_mode label="ambient sensor down" label.color=0xfff38ba8 2>/dev/null || true
         fi
         printf 'unavailable|-1|%s\n' "$(date -u +%FT%TZ)" > "$BUCKET_FILE"
         sleep "$POLL_S"
@@ -152,7 +174,10 @@ while true; do
     if (( sensor_missing_warned == 1 )); then
         log "ambient sensor came back: lux=$lux"
         sensor_missing_warned=0
+        # Clear the alert — re-render bd_mode from the live state file.
+        command -v sketchybar >/dev/null 2>&1 && sketchybar --trigger bd_mode_changed 2>/dev/null || true
     fi
+    sensor_missing_count=0
     bucket="$(raw_to_bucket "$lux" "$last_bucket")"
     printf '%s|%s|%s\n' "$bucket" "$lux" "$(date -u +%FT%TZ)" > "$BUCKET_FILE"
     if [[ "$bucket" != "$last_bucket" ]]; then

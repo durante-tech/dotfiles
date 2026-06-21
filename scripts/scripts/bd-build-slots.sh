@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 # Build BetterDisplay favorite-mode slots from the live bd-apply.sh modes.
 #
-# IMPORTANT: slot-load is broken on BetterDisplay 4.3.0 pre-release, so bd-apply.sh
-# sets display values DIRECTLY and does NOT use favoriteMode. This builder exists
-# only to keep the slots in sync for if/when BD fixes slot-load. Day to day,
-# switch modes with `bd-apply.sh <mode>` or `bd-cycle.sh` — NOT favoriteMode.
+# IMPORTANT: bd-apply.sh sets display values DIRECTLY and does NOT use favoriteMode
+# — by design, not as a stopgap. The direct path closes the loop with readback +
+# retry (see bd-apply.sh header); favoriteMode is a single fire-and-forget set with
+# no verification, so it silently loses a mode written while the external monitor
+# sleeps. These slots are therefore a MANUAL RECOVERY FALLBACK only, kept in sync
+# in case they're ever needed by hand — NOT a migration target. Day to day, switch
+# modes with `bd-apply.sh <mode>` or `bd-cycle.sh`. Version note: app is 4.4.0
+# (build 51969, Sparkle); the Homebrew cask metadata still reads 4.1.1. The
+# 4.3.0-era slot-load breakage has not been re-verified on 4.4.0.
 #
 # Each slot is built by APPLYING the live mode through bd-apply.sh (the single
 # source of truth — the MODES_TABLE) and then saving the result as a favorite,
@@ -35,7 +40,8 @@ save_slot() {   # <slot-number> — persist current display state to both monito
 }
 
 echo "BetterDisplay slot builder — replaying live bd-apply modes into slots 1-5."
-echo "NOTE: slot-load is broken on BD 4.3.0; this only keeps the slots in sync."
+echo "NOTE: favoriteMode is a manual recovery fallback only; bd-apply.sh's direct"
+echo "      readback-verified path is the production switch. This keeps slots in sync."
 echo
 read -r -p "Proceed? [y/N] " yn
 [[ "$yn" =~ ^[Yy]$ ]] || { echo "Aborted."; exit 0; }
