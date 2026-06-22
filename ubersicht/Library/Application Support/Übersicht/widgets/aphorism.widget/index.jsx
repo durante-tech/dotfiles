@@ -7,9 +7,8 @@ export const command = `awk 'BEGIN{srand()} NF{a[++n]=$0} END{if(n) print a[int(
 export const refreshFrequency = 30 * 60 * 1000
 
 export const className = `
-  bottom: 60px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 760px;
+  right: 60px;
   max-width: 540px;
   font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', 'Hack Nerd Font', monospace;
   background: rgba(17, 17, 27, 0.55);

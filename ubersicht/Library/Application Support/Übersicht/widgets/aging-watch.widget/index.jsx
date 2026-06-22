@@ -12,8 +12,8 @@ export const refreshFrequency = 120 * 1000 // 2 min — work.json updates freque
 
 export const className = `
   box-sizing: border-box;
-  top: 1162px;
-  right: 60px;
+  top: 800px;
+  left: 60px;
   width: 400px;
   font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', 'Hack Nerd Font', monospace;
   background: rgba(17, 17, 27, 0.6);
