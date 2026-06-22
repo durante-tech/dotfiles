@@ -216,6 +216,11 @@ const ICONS: IconDef[] = [
   { key: "screen-read",      title: "READ",      idle: { centerText: "Rd",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Rd",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
   { key: "screen-stream",    title: "STREAM",    idle: { centerText: "St",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "St",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
   { key: "screen-cinema",    title: "CINEMA",    idle: { centerText: "Cn",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Cn",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
+  // ── Layout profiles (display-restore.sh --<profile>: resolution/rotation/origin, via Raycast) ──
+  { key: "layout-daily",     title: "DAILY",     idle: { centerText: "Dl",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Dl",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
+  { key: "layout-hires",     title: "HI-RES",    idle: { centerText: "Hi",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Hi",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
+  { key: "layout-native",    title: "NATIVE",    idle: { centerText: "1x",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "1x",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
+  { key: "layout-portrait",  title: "PORTRAIT",  idle: { centerText: "Pt",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Pt",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
   { key: "folder-screens",   title: "SCREENS",   idle: { centerText: "scr", italic: true, color: TOKENS.primary, centerSize: 42 }, active: { centerText: "scr", italic: true, color: TOKENS.primary, centerSize: 42 } },
 ];
 
@@ -597,9 +602,12 @@ const devManifest = {
 // 7. Folder buttons removed — Stream Deck strips them on import. Pages plugin
 // (Prev/Next) replaces them. No UUID wiring needed for landing row 2.
 
-// 7a. Build the SCREENS folder — BetterDisplay mode switching via Raycast.
-// Requires bd-{dawn,day,afternoon,evening,night,meeting,read,stream,cinema}.sh
-// in ~/Durante/scripts/raycast/ to be enabled in Raycast → Script Commands.
+// 7a. Build the SCREENS folder — BetterDisplay brightness modes + display-restore
+// layout profiles, both switched via Raycast script-commands.
+// Requires bd-{dawn,day,afternoon,evening,night,meeting,read,stream,cinema}.sh AND
+// display-{daily,hires,native,portrait}.sh enabled in Raycast → Script Commands.
+// The display-* wrappers live in ~/dotfiles/raycast/script-commands/ and are
+// symlinked into ~/Durante/scripts/raycast/ (Raycast's indexed dir).
 const screensUUID = uuid();
 const screensDir = join(subProfilesDir, screensUUID.toUpperCase());
 mkdirSync(screensDir, { recursive: true });
@@ -618,14 +626,18 @@ const screensManifest = {
       "1,1": actionOpenURL("raycast://script-commands/bd-read",      SC["screen-read"]),
       "2,1": actionOpenURL("raycast://script-commands/bd-stream",    SC["screen-stream"]),
       "3,1": actionOpenURL("raycast://script-commands/bd-cinema",    SC["screen-cinema"]),
-      // Row 2 — page nav (Prev / Next)
+      "4,1": actionOpenURL("raycast://script-commands/display-daily", SC["layout-daily"]),
+      // Row 2 — layout profiles (display-restore.sh) flanked by page nav (Prev / Next)
       "0,2": actionPrevPage(SC["page-prev"]),
+      "1,2": actionOpenURL("raycast://script-commands/display-hires",    SC["layout-hires"]),
+      "2,2": actionOpenURL("raycast://script-commands/display-native",   SC["layout-native"]),
+      "3,2": actionOpenURL("raycast://script-commands/display-portrait", SC["layout-portrait"]),
       "4,2": actionNextPage(SC["page-next"]),
     },
     Type: "Keypad",
   }],
   Icon: "",
-  Name: "Screens · Display Modes",
+  Name: "Screens · Modes + Layouts",
 };
 // (screensUUID wiring also removed — folder buttons replaced by Page nav.)
 
