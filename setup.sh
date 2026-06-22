@@ -211,6 +211,9 @@ configure_environment() {
 
     # Render LaunchAgent plists from templates and bootstrap them.
     render_launchagents
+
+    # Symlink dotfiles-tracked Raycast script-commands into the indexed dir.
+    link_raycast_commands
 }
 
 # ============================================================================
@@ -259,6 +262,45 @@ render_launchagents() {
         print_info "No .plist.template files found"
     else
         print_success "Rendered $rendered LaunchAgent plist(s)"
+    fi
+}
+
+# ============================================================================
+# Raycast Script-Command Symlinks
+# ============================================================================
+#
+# The Stream Deck SCREENS folder fires Raycast script-commands (display-* layout
+# profiles + bd-* brightness modes). Raycast only indexes scripts in directories
+# registered in its Script Commands settings. The display-* wrappers are tracked
+# in dotfiles (raycast/script-commands/); this symlinks them into the Raycast
+# indexed dir so they resolve without copying. Override the target with
+# DOTFILES_RAYCAST_DIR (default: ~/Durante/scripts/raycast).
+
+link_raycast_commands() {
+    print_header "Linking Raycast Script Commands"
+
+    local SRC_DIR="$DOTFILES_DIR/raycast/script-commands"
+    local RAYCAST_DIR="${DOTFILES_RAYCAST_DIR:-$HOME/Durante/scripts/raycast}"
+
+    if [[ ! -d "$SRC_DIR" ]]; then
+        print_info "No raycast/script-commands/ directory — skipping"
+        return 0
+    fi
+
+    mkdir -p "$RAYCAST_DIR"
+
+    local linked=0
+    for src in "$SRC_DIR"/*.sh; do
+        [[ -f "$src" ]] || continue
+        ln -sf "$src" "$RAYCAST_DIR/$(basename "$src")"
+        linked=$((linked + 1))
+    done
+
+    if [[ $linked -eq 0 ]]; then
+        print_info "No raycast script-commands found"
+    else
+        print_success "Linked $linked Raycast script-command(s) into $RAYCAST_DIR"
+        print_info "Enable in Raycast → Extensions → Script Commands (add $RAYCAST_DIR if needed)"
     fi
 }
 
