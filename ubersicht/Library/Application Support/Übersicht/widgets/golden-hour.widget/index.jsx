@@ -59,8 +59,8 @@ const SEGMENT_STYLE = {
 }
 
 export const className = `
-  top: 220px;
-  left: 60px;
+  top: 90px;
+  right: 290px;
   width: 120px;
   height: 120px;
   user-select: none;

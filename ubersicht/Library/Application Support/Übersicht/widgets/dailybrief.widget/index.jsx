@@ -66,7 +66,7 @@ const LINE_CHAR_BUDGET      = 96   // word-truncate target
 
 export const className = `
   box-sizing: border-box;
-  top: 220px;
+  bottom: 60px;
   left: 60px;
   width: 380px;
   font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', 'Hack Nerd Font', monospace;

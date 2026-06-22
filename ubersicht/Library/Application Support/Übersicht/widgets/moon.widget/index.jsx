@@ -18,8 +18,8 @@ const PHASES = [
 ]
 
 export const className = `
-  top: 80px;
-  left: 60px;
+  top: 70px;
+  right: 60px;
   font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', 'Hack Nerd Font', monospace;
   text-align: center;
   color: #cdd6f4;

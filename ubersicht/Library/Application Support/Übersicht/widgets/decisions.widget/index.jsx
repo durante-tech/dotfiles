@@ -12,8 +12,8 @@ export const refreshFrequency = 600 * 1000 // 10 min — decisions accrue slowly
 
 export const className = `
   box-sizing: border-box;
-  top: 355px;
-  right: 60px;
+  bottom: 60px;
+  left: 560px;
   width: 540px;
   font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', 'Hack Nerd Font', monospace;
   background: rgba(17, 17, 27, 0.6);

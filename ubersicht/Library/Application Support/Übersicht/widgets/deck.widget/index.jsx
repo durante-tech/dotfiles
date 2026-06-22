@@ -5,9 +5,8 @@ export const command = `bash "$HOME/Library/Application Support/Übersicht/widge
 export const refreshFrequency = 60 * 1000
 
 export const className = `
-  top: 50%;
-  right: 60px;
-  transform: translateY(-50%);
+  bottom: 60px;
+  left: 1160px;
   width: 540px;
   font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', 'Hack Nerd Font', monospace;
   background: rgba(17, 17, 27, 0.6);

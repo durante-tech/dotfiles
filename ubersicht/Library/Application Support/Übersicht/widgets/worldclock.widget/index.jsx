@@ -11,7 +11,7 @@ const CITIES = [
 ]
 
 export const className = `
-  bottom: 60px;
+  top: 580px;
   right: 60px;
   font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', 'Hack Nerd Font', monospace;
   background: rgba(17, 17, 27, 0.55);

@@ -23,9 +23,8 @@ const MIN_H    = 12
 const BASELINE_Y = 78
 
 export const className = `
-  bottom: 170px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 600px;
+  left: 60px;
   width: ${W_TOTAL}px;
   height: ${H_TOTAL}px;
   user-select: none;

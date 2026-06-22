@@ -6,8 +6,7 @@ export const refreshFrequency = 30 * 60 * 1000
 
 export const className = `
   bottom: 60px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 1760px;
   width: 540px;
   font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', 'Hack Nerd Font', monospace;
   background: rgba(17, 17, 27, 0.55);
