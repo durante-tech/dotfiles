@@ -31,7 +31,7 @@ Before starting, greet the user:
   • Hourly Durante-themed wallpaper rotation (10-piece gallery)
   • Sketchybar Claude Code 5-hour billing block indicator (via ccusage)
 
-This pack installs 77 Homebrew formulas, 22 GUI casks, and 22 stowable dotfile directories. Plus 9 LaunchAgents — BetterDisplay time-of-day chord (5 modes), display-monitor watcher, Sketchybar firstboot, Übersicht, and hourly wallpaper rotation — all rendered from templates with your $USER.
+This pack installs 79 Homebrew formulas, 22 GUI casks, and 22 stowable dotfile directories. Plus 10 LaunchAgents — BetterDisplay time-of-day chord (5 modes), ambient-light watcher, sleep/display-wake watcher, Sketchybar firstboot, Übersicht, and hourly wallpaper rotation — all rendered from templates with your $USER.
 
 Let me analyze your system and guide you through installation."
 ```
@@ -453,6 +453,7 @@ and `launchctl bootstrap`s each agent so they fire on next login.
 | `com.lucas.bd-evening.plist.template` | BetterDisplay → evening mode |
 | `com.lucas.bd-night.plist.template` | BetterDisplay → night mode |
 | `com.lucas.bd-lmu-watch.plist.template` | Light-metering watcher (sets bd mode on ambient-light change) |
+| `com.lucas.sleepwatcher.plist.template` | Runs `~/.wakeup` (bd-wake.sh) on system wake **and** display wake/unlock; supersedes Homebrew's sleepwatcher service |
 | `com.lucas.sketchybar-firstboot.plist.template` | Sketchybar warm-up at first login |
 | `com.lucas.ubersicht.plist.template` | Übersicht autostart |
 | `com.lucas.wallpaper-rotate.plist.template` | Hourly wallpaper rotation |

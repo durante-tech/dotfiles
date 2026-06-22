@@ -118,6 +118,8 @@ brew "ripgrep"
 brew "rmpc"
 # Static analysis and lint tool, for (ba)sh scripts
 brew "shellcheck"
+# Daemon to run a script on sleep/wake AND display-sleep/wake (com.lucas.sleepwatcher agent)
+brew "sleepwatcher"
 # Cross-shell prompt for astronauts
 brew "starship"
 # Organize software neatly under a single directory tree (e.g. /usr/local)
