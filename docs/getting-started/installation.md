@@ -44,7 +44,7 @@ The macOS package manager. Installs to `/opt/homebrew` (Apple Silicon) or `/usr/
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-### Step 3: Homebrew Formulae (~60 packages)
+### Step 3: Homebrew Formulae (79 packages)
 
 Installs all CLI tools in categories:
 

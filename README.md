@@ -3,7 +3,7 @@ name: dotfiles
 pack-id: durante-tech-dotfiles-v2.0.0
 version: 2.0.0
 author: durante-tech (Lucas Gertel)
-description: macOS terminal-first, keyboard-driven development environment. 22 stowable packages, 77 brew formulas + 22 casks, mise polyglot version manager, hourly Durante-themed wallpaper rotation, sketchybar Claude Code billing-block indicator, espanso :llm trigger to local Ollama. USE WHEN install dotfiles, set up new mac, clone dotfiles, install lucas dotfiles, configure new development machine, restore dotfiles, update dotfiles, repair dotfiles, fresh mac setup, dotfile installation, durante dotfiles, dotfiles new machine, terminal-first setup, install brewfile, mise migration, durante setup.
+description: macOS terminal-first, keyboard-driven development environment. 22 stowable packages, 79 brew formulas + 22 casks, mise polyglot version manager, hourly Durante-themed wallpaper rotation, sketchybar Claude Code billing-block indicator, espanso :llm trigger to local Ollama. USE WHEN install dotfiles, set up new mac, clone dotfiles, install lucas dotfiles, configure new development machine, restore dotfiles, update dotfiles, repair dotfiles, fresh mac setup, dotfile installation, durante dotfiles, dotfiles new machine, terminal-first setup, install brewfile, mise migration, durante setup.
 type: dotfiles
 role: environment
 visibility: public
@@ -51,7 +51,7 @@ keywords: [dotfiles, install dotfiles, set up new mac, clone dotfiles, install l
 "Set up a fresh Mac with these dotfiles"   → Read INSTALL.md → choose Fresh install
 ```
 
-The full 12-step install runs `install.sh` which internally drives: Xcode CLT → Homebrew → 77 formulas → 22 casks → Bun + ccusage + Fabric → stow 22 packages → `mise install` → `setup.sh --configure` (renders 9 LaunchAgent templates with `__USER__` substitution) → Espanso service register → TPM tmux plugins → Neovim Lazy sync → `./macos/.macos` (44 defaults entries) → verification.
+The full 12-step install runs `install.sh` which internally drives: Xcode CLT → Homebrew → 79 formulas → 22 casks → Bun + ccusage + Fabric → stow 22 packages → `mise install` → `setup.sh --configure` (renders 10 LaunchAgent templates with `__USER__` substitution + links Raycast script-commands) → Espanso service register → TPM tmux plugins → Neovim Lazy sync → `./macos/.macos` (44 defaults entries) → verification.
 
 > **For human readers:** the rest of this README is the standard overview. AI agents can skip to `INSTALL.md`.
 

@@ -2,7 +2,7 @@
 
 **This guide is designed for AI agents installing/updating these dotfiles on a user's Mac.**
 
-The repo is the personal dev environment for Lucas Gertel: terminal-first, keyboard-driven macOS setup with Neovim, Tmux, AeroSpace, Sketchybar, and a Catppuccin/Rose-pine theme stack. Includes a Claude Code session indicator on the bar, hourly Durante-themed wallpaper rotation, espanso `:llm` triggers piped to local Ollama, and 99 brew packages (77 formulas + 22 casks).
+The repo is the personal dev environment for Lucas Gertel: terminal-first, keyboard-driven macOS setup with Neovim, Tmux, AeroSpace, Sketchybar, and a Catppuccin/Rose-pine theme stack. Includes a Claude Code session indicator on the bar, hourly Durante-themed wallpaper rotation, espanso `:llm` triggers piped to local Ollama, and 101 brew packages (79 formulas + 22 casks).
 
 ---
 
@@ -254,7 +254,7 @@ cd "$HOME/dotfiles"
 |---|-------|------|
 | 1 | Xcode CLT | Installs if missing |
 | 2 | Homebrew | Installs if missing |
-| 3 | Brew formulae | 77 CLI tools (mise, neovim, tmux, fzf, atuin, ollama, gum, glow, wallpaper, etc.) |
+| 3 | Brew formulae | 79 CLI tools (mise, neovim, tmux, fzf, atuin, ollama, gum, glow, wallpaper, sleepwatcher, etc.) |
 | 4 | Brew casks | 22 GUI apps (Ghostty, Espanso, Maccy, Übersicht, boring.notch, etc.) |
 | 5 | Bun + ccusage + Fabric | Non-Homebrew tools |
 | 6 | Stow dotfiles | Symlinks 22 packages into `~/.config/`, `~/Library/`, and `~/` |
@@ -321,6 +321,7 @@ Per-tool one-time setup (opt-in):
 1. Install the Stream Deck app from Elgato.
 2. Install the **Mac Automation** plugin (free): https://marketplace.elgato.com/product/mac-automation-8468fc12-644b-427a-84cb-127c82c5bb30 — required because Stream Deck 7.x broke custom URL schemes like `raycast://` in the built-in Website action.
 3. Build the profile: `bun ~/dotfiles/scripts/scripts/streamdeck-build.ts <source.streamDeckProfile> <output.streamDeckProfile>` then `open <output>` to import.
+4. The SCREENS folder fires Raycast script-commands — `bd-*` brightness modes plus `display-*` layout profiles (daily/hires/native/portrait). `setup.sh` symlinks the dotfiles-tracked `display-*` wrappers (`raycast/script-commands/`) into the Raycast dir; enable them under Raycast → Extensions → Script Commands.
 
 ---
 
