@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  TEMPLATE — rendered to real plist by setup.sh's render_launchagents().
+  __USER__ is substituted with the current $USER at install time.
+  The rendered file lands at ~/Library/LaunchAgents/com.lucas.sleepwatcher.plist.
+
+  Repo-owned sleepwatcher daemon. SUPERSEDES Homebrew's `homebrew.mxcl.sleepwatcher`
+  service — do NOT `brew services start sleepwatcher`; this agent owns the daemon so
+  the flag set survives `brew upgrade` and reproduces on a fresh install.
+
+  Runs ~/.wakeup (-> bd-wake.sh, which restores display layout + brightness) on BOTH:
+    -w : system wake from sleep.
+    -W : DISPLAY wake / unlock.  <-- the load-bearing one. System sleep is usually
+         PREVENTED on this rig (caffeinate/backupd/etc., `pmset -g` shows sleep 0), so
+         -w rarely fires. But the displays still sleep at the `displaysleep` timer and
+         on lock — and -W is what re-applies the layout + brightness when they wake.
+  A sleep hook can be added later with `-s /Users/__USER__/.sleep` (file must exist).
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.lucas.sleepwatcher</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/opt/sleepwatcher/sbin/sleepwatcher</string>
+        <string>-V</string>
+        <string>-w</string>
+        <string>/Users/__USER__/.wakeup</string>
+        <string>-W</string>
+        <string>/Users/__USER__/.wakeup</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/tmp/sleepwatcher.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/sleepwatcher.log</string>
+</dict>
+</plist>

@@ -44,7 +44,11 @@ diagnostic.
 **Automation:**
 - 5 launchd timers (`com.lucas.bd-{dawn,day,afternoon,evening,night}`) fire at fixed hours.
 - `bd-lmu-watch` polls ambient light every 60s and switches mode on bucket transitions.
-- `bd-wake.sh` (sleepwatcher `~/.wakeup`) re-applies layout + brightness on wake.
+- `bd-wake.sh` (sleepwatcher `~/.wakeup`) re-applies layout + brightness on wake. The
+  repo-owned `com.lucas.sleepwatcher` agent wires BOTH `-w` (system wake) and `-W`
+  (**display** wake / unlock) to it — the latter is load-bearing, since system sleep is
+  usually prevented (`pmset -g` → `sleep 0`) while the displays still sleep on the
+  `displaysleep` timer and on lock. Each invocation appends a trace to `~/.cache/bd-wake.log`.
 - `BD_SOURCE` tags each apply in the log: `timer` | `wake` | `lmu` | `manual`.
 
 **Ambient source:** `betterdisplaycli get --ambientLight` (the ONLY live ambient
