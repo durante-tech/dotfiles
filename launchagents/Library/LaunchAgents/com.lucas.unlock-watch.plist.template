@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  TEMPLATE — rendered to real plist by setup.sh's render_launchagents().
+  __USER__ is substituted with the current $USER at install time.
+  The rendered file lands at ~/Library/LaunchAgents/com.lucas.unlock-watch.plist.
+
+  Runs the unlock-watch helper (scripts/scripts/unlock-watch.swift, compiled to
+  ~/.local/bin/unlock-watch by setup.sh's build_native_helpers()). The helper
+  listens for macOS's com.apple.screenIsUnlocked distributed notification and
+  runs ~/.wakeup (-> bd-wake.sh) on every unlock, so the external monitor's
+  layout + brightness are re-asserted and the panel recovers.
+
+  WHY this exists ALONGSIDE com.lucas.sleepwatcher: sleepwatcher's -W
+  (display-wakeup) hook is unreliable on Apple Silicon / macOS 26 — it never
+  fires, so nothing re-asserted the external monitor after a lock. screenIsUnlocked
+  is the reliable unlock signal. sleepwatcher still owns real system wake (-w);
+  this agent does not replace it. If swiftc is absent at install time the binary
+  is never built and this agent simply fails to start (harmless no-op).
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.lucas.unlock-watch</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/__USER__/.local/bin/unlock-watch</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/tmp/unlock-watch.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/unlock-watch.log</string>
+</dict>
+</plist>

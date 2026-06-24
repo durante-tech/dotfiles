@@ -209,11 +209,51 @@ configure_environment() {
         print_success "TPM installed - press prefix + I in tmux to install plugins"
     fi
 
+    # Compile native helper binaries (unlock-watch) before the agents that run
+    # them are bootstrapped.
+    build_native_helpers
+
     # Render LaunchAgent plists from templates and bootstrap them.
     render_launchagents
 
     # Symlink dotfiles-tracked Raycast script-commands into the indexed dir.
     link_raycast_commands
+}
+
+# ============================================================================
+# Native Helper Binaries
+# ============================================================================
+#
+# A repo feature needs a tiny compiled listener that launchd cannot express as
+# a plain plist: launchd has no trigger for distributed notifications.
+# unlock-watch.swift observes com.apple.screenIsUnlocked and runs ~/.wakeup so
+# the external monitor recovers on unlock (sleepwatcher's -W display-wake hook
+# is unreliable on Apple Silicon). Compiled to ~/.local/bin so the LaunchAgent
+# runs an absolute path. Guarded on swiftc: a machine without the Swift
+# toolchain skips the helper and com.lucas.unlock-watch simply no-ops.
+
+build_native_helpers() {
+    print_header "Building Native Helpers"
+
+    if ! command -v swiftc >/dev/null 2>&1; then
+        print_info "swiftc not found — skipping native helpers (unlock-watch)"
+        return 0
+    fi
+
+    local SRC="$DOTFILES_DIR/scripts/scripts/unlock-watch.swift"
+    local OUT="$HOME/.local/bin/unlock-watch"
+
+    if [[ ! -f "$SRC" ]]; then
+        print_info "No unlock-watch.swift — skipping"
+        return 0
+    fi
+
+    mkdir -p "$HOME/.local/bin"
+    if swiftc -O "$SRC" -o "$OUT" 2>/dev/null; then
+        print_success "Built unlock-watch -> $OUT"
+    else
+        print_warning "Failed to build unlock-watch (unlock-recovery for external monitor disabled)"
+    fi
 }
 
 # ============================================================================
