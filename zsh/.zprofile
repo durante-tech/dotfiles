@@ -90,3 +90,6 @@ source ~/.orbstack/shell/init.zsh 2>/dev/null || :
 # >>> localcan >>>
 export PATH="$HOME/.localcan/bin:$PATH"
 # <<< localcan <<<
+
+# Added by Obsidian
+export PATH="$PATH:/Applications/Obsidian.app/Contents/MacOS"
