@@ -45,10 +45,18 @@ diagnostic.
 - 5 launchd timers (`com.lucas.bd-{dawn,day,afternoon,evening,night}`) fire at fixed hours.
 - `bd-lmu-watch` polls ambient light every 60s and switches mode on bucket transitions.
 - `bd-wake.sh` (sleepwatcher `~/.wakeup`) re-applies layout + brightness on wake. The
-  repo-owned `com.lucas.sleepwatcher` agent wires BOTH `-w` (system wake) and `-W`
-  (**display** wake / unlock) to it — the latter is load-bearing, since system sleep is
-  usually prevented (`pmset -g` → `sleep 0`) while the displays still sleep on the
-  `displaysleep` timer and on lock. Each invocation appends a trace to `~/.cache/bd-wake.log`.
+  repo-owned `com.lucas.sleepwatcher` agent wires `-w` (system wake) and `-W`
+  (**display** wake / unlock) to it. `-w` works; **`-W` proved unreliable on Apple
+  Silicon / macOS 26** — it registers but its IOKit display-wrangler notifications never
+  fire, so nothing re-asserted the external monitor after a lock (it stayed dark on
+  unlock). Diagnosed 2026-06-24 from a 2-day `~/.cache/bd-wake.log` gap spanning dozens
+  of "Display is turned on" events with zero hook fires.
+- `unlock-watch` (`com.lucas.unlock-watch`, from `scripts/scripts/unlock-watch.swift`,
+  compiled to `~/.local/bin/unlock-watch`) is the reliable replacement for the `-W` path:
+  a tiny Swift KeepAlive listener on the `com.apple.screenIsUnlocked` distributed
+  notification (launchd has no native trigger for those), which runs the same `~/.wakeup`
+  hook on every unlock. sleepwatcher still owns real system wake (`-w`); this only adds
+  the unlock case. Each `~/.wakeup` invocation appends a trace to `~/.cache/bd-wake.log`.
 - `BD_SOURCE` tags each apply in the log: `timer` | `wake` | `lmu` | `manual`.
 
 **Ambient source:** `betterdisplaycli get --ambientLight` (the ONLY live ambient
