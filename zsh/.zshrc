@@ -39,6 +39,13 @@ bindkey -r "^G"
 set -o vi
 eval "$(starship init zsh)"
 
+# Completion system — MUST init before any tool that calls `compdef` (zoxide
+# and fzf below both register completions). Running it after them caused
+# `compdef:_comps: assignment to invalid subscript range` on re-source. fpath
+# already includes the deno completions dir set above; docker's completions add
+# to fpath later and intentionally rely on this cached dump.
+autoload -Uz compinit && compinit -C
+
 # Zoxide
 command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
 
@@ -343,8 +350,9 @@ if [[ -x "$HOME/.claude/local/claude" ]]; then
 elif command -v claude >/dev/null 2>&1; then
     alias claude="$(command -v claude)"
 fi
-# Zsh completions (needed after oh-my-zsh removal)
-autoload -Uz compinit && compinit -C
+# Zsh completions: compinit now runs earlier (before the zoxide/fzf compdef
+# callers, near the starship init) to fix `_comps: assignment to invalid
+# subscript range`. Docker's fpath addition below still relies on that dump.
 
 # Source project-specific aliases if they exist
 [[ -f ~/Developer/tac/scripts/aliases.sh ]] && source ~/Developer/tac/scripts/aliases.sh
