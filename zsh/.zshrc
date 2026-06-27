@@ -127,29 +127,29 @@ alias nzo="$HOME/scripts/zoxide_openfiles_nvim.sh"
 
 # Eza - Next level ls with git integration
 # Basic ls with git status indicators (M=modified, N=new, I=ignored, etc.)
-alias ls="eza --long --color=always --icons=always --no-user --no-filesize --git"
+alias ls="eza --long --color=auto --icons=auto --no-user --no-filesize --git"
 
 # All files including hidden, with git status
-alias la="eza --long --all --color=always --icons=always --no-user --git"
+alias la="eza --long --all --color=auto --icons=auto --no-user --git"
 
 # Long format with file sizes and timestamps
-alias ll="eza --long --all --color=always --icons=always --no-user --git --header --group"
+alias ll="eza --long --all --color=auto --icons=auto --no-user --git --header --group"
 
 # Tree view with git integration (ignores .git directory)
-alias lt="eza --tree --level=2 --color=always --icons=always --git --git-ignore"
-alias lt3="eza --tree --level=3 --color=always --icons=always --git --git-ignore"
+alias lt="eza --tree --level=2 --color=auto --icons=auto --git --git-ignore"
+alias lt3="eza --tree --level=3 --color=auto --icons=auto --git --git-ignore"
 
 # Only directories
-alias lsd="eza --long --only-dirs --color=always --icons=always --no-user --git"
+alias lsd="eza --long --only-dirs --color=auto --icons=auto --no-user --git"
 
 # Sort by modified time (newest first)
-alias lm="eza --long --all --color=always --icons=always --no-user --git --sort=modified --reverse"
+alias lm="eza --long --all --color=auto --icons=auto --no-user --git --sort=modified --reverse"
 
 # Sort by size (largest first)
-alias lz="eza --long --all --color=always --icons=always --no-user --git --sort=size --reverse"
+alias lz="eza --long --all --color=auto --icons=auto --no-user --git --sort=size --reverse"
 
 # Git-specific: show only modified/new files (use lsg to avoid conflict with lazygit)
-alias lsg="eza --long --all --color=always --icons=always --no-user --git --git-ignore --only-files"
+alias lsg="eza --long --all --color=auto --icons=auto --no-user --git --git-ignore --only-files"
 
 # Classic tree command (fallback)
 alias tree="tree -L 3 -a -I '.git' --charset X "
@@ -394,6 +394,21 @@ esac
 ## Completion scripts setup. Remove the following line to uninstall
 [[ -f "$HOME/.dart-cli-completion/zsh-config.zsh" ]] && . "$HOME/.dart-cli-completion/zsh-config.zsh" || true
 ## [/Completion]
+
+# ---------------------------------------
+# Agent-safety guard: hand Claude Code / non-interactive agents the STOCK tools.
+# The interactive replacements above mangle output (eza/bat force color+icons and
+# drop columns) or hang (TUIs, $EDITOR). CLAUDECODE is set by Claude Code in the
+# shell it snapshots, so this strips them ONLY for agent shells — your interactive
+# setup is untouched. Must run after all aliases are defined (i.e. here, near EOF).
+if [[ -n "$CLAUDECODE" ]]; then
+  for _a in ls la ll lm lsd lsg lz lt lt3 tree dtree cat curl du ps top htop vim; do
+    unalias "$_a" 2>/dev/null
+  done
+  unset _a
+  export EDITOR=true VISUAL=true   # nothing should pop an editor in an agent shell
+fi
+# ---------------------------------------
 
 # Shell startup profiling output (matches the zmodload at top)
 [[ -n "$ZSH_PROFILE" ]] && zprof
