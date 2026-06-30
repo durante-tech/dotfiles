@@ -63,6 +63,11 @@ for a in "$@"; do
   esac
 done
 
+# Caller attribution (diagnostic) — record WHO invoked us and with which profile,
+# so an unexpected layout flip can be traced to its trigger in this same log.
+# Best-effort; the parent's command is truncated to keep the line bounded.
+log "invoked profile=$PROFILE action=${ACTION:-none} ppid=$PPID caller=[$(ps -o command= -p "$PPID" 2>/dev/null | head -c 140)]"
+
 # Built-in resolution per profile. --native runs 1x native 3456x2234 (scaling:off,
 # pixel-perfect 1:1, UI renders tiny); --stream drops to 1728x1080 for a clean OBS
 # 2:1 downscale; daily + hires keep the sharp true integer-2x 1728x1117. SCALING is
@@ -84,17 +89,19 @@ fi
 # --portrait rotates the Samsung 90 to true-2x 1080x1920 (res:1920x1080 degree:90,
 # backing 2160x3840 == native — pixel-perfect, 1920px crisp vertical). EXT_DEGREE
 # carries the rotation (0 for every landscape profile, 90 for portrait).
-# Origin keeps the Samsung centered horizontally ABOVE the built-in and stacked on
-# top: left = builtinWidth/2 - extWidth/2 ; top = -extHeight.
+# Origin places the Samsung to the RIGHT of the built-in for the landscape profiles
+# (operator arrangement 2026-06-30): left = builtinWidth (edges touch), top = +37.
+# daily/stream/hires keep builtinWidth=1728; native is 1x so builtinWidth=3456.
+# --portrait is the exception — it still stacks the rotated panel ABOVE at (324,-1920).
 EXT_DEGREE=0
 if [[ "$PROFILE" == native ]]; then
-  EXT_RES=3840x2160; EXT_ORIGIN='(-192,-2160)'
+  EXT_RES=3840x2160; EXT_ORIGIN='(3456,37)'
 elif [[ "$PROFILE" == hires ]]; then
-  EXT_RES=2560x1440; EXT_ORIGIN='(-416,-1440)'
+  EXT_RES=2560x1440; EXT_ORIGIN='(1728,37)'
 elif [[ "$PROFILE" == portrait ]]; then
   EXT_RES=1920x1080; EXT_ORIGIN='(324,-1920)'; EXT_DEGREE=90
 else
-  EXT_RES=1920x1080; EXT_ORIGIN='(-96,-1080)'
+  EXT_RES=1920x1080; EXT_ORIGIN='(1728,37)'
 fi
 
 # Maintainer default (this rig). Override via DOTFILES_DISPLAY_LAYOUT.
