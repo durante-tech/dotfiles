@@ -94,15 +94,15 @@ nvim/
 
 1. **`.zprofile`** (login shell)
    - Homebrew environment
-   - PATH setup (coreutils, uv, scripts, Mason, Go, Fabric, Bun, Deno, Pyenv)
+   - PATH setup (coreutils, uv, scripts, Mason, Go, Fabric, Bun, Deno)
    - Environment variables (STARSHIP_CONFIG, FZF_*, ATUIN_NOBIND, SSH_AUTH_SOCK)
    - SSH agent via **1Password** (macOS socket at `~/Library/Group Containers/...`)
    - FZF configuration (fd-based with .git/node_modules/.venv exclusions)
-   - FNM, Pyenv, Bun, Deno completions
+   - Bun, Deno completions (Node + Python via **mise**, activated in `.zshrc`)
 
 2. **`.zshrc`** (interactive shell)
    - Vi mode (`set -o vi`) + Starship prompt
-   - Plugin loading: zoxide, fzf, atuin, pyenv, FNM
+   - Plugin loading: zoxide, fzf, atuin, **mise** (Node + Python)
    - Keybindings (Ctrl+E accept suggestion, Ctrl+P/N history)
    - Shell functions (web search, yazi, yt)
    - All alias definitions
@@ -117,8 +117,7 @@ nvim/
 | **Zoxide** | Smart directory jumping | `z <partial>` |
 | **FZF** | Fuzzy finder | `Ctrl+T` (files), `Alt+C` (dirs) |
 | **Atuin** | Shell history search | `Ctrl+R` |
-| **FNM** | Fast Node Manager | Auto-switches on `.node-version`/`.nvmrc` via `chpwd` hook |
-| **Pyenv** | Python version manager | `pyenv install/use` |
+| **mise** | Polyglot version manager — Node + Python (replaces fnm/pyenv/nvm) | Auto-switches per `.mise.toml`/`.tool-versions`/`.nvmrc`/`.python-version` |
 | **Starship** | Shell prompt | Auto-initialized with vi-mode support |
 | **zsh-autosuggestions** | Command suggestions | `Ctrl+E` to accept |
 | **zsh-syntax-highlighting** | Syntax coloring | Automatic |
@@ -916,19 +915,14 @@ Install via Mason (`:Mason`) or manually before enabling.
 
 ### Language Environment Setup
 
-**Node.js** (via FNM - auto-switches on `.node-version`/`.nvmrc`):
+**Node.js & Python** (via **mise** — polyglot manager, replaces fnm/pyenv/nvm; auto-switches per `.mise.toml`/`.tool-versions`/`.nvmrc`/`.python-version`):
 ```bash
-fnm install 23   # or desired version
-fnm use 23
-fnm default 23
+mise use -g node@lts     # or a pinned version, e.g. node@24
+mise use -g python@3.12
+mise install             # install everything a project's config pins
+mise current             # show active versions
 ```
-
-**Python** (via pyenv + uv):
-```bash
-pyenv install 3.12
-pyenv global 3.12
-# uv already in PATH via .zprofile
-```
+Python packaging uses **uv** (already in PATH via `.zprofile`).
 
 **Go**: GOPATH at `$HOME/go`, bin in PATH.
 
