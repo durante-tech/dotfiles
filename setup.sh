@@ -218,6 +218,9 @@ configure_environment() {
 
     # Symlink dotfiles-tracked Raycast script-commands into the indexed dir.
     link_raycast_commands
+
+    # Wire the rtk token-saver hook into Claude Code's PreToolUse:Bash chain.
+    configure_rtk_hook
 }
 
 # ============================================================================
@@ -341,6 +344,66 @@ link_raycast_commands() {
     else
         print_success "Linked $linked Raycast script-command(s) into $RAYCAST_DIR"
         print_info "Enable in Raycast → Extensions → Script Commands (add $RAYCAST_DIR if needed)"
+    fi
+}
+
+# ============================================================================
+# RTK Agent Hook (Claude Code token-saver)
+# ============================================================================
+#
+# rtk (Rust Token Killer, installed via Brewfile) proxies verbose dev-command
+# output into compact form before it reaches the agent context. Its Claude Code
+# integration is a PreToolUse:Bash hook (`rtk hook claude`) that transparently
+# rewrites known commands (git/cargo/npm/ls/...) to their `rtk <cmd>` proxy;
+# unknown/unsafe commands (e.g. rm) pass through untouched. We append it as the
+# LAST hook in the existing Bash chain so every DOS guard validates the ORIGINAL
+# command first — rtk only compacts the final proxy form. Hook-only: it does NOT
+# create RTK.md or mutate ~/.claude/CLAUDE.md. Idempotent; gated on rtk + jq +
+# an existing settings.json; skips gracefully otherwise. Override the settings
+# path with DOTFILES_CLAUDE_SETTINGS.
+
+configure_rtk_hook() {
+    print_header "Wiring RTK Agent Hook (Claude Code)"
+
+    if ! command -v rtk >/dev/null 2>&1; then
+        print_info "rtk not installed — skipping (comes from Brewfile)"
+        return 0
+    fi
+    if ! command -v jq >/dev/null 2>&1; then
+        print_warning "jq not found — cannot patch settings.json safely; skipping rtk hook"
+        return 0
+    fi
+
+    local SETTINGS="${DOTFILES_CLAUDE_SETTINGS:-$HOME/.claude/settings.json}"
+    if [[ ! -f "$SETTINGS" ]]; then
+        print_info "No $SETTINGS — skipping rtk hook (Claude Code not configured here)"
+        return 0
+    fi
+
+    # Already wired? (idempotent)
+    if jq -e '[.hooks.PreToolUse[]? | select(.matcher=="Bash") | .hooks[]? | select(.command=="rtk hook claude")] | length > 0' "$SETTINGS" >/dev/null 2>&1; then
+        print_success "rtk hook already present in $SETTINGS"
+        return 0
+    fi
+
+    # Need an existing PreToolUse:Bash block to append to.
+    if ! jq -e '[.hooks.PreToolUse[]? | select(.matcher=="Bash")] | length > 0' "$SETTINGS" >/dev/null 2>&1; then
+        print_warning "No PreToolUse:Bash block in $SETTINGS — skipping (unexpected layout)"
+        return 0
+    fi
+
+    local TMP
+    TMP="$(mktemp)"
+    if jq '.hooks.PreToolUse = ([.hooks.PreToolUse[] |
+            if .matcher=="Bash" and ((.hooks // []) | any(.command=="rtk hook claude") | not)
+            then .hooks += [{"type":"command","command":"rtk hook claude"}]
+            else . end])' "$SETTINGS" > "$TMP" 2>/dev/null && jq -e . "$TMP" >/dev/null 2>&1; then
+        cp "$SETTINGS" "$SETTINGS.bak"
+        mv "$TMP" "$SETTINGS"
+        print_success "Appended 'rtk hook claude' as last Bash hook (backup: $SETTINGS.bak)"
+    else
+        rm -f "$TMP"
+        print_warning "Failed to patch $SETTINGS with rtk hook — left unchanged"
     fi
 }
 

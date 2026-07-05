@@ -116,6 +116,8 @@ brew "render"
 brew "ripgrep"
 # Terminal based Media Player Client with album art support
 brew "rmpc"
+# CLI proxy to minimize LLM token consumption (agentic-coding token killer)
+brew "rtk"
 # Static analysis and lint tool, for (ba)sh scripts
 brew "shellcheck"
 # Daemon to run a script on sleep/wake AND display-sleep/wake (com.lucas.sleepwatcher agent)
