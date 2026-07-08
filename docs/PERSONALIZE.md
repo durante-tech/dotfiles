@@ -54,6 +54,28 @@ re-stow: `stow -R -t ~ aerospace && aerospace reload-config`.
 betterdisplaycli get --identifiers | grep -E "tagID|name"
 ```
 
+### Monitor names (AeroSpace workspace pinning)
+
+`./personalize.sh` auto-detects connected monitors (via `aerospace
+list-monitors`, `system_profiler` fallback) and offers a numbered pick — no
+free-text regex needed. Single-display setups get `^NONE$` automatically.
+
+Even unpersonalized, the config degrades predictably: every
+`workspace-to-monitor-force-assignment` value is a fallback chain ending in
+`'main'`, so unmatched patterns always land workspaces on a real monitor.
+One and two-monitor setups behave sensibly out of the box (`'secondary'`
+keeps external-pinned workspaces off the laptop screen). On **3+ monitors**
+AeroSpace's `'secondary'` doesn't resolve (defined only for exactly two), so
+unmatched pins collapse onto `main` — running `personalize.sh` to pin exact
+names is required there. The scheme models two roles (built-in + one
+external); additional monitors host whatever you drag to them. Validate
+anytime:
+
+```bash
+scripts/scripts/render-aerospace.sh --doctor   # flags patterns matching no connected monitor
+./setup.sh --check                             # includes the same doctor
+```
+
 **Override:** add to `~/.config/dotfiles/personal.env`:
 ```bash
 DOTFILES_BD_DEV_TAG=2          # your built-in display tagID

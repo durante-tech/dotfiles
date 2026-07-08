@@ -115,16 +115,23 @@ outer.top = [
 # Pin key workspaces to monitors
 # See: https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
 [workspace-to-monitor-force-assignment]
-# Built-in display can't be renamed in BetterDisplay, use actual macOS name
-1 = '@DOTFILES_MONITOR_BUILTIN@'  # Main workspace on laptop
-2 = '^@DOTFILES_MONITOR_EXTERNAL@$'       # Secondary workspace on portrait
-A = '@DOTFILES_MONITOR_BUILTIN@'  # AI engineer apps (Claude, Codex) on laptop
-B = '^@DOTFILES_MONITOR_EXTERNAL@$'       # Browser on portrait
-D = '@DOTFILES_MONITOR_BUILTIN@'  # Development on laptop
-F = '@DOTFILES_MONITOR_BUILTIN@'  # Finder on laptop (floats)
-M = '@DOTFILES_MONITOR_BUILTIN@'  # Messaging on laptop
-N = '@DOTFILES_MONITOR_BUILTIN@'  # Notes on laptop
-T = '^@DOTFILES_MONITOR_EXTERNAL@$'       # Terminal on portrait
+# Built-in display can't be renamed in BetterDisplay, use actual macOS name.
+# Each value is a fallback chain — first matching pattern wins, and the
+# terminal 'main' guarantees a match on any hardware. Degradation by monitor
+# count when the named pattern doesn't match: 1 monitor -> everything on it;
+# 2 monitors -> 'secondary' keeps external-pinned workspaces off the laptop
+# screen; 3+ monitors -> 'secondary' does NOT resolve (AeroSpace defines it
+# only for exactly two monitors), so unmatched pins land on 'main' — run
+# ./personalize.sh to pin exact names on 3+-monitor rigs.
+1 = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Main workspace on laptop
+2 = ['^@DOTFILES_MONITOR_EXTERNAL@$', 'secondary', 'main']   # Secondary workspace on portrait
+A = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # AI engineer apps (Claude, Codex) on laptop
+B = ['^@DOTFILES_MONITOR_EXTERNAL@$', 'secondary', 'main']   # Browser on portrait
+D = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Development on laptop
+F = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Finder on laptop (floats)
+M = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Messaging on laptop
+N = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Notes on laptop
+T = ['^@DOTFILES_MONITOR_EXTERNAL@$', 'secondary', 'main']   # Terminal on portrait
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 # 'main' binding mode must be always presented

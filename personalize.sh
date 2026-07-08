@@ -79,20 +79,71 @@ DEV_TAG=$(ask "BetterDisplay tagID for your built-in display (DEV_TAG)" "$DEV_TA
 PORT_TAG=$(ask "BetterDisplay tagID for your external display (PORT_TAG, or same as DEV if single-display)" "$PORT_TAG_DEFAULT")
 
 # -----------------------------------------------------------------------------
-# 2. Monitor names (informational — AeroSpace TOML needs manual edit)
+# 2. Monitor names (substituted into aerospace.toml by render-aerospace.sh)
 # -----------------------------------------------------------------------------
-hdr "2. Monitor names (informational)"
+hdr "2. Monitor names"
 
 BUILTIN_DEFAULT="Built-in Retina Display"
 EXTERNAL_DEFAULT="^PORTRAIT-MONITOR$"
+
+# Escape a literal monitor name for use inside an anchored regex. Apostrophes
+# become '.' (regex any-char): the value is later injected into single-quoted
+# TOML literal strings where a literal apostrophe cannot be represented at all,
+# and '.' still matches the real name at runtime.
+regex_escape() { printf '%s' "$1" | sed -e 's/[][\.*^$(){}?+|/]/\\&/g' -e "s/'/./g"; }
+
+# Auto-detect connected monitors — AeroSpace preferred (its names are the ones
+# the config matches against), system_profiler as a coarse fallback.
+DETECTED=""
 if command -v aerospace >/dev/null 2>&1; then
-    say "Detected AeroSpace. Monitors AeroSpace sees:"
-    aerospace list-monitors 2>/dev/null | sed 's/^/  /' || warn "(could not read monitors)"
-    echo
+    DETECTED=$(aerospace list-monitors 2>/dev/null | sed 's/^[^|]*| *//' || true)
+fi
+if [ -z "$DETECTED" ] && command -v system_profiler >/dev/null 2>&1; then
+    DETECTED=$(system_profiler SPDisplaysDataType 2>/dev/null \
+        | awk '/^ {8}[^ ].*:$/ {sub(/^ +/,""); sub(/:$/,""); print}' || true)
 fi
 
-MONITOR_BUILTIN=$(ask "Built-in monitor name (used by aerospace.toml workspace pinning)" "$BUILTIN_DEFAULT")
-MONITOR_EXTERNAL=$(ask "External monitor name (regex OK; '^NONE$' if single-display)" "$EXTERNAL_DEFAULT")
+MON_COUNT=0
+[ -n "$DETECTED" ] && MON_COUNT=$(printf '%s\n' "$DETECTED" | grep -c .)
+
+if [ "$MON_COUNT" -eq 0 ]; then
+    warn "Could not auto-detect monitors (AeroSpace not running?). Manual entry:"
+    MONITOR_BUILTIN=$(ask "Built-in monitor name (matched as regex; escape special chars)" "$BUILTIN_DEFAULT")
+    MONITOR_EXTERNAL=$(ask "External monitor name (matched as regex, e.g. 'DELL \\(1\\)'; '^NONE$' if single-display)" "$EXTERNAL_DEFAULT")
+elif [ "$MON_COUNT" -eq 1 ]; then
+    ONLY_MON=$(printf '%s\n' "$DETECTED" | head -1)
+    say "Single display detected: $ONLY_MON"
+    say "External pinning disabled; the template's fallback chains keep every workspace here."
+    MONITOR_BUILTIN=$(ask "Built-in monitor name" "$ONLY_MON")
+    # Accepted detected name verbatim -> escape it (matched as regex downstream);
+    # user-edited input is treated as an intentional regex.
+    [ "$MONITOR_BUILTIN" = "$ONLY_MON" ] && MONITOR_BUILTIN=$(regex_escape "$ONLY_MON")
+    MONITOR_EXTERNAL='^NONE$'
+else
+    say "Detected $MON_COUNT monitors:"
+    printf '%s\n' "$DETECTED" | awk '{print "  " NR ") " $0}'
+    DEF_B=$(printf '%s\n' "$DETECTED" | grep -in 'built-in' | head -1 | cut -d: -f1)
+    [ -z "$DEF_B" ] && DEF_B=1
+    DEF_E=$(printf '%s\n' "$DETECTED" | grep -vin 'built-in' | head -1 | cut -d: -f1)
+    [ -z "$DEF_E" ] && DEF_E=2
+    PICK_B=$(ask "Which number is your BUILT-IN / primary display?" "$DEF_B")
+    PICK_E=$(ask "Which number is your EXTERNAL / secondary display?" "$DEF_E")
+    # Guard sed against non-numeric picks (a bare letter would crash under set -e)
+    MONITOR_BUILTIN=""; EXT_NAME=""
+    if [[ "$PICK_B" =~ ^[0-9]+$ ]] && [[ "$PICK_E" =~ ^[0-9]+$ ]]; then
+        MONITOR_BUILTIN=$(printf '%s\n' "$DETECTED" | sed -n "${PICK_B}p")
+        EXT_NAME=$(printf '%s\n' "$DETECTED" | sed -n "${PICK_E}p")
+    fi
+    if [ -z "$MONITOR_BUILTIN" ] || [ -z "$EXT_NAME" ]; then
+        warn "Pick out of range — falling back to manual entry."
+        MONITOR_BUILTIN=$(ask "Built-in monitor name (matched as regex; escape special chars)" "$BUILTIN_DEFAULT")
+        MONITOR_EXTERNAL=$(ask "External monitor name (matched as regex; escape special chars, e.g. '\\(1\\)')" "$EXTERNAL_DEFAULT")
+    else
+        MONITOR_BUILTIN=$(regex_escape "$MONITOR_BUILTIN")
+        MONITOR_EXTERNAL="^$(regex_escape "$EXT_NAME")\$"
+        ok "BUILTIN='$MONITOR_BUILTIN'  EXTERNAL='$MONITOR_EXTERNAL'"
+    fi
+fi
 
 # -----------------------------------------------------------------------------
 # 3. Keyboard layout

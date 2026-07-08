@@ -403,6 +403,12 @@ No name, email, or absolute user path lives in the repo — see
 
 ## Changelog
 
+### 2.1.1 — 2026-07-08
+
+- **Monitor-agnostic AeroSpace setup:** workspace pinning now uses fallback chains ending in `'secondary'`/`'main'` — fresh clones behave sensibly on any hardware (single display, unknown external, desktop Macs) instead of silently collapsing onto one screen
+- `personalize.sh` auto-detects connected monitors (`aerospace list-monitors`, `system_profiler` fallback) and offers a numbered pick — no free-text regex; single-display setups configured automatically
+- New `render-aerospace.sh --doctor`: flags configured monitor patterns that match no connected display (also runs post-render and in `setup.sh --check`)
+
 ### 2.1.0 — 2026-07-07
 
 - **Path agnosticism:** every script resolves the repo via `DOTFILES_DIR` (default `$HOME/dotfiles`); daemon contexts (launchd, sketchybar, Raycast) source `~/.config/dotfiles/personal.env` first so the override works without shell exports

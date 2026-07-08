@@ -467,6 +467,17 @@ verify_config() {
         issues=$((issues + 1))
     fi
 
+    # AeroSpace monitor-pattern doctor — dead workspace pins degrade to the
+    # template's fallback chains, so this warns without counting as an issue.
+    if [[ -x "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" ]]; then
+        echo -e "\nAeroSpace monitor patterns..."
+        if DOTFILES_DIR="$DOTFILES_DIR" "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" --doctor; then
+            print_success "Monitor patterns match connected displays"
+        else
+            print_warning "Dead monitor pattern(s) — run ./personalize.sh"
+        fi
+    fi
+
     if [[ $issues -eq 0 ]]; then
         print_success "All checks passed!"
     else
