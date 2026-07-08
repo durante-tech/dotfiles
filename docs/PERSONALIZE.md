@@ -83,6 +83,16 @@ DOTFILES_BD_PORT_TAG=60        # your external display tagID
 ```
 The bd-* scripts source this file at top.
 
+### Display layout (display-restore.sh)
+
+| Where | Lucas's value | What it is |
+|-------|--------------|------------|
+| `scripts/scripts/display-restore.sh` DEFAULT_LAYOUT | Two hardcoded display UUIDs | displayplacer per-screen specs for the maintainer's rig |
+
+**Override:** set `DOTFILES_DISPLAY_LAYOUT` in `personal.env` (newline-separated
+`displayplacer` specs — discover yours with `displayplacer list`). Without it,
+the layout profiles no-op harmlessly on foreign hardware.
+
 ---
 
 ## Layer 2 — User identifier (cosmetic, conflict-risk)
@@ -149,6 +159,14 @@ auto-reloads on file change. Backup first; the file is large.
 **Override:** edit the `if.app-id` and `run = "move-node-to-workspace X"`
 lines in `aerospace.toml`. Run `aerospace reload-config` after.
 
+### Geo defaults (weather + widgets)
+
+| Where | Lucas's value | Override |
+|-------|--------------|----------|
+| `sketchybar/.../plugins/weather.sh` | unset (IP auto-detect) | `DOTFILES_WEATHER_LOCATION="City+Name"` in `personal.env` |
+| `ubersicht/.../golden-hour.widget/index.jsx` | `LAT = -23.5505` (São Paulo) | edit `LAT` in the widget (cosmetic) |
+| `ubersicht/.../worldclock.widget/index.jsx` | SP primary, NY/SF secondary | edit the `tz` list in the widget (cosmetic) |
+
 ---
 
 ## Layer 5 — Private / maintainer paths
@@ -162,6 +180,7 @@ read but don't fail.
 | `ubersicht/.../dailybrief.widget/data.sh` | `~/Durante/MEMORY/WORK/dailybrief-YYYY-MM-DD.md` |
 | `ubersicht/.../today-focus.widget/data.sh` | same as above |
 | `scripts/scripts/dos-stream.ts` | `~/Durante/Overlays/*.html` |
+| `scripts/scripts/dos-stream-sidecar.ts` | maintainer display UUID + localhost OBS bridge |
 | `scripts/scripts/obs-scene-build.ts` | `~/Durante/Overlays/` |
 | `scripts/scripts/streamdeck-build.ts:27` | `~/Downloads/Durante Studio/theme.css` (maintainer-private) |
 
