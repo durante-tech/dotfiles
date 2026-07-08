@@ -379,12 +379,15 @@ For machine-specific overrides (gitignored):
 ~/.zprofile.local     # sourced after .zprofile
 ```
 
-For agent-driven personalization (template substitutions, signature edits):
+For agent-driven personalization (template substitutions):
 
 ```bash
-~/dotfiles/espanso/Library/Application Support/espanso/match/base.yml   # edit :sig trigger to your name/email
-~/dotfiles/launchagents/Library/LaunchAgents/*.plist.template            # __USER__ rendered at install time
+~/.config/dotfiles/personal.env                                # DOTFILES_SIG_NAME/EMAIL (espanso :sig; falls back to git config), DOTFILES_DIR, monitor/tagID overrides
+~/dotfiles/launchagents/Library/LaunchAgents/*.plist.template  # __USER__ + __DOTFILES_DIR__ rendered at install time
 ```
+
+No name, email, or absolute user path lives in the repo — see
+`docs/PERSONALIZE.md` for the full catalog.
 
 ---
 
@@ -399,6 +402,16 @@ For agent-driven personalization (template substitutions, signature edits):
 ---
 
 ## Changelog
+
+### 2.1.0 — 2026-07-07
+
+- **Path agnosticism:** every script resolves the repo via `DOTFILES_DIR` (default `$HOME/dotfiles`); daemon contexts (launchd, sketchybar, Raycast) source `~/.config/dotfiles/personal.env` first so the override works without shell exports
+- AeroSpace template gains `@DOTFILES_DIR@` sentinel; LaunchAgent templates gain `__DOTFILES_DIR__` — both baked to absolute paths at render time (sed-metacharacter-safe)
+- `setup.sh` / `personalize.sh` derive the repo root from their own location; `install.sh` accepts a `DOTFILES_DIR` env override
+- Espanso `:sig` reads `DOTFILES_SIG_NAME`/`DOTFILES_SIG_EMAIL` from `personal.env` (git-config fallback) — no personal name/email in the repo
+- Back-ported `BD_SOURCE=timer` env block into the time-of-day LaunchAgent templates (was live-only; a re-render would have dropped it)
+- CLAUDE.md: Path Agnosticism conventions, full package table, corrected stow list; `docs/PERSONALIZE.md`: sig vars + Layer 6 repo-location section
+- **After pulling:** run `./setup.sh --configure` (re-renders LaunchAgent plists) and `scripts/scripts/render-aerospace.sh` (re-bakes bd-mode chord paths)
 
 ### 2.0.0 — 2026-04-30
 
