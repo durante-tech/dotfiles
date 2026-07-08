@@ -6,7 +6,8 @@
 
 set -e
 
-DOTFILES_DIR="$HOME/dotfiles"
+# Repo root = this script's directory; DOTFILES_DIR env var overrides.
+DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -264,9 +265,10 @@ build_native_helpers() {
 # ============================================================================
 #
 # macOS launchd reads plists literally — no env var expansion. Repo holds
-# *.plist.template files with __USER__ placeholders; this function substitutes
-# the running user and copies real plists to ~/Library/LaunchAgents/, then
-# bootstraps each agent into the user's gui session.
+# *.plist.template files with __USER__ and __DOTFILES_DIR__ placeholders; this
+# function substitutes the running user + absolute repo path and copies real
+# plists to ~/Library/LaunchAgents/, then bootstraps each agent into the
+# user's gui session.
 
 render_launchagents() {
     print_header "Rendering LaunchAgent Plists"
@@ -289,7 +291,10 @@ render_launchagents() {
         base="$(basename "$tpl" .template)"
         local dest="$DEST_DIR/$base"
 
-        sed "s|__USER__|$USER|g" "$tpl" > "$dest"
+        # Escape sed replacement metacharacters in the repo path (&, \, |).
+        local dotdir_esc
+        dotdir_esc=$(printf '%s' "$DOTFILES_DIR" | sed -e 's/[&\\|]/\\&/g')
+        sed -e "s|__USER__|$USER|g" -e "s|__DOTFILES_DIR__|$dotdir_esc|g" "$tpl" > "$dest"
 
         # Bootstrap (or re-bootstrap) the agent so changes take effect now.
         launchctl bootout "gui/$(id -u)" "$dest" 2>/dev/null || true

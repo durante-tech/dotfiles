@@ -32,7 +32,7 @@ Espanso needs **macOS Accessibility** permission to function. After installing:
 |---------|-----------|
 | `:dt`   | Today's ISO date — `2026-04-30` |
 | `:ts`   | ISO timestamp — `2026-04-30T14:32:01` |
-| `:sig`  | Email signature (`Lucas Gertel\nlucas.gertel@durante.tech`) |
+| `:sig`  | Email signature — name/email from `~/.config/dotfiles/personal.env` (`DOTFILES_SIG_NAME`/`DOTFILES_SIG_EMAIL`), git config fallback |
 | `:llm` | Pipe clipboard to qwen3-coder:30b → reply pastes inline (copy prompt first, then type `:llm`) |
 | `:llmf` | Form popup → type prompt directly → reply pastes inline (no clipboard needed) |
 

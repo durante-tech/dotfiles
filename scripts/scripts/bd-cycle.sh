@@ -7,7 +7,12 @@
 set -u
 
 STATE_FILE="$HOME/.cache/bd-state"
-APPLY="$HOME/dotfiles/scripts/scripts/bd-apply.sh"
+# sketchybar click context (launchd) — source personal.env so a DOTFILES_DIR
+# override set there is honored outside interactive shells.
+[ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
+
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+APPLY="$DOTFILES_DIR/scripts/scripts/bd-apply.sh"
 DIR="${1:-next}"
 
 # Source bd-apply.sh for the canonical ORDER table (its source-guard prevents it

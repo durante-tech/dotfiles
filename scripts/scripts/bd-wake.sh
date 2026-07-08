@@ -8,8 +8,13 @@ set -u
 
 STATE_FILE="$HOME/.cache/bd-state"
 PROFILE_FILE="$HOME/.cache/bd-profile"
-APPLY="$HOME/dotfiles/scripts/scripts/bd-apply.sh"
-RESTORE="$HOME/dotfiles/scripts/scripts/display-restore.sh"
+# launchd (sleepwatcher) context — interactive-shell exports never reach here,
+# so pick up DOTFILES_DIR (and other overrides) from personal.env.
+[ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
+
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+APPLY="$DOTFILES_DIR/scripts/scripts/bd-apply.sh"
+RESTORE="$DOTFILES_DIR/scripts/scripts/display-restore.sh"
 DP="$(command -v displayplacer || echo /opt/homebrew/bin/displayplacer)"
 
 # --- wake trace (persistent; /tmp is cleared at boot, ~/.cache survives) -------

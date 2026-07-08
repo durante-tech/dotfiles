@@ -6,7 +6,9 @@
 source "$CONFIG_DIR/colors.sh"
 
 OBS_BIN="$(command -v obs || echo "$HOME/scripts/obs")"
-RESTORE="$HOME/dotfiles/scripts/scripts/display-restore.sh"
+# sketchybar runs under launchd — pick up DOTFILES_DIR override from personal.env.
+[ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
+RESTORE="${DOTFILES_DIR:-$HOME/dotfiles}/scripts/scripts/display-restore.sh"
 ACTION="$1"
 LOG=/tmp/obs-action.log
 

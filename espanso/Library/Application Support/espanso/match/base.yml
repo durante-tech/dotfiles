@@ -20,11 +20,22 @@ matches:
         params:
           format: "%Y-%m-%dT%H:%M:%S"
 
-  # Email signature — :sig
+  # Email signature — :sig. Name/email come from ~/.config/dotfiles/personal.env
+  # (DOTFILES_SIG_NAME / DOTFILES_SIG_EMAIL), falling back to git config.
+  # Absolute git path because espanso's shell context has minimal $PATH.
   - trigger: ":sig"
     replace: |
-      Lucas Gertel
-      lucas.gertel@durante.tech
+      {{sig_name}}
+      {{sig_email}}
+    vars:
+      - name: sig_name
+        type: shell
+        params:
+          cmd: '. "$HOME/.config/dotfiles/personal.env" 2>/dev/null; printf "%s" "${DOTFILES_SIG_NAME:-$(/usr/bin/git config --get user.name 2>/dev/null)}"'
+      - name: sig_email
+        type: shell
+        params:
+          cmd: '. "$HOME/.config/dotfiles/personal.env" 2>/dev/null; printf "%s" "${DOTFILES_SIG_EMAIL:-$(/usr/bin/git config --get user.email 2>/dev/null)}"'
 
   # ─── Local LLM via Ollama (qwen3-coder:30b) ──────────────────────────────
   # Requires: `ollama-up` running + qwen3-coder:30b pulled.

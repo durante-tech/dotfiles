@@ -15,7 +15,7 @@
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/__USER__/dotfiles/scripts/scripts/bd-apply.sh</string>
+        <string>__DOTFILES_DIR__/scripts/scripts/bd-apply.sh</string>
         <string>dawn</string>
     </array>
     <key>StartCalendarInterval</key>

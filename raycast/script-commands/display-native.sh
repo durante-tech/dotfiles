@@ -6,4 +6,6 @@
 # @raycast.packageName DOS · Screen
 # @raycast.description Both panels 1x pixel-perfect native (UI renders tiny)
 
-exec "$HOME/dotfiles/scripts/scripts/display-restore.sh" --native
+# Raycast launches with no shell env — pick up DOTFILES_DIR from personal.env.
+[ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
+exec "${DOTFILES_DIR:-$HOME/dotfiles}/scripts/scripts/display-restore.sh" --native

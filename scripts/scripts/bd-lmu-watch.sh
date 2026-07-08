@@ -25,8 +25,9 @@ set -u
 
 [ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
 
-APPLY="$HOME/dotfiles/scripts/scripts/bd-apply.sh"
-WAKE="$HOME/dotfiles/scripts/scripts/bd-wake.sh"
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+APPLY="$DOTFILES_DIR/scripts/scripts/bd-apply.sh"
+WAKE="$DOTFILES_DIR/scripts/scripts/bd-wake.sh"
 BUCKET_FILE="/tmp/bd-lmu-bucket"
 LOG_FILE="/tmp/bd-lmu-watch.log"
 CLI="/opt/homebrew/bin/betterdisplaycli"

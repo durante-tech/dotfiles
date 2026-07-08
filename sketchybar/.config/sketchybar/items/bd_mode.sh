@@ -3,6 +3,10 @@
 # bd_mode — current BetterDisplay mode indicator + click-to-cycle.
 # Listens for bd_mode_changed events (emitted by bd-apply.sh).
 
+# sketchybar runs under launchd — pick up DOTFILES_DIR override from personal.env.
+[ -f "$HOME/.config/dotfiles/personal.env" ] && . "$HOME/.config/dotfiles/personal.env"
+CYCLE="${DOTFILES_DIR:-$HOME/dotfiles}/scripts/scripts/bd-cycle.sh"
+
 bd_mode=(
     background.color="$PURE_BLACK"
     icon=󰖙
@@ -11,7 +15,7 @@ bd_mode=(
     label.font="$FONT:Bold:12.0"
     update_freq=0
     script="$PLUGIN_DIR/bd_mode.sh"
-    click_script="if [ \"\$BUTTON\" = right ]; then $HOME/dotfiles/scripts/scripts/bd-cycle.sh prev; else $HOME/dotfiles/scripts/scripts/bd-cycle.sh next; fi"
+    click_script="if [ \"\$BUTTON\" = right ]; then $CYCLE prev; else $CYCLE next; fi"
 )
 
 sketchybar --add event bd_mode_changed

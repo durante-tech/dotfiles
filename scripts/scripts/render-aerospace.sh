@@ -37,9 +37,14 @@ if [ "$DRY_RUN" = true ]; then
     exit 0
 fi
 
+# Escape sed replacement metacharacters (&, \, delimiter) so a repo path
+# containing them can't corrupt the rendered bindings.
+DOTFILES_DIR_ESC=$(printf '%s' "$DOTFILES_DIR" | sed -e 's/[&\\|]/\\&/g')
+
 sed \
     -e "s|@DOTFILES_MONITOR_BUILTIN@|${BUILTIN}|g" \
     -e "s|@DOTFILES_MONITOR_EXTERNAL@|${EXTERNAL}|g" \
+    -e "s|@DOTFILES_DIR@|${DOTFILES_DIR_ESC}|g" \
     "$TEMPLATE" > "$OUTPUT"
 
 echo "rendered: $OUTPUT (builtin='$BUILTIN' external='$EXTERNAL')"

@@ -280,17 +280,20 @@ alt-shift-l = ['join-with right', 'mode main']
 
 # BetterDisplay mode-switching chord. Entry: alt-shift-x. Single key picks the mode.
 [mode.bd-mode.binding]
-# AeroSpace's exec-and-forget runs commands directly (no shell), so $HOME
-# would not expand. Wrap with /bin/bash -c "..." to get shell expansion.
-w = ['exec-and-forget /bin/bash -c "$HOME/dotfiles/scripts/scripts/bd-apply.sh dawn"', 'mode main']
-d = ['exec-and-forget /bin/bash -c "$HOME/dotfiles/scripts/scripts/bd-apply.sh day"', 'mode main']
-a = ['exec-and-forget /bin/bash -c "$HOME/dotfiles/scripts/scripts/bd-apply.sh afternoon"', 'mode main']
-e = ['exec-and-forget /bin/bash -c "$HOME/dotfiles/scripts/scripts/bd-apply.sh evening"', 'mode main']
-n = ['exec-and-forget /bin/bash -c "$HOME/dotfiles/scripts/scripts/bd-apply.sh night"', 'mode main']
-m = ['exec-and-forget /bin/bash -c "$HOME/dotfiles/scripts/scripts/bd-apply.sh meeting"', 'mode main']
-r = ['exec-and-forget /bin/bash -c "$HOME/dotfiles/scripts/scripts/bd-apply.sh read"', 'mode main']
-s = ['exec-and-forget /bin/bash -c "$HOME/dotfiles/scripts/scripts/bd-apply.sh stream"', 'mode main']
-c = ['exec-and-forget /bin/bash -c "$HOME/dotfiles/scripts/scripts/bd-apply.sh cinema"', 'mode main']
+# AeroSpace's exec-and-forget runs commands directly (no shell). @DOTFILES_DIR@
+# is substituted with the absolute repo path by render-aerospace.sh at render
+# time — do NOT swap it for a runtime env var; the rendered aerospace.toml is a
+# static file with no further substitution. /bin/bash -c wrap kept for shell
+# semantics of the invoked script.
+w = ['exec-and-forget /bin/bash -c "@DOTFILES_DIR@/scripts/scripts/bd-apply.sh dawn"', 'mode main']
+d = ['exec-and-forget /bin/bash -c "@DOTFILES_DIR@/scripts/scripts/bd-apply.sh day"', 'mode main']
+a = ['exec-and-forget /bin/bash -c "@DOTFILES_DIR@/scripts/scripts/bd-apply.sh afternoon"', 'mode main']
+e = ['exec-and-forget /bin/bash -c "@DOTFILES_DIR@/scripts/scripts/bd-apply.sh evening"', 'mode main']
+n = ['exec-and-forget /bin/bash -c "@DOTFILES_DIR@/scripts/scripts/bd-apply.sh night"', 'mode main']
+m = ['exec-and-forget /bin/bash -c "@DOTFILES_DIR@/scripts/scripts/bd-apply.sh meeting"', 'mode main']
+r = ['exec-and-forget /bin/bash -c "@DOTFILES_DIR@/scripts/scripts/bd-apply.sh read"', 'mode main']
+s = ['exec-and-forget /bin/bash -c "@DOTFILES_DIR@/scripts/scripts/bd-apply.sh stream"', 'mode main']
+c = ['exec-and-forget /bin/bash -c "@DOTFILES_DIR@/scripts/scripts/bd-apply.sh cinema"', 'mode main']
 esc = 'mode main'
 enter = 'mode main'
 

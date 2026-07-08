@@ -27,9 +27,12 @@ for arg in "$@"; do
     esac
 done
 
+# Repo root = this script's directory; DOTFILES_DIR env var overrides.
+DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
+
 PERSONAL_DIR="$HOME/.config/dotfiles"
 PERSONAL_ENV="$PERSONAL_DIR/personal.env"
-EXAMPLE="$HOME/dotfiles/templates/personal.env.example"
+EXAMPLE="$DOTFILES_DIR/templates/personal.env.example"
 
 # Colors
 B='\033[0;34m'; G='\033[0;32m'; Y='\033[1;33m'; R='\033[0;31m'; N='\033[0m'
@@ -141,9 +144,9 @@ ok "Wrote $PERSONAL_ENV"
 hdr "Follow-up"
 
 # Auto-render aerospace.toml so the new monitor names take effect immediately.
-if [ -x "$HOME/dotfiles/scripts/scripts/render-aerospace.sh" ]; then
+if [ -x "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" ]; then
     say "Rendering aerospace.toml from new monitor values..."
-    DOTFILES_DIR="$HOME/dotfiles" "$HOME/dotfiles/scripts/scripts/render-aerospace.sh" || \
+    DOTFILES_DIR="$DOTFILES_DIR" "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" || \
         warn "render-aerospace.sh failed — re-run manually"
     command -v aerospace >/dev/null 2>&1 && aerospace reload-config 2>/dev/null && ok "AeroSpace reloaded"
 fi

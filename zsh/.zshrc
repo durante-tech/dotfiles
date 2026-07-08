@@ -237,7 +237,7 @@ alias wpw='~/scripts/wallpaper-workspace.sh'                      # manual per-w
 alias wpl='tail -f ~/Library/Logs/wallpaper-rotate.log'           # watch rotation log
 wps() {                                                           # open shader in Plash
   local shader="${1:-matrix}"
-  local file="$HOME/dotfiles/wallpapers/shaders/${shader}.html"
+  local file="${DOTFILES_DIR:-$HOME/dotfiles}/wallpapers/shaders/${shader}.html"
   [ -f "$file" ] || { echo "no shader: $shader (try: matrix|aurora|flowfield)"; return 1; }
   open -a Plash "$file" 2>/dev/null || open "$file"
 }
@@ -308,7 +308,7 @@ alias dosa="dos -l -m full --dangerously-skip-permissions"
 # for direct DDC writes; --favoriteMode slot mechanism is broken on BetterDisplay
 # 4.3.0 pre-release, see bd-apply.sh header).
 if command -v betterdisplaycli >/dev/null 2>&1; then
-  alias bd-apply="$HOME/dotfiles/scripts/scripts/bd-apply.sh"
+  alias bd-apply="${DOTFILES_DIR:-$HOME/dotfiles}/scripts/scripts/bd-apply.sh"
   alias bd-dawn='bd-apply dawn'
   alias bd-day='bd-apply day'
   alias bd-afternoon='bd-apply afternoon'

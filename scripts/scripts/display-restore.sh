@@ -150,5 +150,5 @@ fi
 # drifted its NSScreenNumber (Übersicht keys selected-screens on it; it is not
 # stable). Best-effort + backgrounded so it never blocks the layout apply; the sync
 # is a cheap no-op unless the number actually changed.
-SYNC="$HOME/dotfiles/scripts/scripts/ubersicht-screen-sync.sh"
+SYNC="${DOTFILES_DIR:-$HOME/dotfiles}/scripts/scripts/ubersicht-screen-sync.sh"
 [[ -x "$SYNC" ]] && "$SYNC" >/dev/null 2>&1 &

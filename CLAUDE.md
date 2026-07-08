@@ -19,7 +19,11 @@ This is a macOS-focused dotfiles repository using **GNU Stow** for symlink manag
 # Manual stow all packages from dotfiles directory
 stow -t ~ .
 
-# Stow individual packages
+# Stow individual packages (authoritative list = PACKAGES in install.sh:
+# aerospace atuin espanso fastfetch ghostty karabiner kitty mise mpd nvim rmpc
+# scripts sketchybar starship tmux ubersicht w3m wallpapers wezterm yazi zed zsh.
+# launchagents/, raycast/, and macos/ are NOT stow targets — setup.sh --configure
+# renders/installs them.)
 stow -t ~ zsh nvim tmux starship aerospace ghostty w3m yazi sketchybar
 
 # Re-stow after configuration changes
@@ -85,6 +89,17 @@ nvim/
 | **W3m** | `w3m/.w3m/config` + `keymap` | Terminal web browser with vi-keys |
 | **Sketchybar** | `sketchybar/.config/sketchybar/` | macOS top bar with 20+ status plugins |
 | **Scripts** | `scripts/scripts/` | Custom utilities (tmux-sessionizer, fzf helpers) |
+| **Kitty / WezTerm** | `kitty/.config/kitty/`, `wezterm/.config/wezterm/` | Alternate terminal emulators |
+| **Karabiner** | `karabiner/.config/karabiner/karabiner.json` | Keyboard remapping |
+| **Espanso** | `espanso/Library/Application Support/espanso/` | Text expander snippets |
+| **LaunchAgents** | `launchagents/Library/LaunchAgents/*.plist.template` | launchd jobs (`__USER__` templates rendered by `setup.sh --configure`) |
+| **Raycast** | `raycast/script-commands/` | Script commands that exec-delegate to `scripts/scripts/` |
+| **Übersicht** | `ubersicht/Library/Application Support/Übersicht/widgets/` | Desktop widgets |
+| **Fastfetch / mpd / rmpc / mactop / zed / atuin / mise** | `<pkg>/.config/<pkg>/` | Smaller stowed configs |
+| **macOS** | `macos/` | System defaults scripts |
+| **Wallpapers** | `wallpapers/` | Rotation assets + Plash shaders |
+| **Site** | `site/` | Astro/React docs site (not stowed) |
+| **Templates** | `templates/personal.env.example` | Personalization values (copied to `~/.config/dotfiles/personal.env` by `personalize.sh`) |
 
 ---
 
@@ -931,6 +946,22 @@ Python packaging uses **uv** (already in PATH via `.zprofile`).
 ---
 
 ## Special Conventions
+
+### Path Agnosticism (enforced)
+
+- Never write `/Users/<name>` — use `$HOME` in shell, `~` in config comments.
+- Scripts that reference the repo use `DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"`
+  (see `smart-pull.sh`, `scripts/scripts/render-aerospace.sh`) — never a bare
+  `$HOME/dotfiles` literal.
+- LaunchAgents are `.plist.template` files with `__USER__` placeholders, rendered by
+  `setup.sh --configure`. Never commit a rendered `.plist`.
+- Personal data and machine-specific overrides (including `DOTFILES_DIR`) belong in
+  `~/.config/dotfiles/personal.env` — outside the repo, created by `personalize.sh`
+  from `templates/personal.env.example` — sourced with existence guards, never
+  inline in configs. Daemon contexts (launchd, sketchybar, Raycast) never see
+  interactive-shell exports, so overrides MUST live there.
+- References to DOS-private `~/Durante/` paths must existence-guard and gracefully
+  no-op when absent.
 
 ### Color Scheme Consistency
 

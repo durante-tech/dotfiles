@@ -27,7 +27,8 @@ set -u
 
 [ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
 
-APPLY="$HOME/dotfiles/scripts/scripts/bd-apply.sh"
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+APPLY="$DOTFILES_DIR/scripts/scripts/bd-apply.sh"
 DEV="${DOTFILES_BD_DEV_TAG:-2}"          # DEV-MAIN tagID (default: MBP 14")
 PORT="${DOTFILES_BD_PORT_TAG:-60}"       # PORTRAIT-MONITOR tagID (default: Dell U2718Q)
 
