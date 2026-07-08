@@ -71,10 +71,23 @@ The bd-* scripts source this file at top.
 |-------|--------------|------------|
 | `launchagents/Library/LaunchAgents/com.lucas.bd-*.plist.template` | `com.lucas.bd-*` | macOS launchd label prefix |
 
-The `.plist.template` files use `__USER__` placeholder substitution at install
-time via `setup.sh render_launchagents()`. **No manual edit needed** — the
-running user's `$USER` is substituted automatically. Verify after install:
-`ls ~/Library/LaunchAgents/`.
+The `.plist.template` files use `__USER__` and `__DOTFILES_DIR__` placeholder
+substitution at install time via `setup.sh render_launchagents()`. **No manual
+edit needed** — the running user's `$USER` and the absolute repo path are
+substituted automatically. Verify after install: `ls ~/Library/LaunchAgents/`.
+
+### Email signature (espanso `:sig`)
+
+| Where | What it reads |
+|-------|--------------|
+| `espanso/.../match/base.yml` (`:sig` trigger) | `DOTFILES_SIG_NAME` / `DOTFILES_SIG_EMAIL` from `personal.env`, falling back to `git config user.name` / `user.email` |
+
+**Override:** add to `~/.config/dotfiles/personal.env`:
+```bash
+DOTFILES_SIG_NAME="Your Name"
+DOTFILES_SIG_EMAIL="you@example.com"
+```
+No name or email is stored in the repo.
 
 ---
 
@@ -133,6 +146,22 @@ read but don't fail.
 **If you don't run DOS:** these widgets show blank / scripts fail silently.
 That's the intended degradation. Don't try to "fix" them — they're not
 meant to ship beyond the maintainer.
+
+---
+
+## Layer 6 — Repo location (only if not `~/dotfiles`)
+
+Every script resolves the repo through `DOTFILES_DIR` (default `$HOME/dotfiles`).
+Daemon contexts (launchd, sketchybar, Raycast) never see shell exports, so the
+override lives in `personal.env`:
+
+```bash
+DOTFILES_DIR="$HOME/code/dotfiles"
+```
+
+After setting it, re-run `./setup.sh --configure` (re-renders LaunchAgent
+plists) and `scripts/scripts/render-aerospace.sh` (re-bakes the AeroSpace
+bd-mode chord paths) — both bake absolute paths at render time.
 
 ---
 

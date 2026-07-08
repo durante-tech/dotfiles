@@ -16,7 +16,10 @@ set -e  # Exit on error
 # =============================================================================
 
 DOTFILES_REPO="https://github.com/durante-tech/dotfiles.git"
-DOTFILES_DIR="$HOME/dotfiles"
+# Clone target / repo root; env var overrides for non-default locations
+# (install.sh may run via curl before the clone exists, so it cannot derive
+# the path from its own location like setup.sh/personalize.sh do).
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 TPM_DIR="$HOME/.tmux/plugins/tpm"
 
 # Colors for output
