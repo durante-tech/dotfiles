@@ -38,6 +38,16 @@ launchagents/.rendered/
 # render-aerospace.sh produces aerospace.toml from personal.env at install time)
 aerospace/.config/aerospace/aerospace.toml
 
+# w3m runtime state — live session cookies/history/bookmarks must never be
+# tracked (~/.w3m symlinks into the repo, so w3m writes them into the tree).
+# Structural fix would be `stow --no-folding` for the w3m package.
+w3m/.w3m/cookie
+w3m/.w3m/history
+w3m/.w3m/request.log
+w3m/.w3m/bookmark.html
+w3m/.w3m/pre_form
+w3m/.w3m/w3mcache*
+
 # DuranteOS internal state
 .dos/
 
