@@ -63,5 +63,5 @@ keymap b VIEW_BOOKMARK
 keymap M EXTERN
 keymap ESC-M EXTERN_LINK
 
-# Help
-keymap ? HELP
+# Help (was "keymap ? HELP" — it shadowed SEARCH_BACK; H is history, use :help)
+keymap ESC-? HELP

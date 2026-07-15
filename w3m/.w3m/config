@@ -29,7 +29,9 @@ active_style 1
 active_color bright cyan
 active_bg_color terminal
 
-# Display image
+# Display image — NOTE: brew w3m 0.5.6 is built WITHOUT inline-image support;
+# these lines (and pixel_per_*/max_load_image) are inert until an image-enabled
+# build is installed. Kept for that eventuality.
 display_image 1
 auto_image 1
 
@@ -39,14 +41,8 @@ use_proxy 0
 # Navigation
 keymap_file ~/.w3m/keymap
 
-# User-Agent
-user_agent Mozilla/5.0 (compatible; w3m/0.5.3+git20230121)
-
 # Editor
 editor nvim
-
-# File type associations
-use_external_dirlist 0
 
 # Security
 ssl_verify_server 1
@@ -67,9 +63,6 @@ wrap_search 1
 # Visual
 confirm_qq 1
 close_tab_back 0
-
-# Bookmarks
-bookmark_file ~/.w3m/bookmark.html
 
 # Performance
 max_load_image 4

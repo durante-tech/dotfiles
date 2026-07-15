@@ -48,6 +48,17 @@ w3m/.w3m/bookmark.html
 w3m/.w3m/pre_form
 w3m/.w3m/w3mcache*
 
+# mpd runtime state — mpd.conf points these at ~/.local/state/mpd/, but keep
+# the repo dir clean if an old daemon writes here through the stow symlink
+mpd/.config/mpd/database
+mpd/.config/mpd/state
+mpd/.config/mpd/sticker.sql
+mpd/.config/mpd/mpd.log
+mpd/.config/mpd/pid
+mpd/.config/mpd/mpd.db
+mpd/.config/mpd/mpd.pid
+mpd/.config/mpd/mpdstate
+
 # DuranteOS internal state
 .dos/
 
