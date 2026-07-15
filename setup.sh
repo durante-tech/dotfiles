@@ -467,14 +467,15 @@ verify_config() {
         issues=$((issues + 1))
     fi
 
-    # AeroSpace monitor-pattern doctor — dead workspace pins degrade to the
-    # template's fallback chains, so this warns without counting as an issue.
+    # AeroSpace doctor — three checks: monitor patterns (dead pins degrade to
+    # the template's fallback chains), AeroSpace >= 0.20.0 (config-version=2
+    # keys), persistent-workspaces drift. Warns without counting as an issue.
     if [[ -x "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" ]]; then
-        echo -e "\nAeroSpace monitor patterns..."
+        echo -e "\nAeroSpace doctor..."
         if DOTFILES_DIR="$DOTFILES_DIR" "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" --doctor; then
-            print_success "Monitor patterns match connected displays"
+            print_success "AeroSpace doctor checks passed"
         else
-            print_warning "Dead monitor pattern(s) — run ./personalize.sh"
+            print_warning "See doctor WARN lines above for the specific fix (personalize.sh, brew upgrade --cask aerospace, or persistent-workspaces edit)"
         fi
     fi
 

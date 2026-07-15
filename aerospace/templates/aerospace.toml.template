@@ -4,6 +4,13 @@
 # It's not necessary to copy all keys to your config.
 # If the key is missing in your config, "default-config.toml" will serve as a fallback
 
+# Config version for compatibility and deprecations (max is 2; omitting = 1).
+# v2 makes persistent-workspaces explicit instead of inferred from keybinding
+# right-hand sides — required here because the E/N workspace bindings are
+# commented out (Brazilian accents) yet on-window-detected still routes apps
+# to E and N. See: https://nikitabobko.github.io/AeroSpace/guide#config-version
+config-version = 2
+
 # You can use it to add commands that run after login to macOS user session.
 # 'start-at-login' needs to be 'true' for 'after-login-command' to work
 # Available commands: https://nikitabobko.github.io/AeroSpace/commands
@@ -39,6 +46,12 @@ start-at-login = true
 
 # Unhide hidden apps when focusing them
 automatically-unhide-macos-hidden-apps = true
+
+# Workspaces that stay alive even when empty (needs config-version = 2;
+# rationale in the config-version comment above). Keep in sync with the
+# bindings, [workspace-to-monitor-force-assignment], and on-window-detected
+# rules below when adding or removing a workspace.
+persistent-workspaces = ['1', '2', 'A', 'B', 'D', 'E', 'F', 'M', 'N', 'T']
 
 # Normalizations. See: https://nikitabobko.github.io/AeroSpace/guide#normalization
 enable-normalization-flatten-containers = true
@@ -128,6 +141,7 @@ outer.top = [
 A = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # AI engineer apps (Claude, Codex) on laptop
 B = ['^@DOTFILES_MONITOR_EXTERNAL@$', 'secondary', 'main']   # Browser on portrait
 D = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Development on laptop
+E = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Email on laptop
 F = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Finder on laptop (floats)
 M = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Messaging on laptop
 N = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Notes on laptop
@@ -205,12 +219,14 @@ alt-2 = 'workspace 2'
 # alt-9 = 'workspace 9'
 alt-a = 'workspace A' # for AI engineer apps (Claude, Codex) — also fires on Caps+A via Karabiner Hyper→alt rewrite
 alt-b = 'workspace B' # for browser
-# COMMENTED OUT FOR BRAZILIAN ACCENTS - ROLLBACK: uncomment line below
+# Unbound by design: alt-e is the pt-BR acute-accent dead key. Workspace E is
+# reached via Karabiner Hyper+E and kept alive by persistent-workspaces above.
 # alt-e = 'workspace E' # for email
 alt-f = 'workspace F' # for finder
 alt-d = 'workspace D' # for development
 alt-m = 'workspace M' #
-# COMMENTED OUT FOR BRAZILIAN ACCENTS - ROLLBACK: uncomment line below
+# Unbound by design: alt-n is the pt-BR tilde dead key. Workspace N is
+# reached via Karabiner Hyper+N and kept alive by persistent-workspaces above.
 # alt-n = 'workspace N' # for notes
 # alt-p = 'workspace P'
 alt-t = 'workspace T' # for terminal shell
@@ -228,12 +244,14 @@ alt-shift-2 = 'move-node-to-workspace 2'
 # alt-shift-9 = 'move-node-to-workspace 9'
 alt-shift-a = 'move-node-to-workspace A'
 alt-shift-b = 'move-node-to-workspace B'
-# COMMENTED OUT FOR BRAZILIAN ACCENTS - ROLLBACK: uncomment line below
+# Unbound by design (pt-BR acute dead key) — move windows to E via
+# on-window-detected rules or `aerospace move-node-to-workspace E`.
 # alt-shift-e = 'move-node-to-workspace E'
 alt-shift-f = 'move-node-to-workspace F'
 alt-shift-d = 'move-node-to-workspace D'
 alt-shift-m = 'move-node-to-workspace M'
-# COMMENTED OUT FOR BRAZILIAN ACCENTS - ROLLBACK: uncomment line below
+# Unbound by design (pt-BR tilde dead key) — move windows to N via
+# on-window-detected rules or `aerospace move-node-to-workspace N`.
 # alt-shift-n = 'move-node-to-workspace N'
 # alt-shift-p = 'move-node-to-workspace P'
 alt-shift-t = 'move-node-to-workspace T'
@@ -244,8 +262,10 @@ alt-tab = 'workspace-back-and-forth'
 alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
-# COMMENTED OUT FOR BRAZILIAN ACCENTS - ROLLBACK: uncomment line below
-# alt-shift-semicolon = 'mode service'
+# Original alt-shift-semicolon entry was commented out for Brazilian accents;
+# alt-shift-s is accent-safe (pt-BR accents use Option dead keys, not
+# Option+Shift+letter) and mnemonic: s = service.
+alt-shift-s = 'mode service'
 
 alt-shift-r = 'mode resize'
 alt-shift-x = 'mode bd-mode'

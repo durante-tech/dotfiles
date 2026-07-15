@@ -15,7 +15,8 @@ i3-like tiling window manager for macOS with Alt-based keybindings.
 | `Alt+Shift+C` | Close window |
 | `Alt+Shift+Space` | Toggle fullscreen |
 | `Alt+R` | Reload config |
-| `Alt+S` | Toggle sketchybar |
+| `Alt+Shift+S` | Enter service mode (flatten tree, join-with, close-others) |
+| `Ctrl+Shift+\` | Toggle sketchybar (via Karabiner — terminals swallow Option) |
 
 ## Workspaces
 
@@ -23,13 +24,14 @@ i3-like tiling window manager for macOS with Alt-based keybindings.
 |-----|-----------|------|
 | `Alt+1` | 1 | General (Built-in) |
 | `Alt+2` | 2 | Secondary (Portrait) |
+| `Alt+A` | AI | Claude, Codex, ChatGPT, Perplexity |
 | `Alt+D` | Development | IDEs, Cursor, VS Code |
 | `Alt+T` | Terminal | Ghostty, iTerm, terminals |
 | `Alt+B` | Browser | Chrome, Safari, Firefox, Zen |
 | `Alt+M` | Messaging | Slack, Discord, WhatsApp |
 | `Alt+F` | Finder | Finder (floating) |
 
-> **Note**: `Alt+N` (Notes) and `Alt+E` (Email) are disabled for Brazilian accent compatibility. Uncomment in config to enable.
+> **Note**: `Alt+N` (Notes) and `Alt+E` (Email) stay unbound — they are pt-BR accent dead keys. Reach those workspaces via Karabiner `Hyper+N` / `Hyper+E`; `persistent-workspaces` keeps them alive when empty.
 
 ### Move to Workspace
 

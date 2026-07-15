@@ -83,7 +83,7 @@ nvim/
 | | `nvim/.config/nvim/lua/sethy/` | Modular plugin configs (~30 files) |
 | **Tmux** | `tmux/.config/tmux/tmux.conf` | Multiplexer config with TPM plugins |
 | **Starship** | `starship/.config/starship/starship.toml` | Shell prompt with Catppuccin theme |
-| **AeroSpace** | `aerospace/.config/aerospace/aerospace.toml` | macOS window manager, multi-monitor setup |
+| **AeroSpace** | `aerospace/templates/aerospace.toml.template` | macOS window manager — edit the template; `.config/.../aerospace.toml` is gitignored render output |
 | **Ghostty** | `ghostty/.config/ghostty/config` | Primary terminal emulator |
 | **Yazi** | `yazi/.config/yazi/` | Terminal file manager (keymap, yazi.toml, theme) |
 | **W3m** | `w3m/.w3m/config` + `keymap` | Terminal web browser with vi-keys |
@@ -691,31 +691,42 @@ vim.lsp.enable("server_name")
 
 ## AeroSpace (Window Manager)
 
+**Config pipeline**: git source of truth is `aerospace/templates/aerospace.toml.template`;
+`aerospace/.config/aerospace/aerospace.toml` is gitignored render output. Edit the
+template, then `scripts/scripts/render-aerospace.sh && aerospace reload-config`.
+`render-aerospace.sh --doctor` checks monitor patterns, AeroSpace version
+(config-version=2 keys need >= 0.20.0), and persistent-workspaces drift.
+
+Uses `config-version = 2` with an explicit `persistent-workspaces` list — all 10
+workspaces stay alive when empty (E and N have no alt bindings; without the list
+they vanished from listings).
+
 ### Workspace-to-Monitor Mapping
 
 | Workspace | Monitor | Apps |
 |-----------|---------|------|
 | **1** | Built-in Retina | Main workspace |
 | **2** | Portrait Monitor | Secondary |
-| **D** (Development) | Built-in | IDEs, Cursor, VS Code |
+| **A** (AI) | Built-in | Claude, Codex, ChatGPT, Perplexity |
+| **D** (Development) | Built-in | IDEs, Cursor, VS Code, Zed |
 | **T** (Terminal) | Portrait Monitor | Ghostty, terminals |
-| **B** (Browser) | Built-in | Chrome, Safari, Firefox |
-| **M** (Messaging) | Built-in | Slack, Discord, Telegram |
-| **N** (Notes) | Built-in | Notion, Obsidian, ChatGPT, Claude |
-| **F** (Finder) | Floating layout | Finder |
-| **E** (Email) | Built-in | Spark, Apple Mail |
+| **B** (Browser) | Portrait Monitor | Chrome, Zen, Arc, Dia, Safari, Firefox |
+| **M** (Messaging) | Built-in | Slack, Discord, Telegram, WhatsApp, Signal |
+| **N** (Notes) | Built-in | Notion, Obsidian, Apple Notes (no alt-n binding — Karabiner Hyper+N) |
+| **F** (Finder) | Built-in | (Finder floats on the current screen — not routed to F) |
+| **E** (Email) | Built-in | Spark, Apple Mail (no alt-e binding — Karabiner Hyper+E) |
 
 ### Main Keybindings (Alt key prefix)
 
 | Binding | Action |
 |---------|--------|
-| `Alt+h/j/k/l` | Focus window left/down/up/right |
+| `Alt+h/j/k/l` | Focus window left/down/up/right (wraps) |
 | `Alt+Shift+h/j/k/l` | Move window left/down/up/right |
 | `Alt+Ctrl+h/j/k/l` | Swap adjacent windows |
-| `Alt+[` / `Alt+]` | Cycle through windows |
-| `Alt+1/2/B/D/T/M/N/F` | Switch to workspace |
-| `Alt+Shift+1/2/B/D/T/M/N/F` | Move window to workspace |
-| `Alt+Tab` | Workspace back-and-forth |
+| `Alt+[` / `Alt+]` | Cycle windows depth-first (dfs-prev/next) |
+| `Alt+1/2/A/B/D/T/M/F` | Switch to workspace (E/N via Karabiner Hyper+E/N) |
+| `Alt+Shift+1/2/A/B/D/T/M/F` | Move window to workspace |
+| `Alt+Tab` or `Alt+0` | Workspace back-and-forth |
 | `Alt+Shift+Tab` | Move workspace to other monitor |
 | `Alt+Enter` | Open Ghostty |
 | `Alt+Shift+Space` | Fullscreen toggle |
@@ -724,18 +735,21 @@ vim.lsp.enable("server_name")
 | `Alt+.` | Floating layout |
 | `Alt+Shift+c` | Close window |
 | `Alt+r` | Reload config |
-| `Alt+s` | Toggle sketchybar |
+| `Alt+Shift+x` | BetterDisplay mode chord (bd-mode) |
+| `Alt+Shift+s` | Service mode (flatten tree, join-with, close-others) |
+
+Sketchybar toggle moved to Karabiner (`Ctrl+Shift+\`) — terminals swallow Option.
 
 ### Resize Mode
 
 Enter with `Alt+Shift+r`, then:
-- `h/j/k/l` to resize (50 units per press)
+- `h/j/k/l` fine resize (50), `Shift+h/j/k/l` coarse (200)
 - `b` to balance sizes
 - `Enter` / `Esc` to exit
 
 ### Gaps & Spacing
 
-Inner/outer gaps: 15px. Accordion padding: 30px. Portrait monitor top gap: 50px.
+Per-monitor: Built-in 10px (15 bottom), Portrait 15px (50 top). Accordion padding: 30px.
 
 ---
 
