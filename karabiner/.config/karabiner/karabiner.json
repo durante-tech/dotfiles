@@ -278,7 +278,7 @@
                                         "value": 1
                                     }
                                 ],
-                                "description": "Hyper + d -> Alt+D (workspace D)",
+                                "description": "Hyper + a -> Alt+A (workspace A)",
                                 "from": {
                                     "key_code": "a"
                                 },
@@ -575,7 +575,7 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "open -a 'Message.app'"
+                                        "shell_command": "open -a 'Messages.app'"
                                     }
                                 ],
                                 "type": "basic"
