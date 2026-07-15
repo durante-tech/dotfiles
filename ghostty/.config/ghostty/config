@@ -2,7 +2,7 @@
 config-file = themes/rosepine 
 background = #000000
 background-opacity = 0.75
-background-blur-radius = 23
+background-blur = 23
 # Helps transparency work with tiling WMs
 macos-window-shadow = false
 
@@ -20,8 +20,11 @@ font-feature = +dlig
 
 cursor-style = block
 cursor-style-blink = false
-cursor-invert-fg-bg = true
-cursor-color = #ffff00
+# Modern form of the deprecated cursor-invert-fg-bg = true. The old explicit
+# cursor-color = #ffff00 was dead config — the rosepine include loads after
+# this file and overrode it.
+cursor-color = cell-foreground
+cursor-text = cell-background
 
 macos-titlebar-style = hidden
 macos-option-as-alt = true

@@ -1,3 +1,4 @@
+# Milliseconds, not seconds — 3600 = 3.6s max per module command
 command_timeout = 3600
 
 "$schema" = 'https://starship.rs/config-schema.json'
@@ -146,7 +147,11 @@ else
 fi
 echo "$GIT_REMOTE_SYMBOL "
 """
-when = 'git rev-parse --is-inside-work-tree 2> /dev/null'
+# require_repo uses starship's internal repo detection — no git subprocess
+# per prompt (the old `when = git rev-parse` cost ~18ms every render).
+# `when = true` is required: custom modules default to when = false.
+when = true
+require_repo = true
 format = "at $output"
 
 [git_branch]
@@ -208,7 +213,7 @@ format = '[ $symbol( $context) ]($style)'
 disabled = true
 time_format = "%R"
 style = "bg:peach"
-format = '[[  $time ](fg:mantle bg:foam)]($style)'
+format = '[[  $time ](fg:mantle bg:peach)]($style)'
 
 [line_break]
 disabled = true 
