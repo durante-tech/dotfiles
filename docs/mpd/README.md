@@ -29,7 +29,7 @@ rmpc
 
 ## Data Files
 
-All stored in `~/.config/mpd/`:
+Playlists live in `~/.config/mpd/playlists/`; runtime state (database, state, sticker.sql, log, pid) lives in `~/.local/state/mpd/` — outside the stow-symlinked repo:
 
 | File | Purpose |
 |------|---------|

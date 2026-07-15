@@ -193,6 +193,7 @@ configure_environment() {
     mkdir -p "$HOME/scripts"
     mkdir -p "$HOME/.cache"
     mkdir -p "$HOME/.zsh/completions"
+    mkdir -p "$HOME/.local/state/mpd"   # mpd.conf runtime paths; mpd won't create parents
     print_success "Directories created"
 
     # Make scripts executable
@@ -209,6 +210,10 @@ configure_environment() {
         git clone https://github.com/tmux-plugins/tpm "$HOME/.config/tmux/.tmux/plugins/tpm" 2>/dev/null || true
         print_success "TPM installed - press prefix + I in tmux to install plugins"
     fi
+
+    # Python venv for nvim's python3 provider (Molten/Jupyter — pynvim).
+    # options.lua points python3_host_prog here with an existence guard.
+    setup_nvim_python
 
     # Compile native helper binaries (unlock-watch) before the agents that run
     # them are bootstrapped.
@@ -235,6 +240,27 @@ configure_environment() {
 # is unreliable on Apple Silicon). Compiled to ~/.local/bin so the LaunchAgent
 # runs an absolute path. Guarded on swiftc: a machine without the Swift
 # toolchain skips the helper and com.lucas.unlock-watch simply no-ops.
+
+setup_nvim_python() {
+    print_header "Nvim Python Provider"
+
+    if ! command -v python3 >/dev/null 2>&1; then
+        print_info "python3 not found — skipping nvim python provider venv"
+        return 0
+    fi
+
+    local VENV="$HOME/.venvs/nvim"
+    if [[ -x "$VENV/bin/python" ]] && "$VENV/bin/python" -c 'import pynvim' 2>/dev/null; then
+        print_info "nvim python venv already provisioned ($VENV)"
+        return 0
+    fi
+
+    if python3 -m venv "$VENV" 2>/dev/null && "$VENV/bin/pip" install -q pynvim 2>/dev/null; then
+        print_success "nvim python provider venv ready -> $VENV"
+    else
+        print_warning "Failed to provision $VENV (Molten/Jupyter provider disabled)"
+    fi
+}
 
 build_native_helpers() {
     print_header "Building Native Helpers"

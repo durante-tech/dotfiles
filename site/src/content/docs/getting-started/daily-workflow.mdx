@@ -376,7 +376,7 @@ Custom shell/terminal settings that can break Claude Code's TUI rendering. These
 
 | Setting | Issue | Fix |
 | ------- | ----- | --- |
-| `escape-time` (missing) | Default 500ms delay after Escape — creates input lag when switching panes | Added `set -g escape-time 0` |
+| `escape-time` (missing) | Old default 500ms delay after Escape created input lag | Set `set -s escape-time 10` (modern upstream default; 0 risks misparsed escapes) |
 | `focus-events` (missing) | Apps don't receive FocusIn/FocusOut — Claude Code can't redraw on pane switch | Added `set -g focus-events on` |
 | `-r` flag on resize `h/j/k/l` | Repeat timer shadows vim-tmux-navigator keys — pane feels "stuck" until Enter | Moved resize to uppercase `H/J/K/L` |
 | `-r` flag on maximize `m` | Repeat timer after one-shot action | Removed `-r` |
@@ -388,7 +388,7 @@ If Claude Code displays incorrectly, check:
 
 1. **Blank gap at bottom?** → `window-padding-balance` must be `true` in Ghostty
 2. **Text wrapping wrong?** → Remove any `adjust-cell-width` in Ghostty
-3. **Pane won't focus?** → Check for `-r` flags on tmux bindings + add `escape-time 0`
+3. **Pane won't focus?** → Check for `-r` flags on tmux bindings + a sane `escape-time` (10)
 4. **Garbled output?** → Remove any shell hooks emitting raw escape sequences (OSC 12, cursor manipulation)
 5. **Shift+Enter broken?** → Don't override it in Ghostty keybinds or zsh `bindkey`
 

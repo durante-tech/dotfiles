@@ -771,7 +771,7 @@ Per-monitor: Built-in 10px (15 bottom), Portrait 15px (50 top). Accordion paddin
 | `Cmd+B > ,` | Quick terminal |
 | `Cmd+I` | Inspector toggle |
 
-**Visual**: Rose-pine theme, 75% opacity, 23px blur, JetBrainsMono Nerd Font (16pt), yellow blinking cursor.
+**Visual**: Rose-pine theme, 75% opacity, 23px blur, JetBrainsMono Nerd Font (16pt), inverted block cursor (no blink).
 
 ---
 
@@ -835,7 +835,7 @@ Vi-style keybindings. Hidden files shown by default. Directories first, natural 
 
 ## W3m (Terminal Web Browser)
 
-Vi-style keybindings. Catppuccin Mocha colors. Image display enabled.
+Vi-style keybindings. Catppuccin Mocha colors. (Inline images configured but inert — brew w3m 0.5.6 is built without image support.)
 
 | Keys | Action |
 |------|--------|

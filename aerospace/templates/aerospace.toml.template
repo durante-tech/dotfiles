@@ -34,11 +34,8 @@ exec-on-workspace-change = ['/bin/bash', '-c',
     'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE; ~/scripts/wallpaper-workspace.sh "$AEROSPACE_FOCUSED_WORKSPACE" &'
 ]
 
-# Notify when mode changes (v0.19+) - useful for visual feedback
-# This runs AeroSpace commands when switching modes (e.g., entering resize mode)
-# To trigger external scripts, use exec-and-forget:
-# on-mode-changed = ['exec-and-forget sketchybar --trigger mode_change MODE=$AEROSPACE_MODE']
-# For now, we leave it empty - uncomment above line if you add mode indicator to sketchybar
+# Mode-change feedback: sketchybar's aerospace_mode item shows RESIZE (yellow)
+# / SERVICE (red) and hides on main — see sketchybar items/aerospace_mode.sh
 on-mode-changed = ['exec-and-forget sketchybar --trigger aerospace_mode_change MODE=$AEROSPACE_MODE']
 
 # Start AeroSpace at login
