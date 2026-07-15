@@ -1,7 +1,10 @@
 # Catppuccin Mocha theme for Yazi
 # https://github.com/catppuccin/yazi
+# Migrated 2026-07-15 to the yazi 26.x theme schema:
+# [manager]->[mgr], tab_*->[tabs], mode_*->[mode], separator_*->sep_left/right,
+# permissions_*->perm_*, [select]->[pick], help.exec->run, name->url globs.
 
-[manager]
+[mgr]
 cwd = { fg = "#89b4fa" }
 
 # Hovered
@@ -17,11 +20,6 @@ marker_selected = { fg = "#a6e3a1", bg = "#a6e3a1" }
 marker_copied = { fg = "#f9e2af", bg = "#f9e2af" }
 marker_cut = { fg = "#f38ba8", bg = "#f38ba8" }
 
-# Tab
-tab_active = { fg = "#1e1e2e", bg = "#cdd6f4" }
-tab_inactive = { fg = "#cdd6f4", bg = "#45475a" }
-tab_width = 1
-
 # Border
 border_symbol = "│"
 border_style = { fg = "#7f849c" }
@@ -29,15 +27,18 @@ border_style = { fg = "#7f849c" }
 # Highlighting
 syntect_theme = "~/.config/bat/themes/Catppuccin-mocha.tmTheme"
 
-[status]
-separator_open = ""
-separator_close = ""
-separator_style = { fg = "#45475a", bg = "#45475a" }
+[tabs]
+active = { fg = "#1e1e2e", bg = "#cdd6f4" }
+inactive = { fg = "#cdd6f4", bg = "#45475a" }
 
-# Mode
-mode_normal = { fg = "#1e1e2e", bg = "#89b4fa", bold = true }
-mode_select = { fg = "#1e1e2e", bg = "#a6e3a1", bold = true }
-mode_unset = { fg = "#1e1e2e", bg = "#f38ba8", bold = true }
+[mode]
+normal_main = { fg = "#1e1e2e", bg = "#89b4fa", bold = true }
+select_main = { fg = "#1e1e2e", bg = "#a6e3a1", bold = true }
+unset_main = { fg = "#1e1e2e", bg = "#f38ba8", bold = true }
+
+[status]
+sep_left = { open = "", close = "" }
+sep_right = { open = "", close = "" }
 
 # Progress
 progress_label = { fg = "#cdd6f4", bold = true }
@@ -45,11 +46,11 @@ progress_normal = { fg = "#89b4fa", bg = "#45475a" }
 progress_error = { fg = "#f38ba8", bg = "#45475a" }
 
 # Permissions
-permissions_t = { fg = "#89b4fa" }
-permissions_r = { fg = "#f9e2af" }
-permissions_w = { fg = "#f38ba8" }
-permissions_x = { fg = "#a6e3a1" }
-permissions_s = { fg = "#7f849c" }
+perm_type = { fg = "#89b4fa" }
+perm_read = { fg = "#f9e2af" }
+perm_write = { fg = "#f38ba8" }
+perm_exec = { fg = "#a6e3a1" }
+perm_sep = { fg = "#7f849c" }
 
 [input]
 border = { fg = "#89b4fa" }
@@ -57,7 +58,7 @@ title = {}
 value = {}
 selected = { reversed = true }
 
-[select]
+[pick]
 border = { fg = "#89b4fa" }
 active = { fg = "#f5c2e7" }
 inactive = {}
@@ -77,7 +78,7 @@ separator_style = { fg = "#585b70" }
 
 [help]
 on = { fg = "#f5c2e7" }
-exec = { fg = "#94e2d5" }
+run = { fg = "#94e2d5" }
 desc = { fg = "#9399b2" }
 hovered = { bg = "#585b70", bold = true }
 footer = { fg = "#45475a", bg = "#cdd6f4" }
@@ -102,11 +103,6 @@ rules = [
   { mime = "application/doc", fg = "#89b4fa" },
   { mime = "application/msword", fg = "#89b4fa" },
   # Fallback
-  { name = "*", fg = "#cdd6f4" },
-  { name = "*/", fg = "#89b4fa" },
+  { url = "*", fg = "#cdd6f4" },
+  { url = "*/", fg = "#89b4fa" },
 ]
-
-[icon]
-rules = []
-
-# : }}}
