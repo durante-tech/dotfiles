@@ -17,12 +17,16 @@ return {
 	},
 	opts = {
 		provider = "claude",
-		claude = {
-			endpoint = "https://api.anthropic.com",
-			model = "claude-sonnet-4-5",
-			timeout = 30000,
-			temperature = 0,
-			max_tokens = 4096,
+		providers = {
+			claude = {
+				endpoint = "https://api.anthropic.com",
+				model = "claude-sonnet-4-5",
+				timeout = 30000,
+				extra_request_body = {
+					temperature = 0,
+					max_tokens = 4096,
+				},
+			},
 		},
 		mappings = {
 			-- Disable defaults; remap under <leader>v to avoid clashing with claudecode.nvim
