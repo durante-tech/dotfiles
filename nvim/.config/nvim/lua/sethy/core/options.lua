@@ -4,6 +4,16 @@
 -- Disable netrw banner
 vim.cmd("let g:netrw_banner = 0")
 
+-- Python provider (Molten/Jupyter) — dedicated venv with pynvim; existence-
+-- guarded so machines without the venv fall back to auto-detection
+local nvim_py = vim.fn.expand("~/.venvs/nvim/bin/python")
+if vim.fn.executable(nvim_py) == 1 then
+    vim.g.python3_host_prog = nvim_py
+end
+
+-- Sessions: persist window-local options too (auto-session healthcheck)
+vim.opt.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
+
 -- line numbers
 vim.opt.nu = true
 vim.opt.relativenumber = true

@@ -10,13 +10,15 @@ return {
 	build = "make",
 	dependencies = {
 		"nvim-treesitter/nvim-treesitter",
-		"stevearc/dressing.nvim",
+		-- dressing.nvim removed: archived upstream, and it hijacked
+		-- vim.ui.input/select from Snacks; avante uses Snacks directly below.
 		"nvim-lua/plenary.nvim",
 		"MunifTanjim/nui.nvim",
 		"MeanderingProgrammer/render-markdown.nvim", -- already in stack; reused
 	},
 	opts = {
 		provider = "claude",
+		input = { provider = "snacks" },
 		providers = {
 			claude = {
 				endpoint = "https://api.anthropic.com",

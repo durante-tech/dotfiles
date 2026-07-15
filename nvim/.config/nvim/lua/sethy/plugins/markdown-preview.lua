@@ -5,7 +5,8 @@ return {
     build = "cd app && npm install",
     ft = { "markdown" },
     keys = {
-        { "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", desc = "Markdown Preview Toggle" },
+        -- ft-scoped: globally this collided with conform's <leader>mp (format)
+        { "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", desc = "Markdown Preview Toggle", ft = "markdown" },
     },
     config = function()
         vim.g.mkdp_auto_start = 0  -- Don't auto-open preview

@@ -24,5 +24,10 @@ require("lazy").setup(
         change_detection = {
             notify = false,
         },
+        -- image.nvim needs luarocks with Lua 5.1; homebrew dropped lua@5.1,
+        -- so let lazy build its own via hererocks (uses the system python3)
+        rocks = {
+            hererocks = true,
+        },
     }
 )
