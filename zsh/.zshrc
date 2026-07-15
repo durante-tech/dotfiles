@@ -44,7 +44,16 @@ eval "$(starship init zsh)"
 # `compdef:_comps: assignment to invalid subscript range` on re-source. fpath
 # already includes the deno completions dir set above; docker's completions add
 # to fpath later and intentionally rely on this cached dump.
-autoload -Uz compinit && compinit -C
+# Completion dirs that must be in fpath BEFORE compinit builds the dump:
+[[ -d "$HOME/.grok/completions/zsh" ]] && fpath=("$HOME/.grok/completions/zsh" $fpath)
+# Rebuild the dump at most once a day so new completion dirs get picked up;
+# otherwise trust the cache (-C) — a full compinit re-scans fpath every shell.
+autoload -Uz compinit
+if () { setopt localoptions extendedglob; [[ -n $HOME/.zcompdump(#qN.mh-24) ]]; }; then
+    compinit -C
+else
+    compinit
+fi
 
 # Zoxide
 command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
@@ -412,3 +421,9 @@ fi
 
 # Shell startup profiling output (matches the zmodload at top)
 [[ -n "$ZSH_PROFILE" ]] && zprof
+
+# Installer-appended blocks land here at EOF — re-home them (PATH → .zprofile
+# "All PATHS" section, completion fpath → above the compinit call), guarded.
+
+# bun completions
+[ -s "/Users/lgertel/.bun/_bun" ] && source "/Users/lgertel/.bun/_bun"

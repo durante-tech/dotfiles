@@ -14,6 +14,9 @@ export LANG=en_US.UTF-8
 # uv (Python package manager)
 export PATH="$HOME/.local/bin:$PATH"
 
+# grok CLI — guarded; installer originally appended an unguarded block to .zshrc
+[[ -d "$HOME/.grok/bin" ]] && export PATH="$HOME/.grok/bin:$PATH"
+
 # Add local ~/scripts to the PATH
 export PATH="$HOME/scripts:$PATH"
 
