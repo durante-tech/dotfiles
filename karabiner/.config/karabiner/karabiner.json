@@ -1473,6 +1473,30 @@
                                     }
                                 ],
                                 "type": "basic"
+                            },
+                            {
+                                "conditions": [
+                                    {
+                                        "name": "hyper_sublayer_s",
+                                        "type": "variable_if",
+                                        "value": 1
+                                    }
+                                ],
+                                "description": "AeroSpace service mode (accent-immune; direct chord is alt-shift-s)",
+                                "from": {
+                                    "key_code": "a",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "shell_command": "/opt/homebrew/bin/aerospace mode service"
+                                    }
+                                ],
+                                "type": "basic"
                             }
                         ]
                     },
