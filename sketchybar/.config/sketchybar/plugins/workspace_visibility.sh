@@ -40,7 +40,6 @@ declare -A VIS=(
 
     # context-sensitive dev tools
     [github]="1 2 A B D T F E"     # dev + AI + browser (PR review) + email
-    [claude]="1 2 A D T F"         # active dev / AI context
     [voice_server]="D T"           # DOS voice — only on development + terminal
 )
 

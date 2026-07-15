@@ -1,3 +1,4 @@
+#!/bin/bash
 # https://github.com/FelixKratz/dotfiles
 
 source "$CONFIG_DIR/colors.sh"
@@ -51,7 +52,7 @@ sketchybar --add item workspace_visibility center \
 ##### Left Items #####
 source "$ITEM_DIR/space.sh"
 # adds layout background for workspaces
-sketchybar --add bracket workspaces space.1 space.2 space.B space.D space.F space.M space.N space.T space.E \
+sketchybar --add bracket workspaces space.1 space.2 space.A space.B space.D space.F space.M space.N space.T space.E \
            --set workspaces background.color="$PURE_BLACK" \
 
 source "$ITEM_DIR/aerospace_mode.sh"
@@ -65,7 +66,7 @@ source "$ITEM_DIR/calendar.sh"
 ##### Right Items #####
 # Source order = right→left visually (first sourced sits rightmost).
 # Layout (right→left):
-#   battery | clock | bd_mode | weather | cpu | memory | network | github | mic | volume | obs | spotify | media_block
+#   battery | clock | bd_mode | weather | cpu | memory | network | github | mic | volume | obs | spotify
 source "$ITEM_DIR/battery.sh"
 source "$ITEM_DIR/clock.sh"
 source "$ITEM_DIR/bd_mode.sh"
@@ -86,7 +87,8 @@ sketchybar --add bracket comms mic volume obs \
            --set comms background.color="$PURE_BLACK"
 
 source "$ITEM_DIR/spotify.sh"
-source "$ITEM_DIR/media_block.sh"
+# media_block.sh removed: broken residue — re-sourced battery.sh (duplicate
+# item error) and referenced wifi.sh, deleted in 7041606
 
           
            

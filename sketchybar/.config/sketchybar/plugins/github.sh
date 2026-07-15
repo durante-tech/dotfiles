@@ -11,11 +11,9 @@ if ! command -v gh &> /dev/null; then
     exit 0
 fi
 
-# `grep -c '"id"'` exits with status 1 (and output "0") when there are no
-# matches. The prior `|| echo "0"` then appended a second "0", producing a
-# multi-line value that broke `[ "$COUNT" -eq 0 ]` with "integer expression
-# expected". Capture cleanly and default to 0.
-COUNT=$(gh api notifications 2>/dev/null | grep -c '"id"' 2>/dev/null)
+# gh's built-in jq gives one clean number (the old grep -c '"id"' overcounted
+# ~3x and an earlier `|| echo 0` variant produced multi-line values)
+COUNT=$(gh api notifications -q 'length' 2>/dev/null)
 COUNT=${COUNT:-0}
 
 if [ "$COUNT" -gt 0 ]; then

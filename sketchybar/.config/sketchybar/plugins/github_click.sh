@@ -12,7 +12,7 @@ fi
 
 # Refresh the unread-count header (best-effort; gh may be missing/unauthed).
 if command -v gh >/dev/null 2>&1; then
-    COUNT=$(gh api notifications 2>/dev/null | grep -c '"id"' 2>/dev/null)
+    COUNT=$(gh api notifications -q 'length' 2>/dev/null)
     COUNT=${COUNT:-0}
     if [ "$COUNT" -gt 0 ]; then
         sketchybar --set github.count label="$COUNT unread" label.color="$ORANGE"

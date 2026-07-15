@@ -17,9 +17,10 @@ CACHE_FILE="/tmp/sketchybar_network_cache"
 if [ -f "$CACHE_FILE" ]; then
     read -r PREV_IN PREV_OUT < "$CACHE_FILE"
 
-    # Calculate speed (bytes per second, update every 5 seconds)
-    DIFF_IN=$(( (BYTES_IN - PREV_IN) / 5 ))
-    DIFF_OUT=$(( (BYTES_OUT - PREV_OUT) / 5 ))
+    # Calculate speed in bytes/second — divisor must match the item's
+    # update_freq (15s in items/network.sh); /5 inflated speeds 3x
+    DIFF_IN=$(( (BYTES_IN - PREV_IN) / 15 ))
+    DIFF_OUT=$(( (BYTES_OUT - PREV_OUT) / 15 ))
 
     # Ensure non-negative values
     [ "$DIFF_IN" -lt 0 ] && DIFF_IN=0

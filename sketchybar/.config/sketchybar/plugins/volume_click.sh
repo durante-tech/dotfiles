@@ -1,22 +1,9 @@
 #!/bin/bash
 
-WIDTH=100
-
-detail_on() {
-  sketchybar --animate tanh 30 --set volume slider.width=$WIDTH
-}
-
-detail_off() {
-  sketchybar --animate tanh 30 --set volume slider.width=0
-}
-
-toggle_detail() {
-  INITIAL_WIDTH=$(sketchybar --query volume 2>/dev/null | jq -r ".slider.width // 0")
-  if [ "$INITIAL_WIDTH" -eq "0" ] 2>/dev/null; then
-    detail_on
-  else
-    detail_off
-  fi
+# Left-click opens Sound settings. (The old slider-width animation was dead
+# code — items/volume.sh converted volume from a slider to a plain item.)
+open_sound_settings() {
+  open "x-apple.systempreferences:com.apple.Sound-Settings.extension"
 }
 
 toggle_devices() {
@@ -44,9 +31,9 @@ toggle_devices() {
 }
 
 # Right-click or shift-click: show device picker
-# Left-click: toggle slider visibility
+# Left-click: open Sound settings
 if [ "$BUTTON" = "right" ] || [ "$MODIFIER" = "shift" ]; then
   toggle_devices
 else
-  toggle_detail
+  open_sound_settings
 fi

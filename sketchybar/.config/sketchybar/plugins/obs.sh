@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
 # OBS status plugin — turns red and shows "REC NNm" when recording, hides otherwise.
 
-# Bail silently if obs CLI not on PATH (during early boot or if OBS not installed)
-command -v obs >/dev/null 2>&1 || {
+# launchd PATH lacks ~/scripts AND ~/.bun/bin (the obs script's interpreter),
+# so provide both. Resolve the obs CLI with a fallback
+# (same pattern as obs_action.sh); bail silently only if truly absent
+export PATH="$HOME/.bun/bin:$PATH"
+OBS_BIN="$(command -v obs || echo "$HOME/scripts/obs")"
+[ -x "$OBS_BIN" ] || {
   sketchybar --set "$NAME" drawing=off
   exit 0
 }
 
-status_json=$(obs rec status 2>/dev/null || echo "")
+status_json=$("$OBS_BIN" rec status 2>/dev/null || echo "")
 
-if [[ -z "$status_json" ]] || ! echo "$status_json" | grep -q '"outputActive":\s*true'; then
+if [[ -z "$status_json" ]] || ! echo "$status_json" | tr -d ' ' | grep -q '"outputActive":true'; then
   sketchybar --set "$NAME" drawing=off
   exit 0
 fi

@@ -5,6 +5,7 @@
 # Uses the same obs WebSocket CLI as plugins/obs.sh.
 source "$CONFIG_DIR/colors.sh"
 
+export PATH="$HOME/.bun/bin:$PATH"   # obs script runs via bun; launchd PATH lacks it
 OBS_BIN="$(command -v obs || echo "$HOME/scripts/obs")"
 # sketchybar runs under launchd — pick up DOTFILES_DIR override from personal.env.
 [ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
