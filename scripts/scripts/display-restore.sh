@@ -16,7 +16,7 @@
 # drifted from target, because a redundant apply can itself flicker / disturb the
 # window manager. --force applies unconditionally.
 #
-# Usage: display-restore.sh [--daily | --stream | --hires | --native | --portrait] [--force | --dry-run]
+# Usage: display-restore.sh [--daily | --stream | --hires | --native | --portrait | --solo] [--force | --dry-run]
 #   --daily   : explicit alias for the default (built-in 1728x1117 + Samsung 1920x1080).
 #   --stream  : built-in at 1728x1080 (OBS-clean 2:1). Default is 1728x1117 (sharp).
 #   --hires   : Samsung external at 2560x1440 HiDPI (~78% more desktop area, stays
@@ -25,6 +25,16 @@
 #               scaling:off — pixel-perfect 1:1, zero scaling, but UI renders tiny.
 #   --portrait: Samsung rotated 90 to true-2x 1080x1920 portrait (backing 2160x3840
 #               == native — pixel-perfect, 1920px of crisp vertical space).
+#   --solo    : single-display / clamshell — drive the ONLY connected display at
+#               2560x1440 HiDPI landscape (override: DOTFILES_DISPLAY_SOLO_RES).
+#               UUID is detected live, so this works for any external 4K panel
+#               (the two-screen profiles above are pinned to this rig's UUIDs).
+#               Bare laptop (single display == built-in): applies the canonical
+#               built-in true-2x 1728x1117@120 instead. With >1 display
+#               connected it FALLS BACK to the daily layout (so a bd-profile
+#               cached as 'solo' can never disable wake restore after
+#               re-docking). Note: --solo ignores DOTFILES_DISPLAY_LAYOUT —
+#               that override describes a fixed multi-screen topology.
 #
 # Personal override (~/.config/dotfiles/personal.env): display UUIDs are
 # machine-specific, so override the WHOLE layout there as a newline-separated
@@ -59,6 +69,7 @@ for a in "$@"; do
     --hires)           PROFILE=hires ;;
     --native)          PROFILE=native ;;
     --portrait)        PROFILE=portrait ;;
+    --solo)            PROFILE=solo ;;
     --force|--dry-run) ACTION="$a" ;;
   esac
 done
@@ -118,6 +129,30 @@ fi
 
 [[ -x "$DP" ]] || { log "displayplacer not found at $DP"; exit 127; }
 
+# --solo overrides the assembled layout entirely: detect the single live display
+# at runtime (no hardcoded UUID — clamshell docks vary). One list snapshot for
+# count + id + kind, so the guard and the apply can't race a mid-enumeration
+# dock event. With >1 display we fall back to the daily layout already in args:
+# refusing here would let a cached bd-profile of 'solo' permanently disable the
+# wake-restore path after re-docking (bd-wake re-runs the cached profile).
+if [[ "$PROFILE" == solo ]]; then
+  SOLO_LIST="$("$DP" list 2>/dev/null)"
+  SOLO_COUNT="$(grep -c 'Persistent screen id:' <<< "$SOLO_LIST")"
+  if [[ "$SOLO_COUNT" -ne 1 ]]; then
+    log "solo: $SOLO_COUNT displays connected — falling back to daily layout"
+    PROFILE=daily   # heal the persisted bd-profile too (written below)
+  else
+    SOLO_ID="$(awk '/Persistent screen id:/{print $4; exit}' <<< "$SOLO_LIST")"
+    if grep -q 'MacBook built in screen' <<< "$SOLO_LIST"; then
+      # Bare laptop: canonical built-in true-2x, keep ProMotion.
+      SOLO_RES="1728x1117"; SOLO_HZ=120
+    else
+      SOLO_RES="${DOTFILES_DISPLAY_SOLO_RES:-2560x1440}"; SOLO_HZ=60
+    fi
+    args=("id:$SOLO_ID res:$SOLO_RES hz:$SOLO_HZ color_depth:8 enabled:true scaling:on origin:(0,0) degree:0")
+  fi
+fi
+
 [[ "$ACTION" == "--dry-run" ]] && { printf 'would apply:\n'; printf '  %s\n' "${args[@]}"; exit 0; }
 
 # Persist the active profile so bd-wake.sh re-applies it on wake. Without this,
@@ -126,14 +161,16 @@ fi
 mkdir -p "$HOME/.cache" 2>/dev/null || true
 printf '%s\n' "$PROFILE" > "$HOME/.cache/bd-profile" 2>/dev/null || true
 
-# drifted — true if any target screen's live res|rotation differs from the target.
+# drifted — true if any target screen's live res|scaling|rotation differs from
+# the target. Scaling matters: 2560x1440 at scaling:off on a 4K panel is a soft
+# non-retina 1x mode that res+rotation alone would wrongly read as canonical.
 drifted() {
   [[ "${1:-}" == "--force" ]] && return 0
   local line id want cur
   for line in "${args[@]}"; do
     id="$(sed -E 's/.*id:([A-Za-z0-9-]+).*/\1/' <<< "$line")"
-    want="$(sed -E 's/.*res:([0-9]+x[0-9]+).*degree:([0-9]+).*/\1|\2/' <<< "$line")"
-    cur="$("$DP" list 2>/dev/null | awk -v u="$id" 'index($0,u){f=1} f&&/Resolution:/{r=$2} f&&/Rotation:/{print r"|"$2; exit}')"
+    want="$(sed -E 's/.*res:([0-9]+x[0-9]+).*scaling:(on|off).*degree:([0-9]+).*/\1|\2|\3/' <<< "$line")"
+    cur="$("$DP" list 2>/dev/null | awk -v u="$id" 'index($0,u){f=1} f&&/Resolution:/{r=$2} f&&/Scaling:/{s=$2} f&&/Rotation:/{print r"|"s"|"$2; exit}')"
     [[ "$cur" != "$want" ]] && { log "drift on $id: live=$cur want=$want"; return 0; }
   done
   return 1

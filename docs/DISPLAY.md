@@ -9,7 +9,7 @@ capabilities are intentionally unused (see below).
 
 | Axis | Owner | State file | What it controls |
 |------|-------|-----------|------------------|
-| **Layout** (resolution / rotation / origin) | `display-restore.sh` (displayplacer) | `~/.cache/bd-profile` | which of the 5 profiles is active |
+| **Layout** (resolution / rotation / origin) | `display-restore.sh` (displayplacer) | `~/.cache/bd-profile` | which of the 6 profiles is active |
 | **Brightness / color** (DDC + EDR) | `bd-apply.sh` (betterdisplaycli) | `~/.cache/bd-state` | time/task brightness mode |
 
 These never collide: layout is resolution, brightness is DDC/EDR.
@@ -23,6 +23,7 @@ These never collide: layout is resolution, brightness is DDC/EDR.
 | `--hires` | 1728×1117 | 2560×1440 HiDPI | ~78% more area, slightly soft |
 | `--native` | 3456×2234 | 3840×2160 | 1x native, pixel-perfect, UI tiny |
 | `--portrait` | 1728×1117 | 1080×1920 (rot 90°) | 1920px crisp vertical |
+| `--solo` | — (or 1728×1117 if lid-open) | any single external: 2560×1440 HiDPI | clamshell/single display; UUID detected live; falls back to daily when >1 display |
 
 **Sharpness invariant:** true integer-2x = logical×2 == panel native (zero scaling).
 Unique per panel; "more space" always means HiDPI supersampling (softer). See
@@ -30,7 +31,9 @@ Unique per panel; "more space" always means HiDPI supersampling (softer). See
 
 **Wake persistence:** `display-restore.sh` writes the active profile to
 `~/.cache/bd-profile`; `bd-wake.sh` re-applies it on wake. Without this, sleep/wake
-reverted everything to daily (fixed 2026-06-20).
+reverted everything to daily (fixed 2026-06-20). A cached `solo` self-heals: if the
+rig is re-docked (>1 display), `--solo` applies the daily layout and rewrites the
+cache to `daily` instead of refusing.
 
 ## Brightness / color — `bd-apply.sh <mode>`
 

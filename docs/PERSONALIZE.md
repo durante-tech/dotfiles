@@ -93,7 +93,9 @@ The bd-* scripts source this file at top.
 
 **Override:** set `DOTFILES_DISPLAY_LAYOUT` in `personal.env` (newline-separated
 `displayplacer` specs — discover yours with `displayplacer list`). Without it,
-the layout profiles no-op harmlessly on foreign hardware.
+the layout profiles no-op harmlessly on foreign hardware — except `--solo`,
+which detects the single connected display live and WILL apply on any hardware
+(resolution override: `DOTFILES_DISPLAY_SOLO_RES`, default 2560x1440).
 
 ---
 
