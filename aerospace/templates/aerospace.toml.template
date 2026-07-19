@@ -113,13 +113,16 @@ outer.bottom = [
   { monitor."@DOTFILES_MONITOR_EXTERNAL@" = 15 },
   15,
 ]
-# Per-monitor top gap. Sketchybar (height=28) self-reserves its strip, so this is
-# pure padding below the bar — not bar clearance. Built-in at 10 matches its 10px
-# side gaps (snug, balanced vs the 15px bottom); PORTRAIT keeps 50 for its scale.
+# Per-monitor top gap. Sketchybar (height=28) does NOT reserve screen estate —
+# clearance comes from these gaps. Built-in at 10 works because the macOS
+# menu-bar/notch strip is reserved there anyway; PORTRAIT's 50 clears bar +
+# breathing room. The default (last entry) covers UNMATCHED monitors — e.g. the
+# Dell in landscape solo/clamshell, where 15 left windows tucked under the bar:
+# 40 = 28px bar + 12px padding.
 outer.top = [
   { monitor."@DOTFILES_MONITOR_BUILTIN@" = 10 },
   { monitor."@DOTFILES_MONITOR_EXTERNAL@" = 50 },
-  15,
+  40,
 ]
 
 # Pin key workspaces to monitors

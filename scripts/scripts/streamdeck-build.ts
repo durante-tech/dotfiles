@@ -220,6 +220,7 @@ const ICONS: IconDef[] = [
   { key: "layout-daily",     title: "DAILY",     idle: { centerText: "Dl",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Dl",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
   { key: "layout-hires",     title: "HI-RES",    idle: { centerText: "Hi",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Hi",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
   { key: "layout-native",    title: "NATIVE",    idle: { centerText: "1x",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "1x",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
+  { key: "layout-solo",      title: "SOLO",      idle: { centerText: "So",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "So",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
   { key: "layout-portrait",  title: "PORTRAIT",  idle: { centerText: "Pt",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Pt",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
   { key: "folder-screens",   title: "SCREENS",   idle: { centerText: "scr", italic: true, color: TOKENS.primary, centerSize: 42 }, active: { centerText: "scr", italic: true, color: TOKENS.primary, centerSize: 42 } },
 ];
@@ -605,7 +606,9 @@ const devManifest = {
 // 7a. Build the SCREENS folder — BetterDisplay brightness modes + display-restore
 // layout profiles, both switched via Raycast script-commands.
 // Requires bd-{dawn,day,afternoon,evening,night,meeting,read,stream,cinema}.sh AND
-// display-{daily,hires,native,portrait}.sh enabled in Raycast → Script Commands.
+// display-{daily,hires,solo,portrait}.sh enabled in Raycast → Script Commands.
+// (display-native.sh exists in Raycast but has no deck key — SOLO took its
+// slot 2026-07-19, operator choice: native is the rarest-used profile.)
 // The display-* wrappers live in ~/dotfiles/raycast/script-commands/ and are
 // symlinked into ~/Durante/scripts/raycast/ (Raycast's indexed dir).
 const screensUUID = uuid();
@@ -630,7 +633,7 @@ const screensManifest = {
       // Row 2 — layout profiles (display-restore.sh) flanked by page nav (Prev / Next)
       "0,2": actionPrevPage(SC["page-prev"]),
       "1,2": actionOpenURL("raycast://script-commands/display-hires",    SC["layout-hires"]),
-      "2,2": actionOpenURL("raycast://script-commands/display-native",   SC["layout-native"]),
+      "2,2": actionOpenURL("raycast://script-commands/display-solo",     SC["layout-solo"]),
       "3,2": actionOpenURL("raycast://script-commands/display-portrait", SC["layout-portrait"]),
       "4,2": actionNextPage(SC["page-next"]),
     },
