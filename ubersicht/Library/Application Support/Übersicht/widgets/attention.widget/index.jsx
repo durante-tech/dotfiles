@@ -147,14 +147,6 @@ export const className = `
     white-space: nowrap;
   }
 
-  .more {
-    color: #6c7086;
-    font-size: 10px; /* label */
-    margin: 6px 0 0 16px;
-    font-style: italic;
-    letter-spacing: 0.5px;
-  }
-
   .clear-line {
     color: #a6e3a1;
     font-size: 11px; /* support */
