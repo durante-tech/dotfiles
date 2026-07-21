@@ -15,15 +15,17 @@ const REED_COLORS = [
 ]
 
 const W_TOTAL  = 360
-const H_TOTAL  = 110
+const H_TOTAL  = 136
 const REED_W   = 14
 const REED_GAP = 32
 const MAX_H    = 56
 const MIN_H    = 12
-const BASELINE_Y = 78
+// Header sits at y=12; tallest reed count renders at BASELINE_Y - MAX_H - 6 = 38,
+// leaving 20px clearance below the header (was 2px — counts collided with title).
+const BASELINE_Y = 100
 
 export const className = `
-  top: 600px;
+  top: 560px;
   left: 60px;
   width: ${W_TOTAL}px;
   height: ${H_TOTAL}px;
@@ -99,7 +101,7 @@ export const render = ({ output }) => {
 
   return (
     <svg width={W_TOTAL} height={H_TOTAL} viewBox={`0 0 ${W_TOTAL} ${H_TOTAL}`}>
-      <text className="header" x={W_TOTAL / 2} y={14}>✦ Activity · 7 days</text>
+      <text className="header" x={W_TOTAL / 2} y={12}>✦ Activity · 7 days</text>
 
       {/* faint baseline so reeds have a horizon */}
       <line className="baseline" x1={startX - 4} y1={BASELINE_Y} x2={startX + totalW + 4} y2={BASELINE_Y} />

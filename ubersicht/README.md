@@ -69,6 +69,45 @@ Retired (absorbed by pipeline/attention): `mempalace.widget` (session counts),
 covered by the daily brief). Future absorption candidates: today-focus (into
 dailybrief), drift-warden (as an attention row).
 
+## Layout lanes (2026-07 UX pass, 2560×1440 logical)
+
+Every panel owns a lane; variable-height panels are capped or bottom-anchored
+so they can never grow into a neighbor:
+
+| Lane | Widget | Anchor |
+|---|---|---|
+| Left 1 | pipeline | `top:70 left:60 w:540` |
+| Left 2 | memory-tide (sparkline) | `top:560 left:60` |
+| Left 3 | attention (max 4 rows, detail on top 2) | `top:720 left:60 w:540` |
+| Left 4 | today-focus | `bottom:60 left:60 w:540` (grows upward) |
+| Top-center-left | focus (intention mantra) | `top:80 left:640` |
+| Center | brief-trigger ring | `top:42% left:50%` (42% keeps it clear of deck) |
+| Center-bottom | dailybrief | `bottom:60 left:640 w:460` |
+| Center-right-bottom | deck | `bottom:60 left:1160 w:540` |
+| Right-bottom | q3-thread (mirror) | `bottom:60 left:1760 w:540` |
+
+The old layout stacked focus + dailybrief + today-focus on the same
+`bottom:60 left:60` anchor (three-way collision) and let attention run into
+today-focus.
+
+## Daily nano-banana wallpaper
+
+The DailyBrief agent (`~/Durante/Packs/Agents/DailyBrief`) generates one
+wallpaper per evening via Nano Banana Pro (Gemini, through the Studio media
+gateway) into `~/Pictures/Wallpapers/daily/dailybrief-YYYY-MM-DD.png` and sets
+it immediately. The prompt is grounded in the brief's **Visual Metaphor**
+section — the synthesizer's one-sentence translation of the day's operational
+reality (load, failures, pipeline health, commitments) into abstract visual
+language. `--force-wallpaper` mints extra versioned variants on demand.
+
+Visibility is owned by `wallpaper-workspace.sh` (AeroSpace
+exec-on-workspace-change): its lookup chain now prefers a fresh (<36h) daily
+piece for every workspace except `WALLPAPER_DAILY_EXCLUDE` (default `T`, the
+portrait monitor — daily art is 16:9). Without that step the per-workspace
+files stomped every wallpaper change on the next workspace switch, which is
+why the hourly rotation was invisible. `wallpaper-rotate.sh` also folds the
+daily piece into its band pools for the no-fresh-daily fallback path.
+
 Widget-own state/cache files live in `~/.claude/MEMORY/STATE/`
 (`pipeline-widget-cache.json`, `attention-widget-cache.json`,
 `drift-warden-state.json`) — widgets write nothing else.

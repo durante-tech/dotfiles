@@ -20,7 +20,10 @@ const SEV_COLOR = {
 
 export const className = `
   box-sizing: border-box;
-  top: 800px;
+  /* Left-column lane 3: pipeline (70) → memory-tide (560) → attention (720)
+     → today-focus (bottom:60). At top:800 with 7 rows this panel ran into
+     today-focus; 720 + a 6-row cap keeps it clear. */
+  top: 720px;
   left: 60px;
   width: 540px;
   font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', 'Hack Nerd Font', monospace;
@@ -144,14 +147,6 @@ export const className = `
     white-space: nowrap;
   }
 
-  .more {
-    color: #6c7086;
-    font-size: 10px; /* label */
-    margin: 6px 0 0 16px;
-    font-style: italic;
-    letter-spacing: 0.5px;
-  }
-
   .clear-line {
     color: #a6e3a1;
     font-size: 11px; /* support */
@@ -207,7 +202,10 @@ const Header = ({ data, badgeClass, badgeText }) => (
   </div>
 )
 
-const Row = ({ row }) => (
+// withDetail: only the top of the queue earns a context line — rows 3-4 are
+// title-only. Keeps the panel inside its lane (attention must end above
+// today-focus's tallest reach) while the top items keep their "why".
+const Row = ({ row, withDetail }) => (
   <div>
     <div className="row">
       <span
@@ -220,7 +218,7 @@ const Row = ({ row }) => (
       <span className="row-title">{row.title}</span>
       {row.age ? <span className="age">{row.age}</span> : null}
     </div>
-    {row.detail ? <div className="detail">{row.detail}</div> : null}
+    {withDetail && row.detail ? <div className="detail">{row.detail}</div> : null}
   </div>
 )
 
@@ -271,10 +269,11 @@ export const render = ({ output }) => {
       <Header data={data} badgeClass={badgeClass} badgeText={badgeText} />
 
       {rows.map((row, i) => (
-        <Row row={row} key={i} />
+        <Row row={row} withDetail={i < 2} key={i} />
       ))}
 
-      {data.hidden > 0 && <div className="more">+{data.hidden} more</div>}
+      {/* No "+N more" line — the header badge already carries total queue
+          depth, and the extra line pushed the panel into today-focus. */}
 
       <div className="footer">
         <span className="brand">DOS · ATTENTION</span>
