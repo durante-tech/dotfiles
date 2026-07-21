@@ -27,11 +27,15 @@ for ln in lines:
         continue
     try:
         j = json.loads(ln)
-        q3 = (j.get("reflection_q3") or "").strip()
+        # Two canonical shapes coexist in this file (RFC-0115 / Amendment N):
+        #   doctrine-12: reflection_q3 + task_description
+        #   runtime-8:   reflection (single field) + no task_description
+        q3 = (j.get("reflection_q3") or j.get("reflection") or "").strip()
         if not q3 or len(q3) < 12:
             continue
+        task = (j.get("task_description") or j.get("prd_id") or "").strip()
         entries.append({
-            "task":       (j.get("task_description") or "").strip(),
+            "task":       task,
             "task_date":  (j.get("timestamp") or "")[:10],
             "q3":         q3,
             "sentiment":  int(j.get("implied_sentiment") or 7),

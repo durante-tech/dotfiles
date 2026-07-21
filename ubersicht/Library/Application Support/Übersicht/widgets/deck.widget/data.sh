@@ -7,19 +7,37 @@ from datetime import datetime, timezone
 
 HOME = Path.home()
 HOT_DIRS = [HOME / "Durante", HOME / "dotfiles", HOME / ".claude"]
-REPO_PATHS = [
-    HOME / "Durante",
-    HOME / "dotfiles",
-    HOME / ".claude",
-    HOME / "Projects" / "snap-business",
-    HOME / "Projects" / "seriq",
-    HOME / "Projects" / "no-events",
-    HOME / "Projects" / "meld",
-    HOME / "Projects" / "era-materna",
-    HOME / "Projects" / "edf",
-    HOME / "Projects" / "my-window",
-    HOME / "Projects" / "sala2-arquitetura",
-]
+
+# Repo list comes from the canonical DOS project registry (.dos-projects.json)
+# instead of a hardcoded list that drifts. Deprecated projects are skipped;
+# the three always-relevant roots stay as the fallback when the registry is
+# missing or unparseable.
+BASE_REPOS = [HOME / "Durante", HOME / "dotfiles", HOME / ".claude"]
+
+def registry_repos():
+    reg_candidates = [
+        HOME / "Durante" / "Tools" / ".dos-projects.json",
+        HOME / "Durante" / ".dos-projects.json",
+    ]
+    out = []
+    for reg in reg_candidates:
+        if not reg.exists():
+            continue
+        try:
+            data = json.loads(reg.read_text())
+        except Exception:
+            return []
+        for p in data.get("projects", []):
+            if p.get("deprecated"):
+                continue
+            root = p.get("root_path", "")
+            if not root:
+                continue
+            out.append(Path(root.replace("~", str(HOME), 1)))
+        break
+    return out
+
+REPO_PATHS = list(dict.fromkeys(BASE_REPOS + registry_repos()))
 EXTS = {".md", ".ts", ".tsx", ".jsx", ".lua", ".py", ".sh", ".toml", ".yaml", ".yml"}
 EXCLUDE_PARTS = {"node_modules", ".git", ".venv", "dist", "build", ".next", "target",
                  "shell-snapshots", "STATE", "todos", "intel-context-cache",
