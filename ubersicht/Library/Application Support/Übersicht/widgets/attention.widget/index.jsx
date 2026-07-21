@@ -210,7 +210,10 @@ const Header = ({ data, badgeClass, badgeText }) => (
   </div>
 )
 
-const Row = ({ row }) => (
+// withDetail: only the top of the queue earns a context line — rows 3-4 are
+// title-only. Keeps the panel inside its lane (attention must end above
+// today-focus's tallest reach) while the top items keep their "why".
+const Row = ({ row, withDetail }) => (
   <div>
     <div className="row">
       <span
@@ -223,7 +226,7 @@ const Row = ({ row }) => (
       <span className="row-title">{row.title}</span>
       {row.age ? <span className="age">{row.age}</span> : null}
     </div>
-    {row.detail ? <div className="detail">{row.detail}</div> : null}
+    {withDetail && row.detail ? <div className="detail">{row.detail}</div> : null}
   </div>
 )
 
@@ -274,10 +277,11 @@ export const render = ({ output }) => {
       <Header data={data} badgeClass={badgeClass} badgeText={badgeText} />
 
       {rows.map((row, i) => (
-        <Row row={row} key={i} />
+        <Row row={row} withDetail={i < 2} key={i} />
       ))}
 
-      {data.hidden > 0 && <div className="more">+{data.hidden} more</div>}
+      {/* No "+N more" line — the header badge already carries total queue
+          depth, and the extra line pushed the panel into today-focus. */}
 
       <div className="footer">
         <span className="brand">DOS · ATTENTION</span>

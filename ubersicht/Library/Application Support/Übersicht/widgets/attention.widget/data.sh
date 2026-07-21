@@ -303,9 +303,10 @@ except Exception:
 # ── sort · cap · emit ───────────────────────────────────────────────────────
 rows.sort(key=lambda r: (SEV_ORDER.get(r["severity"], 3), -r["_age_sec"]))
 total_count = len(rows)
-# 6-row cap (was 7): lane budget — attention sits at top:720 and must stay
-# clear of the bottom-anchored today-focus panel.
-top = rows[:6]
+# 4-row cap: lane budget — attention (top:720) must clear the bottom-anchored
+# today-focus panel even at its tallest (3 cards, wrapped titles → top ≈ y994).
+# 6 two-line rows + a "+N more" line measured ~410px and crossed into it.
+top = rows[:4]
 for r in top:
     r.pop("_age_sec", None)
 

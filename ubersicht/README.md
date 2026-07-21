@@ -78,7 +78,7 @@ so they can never grow into a neighbor:
 |---|---|---|
 | Left 1 | pipeline | `top:70 left:60 w:540` |
 | Left 2 | memory-tide (sparkline) | `top:560 left:60` |
-| Left 3 | attention (max 6 rows) | `top:720 left:60 w:540` |
+| Left 3 | attention (max 4 rows, detail on top 2) | `top:720 left:60 w:540` |
 | Left 4 | today-focus | `bottom:60 left:60 w:540` (grows upward) |
 | Top-center-left | focus (intention mantra) | `top:80 left:640` |
 | Center | brief-trigger ring | `top:42% left:50%` (42% keeps it clear of deck) |
