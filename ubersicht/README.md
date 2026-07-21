@@ -95,9 +95,18 @@ today-focus.
 The DailyBrief agent (`~/Durante/Packs/Agents/DailyBrief`) generates one
 wallpaper per evening via Nano Banana Pro (Gemini, through the Studio media
 gateway) into `~/Pictures/Wallpapers/daily/dailybrief-YYYY-MM-DD.png` and sets
-it immediately. `wallpaper-rotate.sh` folds a <36h-old daily piece into every
-band's pool (double-weighted) so the day's generated art keeps appearing in
-the hourly rotation alongside the curated gallery.
+it immediately. The prompt is grounded in the brief's **Visual Metaphor**
+section — the synthesizer's one-sentence translation of the day's operational
+reality (load, failures, pipeline health, commitments) into abstract visual
+language. `--force-wallpaper` mints extra versioned variants on demand.
+
+Visibility is owned by `wallpaper-workspace.sh` (AeroSpace
+exec-on-workspace-change): its lookup chain now prefers a fresh (<36h) daily
+piece for every workspace except `WALLPAPER_DAILY_EXCLUDE` (default `T`, the
+portrait monitor — daily art is 16:9). Without that step the per-workspace
+files stomped every wallpaper change on the next workspace switch, which is
+why the hourly rotation was invisible. `wallpaper-rotate.sh` also folds the
+daily piece into its band pools for the no-fresh-daily fallback path.
 
 Widget-own state/cache files live in `~/.claude/MEMORY/STATE/`
 (`pipeline-widget-cache.json`, `attention-widget-cache.json`,
