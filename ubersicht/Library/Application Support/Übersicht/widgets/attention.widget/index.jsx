@@ -20,7 +20,10 @@ const SEV_COLOR = {
 
 export const className = `
   box-sizing: border-box;
-  top: 800px;
+  /* Left-column lane 3: pipeline (70) → memory-tide (560) → attention (720)
+     → today-focus (bottom:60). At top:800 with 7 rows this panel ran into
+     today-focus; 720 + a 6-row cap keeps it clear. */
+  top: 720px;
   left: 60px;
   width: 540px;
   font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', 'Hack Nerd Font', monospace;

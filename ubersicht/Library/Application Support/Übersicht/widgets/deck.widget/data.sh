@@ -41,13 +41,16 @@ REPO_PATHS = list(dict.fromkeys(BASE_REPOS + registry_repos()))
 EXTS = {".md", ".ts", ".tsx", ".jsx", ".lua", ".py", ".sh", ".toml", ".yaml", ".yml"}
 EXCLUDE_PARTS = {"node_modules", ".git", ".venv", "dist", "build", ".next", "target",
                  "shell-snapshots", "STATE", "todos", "intel-context-cache",
-                 "intel-context-fired", "transcripts", "ack-state"}
+                 "intel-context-fired", "transcripts", "ack-state",
+                 "generated", "coverage", "__pycache__", "worktrees"}
 EXCLUDE_NAMES = {"session-name-cache.sh"}
 
 now = time.time()
 
 def age_str(ts):
-    d = now - ts
+    # Clamp: codegen (e.g. Prisma) can stamp mtimes marginally in the future,
+    # which rendered as "-1s". Anything not in the past reads as "now".
+    d = max(0, now - ts)
     if d < 60:    return f"{int(d)}s"
     if d < 3600:  return f"{int(d/60)}m"
     if d < 86400: return f"{int(d/3600)}h"
@@ -66,7 +69,10 @@ cutoff = now - 86400  # 24h window
 for root in HOT_DIRS:
     if not root.exists(): continue
     for path, dirs, files in os.walk(root):
-        dirs[:] = [d for d in dirs if d not in EXCLUDE_PARTS and not d.startswith(".") or d == ".claude"]
+        # Parenthesized: without them, `and` bound tighter than `or` and every
+        # EXCLUDE_PARTS dir slipped back in whenever the walk reached ".claude".
+        dirs[:] = [d for d in dirs
+                   if (d not in EXCLUDE_PARTS and not d.startswith(".")) or d == ".claude"]
         for f in files:
             if f in EXCLUDE_NAMES: continue
             if not any(f.endswith(e) for e in EXTS): continue
@@ -79,13 +85,21 @@ for root in HOT_DIRS:
             hits.append((mt, fp))
 
 hits.sort(reverse=True)
-hot_files = []
-for mt, fp in hits[:6]:
+# Diversity cap: at most 2 files per directory, so one hot build/codegen dir
+# cannot monopolize all six rows (the failure mode was 6× prisma/generated).
+hot_files, per_dir = [], {}
+for mt, fp in hits:
+    key = str(fp.parent)
+    if per_dir.get(key, 0) >= 2:
+        continue
+    per_dir[key] = per_dir.get(key, 0) + 1
     hot_files.append({
         "path": short(fp),
         "name": fp.name,
         "age":  age_str(mt),
     })
+    if len(hot_files) >= 6:
+        break
 
 # ── REPOS ──────────────────────────────────────────────────
 def gx(repo, *args, timeout=2):

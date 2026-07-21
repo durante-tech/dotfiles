@@ -303,7 +303,9 @@ except Exception:
 # ── sort · cap · emit ───────────────────────────────────────────────────────
 rows.sort(key=lambda r: (SEV_ORDER.get(r["severity"], 3), -r["_age_sec"]))
 total_count = len(rows)
-top = rows[:7]
+# 6-row cap (was 7): lane budget — attention sits at top:720 and must stay
+# clear of the bottom-anchored today-focus panel.
+top = rows[:6]
 for r in top:
     r.pop("_age_sec", None)
 

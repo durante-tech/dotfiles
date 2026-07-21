@@ -59,6 +59,23 @@ pick_random() {
   echo "${arr[$((RANDOM % n))]}"
 }
 
+# Daily nano-banana wallpaper: the DailyBrief agent drops a fresh generated
+# piece into $DIR/daily/ each evening (dailybrief-YYYY-MM-DD.png). If one
+# exists and is <36h old, it joins every band's landscape pool for its day —
+# so the day's generated art shows up in rotation alongside the gallery.
+DAILY_DIR="$DIR/daily"
+DAILY_PICK=""
+if [ -d "$DAILY_DIR" ]; then
+  newest="$(ls -t "$DAILY_DIR"/dailybrief-*.png "$DAILY_DIR"/dailybrief-*.jpg 2>/dev/null | head -1)"
+  if [ -n "$newest" ]; then
+    now_epoch="$(date +%s)"
+    file_epoch="$(stat -f %m "$newest" 2>/dev/null || echo 0)"
+    if [ $((now_epoch - file_epoch)) -lt 129600 ]; then  # 36h
+      DAILY_PICK="$newest"
+    fi
+  fi
+fi
+
 # Build candidate pools.
 band="$(current_band)"
 if [ "$MODE" = "--all" ] || [ "$MODE" = "all" ]; then
@@ -70,6 +87,10 @@ else
   done
   # Belt + suspenders: if band yielded nothing, fall back to full set.
   [ ${#POOL[@]} -eq 0 ] && POOL=( "$DIR"/[0-9][0-9]-*.jpg )
+fi
+# Fresh daily piece joins the pool (twice — gentle weighting toward today's art).
+if [ -n "$DAILY_PICK" ]; then
+  POOL+=("$DAILY_PICK" "$DAILY_PICK")
 fi
 
 # Split pool by orientation.

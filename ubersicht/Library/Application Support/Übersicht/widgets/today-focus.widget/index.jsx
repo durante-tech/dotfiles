@@ -13,7 +13,10 @@ export const refreshFrequency = 300 * 1000 // 5 min — brief updates daily
 
 export const className = `
   box-sizing: border-box;
-  top: 1075px;
+  /* Bottom-anchored north-star slot: grows upward from the corner, so a
+     1-action day and a 3-action day both hug bottom-left without ever
+     chasing attention.widget's variable height (was top:1075 → collisions). */
+  bottom: 60px;
   left: 60px;
   width: 540px;
   font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', 'Hack Nerd Font', monospace;

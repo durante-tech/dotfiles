@@ -66,9 +66,12 @@ const LINE_CHAR_BUDGET      = 96   // word-truncate target
 
 export const className = `
   box-sizing: border-box;
+  /* Center-bottom lane between today-focus (left:60 w:540) and deck (left:1160).
+     Was bottom:60 left:60 — stacked directly on top of the focus/today-focus
+     corner; three widgets contended for one anchor. */
   bottom: 60px;
-  left: 60px;
-  width: 380px;
+  left: 640px;
+  width: 460px;
   font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', 'Hack Nerd Font', monospace;
   background: rgba(17, 17, 27, 0.6);
   backdrop-filter: blur(28px) saturate(140%);
@@ -241,6 +244,25 @@ export const className = `
     font-size: 11px; /* support */
     padding: 4px 0;
   }
+
+  .degraded {
+    border-left: 3px solid rgba(243, 139, 168, 0.6);
+    padding: 8px 12px;
+    margin-top: 4px;
+    background: rgba(243, 139, 168, 0.06);
+    border-radius: 6px;
+  }
+  .degraded .why {
+    color: #cdd6f4;
+    font-size: 11px; /* support */
+    line-height: 1.5;
+  }
+  .degraded .hint {
+    color: #6c7086;
+    font-size: 10px; /* label */
+    margin-top: 6px;
+    font-style: italic;
+  }
 `
 
 // ── Render helpers ──────────────────────────────────────────────────────────
@@ -352,7 +374,37 @@ export const render = ({ output }) => {
     data.delta_days === 1     ? "1d old" :
     `${data.delta_days}d old`
 
-  const sections = (data.sections || [])
+  // ── degraded-brief detection ──────────────────────────────────────────────
+  // A degraded run writes "## Degraded Mode" as its first section. Rendering
+  // that as ordinary sections read as data ("0 of 12 sources failed") while
+  // hiding the actual failure. Render a single honest warning card instead.
+  const rawSections = data.sections || []
+  const degraded = rawSections.find((s) => /degraded\s+mode/i.test(s.heading || ""))
+  if (degraded) {
+    const reason = (degraded.lines || []).join(" ") || "brief generation degraded"
+    const action = rawSections.find((s) => /action\s+required/i.test(s.heading || ""))
+    return (
+      <div>
+        <Header metaClass="very-stale" withDot metaText={`${data.date || ""} · degraded`} />
+        <div className="degraded">
+          <div className="why">{wordTruncate(reason, 180)}</div>
+          {action && (action.lines || [])[0] && (
+            <div className="why" style={{ marginTop: "6px" }}>
+              <span className="tag-warn">Fix: </span>
+              {wordTruncate(action.lines[0], 140)}
+            </div>
+          )}
+          <div className="hint">↻ re-runs the brief once the gateway is healthy</div>
+        </div>
+        <div className="footer">
+          <span className="brand">DailyBrief</span>
+          <span>refreshed {data.now}</span>
+        </div>
+      </div>
+    )
+  }
+
+  const sections = rawSections
     .filter((s) => !isTodayFocusSection(s.heading))
     .slice(0, MAX_SECTIONS)
 
