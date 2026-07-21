@@ -123,8 +123,16 @@ def stage_prs():
             return {"state": "offline-cached", "cache_age": None, "repos": []}
         try:
             prs = json.loads(proc.stdout or "[]")
+            if not isinstance(prs, list):
+                raise ValueError("unexpected gh payload shape")
         except Exception:
-            prs = []
+            # Malformed stdout from a zero-exit gh is a DEGRADE, never a zero:
+            # a fabricated empty list would render "0 open · 0 failing" as a
+            # healthy repo and poison the cache with it. Same path as gh failure.
+            cached = read_pr_cache()
+            if cached:
+                return cached
+            return {"state": "offline-cached", "cache_age": None, "repos": []}
         failing = green = draft = 0
         for pr in prs:
             rollup = pr.get("statusCheckRollup") or []
