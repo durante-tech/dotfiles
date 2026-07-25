@@ -137,16 +137,26 @@ except Exception:
     gh_state = "offline-cached"
     prs = None
 
-# ── 1. checks-failing (crit) ────────────────────────────────────────────────
+# ── 1. checks-failing (crit for ready PRs, info for drafts) ─────────────────
+# Operator ruling 2026-07-25: a DRAFT PR's red CI is not a call to action — the
+# author marked it not-ready and the deploy line never merges drafts. Measured
+# that day: all 5 crit rows here were drafts, taking 5 of 7 visible slots and
+# burying every work-stuck row below the cut. Demoted, NOT dropped — "info"
+# sorts below "warn" in SEV_ORDER, so a draft's failures stay auditable without
+# crowding out actionable work.
+# KNOWN FORK: keep this equivalent to Tools/attention-census.ts
+# buildChecksFailing() until the de-fork lands.
 try:
     for pr in (prs or []):
         nfail = sum(1 for c in pr["checks"] if c in FAILING)
         if nfail == 0:
             continue
         plural = "check" if nfail == 1 else "checks"
+        is_draft = bool(pr.get("isDraft"))
         add_row(
-            "checks-failing", "crit",
-            f"{pr['repo']}#{pr['number']} — {nfail} {plural} failing",
+            "checks-failing", "info" if is_draft else "crit",
+            f"{pr['repo']}#{pr['number']} — {nfail} {plural} failing"
+            + (" (draft)" if is_draft else ""),
             detail=pr["title"], age="", source="gh",
         )
 except Exception:
@@ -190,6 +200,9 @@ JUNK_PREFIXES = (
     "You are a memory consolidation",
     "Apply maximum non-destructive compression",
 )
+# Phases treated as "actively building". Mirrors BUILDING_PHASES in
+# Tools/attention-census.ts — keep the two in step until the de-fork lands.
+BUILDING_PHASES = ("build", "execute")
 
 def parse_progress(p):
     if not isinstance(p, str):
@@ -223,8 +236,14 @@ try:
         label = None
         if phase == "verify" and age_sec > 24 * 3600:
             label = "verify-stuck"
-        elif phase == "build" and passed == 0 and age_sec > 12 * 3600:
+        # "execute" is the DOS Algorithm's own phase name; "build" is the older
+        # synonym and was the only one checked — so every execute row was
+        # invisible. Mirrors BUILDING_PHASES in Tools/attention-census.ts.
+        # done/complete deliberately NOT added: no such row exists live.
+        elif phase in BUILDING_PHASES and passed == 0 and age_sec > 12 * 3600:
             label = "build-stuck"
+        # "stale" is dead by construction — gcStaleSessions deletes at the same
+        # 168h. Kept so this reader isn't coupled to another file's GC constant.
         elif age_sec > 7 * 86400:
             label = "stale"
         if label is None:
