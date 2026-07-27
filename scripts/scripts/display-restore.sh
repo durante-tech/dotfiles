@@ -27,8 +27,13 @@
 #               == native — pixel-perfect, 1920px of crisp vertical space).
 #   --solo    : single-display / clamshell — drive the ONLY connected display at
 #               2560x1440 HiDPI landscape (override: DOTFILES_DISPLAY_SOLO_RES).
-#               UUID is detected live, so this works for any external 4K panel
-#               (the two-screen profiles above are pinned to this rig's UUIDs).
+#               UUID is detected live, so this works for any external 4K panel.
+#
+# Every profile detects its screen ids live (built-in by displayplacer's
+# "MacBook built in screen" type, external by elimination) — no UUID is pinned,
+# so a redock that renumbers a persistent id cannot silently disable a profile.
+# A two-screen profile run in clamshell drops the absent built-in and applies
+# its external half at the origin.
 #               Bare laptop (single display == built-in): applies the canonical
 #               built-in true-2x 1728x1117@120 instead. With >1 display
 #               connected it FALLS BACK to the daily layout (so a bd-profile
@@ -115,19 +120,43 @@ else
   EXT_RES=1920x1080; EXT_ORIGIN='(1728,37)'
 fi
 
-# Maintainer default (this rig). Override via DOTFILES_DISPLAY_LAYOUT.
-DEFAULT_LAYOUT=(
-  "id:37D8832A-2D66-02CA-B9F7-8F30A301B230 res:$BUILTIN_RES hz:120 color_depth:8 enabled:true scaling:$SCALING origin:(0,0) degree:0"
-  "id:E3434867-5A33-48E9-8FAE-B8DC6CC682B6 res:$EXT_RES hz:60 color_depth:8 enabled:true scaling:$SCALING origin:$EXT_ORIGIN degree:$EXT_DEGREE"
-)
+# displayplacer is needed to DETECT screen ids below as well as to apply, so the
+# availability guard has to run before the layout is assembled.
+[[ -x "$DP" ]] || { log "displayplacer not found at $DP"; exit 127; }
+
+# Resolve screen ids LIVE. Pinned UUIDs do not survive a redock: reattaching the
+# external through a different port renumbers its persistent id, after which
+# every two-screen profile silently no-ops — displayplacer prints "Unable to
+# find screen <uuid>" per screen and the deck key looks inert (observed
+# 2026-07-27: --hires from Raycast, both ids stale). Only the live-detecting
+# --solo path survived. The built-in is identified by displayplacer's "MacBook
+# built in screen" type; the first screen that is not the built-in is external.
+DP_LIST="$("$DP" list 2>/dev/null)"
+BUILTIN_ID="$(awk '/Persistent screen id:/{id=$4} /^Type:/{if(id!=""){if($0~/MacBook built in/){print id;exit} id=""}}' <<< "$DP_LIST")"
+EXT_ID="$(awk '/Persistent screen id:/{id=$4} /^Type:/{if(id!=""){if($0!~/MacBook built in/){print id;exit} id=""}}' <<< "$DP_LIST")"
+
+# Maintainer default (this rig), assembled from the live ids. Override via
+# DOTFILES_DISPLAY_LAYOUT. Each panel is emitted only when actually connected,
+# so a clamshell dock (built-in absent) still applies the profile's external
+# resolution instead of addressing a panel that is not there. With the built-in
+# absent the external is the ONLY screen, so it takes the origin rather than an
+# offset past a panel that is not present.
+DEFAULT_LAYOUT=()
+if [[ -n "$BUILTIN_ID" ]]; then
+  DEFAULT_LAYOUT+=("id:$BUILTIN_ID res:$BUILTIN_RES hz:120 color_depth:8 enabled:true scaling:$SCALING origin:(0,0) degree:0")
+else
+  EXT_ORIGIN='(0,0)'
+fi
+[[ -n "$EXT_ID" ]] && DEFAULT_LAYOUT+=("id:$EXT_ID res:$EXT_RES hz:60 color_depth:8 enabled:true scaling:$SCALING origin:$EXT_ORIGIN degree:$EXT_DEGREE")
 
 if [[ -n "${DOTFILES_DISPLAY_LAYOUT:-}" ]]; then
   args=(); while IFS= read -r l; do [[ -n "$l" ]] && args+=("$l"); done <<< "$DOTFILES_DISPLAY_LAYOUT"
-else
+elif [[ "${#DEFAULT_LAYOUT[@]}" -gt 0 ]]; then
   args=("${DEFAULT_LAYOUT[@]}")
+else
+  log "no displays detected — nothing to restore"
+  exit 0
 fi
-
-[[ -x "$DP" ]] || { log "displayplacer not found at $DP"; exit 127; }
 
 # --solo overrides the assembled layout entirely: detect the single live display
 # at runtime (no hardcoded UUID — clamshell docks vary). One list snapshot for
