@@ -30,25 +30,8 @@ after-startup-command = [
 # Notify Sketchybar about workspace change AND swap per-workspace wallpaper.
 # wallpaper-workspace.sh looks for ~/Pictures/Wallpapers/workspace-<NAME>.{jpg,png}
 # with a graceful fallback chain — missing files are a no-op, never a crash.
-#
-# BOTH commands are backgrounded AND have their fds redirected, and the second
-# part is load-bearing: `&` detaches the PROCESS but NOT its file descriptors.
-# A backgrounded child keeps AeroSpace's stdout pipe open, so AeroSpace blocks
-# reading that pipe until the child exits — the `&` buys nothing on its own.
-# Measured 2026-07-27, workspace switch, 5-switch average:
-#   hook as-was      ~93 ms      hook removed entirely  ~49 ms
-# and per component, with a parent reading the pipe:
-#   sketchybar --trigger (sync)          43-62 ms
-#   wallpaper-workspace.sh & (fds open)  55-69 ms
-#   wallpaper-workspace.sh & (redirected) 18-20 ms
-# Redirecting alone recovers most of it; backgrounding sketchybar recovers the
-# rest. Trade-off accepted knowingly: two switches in very quick succession can
-# now deliver their triggers out of order, leaving the bar briefly showing a
-# stale workspace until the next switch corrects it. Latency on EVERY switch
-# was judged to outweigh a rare cosmetic lag. Revert the first `&` to `;` to
-# restore strict ordering at ~45 ms/switch.
 exec-on-workspace-change = ['/bin/bash', '-c',
-    'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE >/dev/null 2>&1 & ~/scripts/wallpaper-workspace.sh "$AEROSPACE_FOCUSED_WORKSPACE" >/dev/null 2>&1 &'
+    'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE; ~/scripts/wallpaper-workspace.sh "$AEROSPACE_FOCUSED_WORKSPACE" &'
 ]
 
 # Mode-change feedback: sketchybar's aerospace_mode item shows RESIZE (yellow)
