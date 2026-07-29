@@ -65,10 +65,74 @@ hdr "1. BetterDisplay tagIDs"
 
 DEV_TAG_DEFAULT=2
 PORT_TAG_DEFAULT=60
+
+# detect_bd_tag <internal|external> — read the live tagID(s) straight off
+# BetterDisplay rather than offering a hardcoded constant as the default.
+# The constants above go stale on a redock (the tagID is renumbered) and the
+# resulting breakage is silent, so a live-detected default is the difference
+# between "personalize fixed it" and "personalize re-enshrined the stale value".
+#
+# Reads BD_IDENTIFIERS (captured ONCE below) — betterdisplaycli round-trips to
+# the app, and this file used to shell out three separate times.
+#
+# --identifiers emits one JSON-ish block per device, fields in alphabetical
+# order, so deviceType and registryLocation are both seen before tagID. The
+# built-in framebuffer registers under disp0@; every external is dispextN@.
+# "DisplayGroup" is excluded by the closing quote in the /"Display"/ match.
+# isint is reset on deviceType (the block-start marker) so a Display block with
+# no registryLocation cannot leak its predecessor's classification forward.
+#
+# Prints EVERY match, one per line — it does not exit on the first. "external"
+# means "not disp0@", which also catches a second monitor or a BetterDisplay
+# virtual/dummy screen; the caller warns instead of silently picking one.
+detect_bd_tag() {
+    printf '%s\n' "$BD_IDENTIFIERS" | awk -v want="$1" '
+        /"deviceType"/       { isdisp = ($0 ~ /"Display"/); isint = 0 }
+        /"registryLocation"/ { isint  = ($0 ~ /disp0@/) }
+        /"tagID"/ {
+            t = $0; gsub(/[^0-9-]/, "", t)
+            if (isdisp) {
+                if (want == "internal" &&  isint) print t
+                if (want == "external" && !isint) print t
+            }
+            isdisp = 0; isint = 0
+        }'
+}
+
 if command -v betterdisplaycli >/dev/null 2>&1; then
+    BD_IDENTIFIERS=$(betterdisplaycli get --identifiers 2>/dev/null || true)
     say "Detected BetterDisplay. Available displays:"
-    betterdisplaycli get --identifiers 2>/dev/null | grep -E "name|tagID" | head -20 | sed 's/^/  /' || warn "(could not read identifiers — BetterDisplay running?)"
+    if [ -n "$BD_IDENTIFIERS" ]; then
+        printf '%s\n' "$BD_IDENTIFIERS" | grep -E "name|tagID" | head -20 | sed 's/^/  /'
+    else
+        warn "(could not read identifiers — BetterDisplay running?)"
+    fi
     echo
+    DEV_CANDIDATES=$(detect_bd_tag internal)
+    PORT_CANDIDATES=$(detect_bd_tag external)
+    DETECTED_DEV=$(printf '%s\n' "$DEV_CANDIDATES" | grep -m1 . || true)
+    DETECTED_PORT=$(printf '%s\n' "$PORT_CANDIDATES" | grep -m1 . || true)
+
+    # Report ONLY what was actually detected. Printing both values when only one
+    # resolved would label the stale hardcoded constant "auto-detected" — the
+    # exact re-enshrinement this detection exists to prevent.
+    if [ -n "$DETECTED_DEV" ]; then
+        DEV_TAG_DEFAULT=$DETECTED_DEV
+        ok "Auto-detected built-in tagID — DEV=$DEV_TAG_DEFAULT"
+    else
+        warn "No built-in display detected (clamshell?) — DEV default stays $DEV_TAG_DEFAULT (may be stale)"
+    fi
+    if [ -n "$DETECTED_PORT" ]; then
+        PORT_TAG_DEFAULT=$DETECTED_PORT
+        ok "Auto-detected external tagID — PORT=$PORT_TAG_DEFAULT"
+    else
+        warn "No external display detected — PORT default stays $PORT_TAG_DEFAULT (may be stale)"
+    fi
+    if [ "$(printf '%s\n' "$PORT_CANDIDATES" | grep -c . || true)" -gt 1 ]; then
+        warn "More than one non-built-in display is registered (extra monitor, or a"
+        warn "BetterDisplay virtual/dummy screen). Candidates: $(printf '%s' "$PORT_CANDIDATES" | tr '\n' ' ')"
+        warn "Confirm PORT against the name table above — DDC writes to a virtual screen no-op silently."
+    fi
     say "DEV = your primary built-in display (where you edit code)."
     say "PORT = your external display (the one bd-apply.sh writes DDC to)."
 else
@@ -173,6 +237,25 @@ DOTFILES_MONITOR_EXTERNAL="$MONITOR_EXTERNAL"
 DOTFILES_KEYBOARD_LAYOUT=$KEYBOARD
 EOF
 )
+
+# Carry over every key this script does not manage. personal.env is the documented
+# home for machine-specific overrides well beyond these five — DOTFILES_DIR,
+# DOTFILES_DISPLAY_LAYOUT, DOTFILES_DISPLAY_SOLO_RES, DOTFILES_BD_PORT_REF_*,
+# DOTFILES_RAYCAST_DIR — and daemon contexts (launchd, sketchybar, Raycast) can
+# read them from nowhere else. A blind `>` rewrite dropped all of them, and
+# `--recheck` (the documented remedy for a tagID that drifted on a redock) is
+# precisely when that rewrite happens.
+MANAGED_KEYS='DOTFILES_BD_DEV_TAG|DOTFILES_BD_PORT_TAG|DOTFILES_MONITOR_BUILTIN|DOTFILES_MONITOR_EXTERNAL|DOTFILES_KEYBOARD_LAYOUT'
+if [ -f "$PERSONAL_ENV" ]; then
+    CARRIED=$(grep -E '^[[:space:]]*(export[[:space:]]+)?[A-Za-z_][A-Za-z0-9_]*=' "$PERSONAL_ENV" \
+        | grep -vE "^[[:space:]]*(export[[:space:]]+)?($MANAGED_KEYS)=" || true)
+    if [ -n "$CARRIED" ]; then
+        new_content="$new_content
+
+# --- carried over from the previous personal.env (not managed by personalize.sh)
+$CARRIED"
+    fi
+fi
 
 if [ "$DRY_RUN" = true ]; then
     echo "─── would write to $PERSONAL_ENV ───"

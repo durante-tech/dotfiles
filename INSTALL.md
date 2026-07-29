@@ -321,7 +321,9 @@ Per-tool one-time setup (opt-in):
 1. Install the Stream Deck app from Elgato.
 2. Install the **Mac Automation** plugin (free): https://marketplace.elgato.com/product/mac-automation-8468fc12-644b-427a-84cb-127c82c5bb30 — required because Stream Deck 7.x broke custom URL schemes like `raycast://` in the built-in Website action.
 3. Build the profile: `bun ~/dotfiles/scripts/scripts/streamdeck-build.ts <source.streamDeckProfile> <output.streamDeckProfile>` then `open <output>` to import.
-4. The SCREENS folder fires Raycast script-commands — `bd-*` brightness modes plus `display-*` layout profiles (daily/hires/native/portrait). `setup.sh` symlinks the dotfiles-tracked `display-*` wrappers (`raycast/script-commands/`) into the Raycast dir; enable them under Raycast → Extensions → Script Commands.
+4. The SCREENS folder fires Raycast script-commands — `bd-*` brightness modes plus `display-*` layout profiles (daily/hires/native/portrait/portrait-hires/solo). `setup.sh` symlinks the dotfiles-tracked `display-*` wrappers (`raycast/script-commands/`) into the Raycast dir; enable them under Raycast → Extensions → Script Commands.
+
+   The keypad is 15/15 full, so only four layout profiles get deck keys: **DAILY, HI-RES, SOLO, PORT HI**. `--native` and `--portrait` are Raycast-search-only (each lost its slot to a more-used profile — see the displacement log in `streamdeck-build.ts`). A deck key that opens the Raycast search bar instead of acting means the script-command symlink is missing or not enabled.
 
 ---
 

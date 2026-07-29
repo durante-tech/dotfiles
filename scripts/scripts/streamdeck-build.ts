@@ -222,6 +222,7 @@ const ICONS: IconDef[] = [
   { key: "layout-native",    title: "NATIVE",    idle: { centerText: "1x",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "1x",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
   { key: "layout-solo",      title: "SOLO",      idle: { centerText: "So",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "So",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
   { key: "layout-portrait",  title: "PORTRAIT",  idle: { centerText: "Pt",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Pt",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
+  { key: "layout-portrait-hires", title: "PORT HI", idle: { centerText: "Ph", italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Ph", italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
   { key: "folder-screens",   title: "SCREENS",   idle: { centerText: "scr", italic: true, color: TOKENS.primary, centerSize: 42 }, active: { centerText: "scr", italic: true, color: TOKENS.primary, centerSize: 42 } },
 ];
 
@@ -606,9 +607,15 @@ const devManifest = {
 // 7a. Build the SCREENS folder — BetterDisplay brightness modes + display-restore
 // layout profiles, both switched via Raycast script-commands.
 // Requires bd-{dawn,day,afternoon,evening,night,meeting,read,stream,cinema}.sh AND
-// display-{daily,hires,solo,portrait}.sh enabled in Raycast → Script Commands.
-// (display-native.sh exists in Raycast but has no deck key — SOLO took its
-// slot 2026-07-19, operator choice: native is the rarest-used profile.)
+// display-{daily,hires,solo,portrait-hires}.sh enabled in Raycast → Script Commands.
+//
+// The keypad is 15/15 full, so every layout profile added here displaces one.
+// Two such operator choices are recorded:
+//   - display-native.sh  — SOLO took its slot 2026-07-19 (native is rarest-used).
+//   - display-portrait.sh — PORT HI took its slot 2026-07-28, when --portrait-hires
+//     became the canonical layout. Both are the same gesture (rotate the Dell);
+//     the deck carries the one actually in daily use, and plain --portrait (the
+//     pixel-perfect 1080x1920 alternative) stays reachable from Raycast search.
 // The display-* wrappers live in ~/dotfiles/raycast/script-commands/ and are
 // symlinked into ~/Durante/scripts/raycast/ (Raycast's indexed dir).
 const screensUUID = uuid();
@@ -634,7 +641,7 @@ const screensManifest = {
       "0,2": actionPrevPage(SC["page-prev"]),
       "1,2": actionOpenURL("raycast://script-commands/display-hires",    SC["layout-hires"]),
       "2,2": actionOpenURL("raycast://script-commands/display-solo",     SC["layout-solo"]),
-      "3,2": actionOpenURL("raycast://script-commands/display-portrait", SC["layout-portrait"]),
+      "3,2": actionOpenURL("raycast://script-commands/display-portrait-hires", SC["layout-portrait-hires"]),
       "4,2": actionNextPage(SC["page-next"]),
     },
     Type: "Keypad",

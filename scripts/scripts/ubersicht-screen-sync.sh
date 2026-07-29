@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ubersicht-screen-sync.sh — keep the Übersicht dashboard pinned to the external
-# (Samsung) monitor even when its NSScreenNumber drifts.
+# (Dell) monitor even when its NSScreenNumber drifts.
 #
 # Übersicht's "show on selected screens" keys on the live NSScreenNumber, which is
 # NOT stable on this rig: it drifted 5 -> 3 during display-profile switches, which

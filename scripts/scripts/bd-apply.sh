@@ -9,19 +9,37 @@
 # favoriteMode is a single set that exits 0 even on a silent DDC no-op, with no
 # closed-loop verify — re-adopting it would re-introduce "mode lost while monitor
 # asleep". favoriteMode slots are kept only as a manual recovery fallback
-# (bd-build-slots.sh). Version note: the running app is 4.4.0 (build 51969, via
-# Sparkle), though the Homebrew cask metadata is pinned at 4.1.1 — `betterdisplaycli
-# version` currently hangs (launches a 2nd app instance), so the skew is cosmetic
-# but worth tracking. The 4.3.0-era slot-load breakage was never re-verified on 4.4.0.
+# (bd-build-slots.sh).
+#
+# Version note (re-verified 2026-07-28): the running app is 5.0.1 (build 52622,
+# via Sparkle) on the STABLE channel — preReleaseChannel=0, internalReleaseChannel=0.
+# The Homebrew cask is still at 4.3.5, because Sparkle updated the bundle in place
+# and brew never learned: `brew reinstall --cask betterdisplay` would DOWNGRADE
+# 5.0.1 -> 4.3.5. Keep that in mind before using brew as a repair (`bd-apply.sh
+# doctor` prints both versions). The CLI is not a separate build — the Caskroom
+# "betterdisplaycli" is a one-line wrapper that execs the app binary — so CLI
+# behavior always tracks whatever version is in /Applications.
+#
+# `betterdisplaycli version` still hangs, and it does NOT just hang: it strands a
+# second full app instance, extra menu-bar icon and all, which looks exactly like
+# a duplicate installation. Two accumulated on 2026-07-28. Never call it — read
+# the version from /Applications/BetterDisplay.app/Contents/Info.plist instead
+# (`bd-apply.sh doctor` does this, and flags any strays it finds).
+# On 5.x several `get` flags regressed to "Failed." — nativeResolution,
+# displayColorSpace, bitDepth, active. Nothing here reads them; use
+# system_profiler SPDisplaysDataType / displayplacer for those facts.
+# The 4.3.0-era slot-load breakage was never re-verified on 5.x.
 #
 # Usage:
 #   bd-apply.sh <mode>
-#   bd-apply.sh status
+#   bd-apply.sh status | verify | doctor
 #
 # Modes:
 #   Time-based:  dawn | day | afternoon | evening | night
 #   Task-based:  meeting | read | stream | cinema
 #   Utility:     status (print current state, no change)
+#                verify (diff live readback against the intent table)
+#                doctor (confirm both tagIDs still resolve — run after any redock)
 #
 # State persisted to ~/.cache/bd-state. Sketchybar notified via trigger.
 
@@ -37,12 +55,12 @@ LOCK_DIR="$HOME/.cache/bd-apply.lock"
 LOG_FILE="/tmp/bd-apply.log"
 CLI="/opt/homebrew/bin/betterdisplaycli"
 
-# Samsung (PORT) is a COLOR-REFERENCE display (operator decision 2026-06-13):
+# Dell (PORT) is a COLOR-REFERENCE display (operator decision 2026-06-13):
 # pin its white point + contrast to neutral/native on EVERY mode so time-of-day
 # never warps color fidelity. Only brightness follows the mode ("color locked,
 # brightness adapts"). These override the port_contrast/port_temp MODES columns
-# for the Samsung; override per-rig via the env vars below.
-PORT_REF_CONTRAST="${DOTFILES_BD_PORT_REF_CONTRAST:-75}"  # Samsung native contrast (OSD default)
+# for the Dell; override per-rig via the env vars below.
+PORT_REF_CONTRAST="${DOTFILES_BD_PORT_REF_CONTRAST:-75}"  # Dell native contrast (OSD default)
 PORT_REF_TEMP="${DOTFILES_BD_PORT_REF_TEMP:-0}"           # neutral white point (no DDC warm shift)
 
 # Single source of truth for every mode. apply_mode() AND verify_mode() both
@@ -206,11 +224,11 @@ set_port_feature() {
     return 1
 }
 
-# set_port <brightness%> [contrast% temp% — ignored] — Samsung is a color-
+# set_port <brightness%> [contrast% temp% — ignored] — Dell is a color-
 # reference display: only brightness follows the mode; contrast + temperature
 # are pinned to the neutral PORT_REF_* values on every mode to preserve color
 # fidelity. The port_contrast/port_temp args are accepted (call-site stability)
-# but intentionally NOT applied to the Samsung.
+# but intentionally NOT applied to the Dell.
 set_port() {
     set_port_feature hardwareBrightness "$1"
     set_port_feature hardwareContrast  "$PORT_REF_CONTRAST"
@@ -260,6 +278,131 @@ print_status() {
     fi
 }
 
+# bd_stray_instances — list BetterDisplay app processes that a CLI call started
+# and never cleaned up. `betterdisplaycli version` is the known offender: it hangs
+# and leaves a SECOND full app instance running, complete with its own menu-bar
+# icon, so the rig LOOKS like it has several BetterDisplay installations when
+# exactly one bundle exists on disk. Two accumulated on 2026-07-28 alone (20:31
+# and 20:38, both from an agent asking the CLI for its version).
+#
+# Discriminator: the real app runs the binary with NO arguments; every CLI call
+# execs the same binary WITH arguments (the Homebrew "CLI" is a one-line wrapper
+# that does exactly that) and should exit in milliseconds. `ps -Ao pid,lstart,args`
+# puts the binary path in field 7 — five lstart fields follow the pid — so field 7
+# matching the binary exactly plus NF>7 means "invoked with args and still alive".
+bd_stray_instances() {
+    ps -Ao pid,lstart,args 2>/dev/null | awk '
+        $7 ~ /\/BetterDisplay\.app\/Contents\/MacOS\/BetterDisplay$/ && NF > 7 {
+            printf "  pid=%-7s started=%s %s %s  args=%s\n", $1, $3, $4, $5, $8
+        }'
+}
+
+# bd_app_version — read the version from Info.plist, NEVER from `betterdisplaycli
+# version`. That subcommand hangs and strands an app instance (see above); the
+# plist is the safe source and needs no running app.
+bd_app_version() {
+    /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' \
+        /Applications/BetterDisplay.app/Contents/Info.plist 2>/dev/null
+}
+
+# bd_display_tags — emit the tagID of every REGISTERED display, one per line.
+# Software-side enumeration off `get --identifiers`: unlike a hardwareBrightness
+# read it does NOT travel over DDC, so it stays truthful while the external is
+# asleep. That distinction is the whole point of doctor (see below).
+# `--identifiers` emits one JSON-ish block per device with fields in alphabetical
+# order, so deviceType is always seen before tagID. The "DisplayGroup" pseudo-
+# device (tagID -1001) is excluded by the closing quote in the /"Display"/ match.
+bd_display_tags() {
+    bd get --identifiers 2>/dev/null | awk '
+        /"deviceType"/ { isdisp = ($0 ~ /"Display"/) }
+        /"tagID"/      { if (isdisp) { t = $0; gsub(/[^0-9-]/, "", t); print t } isdisp = 0 }'
+}
+
+# doctor: confirm both configured tagIDs actually resolve to a live display
+# BEFORE trusting any apply. This exists because the tag is the one value here
+# that can go stale silently: reattaching the external through a different port
+# renumbers it, `betterdisplaycli get` then answers "Failed." for every feature
+# while still exiting 0, and set_port_feature's retry loop misattributes the
+# cause to "monitor asleep or DDC down". That mis-diagnosis cost two separate
+# debugging sessions (60 -> 166 on 2026-07-25, 166 -> 60 on 2026-07-28), so the
+# check is now one command instead of a memory.
+#
+# Liveness is decided by REGISTRATION, not by a DDC readback. A sleeping external
+# answers "Failed." to `get --hardwareBrightness` with a perfectly valid tagID —
+# the identical symptom a stale tag produces — so probing DDC here would recreate
+# the exact ambiguity doctor exists to resolve, and would tell the operator to
+# rewrite a correct personal.env. DDC reachability is still reported, but only as
+# a second, non-fatal line.
+#
+# Exit 0 = healthy. Exit 1 = something needs attention: a tag is stale (the live
+# identifier table is printed so the correct value can be copied into
+# personal.env) and/or stray app instances are running. Exit 2 = could not
+# enumerate at all (CLI missing / BD not running), which is not evidence either
+# way — deliberately distinct from 1 so "I could not check" never reads as
+# "your config is wrong".
+doctor() {
+    local rc=0 pair tag name probe tags
+    printf 'BetterDisplay tag reachability\n'
+
+    tags="$(bd_display_tags)"
+    if [[ -z "$tags" ]]; then
+        printf '  cannot enumerate displays — is BetterDisplay running? (CLI: %s)\n' "$CLI"
+        printf '  no verdict on the tagIDs; nothing was checked.\n'
+        return 2
+    fi
+
+    for pair in "DEV:$DEV_TAG" "PORT:$PORT_TAG"; do
+        name="${pair%%:*}"; tag="${pair#*:}"
+        if ! grep -qx -- "$tag" <<< "$tags"; then
+            printf '  %-5s tagID=%-5s STALE — no registered display carries this tagID\n' "$name" "$tag"
+            rc=1
+            continue
+        fi
+        probe="$(bd get --tagID="$tag" --hardwareBrightness 2>/dev/null)"
+        if [[ "$probe" =~ ^-?[0-9]*\.?[0-9]+$ ]]; then
+            printf '  %-5s tagID=%-5s OK (hardwareBrightness=%s)\n' "$name" "$tag" "$probe"
+        else
+            printf '  %-5s tagID=%-5s OK — registered, but DDC did not answer (monitor asleep?)\n' \
+                "$name" "$tag"
+        fi
+    done
+
+    if (( rc != 0 )); then
+        printf '\nLive displays:\n'
+        bd get --identifiers 2>/dev/null | grep -E '"(name|tagID)"' | sed 's/^/  /'
+        printf '\nFix: set DOTFILES_BD_{DEV,PORT}_TAG in ~/.config/dotfiles/personal.env\n'
+    fi
+
+    # Stray app instances left behind by a hung CLI call. Not fatal to DDC, but
+    # they duplicate the menu-bar icon and read as "multiple installations".
+    local strays
+    strays="$(bd_stray_instances)"
+    if [[ -n "$strays" ]]; then
+        printf '\nStray BetterDisplay instances (a CLI call that never exited):\n%s' "$strays"
+        printf 'These are extra copies of the ONE app in /Applications, not extra installs.\n'
+        printf 'Clear with: pkill -f "BetterDisplay/Contents/MacOS/BetterDisplay version"\n'
+        printf 'Avoid by never running `betterdisplaycli version` — it hangs. Use:\n'
+        printf '  bd-apply.sh doctor   (reports the version from Info.plist)\n'
+        rc=1
+    fi
+
+    # Homebrew vs. on-disk skew. Sparkle updates the bundle in place, so brew
+    # keeps believing the version it installed — and `brew upgrade`/`reinstall
+    # --cask betterdisplay` would then DOWNGRADE a Sparkle-updated app onto the
+    # cask's older build. Worth knowing before reaching for a brew-based repair.
+    local app_ver cask_ver
+    app_ver="$(bd_app_version)"
+    cask_ver="$(ls /opt/homebrew/Caskroom/betterdisplay 2>/dev/null | grep -E '^[0-9]' | tail -1)"
+    printf '\nVersions: app=%s (Info.plist)  homebrew-cask=%s\n' "${app_ver:-?}" "${cask_ver:-none}"
+    if [[ -n "$app_ver" && -n "$cask_ver" && "$app_ver" != "$cask_ver" ]]; then
+        printf '  NOTE skew — the app self-updated via Sparkle. `brew reinstall --cask\n'
+        printf '  betterdisplay` would DOWNGRADE %s -> %s. Not an error; just do not\n' "$app_ver" "$cask_ver"
+        printf '  reach for brew as a repair unless you mean to roll back.\n'
+    fi
+
+    return $rc
+}
+
 # verify: probe live BD readback and diff against the intent table for the
 # currently-applied mode. Exit 0 if all values match, 1 if any drift.
 verify_mode() {
@@ -291,7 +434,7 @@ verify_mode() {
     # Convert intent percent → expected float for comparison.
     local exp_dev_sw exp_port_b exp_port_c exp_port_t
     exp_dev_sw="$(awk -v p="$dev_pct"  'BEGIN{printf "%.2f", p/100}')"
-    # Samsung contrast + temperature are pinned to the color-reference values on
+    # Dell contrast + temperature are pinned to the color-reference values on
     # every mode (not the per-mode columns), so verify against PORT_REF_*, not port_c/port_t.
     exp_port_b="$(awk -v p="$port_b"           'BEGIN{printf "%.2f", p/100}')"
     exp_port_c="$(awk -v p="$PORT_REF_CONTRAST" 'BEGIN{printf "%.2f", p/100}')"
@@ -349,13 +492,14 @@ main() {
     if [[ -z "$arg" ]]; then
         echo "usage: $(basename "$0") <mode>"
         echo "modes:    dawn day afternoon evening night meeting read stream cinema"
-        echo "commands: status verify"
+        echo "commands: status verify doctor"
         exit 1
     fi
 
     case "$arg" in
         status) print_status; return 0 ;;
         verify) verify_mode ;;
+        doctor) doctor ;;
         *) apply_mode "$arg" ;;
     esac
 }
