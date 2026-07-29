@@ -225,8 +225,6 @@ configure_environment() {
     # Symlink dotfiles-tracked Raycast script-commands into the indexed dir.
     link_raycast_commands
 
-    # Extension-less command aliases for the *.ts scripts (obs, dos-stream, ...).
-    link_script_aliases
 
     # Wire the rtk token-saver hook into Claude Code's PreToolUse:Bash chain.
     configure_rtk_hook
@@ -382,57 +380,6 @@ link_raycast_commands() {
 }
 
 # ============================================================================
-# Script Aliases (extension-less names for the *.ts scripts)
-# ============================================================================
-#
-# stow links scripts/scripts/*.ts into ~/scripts under their real names, but the
-# TS scripts are invoked as commands WITHOUT the extension — `obs`, not `obs.ts`.
-# sketchybar/plugins/obs.sh:8 depends on it directly:
-#     OBS_BIN="$(command -v obs || echo "$HOME/scripts/obs")"
-#
-# Those aliases existed only as hand-made symlinks: absent on a fresh machine,
-# and invisible to `stow -R`, which is why ~/scripts drifted into a mix of
-# stow-managed and hand-managed links. Deriving them from the *.ts set makes the
-# rule explicit — every TS script gets an extension-less alias, no list to
-# maintain — and reproducible on a new install.
-link_script_aliases() {
-    print_header "Linking Script Aliases"
-
-    local SRC_DIR="$DOTFILES_DIR/scripts/scripts"
-    local BIN_DIR="$HOME/scripts"
-
-    if [[ ! -d "$SRC_DIR" ]]; then
-        print_info "No scripts/scripts/ directory — skipping"
-        return 0
-    fi
-    mkdir -p "$BIN_DIR"
-
-    local linked=0 skipped=0
-    for src in "$SRC_DIR"/*.ts; do
-        [[ -f "$src" ]] || continue
-        local base alias_path
-        base="$(basename "$src")"
-        alias_path="$BIN_DIR/${base%.ts}"
-        # Never clobber a real file that happens to share the name — only create
-        # the alias, or refresh one we already own.
-        if [[ -e "$alias_path" && ! -L "$alias_path" ]]; then
-            print_warning "Skipping ${base%.ts} — a real file already exists there"
-            skipped=$((skipped + 1))
-            continue
-        fi
-        ln -sfn "$src" "$alias_path"
-        linked=$((linked + 1))
-    done
-
-    if [[ $linked -eq 0 ]]; then
-        print_info "No .ts scripts found — no aliases needed"
-    else
-        print_success "Linked $linked script alias(es) into $BIN_DIR"
-        [[ $skipped -gt 0 ]] && print_warning "$skipped alias(es) skipped (real file in the way)"
-    fi
-}
-
-# ============================================================================
 # RTK Agent Hook (Claude Code token-saver)
 # ============================================================================
 #
@@ -522,7 +469,14 @@ check_stow_drift() {
         [[ -d "$DOTFILES_DIR/$pkg" ]] || continue
         # "(reverts previous action)" lines are stow's re-stow bookkeeping for links
         # that already exist — only the remainder are genuinely missing.
-        out="$(stow -n -v -R -t ~ "$pkg" 2>&1 | grep '^LINK:' | grep -v 'reverts previous action')"
+        #
+        # The trailing `|| true` is load-bearing under this file's `set -e`. A
+        # CLEAN package filters to zero lines, grep exits 1, and a bare
+        # `out="$(...)"` propagates that status — which aborted the whole script
+        # on the first healthy package, so `--check` printed this header and then
+        # died before reporting anything or running any later verification. The
+        # healthy path was the failing one.
+        out="$(stow -n -v -R -t ~ "$pkg" 2>&1 | grep '^LINK:' | grep -v 'reverts previous action' || true)"
         if [[ -n "$out" ]]; then
             print_warning "$pkg has unstowed file(s):"
             sed 's/^/    /' <<< "$out"
