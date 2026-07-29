@@ -44,10 +44,10 @@ re-stow: `stow -R -t ~ aerospace && aerospace reload-config`.
 
 | Where | Lucas's value | What it is |
 |-------|--------------|------------|
-| `scripts/scripts/bd-apply.sh:22` | `DEV_TAG=2` | tagID for the primary (built-in) display |
-| `scripts/scripts/bd-apply.sh:23` | `PORT_TAG=60` | tagID for the external (portrait/secondary) display |
-| `scripts/scripts/bd-lmu-watch.sh:27` | `PORT_TAG=60` | same — for ambient-light watch |
-| `scripts/scripts/bd-build-slots.sh:17-18` | `DEV=2` / `PORT=60` | same — for slot-build (legacy) |
+| `scripts/scripts/bd-apply.sh:41` | `DEV_TAG=2` | tagID for the primary (built-in) display |
+| `scripts/scripts/bd-apply.sh:42` | `PORT_TAG=60` | tagID for the external (portrait/secondary) display |
+| `scripts/scripts/bd-lmu-watch.sh:34` | `PORT_TAG=60` | same — for ambient-light watch |
+| `scripts/scripts/bd-build-slots.sh:32-33` | `DEV=2` / `PORT=60` | same — for slot-build (legacy) |
 
 **Discover yours:**
 ```bash

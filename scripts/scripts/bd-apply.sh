@@ -268,6 +268,19 @@ print_status() {
     fi
 }
 
+# bd_display_tags — emit the tagID of every REGISTERED display, one per line.
+# Software-side enumeration off `get --identifiers`: unlike a hardwareBrightness
+# read it does NOT travel over DDC, so it stays truthful while the external is
+# asleep. That distinction is the whole point of doctor (see below).
+# `--identifiers` emits one JSON-ish block per device with fields in alphabetical
+# order, so deviceType is always seen before tagID. The "DisplayGroup" pseudo-
+# device (tagID -1001) is excluded by the closing quote in the /"Display"/ match.
+bd_display_tags() {
+    bd get --identifiers 2>/dev/null | awk '
+        /"deviceType"/ { isdisp = ($0 ~ /"Display"/) }
+        /"tagID"/      { if (isdisp) { t = $0; gsub(/[^0-9-]/, "", t); print t } isdisp = 0 }'
+}
+
 # doctor: confirm both configured tagIDs actually resolve to a live display
 # BEFORE trusting any apply. This exists because the tag is the one value here
 # that can go stale silently: reattaching the external through a different port
@@ -277,23 +290,44 @@ print_status() {
 # debugging sessions (60 -> 166 on 2026-07-25, 166 -> 60 on 2026-07-28), so the
 # check is now one command instead of a memory.
 #
-# Exit 0 = both tags answer. Exit 1 = at least one is stale; the live identifier
-# table is printed so the correct value can be copied into personal.env.
+# Liveness is decided by REGISTRATION, not by a DDC readback. A sleeping external
+# answers "Failed." to `get --hardwareBrightness` with a perfectly valid tagID —
+# the identical symptom a stale tag produces — so probing DDC here would recreate
+# the exact ambiguity doctor exists to resolve, and would tell the operator to
+# rewrite a correct personal.env. DDC reachability is still reported, but only as
+# a second, non-fatal line.
+#
+# Exit 0 = both tags are registered. Exit 1 = at least one is stale; the live
+# identifier table is printed so the correct value can be copied into
+# personal.env. Exit 2 = could not enumerate at all (CLI missing / BD not running),
+# which is not evidence either way.
 doctor() {
-    local rc=0 pair tag name probe
+    local rc=0 pair tag name probe tags
     printf 'BetterDisplay tag reachability\n'
+
+    tags="$(bd_display_tags)"
+    if [[ -z "$tags" ]]; then
+        printf '  cannot enumerate displays — is BetterDisplay running? (CLI: %s)\n' "$CLI"
+        printf '  no verdict on the tagIDs; nothing was checked.\n'
+        return 2
+    fi
+
     for pair in "DEV:$DEV_TAG" "PORT:$PORT_TAG"; do
         name="${pair%%:*}"; tag="${pair#*:}"
+        if ! grep -qx -- "$tag" <<< "$tags"; then
+            printf '  %-5s tagID=%-5s STALE — no registered display carries this tagID\n' "$name" "$tag"
+            rc=1
+            continue
+        fi
         probe="$(bd get --tagID="$tag" --hardwareBrightness 2>/dev/null)"
-        # A live tag answers with a float. "Failed." (or empty) means the tagID
-        # does not resolve — the display it named is gone or was renumbered.
         if [[ "$probe" =~ ^-?[0-9]*\.?[0-9]+$ ]]; then
             printf '  %-5s tagID=%-5s OK (hardwareBrightness=%s)\n' "$name" "$tag" "$probe"
         else
-            printf '  %-5s tagID=%-5s STALE — got %s\n' "$name" "$tag" "${probe:-<empty>}"
-            rc=1
+            printf '  %-5s tagID=%-5s OK — registered, but DDC did not answer (monitor asleep?)\n' \
+                "$name" "$tag"
         fi
     done
+
     if (( rc != 0 )); then
         printf '\nLive displays:\n'
         bd get --identifiers 2>/dev/null | grep -E '"(name|tagID)"' | sed 's/^/  /'

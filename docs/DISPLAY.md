@@ -50,6 +50,12 @@ reverted everything to daily (fixed 2026-06-20). A cached `solo` self-heals: if 
 rig is re-docked (>1 display), `--solo` applies the daily layout and rewrites the
 cache to `daily` instead of refusing.
 
+**Stream round-trip:** the Sketchybar OBS toggle (`plugins/obs_action.sh`) stashes
+the outgoing profile to `~/.cache/bd-profile.prestream` when going LIVE and restores
+*that* when going offline. It used to call `display-restore.sh --force` with no
+profile, which resolves to the `--daily` fallback and persists it — so a single
+stream toggle demoted the rig off `--portrait-hires` for good, wake included.
+
 ## Brightness / color — `bd-apply.sh <mode>`
 
 Modes: `dawn day afternoon evening night` (time) + `meeting read stream cinema` (task).
