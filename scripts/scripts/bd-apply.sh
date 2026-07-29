@@ -257,6 +257,35 @@ set_dev() {
 # a sleeping external monitor, so the exit code is worthless — the readback is
 # the only honest success signal. This is why a mode change scheduled while
 # the portrait monitor sleeps used to be lost permanently.
+# port_vcp_read <vcp-name> — read one DDC control from the PANEL, or fail.
+#
+# The discriminator here is stderr, not stdout, and getting that wrong produced a
+# false "verified" in this very script. Measured behaviour of
+# `betterdisplaycli get --ddc --vcp=luminance` on a panel whose DDC reads do NOT
+# work (this rig over DisplayPort):
+#
+#   cold read          stdout=""    stderr="Failed."
+#   0.5s after a write stdout="44"  stderr="Failed."   <- CACHED ECHO of the write
+#   3s after a write   stdout=""    stderr="Failed."
+#
+# BetterDisplay serves the just-written value back for a few seconds while still
+# reporting the read as failed. A readback taken shortly after a write therefore
+# returns exactly what was written no matter what the display did — the same
+# cache-verifying-itself defect this whole rewrite exists to remove, reproduced
+# one layer down. stderr stays honest throughout, so it is the signal.
+#
+# Note this cannot use bd(), which redirects stderr into the log file.
+port_vcp_read() {
+    local vcp="$1" out err tmp
+    [[ -x "$CLI" ]] || return 1
+    tmp="$(mktemp -t bdvcp)" || return 1
+    out="$("$CLI" get --tagID="$PORT_TAG" --ddc --vcp="$vcp" 2>"$tmp" | head -1)"
+    err="$(cat "$tmp" 2>/dev/null)"; rm -f "$tmp"
+    grep -qi 'failed' <<< "$err" && return 1
+    [[ "$out" =~ ^[0-9]+$ ]] || return 1
+    printf '%s' "$out"
+}
+
 # set_port_vcp <vcp-name> <value 0-100> — write one DDC control to the external
 # panel as a RAW VCP command.
 #
@@ -307,7 +336,7 @@ set_port_vcp() {
             continue
         fi
         sleep 0.5
-        cur="$(bd get --tagID="$PORT_TAG" --ddc --vcp="$vcp" 2>/dev/null | head -1)"
+        cur="$(port_vcp_read "$vcp")" || cur=''
         if [[ "$cur" =~ ^[0-9]+$ ]]; then
             saw_numeric=1
             # Panel answers reads — this is real verification against the display.
@@ -512,7 +541,7 @@ doctor() {
             # confident OK for days while writes never reached the display.
             # Probe the panel itself; that is the only answer worth printing.
             local vcp
-            vcp="$(bd get --tagID="$tag" --ddc --vcp=luminance 2>/dev/null | head -1)"
+            vcp="$(port_vcp_read luminance)" || vcp=""
             if [[ "$vcp" =~ ^[0-9]+$ ]]; then
                 printf '  %-5s tagID=%-5s OK — panel answers DDC (luminance=%s)\n' "$name" "$tag" "$vcp"
             else
@@ -611,8 +640,8 @@ verify_mode() {
     # this function compares against. A panel that does not answer reads (the
     # DisplayPort case) yields `?`, which surfaces as a mismatch rather than a
     # false pass — "cannot verify" must never render as "ok".
-    cur_port_b="$(bd get --tagID="$PORT_TAG" --ddc --vcp=luminance 2>/dev/null | head -1)"
-    cur_port_c="$(bd get --tagID="$PORT_TAG" --ddc --vcp=contrast   2>/dev/null | head -1)"
+    cur_port_b="$(port_vcp_read luminance)" || cur_port_b=""
+    cur_port_c="$(port_vcp_read contrast)" || cur_port_c=""
     [[ "$cur_port_b" =~ ^[0-9]+$ ]] && cur_port_b="$(awk -v v="$cur_port_b" 'BEGIN{printf "%.2f", v/100}')" || cur_port_b='?'
     [[ "$cur_port_c" =~ ^[0-9]+$ ]] && cur_port_c="$(awk -v v="$cur_port_c" 'BEGIN{printf "%.2f", v/100}')" || cur_port_c='?'
     # temperature is a SOFTWARE colour-table control applied by BD itself, so its
@@ -643,13 +672,28 @@ verify_mode() {
     printf '  %-22s expect=%-40s actual=%-40s %s\n' "DEV xdrPreset" \
         "$dev_preset" "$cur_dev_preset" "$st"
 
-    st=ok; diff_ok "$exp_port_b" "$cur_port_b" >/dev/null || { st=DRIFT; drift=1; }
-    printf '  %-22s expect=%-8s actual=%-8s %s\n' "PORT hardwareBrightness" \
-        "$exp_port_b" "$cur_port_b" "$st"
+    # UNVERIFIABLE is not DRIFT. Over DisplayPort this panel accepts DDC writes but
+    # answers no reads, so there is nothing to compare — reporting that as drift
+    # would make `verify` fail permanently on the CORRECT daily setup and train the
+    # operator to ignore it, the same cry-wolf trap already fixed in doctor. Only a
+    # value we actually read and that actually disagrees sets drift.
+    if [[ -z "$cur_port_b" || "$cur_port_b" == '?' ]]; then
+        printf '  %-22s expect=%-8s actual=%-8s %s\n' "PORT hardwareBrightness" \
+            "$exp_port_b" "unread" "UNVERIFIABLE (no DDC readback)"
+    else
+        st=ok; diff_ok "$exp_port_b" "$cur_port_b" >/dev/null || { st=DRIFT; drift=1; }
+        printf '  %-22s expect=%-8s actual=%-8s %s\n' "PORT hardwareBrightness" \
+            "$exp_port_b" "$cur_port_b" "$st"
+    fi
 
-    st=ok; diff_ok "$exp_port_c" "$cur_port_c" >/dev/null || { st=DRIFT; drift=1; }
-    printf '  %-22s expect=%-8s actual=%-8s %s\n' "PORT hardwareContrast" \
-        "$exp_port_c" "$cur_port_c" "$st"
+    if [[ -z "$cur_port_c" || "$cur_port_c" == '?' ]]; then
+        printf '  %-22s expect=%-8s actual=%-8s %s\n' "PORT hardwareContrast" \
+            "$exp_port_c" "unread" "UNVERIFIABLE (no DDC readback)"
+    else
+        st=ok; diff_ok "$exp_port_c" "$cur_port_c" >/dev/null || { st=DRIFT; drift=1; }
+        printf '  %-22s expect=%-8s actual=%-8s %s\n' "PORT hardwareContrast" \
+            "$exp_port_c" "$cur_port_c" "$st"
+    fi
 
     st=ok; diff_ok "$exp_port_t" "$cur_port_t" >/dev/null || { st=DRIFT; drift=1; }
     printf '  %-22s expect=%-8s actual=%-8s %s\n' "PORT temperature" \
@@ -666,7 +710,7 @@ verify_mode() {
         | sed -E 's#.*/ ([A-Za-z ]+): *#\1=#' | tr '\n' ' ')"
     [[ -n "$edr" ]] && printf '  %-22s %s\n' "DEV EDR (info)" "$edr"
 
-    (( drift == 0 )) && echo $'\nall values match intent.' && return 0
+    (( drift == 0 )) && echo $'\nall READABLE values match intent.' && return 0
     echo $'\ndrift detected — re-apply or investigate.' >&2
     return 1
 }
