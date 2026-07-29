@@ -708,8 +708,8 @@ they vanished from listings).
 | **1** | Built-in Retina | Main workspace |
 | **2** | Portrait Monitor | Secondary |
 | **A** (AI) | Built-in | Claude, Codex, ChatGPT, Perplexity |
-| **D** (Development) | Portrait Monitor | Xcode, Cursor, Godot, Frame0 (moved 2026-07-28 — editors want vertical space, and it sits beside T) |
-| **T** (Terminal) | Portrait Monitor | Ghostty, terminals |
+| **D** (Development) | Built-in Retina | Xcode, Cursor, Godot, Frame0 — deliberately OPPOSITE T: Cursor agents are watched while work happens in kitty, so they must not share a monitor |
+| **T** (Terminal) | Portrait Monitor | Ghostty, kitty, terminals — gets the full 2560px for tmux |
 | **B** (Browser) | Built-in Retina | Dia, Chrome, Safari, Zen, Arc, Firefox (moved 2026-07-28 — a browser wants width; 1728 > 1440) |
 | **M** (Messaging) | Portrait Monitor | Slack, Discord, Telegram, WhatsApp, Signal (moved 2026-07-28 — chat is tall-narrow) |
 | **N** (Notes) | Built-in | Notion, Obsidian, Apple Notes (`Alt+O` — alt-n is a pt-BR dead key; Hyper+N also works) |

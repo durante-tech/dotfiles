@@ -163,15 +163,24 @@ outer.top = [
 # screen — so terminal <-> browser was a workspace switch instead of a glance.
 #
 # The fix follows the geometry: a browser wants WIDTH (built-in, 1728 logical),
-# a terminal wants HEIGHT (portrait, 2560 logical). B moves to the built-in, D
-# joins T on the tall panel so the dev surfaces sit together. D stays despite
-# its low count — Xcode needs somewhere to land, and an editor benefits from
-# vertical space for the same reason a terminal does.
+# a terminal wants HEIGHT (portrait, 2560 logical). B moved to the built-in.
+#
+# D is on the built-in for a different reason — ADJACENCY, not shape. Cursor runs
+# agents that are WATCHED while the actual work happens in kitty on T (operator,
+# 2026-07-28). Two surfaces used simultaneously must not share a monitor, or
+# every glance becomes a workspace switch. So D sits opposite T deliberately:
+#
+#   Built-in  B D A E N 1   watched / referenced  (browser, agents, AI, mail, notes)
+#   PORTRAIT  T M 2         worked in            (tmux gets the full 2560px)
+#
+# The corollary: do NOT "rebalance" D back onto the portrait panel on the
+# strength of its low launch count. The count is low because the work happens in
+# nvim-inside-tmux; the window still has to be visible at the same time.
 1 = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Main workspace on laptop
 2 = ['^@DOTFILES_MONITOR_EXTERNAL@$', 'secondary', 'main']   # Secondary workspace on portrait
 A = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # AI engineer apps (Claude, Codex) on laptop
 B = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Browser on the WIDE built-in — see the utilization note below
-D = ['^@DOTFILES_MONITOR_EXTERNAL@$', 'secondary', 'main']   # Dev editors beside T on the tall panel
+D = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Editors on the built-in — WATCHED while working in T
 E = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Email on laptop
 M = ['^@DOTFILES_MONITOR_EXTERNAL@$', 'secondary', 'main']   # Messaging on portrait — chat is tall-narrow by nature
 N = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Notes on laptop
@@ -572,3 +581,11 @@ run = ['layout tiling', 'move-node-to-workspace D']
 [[on-window-detected]]
 if.app-id = 'com.obsproject.obs-studio'
 run = ['layout tiling', 'move-node-to-workspace 2']
+
+# OrbStack → floating, matching the Docker Desktop precedent above. A container
+# manager is something you glance at and dismiss, not a window you tile into a
+# workspace; before this it had no rule at all and landed on whatever workspace
+# happened to be focused.
+[[on-window-detected]]
+if.app-id = 'dev.kdrag0n.MacVirt'
+run = 'layout floating'
