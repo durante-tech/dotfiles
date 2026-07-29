@@ -215,16 +215,50 @@ fi
 mkdir -p "$HOME/.cache" 2>/dev/null || true
 printf '%s\n' "$PROFILE" > "$HOME/.cache/bd-profile" 2>/dev/null || true
 
-# drifted — true if any target screen's live res|scaling|rotation differs from
-# the target. Scaling matters: 2560x1440 at scaling:off on a 4K panel is a soft
-# non-retina 1x mode that res+rotation alone would wrongly read as canonical.
+# spec_field <key> <displayplacer-spec-line> — pull one "key:value" out of a spec
+# regardless of field ORDER. The previous single-regex parse assumed the
+# generated order (res ... scaling ... degree); a hand-written
+# DOTFILES_DISPLAY_LAYOUT that orders fields differently failed to match, leaving
+# `want` set to the entire line so the layout re-applied on every single check.
+spec_field() {
+  grep -oE "(^|[[:space:]])$1:[^[:space:]]+" <<< "$2" | head -1 | sed -E "s/.*$1://"
+}
+
+# drifted — true if any target screen's live res|scaling|rotation|origin differs
+# from the target. Scaling matters: 2560x1440 at scaling:off on a 4K panel is a
+# soft non-retina 1x mode that res+rotation alone would wrongly read as canonical.
+#
+# Origin matters too, and used to be ignored: the two rotated profiles put the
+# panel in physically different places (--portrait stacks it ABOVE at (324,-1920),
+# --portrait-hires sits to the RIGHT at (1728,-765)), so a panel dragged in System
+# Settings kept its res/rotation and was reported "already canonical" forever.
+# displayplacer's Origin readback round-trips our value exactly (verified against
+# the live rig), because the built-in is always the main display at (0,0) and
+# macOS renumbers nothing. Origin is compared only when the spec actually states
+# one, so a custom layout that omits it opts out rather than drifting forever.
 drifted() {
   [[ "${1:-}" == "--force" ]] && return 0
-  local line id want cur
+  local line id want cur cur_r cur_s cur_o cur_d
   for line in "${args[@]}"; do
-    id="$(sed -E 's/.*id:([A-Za-z0-9-]+).*/\1/' <<< "$line")"
-    want="$(sed -E 's/.*res:([0-9]+x[0-9]+).*scaling:(on|off).*degree:([0-9]+).*/\1|\2|\3/' <<< "$line")"
-    cur="$("$DP" list 2>/dev/null | awk -v u="$id" 'index($0,u){f=1} f&&/Resolution:/{r=$2} f&&/Scaling:/{s=$2} f&&/Rotation:/{print r"|"s"|"$2; exit}')"
+    id="$(spec_field id "$line")"
+    # One pass over the target screen's block. displayplacer prints Resolution,
+    # Scaling, Origin, then Rotation; Origin carries a " - main display" suffix
+    # on the primary, so take $2 only.
+    cur="$("$DP" list 2>/dev/null | awk -v u="$id" '
+      index($0,u){f=1}
+      f&&/Resolution:/{r=$2}
+      f&&/Scaling:/{s=$2}
+      f&&/Origin:/{o=$2}
+      f&&/Rotation:/{print r"|"s"|"o"|"$2; exit}')"
+    IFS='|' read -r cur_r cur_s cur_o cur_d <<< "$cur"
+
+    want="$(spec_field res "$line")|$(spec_field scaling "$line")|$(spec_field degree "$line")"
+    cur="$cur_r|$cur_s|$cur_d"
+    if grep -qE "(^|[[:space:]])origin:" <<< "$line"; then
+      want="$want|$(spec_field origin "$line")"
+      cur="$cur|$cur_o"
+    fi
+
     [[ "$cur" != "$want" ]] && { log "drift on $id: live=$cur want=$want"; return 0; }
   done
   return 1
