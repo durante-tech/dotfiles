@@ -110,6 +110,60 @@ bd() {
     "$CLI" "$@" 2>>"$LOG_FILE"
 }
 
+# resolve_port_tag — self-heal a stale DOTFILES_BD_PORT_TAG.
+#
+# The external panel's tagID is a property of the CONNECTION, not the display.
+# Measured on this rig by swapping one cable back and forth:
+#
+#     DisplayPort  tagID 60   UUID E3434867…  name PORTRAIT-MONITOR  350 nits
+#     HDMI         tagID 166  UUID E9024EE3…  name DELL U2718Q       500 nits
+#     serial       808734284  — IDENTICAL on both, the only stable identifier
+#
+# Every one of those pinned values moves when the cable moves, and a stale tag is
+# silent: writes land in BetterDisplay's cache and the panel never changes. That
+# has now cost four separate debugging sessions (60 -> 166 -> 60 -> 166 -> 60).
+# Pinning a value that is a function of the cable was the design error; the fix is
+# to treat the configured tag as a HINT and re-derive when it does not resolve.
+#
+# Order: use the configured tag if it is live (fast path, zero behaviour change);
+# else match on serial, which survives the swap; else take the sole non-built-in
+# display. Every correction is logged loudly — self-healing must never be silent,
+# or personal.env rots while everything appears fine.
+resolve_port_tag() {
+    local ids live
+    ids="$(bd get --identifiers 2>/dev/null)" || return 0
+    [[ -z "$ids" ]] && return 0
+
+    # awk over the identifier blocks: emit "tagID<TAB>serial<TAB>registryLocation"
+    # for each Display (fields are alphabetical, so tagID comes last of the three).
+    live="$(awk '
+        /"deviceType"/       { isdisp = ($0 ~ /"Display"/); ser=""; reg="" }
+        /"serial"/           { s=$0; gsub(/.*: *"|",?$/, "", s); ser=s }
+        /"registryLocation"/ { r=$0; reg = ($0 ~ /disp0@/) ? "builtin" : "external" }
+        /"tagID"/ { t=$0; gsub(/[^0-9-]/, "", t)
+                    if (isdisp) print t "\t" ser "\t" reg
+                    isdisp=0 }' <<< "$ids")"
+    [[ -z "$live" ]] && return 0
+
+    # 1. Configured tag still live? Nothing to do.
+    if grep -q "^${PORT_TAG}	" <<< "$live"; then return 0; fi
+
+    local found=""
+    # 2. Match the serial we last saw, if one was recorded.
+    if [[ -n "${DOTFILES_BD_PORT_SERIAL:-}" ]]; then
+        found="$(awk -F'\t' -v s="$DOTFILES_BD_PORT_SERIAL" '$2==s {print $1; exit}' <<< "$live")"
+    fi
+    # 3. Otherwise the sole non-built-in display.
+    [[ -z "$found" ]] && found="$(awk -F'\t' '$3=="external" {print $1; exit}' <<< "$live")"
+
+    if [[ -n "$found" && "$found" != "$PORT_TAG" ]]; then
+        log "PORT tag $PORT_TAG is stale (cable change?) — re-derived as $found for this run."
+        log "     Persist it: DOTFILES_BD_PORT_TAG=\"$found\" in ~/.config/dotfiles/personal.env"
+        PORT_TAG="$found"
+    fi
+}
+resolve_port_tag
+
 # acquire_lock — serialize concurrent apply_mode runs. The five launchd timers,
 # bd-lmu-watch, bd-wake (sleepwatcher), and a manual bd-cycle can fire near
 # simultaneously and would otherwise interleave DDC writes + STATE_FILE writes.
@@ -462,10 +516,21 @@ doctor() {
             if [[ "$vcp" =~ ^[0-9]+$ ]]; then
                 printf '  %-5s tagID=%-5s OK — panel answers DDC (luminance=%s)\n' "$name" "$tag" "$vcp"
             else
-                printf '  %-5s tagID=%-5s registered, but the PANEL does not answer DDC reads.\n' "$name" "$tag"
-                printf '        Writes may still land (dispatch-only); brightness control is UNVERIFIABLE.\n'
-                printf '        Seen on this rig over DisplayPort; fixed by moving to HDMI.\n'
-                rc=1
+                # NOT a failure. Read support is connection-dependent: this panel
+                # answers reads over HDMI and not over DisplayPort, while WRITES
+                # work on both (operator-confirmed). DisplayPort is the preferred
+                # daily path — it keeps HDR off, which is what leaves the monitor's
+                # Brightness and Preset Modes usable at all (Dell U2718Q manual:
+                # "While the monitor is processing HDR content, Preset Modes,
+                # Brightness, and Dynamic Contrast will be disabled").
+                #
+                # Exiting 1 here would make doctor fail on the CORRECT setup, and a
+                # check that cries wolf on the normal configuration is worse than no
+                # check — it teaches you to ignore the one alarm that matters (a
+                # genuinely stale tag, which is still rc=1 above).
+                printf '  %-5s tagID=%-5s OK — registered; panel does not answer DDC reads\n' "$name" "$tag"
+                printf '        (normal over DisplayPort). Writes land but cannot be read back,\n'
+                printf '        so bd-apply logs those as "dispatched" rather than "verified".\n'
             fi
         elif [[ "$probe" =~ ^-?[0-9]*\.?[0-9]+$ ]]; then
             printf '  %-5s tagID=%-5s OK (hardwareBrightness=%s)\n' "$name" "$tag" "$probe"
