@@ -13,12 +13,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # severity: error is deliberate. At the default (all severities) this job
+      # gated on style notes — SC2086 in sketchybar plugins, SC2206 where the
+      # word-splitting is intentional — so it could never pass, and it did not:
+      # this workflow failed on EVERY run on main from 2026-05-27 to 2026-06-10,
+      # which is how the repo ended up with a permanently-red quality gate nobody
+      # read. Gating on `error` makes a red run mean something again.
+      #
+      # Remaining debt at warning/note level is tracked in
+      # docs/Sentinel/TECH-DEBT.md with a ratchet plan; tighten this to `warning`
+      # once that backlog is cleared, not before.
       - name: Run ShellCheck on custom scripts
         uses: ludeeus/action-shellcheck@master
         env:
           SHELLCHECK_OPTS: -e SC1090 -e SC1091 -e SC2034 -e SC2155
         with:
           scandir: .
+          severity: error
           ignore_paths: >-
             tmux/.config/tmux/.tmux/plugins
             site
@@ -76,15 +87,39 @@ jobs:
       - name: Install stow
         run: brew install stow
 
+      # Packages come from stow-packages.txt, shared with install.sh and
+      # setup.sh. This step used to carry its own list of 15 of the 22 packages,
+      # so espanso, fastfetch, kitty, mise, ubersicht, wallpapers and wezterm
+      # were never dry-run-verified and a conflict in any of them shipped green.
       - name: Verify stow packages (dry run)
         run: |
+          set -euo pipefail
           mkdir -p /tmp/fakehome/.config
-          packages=(
-            aerospace atuin ghostty karabiner mpd nvim rmpc
-            scripts sketchybar starship tmux w3m yazi zed zsh
-          )
-          for pkg in "${packages[@]}"; do
-            if [ -d "$pkg" ]; then
-              stow -n -t /tmp/fakehome "$pkg" 2>&1 && echo "✓ $pkg" || echo "✗ $pkg"
+          # `|| true` is load-bearing under set -euo pipefail: an empty manifest
+          # filters to zero lines and grep exits 1, which would abort the step
+          # with no diagnostic. Fail on the explicit check instead.
+          packages="$(sed -e 's/#.*//' -e 's/[[:space:]]//g' stow-packages.txt | grep -v '^$' || true)"
+          if [ -z "$packages" ]; then
+            echo "stow-packages.txt lists no packages"
+            exit 1
+          fi
+          echo "manifest lists $(echo "$packages" | wc -l | tr -d ' ') packages"
+          failed=0
+          # here-string, not a pipe: a `while read` on the right of a pipe runs in
+          # a subshell and the `failed` assignment would never reach this scope,
+          # turning every failure into a silent pass.
+          while IFS= read -r pkg; do
+            [ -n "$pkg" ] || continue
+            if [ ! -d "$pkg" ]; then
+              echo "✗ $pkg — listed in stow-packages.txt but no such directory"
+              failed=1
+              continue
             fi
-          done
+            if stow -n -t /tmp/fakehome "$pkg" 2>&1; then
+              echo "✓ $pkg"
+            else
+              echo "✗ $pkg"
+              failed=1
+            fi
+          done <<< "$packages"
+          exit "$failed"
