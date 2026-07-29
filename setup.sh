@@ -225,6 +225,9 @@ configure_environment() {
     # Symlink dotfiles-tracked Raycast script-commands into the indexed dir.
     link_raycast_commands
 
+    # Extension-less command aliases for the *.ts scripts (obs, dos-stream, ...).
+    link_script_aliases
+
     # Wire the rtk token-saver hook into Claude Code's PreToolUse:Bash chain.
     configure_rtk_hook
 }
@@ -379,6 +382,57 @@ link_raycast_commands() {
 }
 
 # ============================================================================
+# Script Aliases (extension-less names for the *.ts scripts)
+# ============================================================================
+#
+# stow links scripts/scripts/*.ts into ~/scripts under their real names, but the
+# TS scripts are invoked as commands WITHOUT the extension — `obs`, not `obs.ts`.
+# sketchybar/plugins/obs.sh:8 depends on it directly:
+#     OBS_BIN="$(command -v obs || echo "$HOME/scripts/obs")"
+#
+# Those aliases existed only as hand-made symlinks: absent on a fresh machine,
+# and invisible to `stow -R`, which is why ~/scripts drifted into a mix of
+# stow-managed and hand-managed links. Deriving them from the *.ts set makes the
+# rule explicit — every TS script gets an extension-less alias, no list to
+# maintain — and reproducible on a new install.
+link_script_aliases() {
+    print_header "Linking Script Aliases"
+
+    local SRC_DIR="$DOTFILES_DIR/scripts/scripts"
+    local BIN_DIR="$HOME/scripts"
+
+    if [[ ! -d "$SRC_DIR" ]]; then
+        print_info "No scripts/scripts/ directory — skipping"
+        return 0
+    fi
+    mkdir -p "$BIN_DIR"
+
+    local linked=0 skipped=0
+    for src in "$SRC_DIR"/*.ts; do
+        [[ -f "$src" ]] || continue
+        local base alias_path
+        base="$(basename "$src")"
+        alias_path="$BIN_DIR/${base%.ts}"
+        # Never clobber a real file that happens to share the name — only create
+        # the alias, or refresh one we already own.
+        if [[ -e "$alias_path" && ! -L "$alias_path" ]]; then
+            print_warning "Skipping ${base%.ts} — a real file already exists there"
+            skipped=$((skipped + 1))
+            continue
+        fi
+        ln -sfn "$src" "$alias_path"
+        linked=$((linked + 1))
+    done
+
+    if [[ $linked -eq 0 ]]; then
+        print_info "No .ts scripts found — no aliases needed"
+    else
+        print_success "Linked $linked script alias(es) into $BIN_DIR"
+        [[ $skipped -gt 0 ]] && print_warning "$skipped alias(es) skipped (real file in the way)"
+    fi
+}
+
+# ============================================================================
 # RTK Agent Hook (Claude Code token-saver)
 # ============================================================================
 #
@@ -442,10 +496,54 @@ configure_rtk_hook() {
 # Verify Configuration
 # ============================================================================
 
+# check_stow_drift — report any package file the repo has but $HOME does not.
+#
+# The hardcoded symlink spot-check below only covers a handful of well-known
+# paths, so a package could gain files that were never stowed and nothing would
+# say so. That is exactly what happened: 17 scripts (display-restore.sh,
+# bd-apply.sh, render-aerospace.sh, ...) plus all of fastfetch and wezterm sat
+# unlinked in ~/ for weeks, because adding a file to a package does not re-run
+# stow. `stow -n -R` in simulation mode is the authoritative answer — anything it
+# would still LINK is a file that is missing from $HOME right now.
+#
+# Entries that are deliberately NOT stowed (aerospace/templates, wallpapers/
+# shaders, zsh docs + completion cache) are excluded by each package's
+# .stow-local-ignore, so they never show up here.
+check_stow_drift() {
+    print_header "Checking Stow Drift"
+
+    command -v stow >/dev/null 2>&1 || { print_warning "stow not installed — skipping"; return 0; }
+    cd "$DOTFILES_DIR" || return 1
+
+    local pkg drifted=0 out
+    for pkg in aerospace atuin espanso fastfetch ghostty karabiner kitty mise mpd \
+               nvim rmpc scripts sketchybar starship tmux ubersicht w3m wallpapers \
+               wezterm yazi zed zsh; do
+        [[ -d "$DOTFILES_DIR/$pkg" ]] || continue
+        # "(reverts previous action)" lines are stow's re-stow bookkeeping for links
+        # that already exist — only the remainder are genuinely missing.
+        out="$(stow -n -v -R -t ~ "$pkg" 2>&1 | grep '^LINK:' | grep -v 'reverts previous action')"
+        if [[ -n "$out" ]]; then
+            print_warning "$pkg has unstowed file(s):"
+            sed 's/^/    /' <<< "$out"
+            drifted=$((drifted + 1))
+        fi
+    done
+
+    if [[ $drifted -eq 0 ]]; then
+        print_success "All packages fully stowed"
+    else
+        print_warning "$drifted package(s) drifted — fix with: stow -t ~ -R <package>"
+    fi
+    return 0
+}
+
 verify_config() {
     print_header "Verifying Configuration"
 
     local issues=0
+
+    check_stow_drift
 
     # Check symlinks
     echo "Checking symlinks..."

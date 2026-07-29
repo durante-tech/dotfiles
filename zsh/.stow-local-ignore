@@ -1,0 +1,29 @@
+# stow ignore list for the zsh package.
+#
+# NOTE: this file REPLACES stow's built-in defaults, so the standard entries are
+# repeated below — dropping them would start stowing .git metadata and editor
+# backups into $HOME.
+#
+# perf-baseline.md is documentation and .zcompdump* are zsh completion-cache
+# artifacts (already gitignored) that zsh writes into the repo dir. Neither
+# belongs in $HOME.
+^/perf-baseline\.md
+^/\.zcompdump.*
+
+# --- stow defaults, preserved ---
+RCS
+.+,v
+CVS
+\.\#.+
+\.cvsignore
+\.svn
+_darcs
+\.hg
+\.git
+\.gitignore
+\.gitmodules
+.+~
+\#.*\#
+^/README.*
+^/LICENSE.*
+^/COPYING
