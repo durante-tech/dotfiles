@@ -708,9 +708,9 @@ they vanished from listings).
 | **1** | Built-in Retina | Main workspace |
 | **2** | Portrait Monitor | Secondary |
 | **A** (AI) | Built-in | Claude, Codex, ChatGPT, Perplexity |
-| **D** (Development) | Built-in | IDEs, Cursor, VS Code, Zed |
+| **D** (Development) | Portrait Monitor | Xcode, Cursor, Godot, Frame0 (moved 2026-07-28 — editors want vertical space, and it sits beside T) |
 | **T** (Terminal) | Portrait Monitor | Ghostty, terminals |
-| **B** (Browser) | Portrait Monitor | Chrome, Zen, Arc, Dia, Safari, Firefox |
+| **B** (Browser) | Built-in Retina | Dia, Chrome, Safari, Zen, Arc, Firefox (moved 2026-07-28 — a browser wants width; 1728 > 1440) |
 | **M** (Messaging) | Portrait Monitor | Slack, Discord, Telegram, WhatsApp, Signal (moved 2026-07-28 — chat is tall-narrow) |
 | **N** (Notes) | Built-in | Notion, Obsidian, Apple Notes (`Alt+O` — alt-n is a pt-BR dead key; Hyper+N also works) |
 | **E** (Email) | Built-in | Spark, Apple Mail (`Alt+W` — alt-e is a pt-BR dead key; Hyper+E also works) |

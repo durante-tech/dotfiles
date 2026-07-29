@@ -147,11 +147,31 @@ outer.top = [
 # screen; 3+ monitors -> 'secondary' does NOT resolve (AeroSpace defines it
 # only for exactly two monitors), so unmatched pins land on 'main' — run
 # ./personalize.sh to pin exact names on 3+-monitor rigs.
+
+# Monitor split, and why it is shaped this way (measured 2026-07-28 from
+# kMDItemUseCount — LAUNCH counts, not time-in-app, so treat as a strong signal
+# rather than a precise ranking):
+#
+#   T terminal   6,266   (kitty 6196, Ghostty 64, iTerm 6)
+#   B browser    5,099   (Dia 4980, Chrome 105, Safari 14)
+#   M messaging  1,551   (WhatsApp 1534, Messages 10, Slack 5, Discord 2)
+#   A ai            72   D dev  41 (Xcode only; Cursor NEVER launched)
+#   E email         19   N notes 6
+#
+# Before this change the portrait panel carried ~99% of all launches while the
+# built-in sat near-idle, AND the two heaviest workspaces (T and B) shared one
+# screen — so terminal <-> browser was a workspace switch instead of a glance.
+#
+# The fix follows the geometry: a browser wants WIDTH (built-in, 1728 logical),
+# a terminal wants HEIGHT (portrait, 2560 logical). B moves to the built-in, D
+# joins T on the tall panel so the dev surfaces sit together. D stays despite
+# its low count — Xcode needs somewhere to land, and an editor benefits from
+# vertical space for the same reason a terminal does.
 1 = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Main workspace on laptop
 2 = ['^@DOTFILES_MONITOR_EXTERNAL@$', 'secondary', 'main']   # Secondary workspace on portrait
 A = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # AI engineer apps (Claude, Codex) on laptop
-B = ['^@DOTFILES_MONITOR_EXTERNAL@$', 'secondary', 'main']   # Browser on portrait
-D = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Development on laptop
+B = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Browser on the WIDE built-in — see the utilization note below
+D = ['^@DOTFILES_MONITOR_EXTERNAL@$', 'secondary', 'main']   # Dev editors beside T on the tall panel
 E = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Email on laptop
 M = ['^@DOTFILES_MONITOR_EXTERNAL@$', 'secondary', 'main']   # Messaging on portrait — chat is tall-narrow by nature
 N = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Notes on laptop
