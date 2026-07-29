@@ -6,9 +6,12 @@
 
 # Config version for compatibility and deprecations (max is 2; omitting = 1).
 # v2 makes persistent-workspaces explicit instead of inferred from keybinding
-# right-hand sides — required here because the E/N workspace bindings are
-# commented out (Brazilian accents) yet on-window-detected still routes apps
-# to E and N. See: https://nikitabobko.github.io/AeroSpace/guide#config-version
+# right-hand sides. Kept explicit as the safer contract: the list below is the
+# single declaration of which workspaces exist, so a workspace can never quietly
+# vanish because its binding moved or was retired (E and N are reached via
+# alt-w / alt-o rather than the pt-BR dead keys alt-e / alt-n, and workspace F
+# was retired 2026-07-28).
+# See: https://nikitabobko.github.io/AeroSpace/guide#config-version
 config-version = 2
 
 # You can use it to add commands that run after login to macOS user session.
@@ -48,7 +51,7 @@ automatically-unhide-macos-hidden-apps = true
 # rationale in the config-version comment above). Keep in sync with the
 # bindings, [workspace-to-monitor-force-assignment], and on-window-detected
 # rules below when adding or removing a workspace.
-persistent-workspaces = ['1', '2', 'A', 'B', 'D', 'E', 'F', 'M', 'N', 'T']
+persistent-workspaces = ['1', '2', 'A', 'B', 'D', 'E', 'M', 'N', 'T']
 
 # Normalizations. See: https://nikitabobko.github.io/AeroSpace/guide#normalization
 enable-normalization-flatten-containers = true
@@ -150,7 +153,6 @@ A = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # AI engineer apps 
 B = ['^@DOTFILES_MONITOR_EXTERNAL@$', 'secondary', 'main']   # Browser on portrait
 D = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Development on laptop
 E = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Email on laptop
-F = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Finder on laptop (floats)
 M = ['^@DOTFILES_MONITOR_EXTERNAL@$', 'secondary', 'main']   # Messaging on portrait — chat is tall-narrow by nature
 N = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Notes on laptop
 T = ['^@DOTFILES_MONITOR_EXTERNAL@$', 'secondary', 'main']   # Terminal on portrait
@@ -227,15 +229,19 @@ alt-2 = 'workspace 2'
 # alt-9 = 'workspace 9'
 alt-a = 'workspace A' # for AI engineer apps (Claude, Codex) — also fires on Caps+A via Karabiner Hyper→alt rewrite
 alt-b = 'workspace B' # for browser
-# Unbound by design: alt-e is the pt-BR acute-accent dead key. Workspace E is
-# reached via Karabiner Hyper+E and kept alive by persistent-workspaces above.
-# alt-e = 'workspace E' # for email
-alt-f = 'workspace F' # for finder
+# alt-e is the pt-BR acute-accent dead key, so E lives on alt-w — W sits
+# immediately left of E on QWERTY, which is the closest thing to a positional
+# mnemonic available. Karabiner Hyper+E still works and is unchanged.
+alt-w = 'workspace E' # for email (alt-e is a pt-BR dead key)
+# alt-f retired 2026-07-28 with workspace F — Finder floats on the current screen
+# by design (see its on-window-detected rule), so F could never hold a window.
+# The key is left FREE rather than reassigned: an 'f' key opening a non-F
+# workspace is worse than an open slot.
 alt-d = 'workspace D' # for development
 alt-m = 'workspace M' #
-# Unbound by design: alt-n is the pt-BR tilde dead key. Workspace N is
-# reached via Karabiner Hyper+N and kept alive by persistent-workspaces above.
-# alt-n = 'workspace N' # for notes
+# alt-n is the pt-BR tilde dead key, so N lives on alt-o — mnemonic: nOtes /
+# Obsidian. Karabiner Hyper+N still works and is unchanged.
+alt-o = 'workspace N' # for notes (alt-n is a pt-BR dead key)
 # alt-p = 'workspace P'
 alt-t = 'workspace T' # for terminal shell
 # alt-v = 'workspace V'
@@ -255,7 +261,6 @@ alt-shift-b = 'move-node-to-workspace B'
 # Unbound by design (pt-BR acute dead key) — move windows to E via
 # on-window-detected rules or `aerospace move-node-to-workspace E`.
 # alt-shift-e = 'move-node-to-workspace E'
-alt-shift-f = 'move-node-to-workspace F'
 alt-shift-d = 'move-node-to-workspace D'
 alt-shift-m = 'move-node-to-workspace M'
 # Unbound by design (pt-BR tilde dead key) — move windows to N via
@@ -263,6 +268,12 @@ alt-shift-m = 'move-node-to-workspace M'
 # alt-shift-n = 'move-node-to-workspace N'
 # alt-shift-p = 'move-node-to-workspace P'
 alt-shift-t = 'move-node-to-workspace T'
+# E and N never had move bindings at all — alt-shift-e / alt-shift-n are the same
+# pt-BR dead keys that blocked their switch bindings, so you could reach those
+# workspaces but never send a window to one. These complete the symmetry on the
+# same substitute keys used for switching (alt-w -> E, alt-o -> N).
+alt-shift-w = 'move-node-to-workspace E'
+alt-shift-o = 'move-node-to-workspace N'
 # alt-shift-v = 'move-node-to-workspace V'
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
 alt-tab = 'workspace-back-and-forth'
@@ -506,3 +517,38 @@ run = ['layout tiling', 'move-node-to-workspace E']
 [[on-window-detected]]
 if.app-id = 'com.apple.mail'
 run = ['layout tiling', 'move-node-to-workspace E']
+
+# ---------------------------------------------------------------------------
+# Previously-homeless apps (added 2026-07-28)
+#
+# Each of these is a real windowed app that had NO rule, so it landed on
+# whichever workspace happened to be focused — the main source of "windows end
+# up in random places". Utilities that are genuinely meant to float or live in
+# the menu bar (Raycast, Maccy, Karabiner, Übersicht, Setapp, ...) are
+# deliberately still unrouted; they are not windows you arrange.
+# ---------------------------------------------------------------------------
+
+# LM Studio → A. Local-model chat belongs with the other AI surfaces.
+[[on-window-detected]]
+if.app-id = 'ai.elementlabs.lmstudio'
+run = ['layout tiling', 'move-node-to-workspace A']
+
+# Godot → D. Game/engine editor, same class as the other IDEs.
+[[on-window-detected]]
+if.app-id = 'org.godotengine.godot'
+run = ['layout tiling', 'move-node-to-workspace D']
+
+# Frame0 → D. Wireframing sits next to the editors, not with the browsers.
+[[on-window-detected]]
+if.app-id = 'com.electron.frame0'
+run = ['layout tiling', 'move-node-to-workspace D']
+
+# OBS → 2 (portrait). JUDGEMENT CALL, flagged as such: the --stream display
+# profile drives the BUILT-IN at 1728x1080 because that is the panel OBS
+# captures, so parking OBS's own control window there would put it inside the
+# shot. 2 is the generic secondary workspace on the portrait panel — off the
+# capture, still one key away. Move it to 1 if you would rather have OBS on the
+# laptop screen and capture a different source.
+[[on-window-detected]]
+if.app-id = 'com.obsproject.obs-studio'
+run = ['layout tiling', 'move-node-to-workspace 2']
