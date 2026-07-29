@@ -203,6 +203,70 @@ set_dev() {
 # a sleeping external monitor, so the exit code is worthless — the readback is
 # the only honest success signal. This is why a mode change scheduled while
 # the portrait monitor sleeps used to be lost permanently.
+# set_port_vcp <vcp-name> <value 0-100> — write one DDC control to the external
+# panel as a RAW VCP command.
+#
+# Why raw VCP instead of BetterDisplay's `--hardwareBrightness` abstraction:
+# this display's DDC capabilities report is unacquirable ("DDC channel:
+# Available, DDC communication: Supported, DDC capabilities report: Unable to
+# acquire" — BetterDisplay's own panel, 2026-07-29). Without that report BD does
+# not know which VCP codes the panel implements, so it silently declines to route
+# hardwareBrightness/hardwareContrast over DDC — while still ACCEPTING the value
+# into its cache and echoing it back on `get`. The old readback loop below
+# therefore verified BD's own cache and reported success for writes that never
+# left the machine: every mode change was inert on this panel for as long as that
+# was true. A raw VCP write bypasses the capability gate entirely and does reach
+# the display (operator-confirmed: luminance 20 -> visibly dim, 100 -> restored).
+#
+# VERIFICATION IS CONNECTION-DEPENDENT, so this tries the strong signal first and
+# degrades explicitly rather than pretending. Measured on the same panel:
+#
+#   over DisplayPort : capabilities report unacquirable, `get --ddc --vcp=...`
+#                      -> "Failed."  — no readback possible
+#   over HDMI + HDR  : capabilities report acquired, `get --ddc --vcp=luminance`
+#                      -> a real panel value — full readback available
+#
+# So: read back when the panel answers and compare (genuine verification); when it
+# does not, fall back to the dispatch signal — the CLI prints "Failed." on a
+# rejected write and stays silent on an accepted one, validated by sending a bogus
+# VCP name and a bogus tagID, both of which print "Failed.". The log line says
+# which of the two happened; `verified=` and `dispatched=` are not the same claim
+# and must not be conflated when reading these logs.
+set_port_vcp() {
+    local vcp="$1" val="$2"
+    local out cur attempt
+    for (( attempt=1; attempt<=3; attempt++ )); do
+        out="$(bd set --tagID="$PORT_TAG" --ddc --vcp="$vcp" --value="$val" 2>&1)"
+        if grep -qi 'failed' <<< "$out"; then
+            log "PORT vcp:$vcp=$val rejected (attempt=$attempt) — reinitialize + retry"
+            bd perform --tagID="$PORT_TAG" --reinitialize >/dev/null 2>&1 || true
+            sleep 1.0
+            continue
+        fi
+        sleep 0.5
+        cur="$(bd get --tagID="$PORT_TAG" --ddc --vcp="$vcp" 2>/dev/null | head -1)"
+        if [[ "$cur" =~ ^[0-9]+$ ]]; then
+            # Panel answers reads — this is real verification against the display.
+            if (( cur == val )); then
+                log "PORT vcp:$vcp=$val (verified=$cur attempt=$attempt)"
+                return 0
+            fi
+            log "PORT vcp:$vcp=$val drift (panel reports $cur, attempt=$attempt) — retry"
+            sleep 1.0
+            continue
+        fi
+        # Panel does not answer reads (DisplayPort case). Dispatch-only signal.
+        log "PORT vcp:$vcp=$val (dispatched, no readback available, attempt=$attempt)"
+        return 0
+    done
+    log "WARN PORT vcp:$vcp=$val FAILED after 3 attempts (monitor asleep or DDC down)"
+    return 1
+}
+
+# set_port_feature <feature> <pct> — BetterDisplay-abstraction writer with
+# readback. RETAINED for software-path features only (temperature is a software
+# colour-table control, not DDC), where the readback is a real signal because BD
+# applies it itself rather than forwarding it to the panel.
 set_port_feature() {
     local feat="$1" pct="$2"
     local exp cur attempt
@@ -229,10 +293,14 @@ set_port_feature() {
 # are pinned to the neutral PORT_REF_* values on every mode to preserve color
 # fidelity. The port_contrast/port_temp args are accepted (call-site stability)
 # but intentionally NOT applied to the Dell.
+# Brightness and contrast go over RAW DDC (the abstraction silently no-ops on
+# this panel — see set_port_vcp). Temperature stays on the BD abstraction: it is
+# a SOFTWARE colour-table control, not a DDC one, so BD applies it locally and
+# the readback there is genuine.
 set_port() {
-    set_port_feature hardwareBrightness "$1"
-    set_port_feature hardwareContrast  "$PORT_REF_CONTRAST"
-    set_port_feature temperature       "$PORT_REF_TEMP"
+    set_port_vcp     luminance "$1"
+    set_port_vcp     contrast  "$PORT_REF_CONTRAST"
+    set_port_feature temperature "$PORT_REF_TEMP"
 }
 
 apply_mode() {
@@ -359,7 +427,23 @@ doctor() {
             continue
         fi
         probe="$(bd get --tagID="$tag" --hardwareBrightness 2>/dev/null)"
-        if [[ "$probe" =~ ^-?[0-9]*\.?[0-9]+$ ]]; then
+        if [[ "$name" == "PORT" ]]; then
+            # Registration alone is not enough for the external panel: the
+            # control path can be dead while every cache read looks healthy.
+            # `--hardwareBrightness` answers from BD's cache, so it reported a
+            # confident OK for days while writes never reached the display.
+            # Probe the panel itself; that is the only answer worth printing.
+            local vcp
+            vcp="$(bd get --tagID="$tag" --ddc --vcp=luminance 2>/dev/null | head -1)"
+            if [[ "$vcp" =~ ^[0-9]+$ ]]; then
+                printf '  %-5s tagID=%-5s OK — panel answers DDC (luminance=%s)\n' "$name" "$tag" "$vcp"
+            else
+                printf '  %-5s tagID=%-5s registered, but the PANEL does not answer DDC reads.\n' "$name" "$tag"
+                printf '        Writes may still land (dispatch-only); brightness control is UNVERIFIABLE.\n'
+                printf '        Seen on this rig over DisplayPort; fixed by moving to HDMI.\n'
+                rc=1
+            fi
+        elif [[ "$probe" =~ ^-?[0-9]*\.?[0-9]+$ ]]; then
             printf '  %-5s tagID=%-5s OK (hardwareBrightness=%s)\n' "$name" "$tag" "$probe"
         else
             printf '  %-5s tagID=%-5s OK — registered, but DDC did not answer (monitor asleep?)\n' \
@@ -426,8 +510,24 @@ verify_mode() {
     local cur_dev_sw cur_dev_preset cur_port_b cur_port_c cur_port_t
     cur_dev_sw="$(bd get --tagID="$DEV_TAG" --softwareBrightness 2>/dev/null || echo ?)"
     cur_dev_preset="$(bd get --tagID="$DEV_TAG" --xdrPreset 2>/dev/null || echo ?)"
-    cur_port_b="$(bd get --tagID="$PORT_TAG" --hardwareBrightness 2>/dev/null || echo ?)"
-    cur_port_c="$(bd get --tagID="$PORT_TAG" --hardwareContrast 2>/dev/null || echo ?)"
+    # Brightness/contrast are read from the PANEL over raw DDC, never from
+    # `--hardwareBrightness`. That abstraction reports BD's own cache: setting it
+    # to 30% makes `get` answer 0.3 while the panel's real VCP luminance sits
+    # unchanged (measured 2026-07-29 — panel held 85 across a 30%/100% round
+    # trip). Verifying against that cache is how this command reported a
+    # confident "all values match intent" through a control path that had not
+    # touched the display in days. Raw VCP is the display's own answer.
+    #
+    # Values arrive as 0..100 integers; normalise to the 0..1 float the rest of
+    # this function compares against. A panel that does not answer reads (the
+    # DisplayPort case) yields `?`, which surfaces as a mismatch rather than a
+    # false pass — "cannot verify" must never render as "ok".
+    cur_port_b="$(bd get --tagID="$PORT_TAG" --ddc --vcp=luminance 2>/dev/null | head -1)"
+    cur_port_c="$(bd get --tagID="$PORT_TAG" --ddc --vcp=contrast   2>/dev/null | head -1)"
+    [[ "$cur_port_b" =~ ^[0-9]+$ ]] && cur_port_b="$(awk -v v="$cur_port_b" 'BEGIN{printf "%.2f", v/100}')" || cur_port_b='?'
+    [[ "$cur_port_c" =~ ^[0-9]+$ ]] && cur_port_c="$(awk -v v="$cur_port_c" 'BEGIN{printf "%.2f", v/100}')" || cur_port_c='?'
+    # temperature is a SOFTWARE colour-table control applied by BD itself, so its
+    # readback is genuine and stays on the abstraction.
     cur_port_t="$(bd get --tagID="$PORT_TAG" --temperature 2>/dev/null || echo ?)"
 
     # BD reports brightness/contrast as 0..1 float, temperature as ±0..1.
