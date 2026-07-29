@@ -91,8 +91,35 @@ wrong. A dead sensor now raises a `bd_mode` sketchybar alert after ~5min.
 **The tagIDs are the fragile part — check them after any redock.**
 
 ```bash
-bd-apply.sh doctor      # exit 0 = both tags answer; exit 1 = prints the live table
+bd-apply.sh doctor      # 0 = healthy · 1 = stale tag or stray instance · 2 = could not check
 ```
+
+`doctor` decides liveness by **registration** (`get --identifiers`), not by a DDC
+readback. A sleeping external answers `Failed.` to `get --hardwareBrightness` with a
+perfectly valid tagID — the same symptom a stale tag gives — so probing DDC there
+would recreate the very ambiguity the command exists to resolve, and would advise
+rewriting a correct `personal.env`. DDC reachability is still reported, as a
+separate non-fatal line.
+
+**"I seem to have several BetterDisplay installations."** Almost certainly one
+bundle and several stranded processes. `betterdisplaycli version` hangs *and*
+strands a second full app instance — own menu-bar icon and all — so each call
+leaves behind something that looks like another install. Two accumulated on
+2026-07-28. There is only ever one bundle: `/Applications/BetterDisplay.app`.
+
+```bash
+pgrep -fl 'BetterDisplay.app/Contents/MacOS'                       # count instances
+pkill -f 'BetterDisplay/Contents/MacOS/BetterDisplay version'      # clear the strays
+```
+
+`doctor` flags them automatically. Never call `betterdisplaycli version`; the
+version comes from `Info.plist` (`doctor` prints it).
+
+**Homebrew reports a stale version on purpose.** Sparkle updates the bundle in
+place, so the cask stays at whatever it installed — currently app **5.0.1** vs cask
+**4.3.5**. `brew reinstall --cask betterdisplay` would therefore *downgrade* the app.
+The CLI is not a separate build: the Caskroom `betterdisplaycli` is a one-line
+wrapper that execs the app binary, so CLI behavior always tracks `/Applications`.
 
 `DOTFILES_BD_{DEV,PORT}_TAG` in `personal.env` name the displays every DDC write
 targets. Reattaching the external through a different port renumbers its tagID, and

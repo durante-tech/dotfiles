@@ -13,8 +13,18 @@
 #
 # Version note (re-verified 2026-07-28): the running app is 5.0.1 (build 52622,
 # via Sparkle) on the STABLE channel — preReleaseChannel=0, internalReleaseChannel=0.
-# `betterdisplaycli version` still hangs (launches a 2nd app instance); read the
-# version from /Applications/BetterDisplay.app/Contents/Info.plist instead.
+# The Homebrew cask is still at 4.3.5, because Sparkle updated the bundle in place
+# and brew never learned: `brew reinstall --cask betterdisplay` would DOWNGRADE
+# 5.0.1 -> 4.3.5. Keep that in mind before using brew as a repair (`bd-apply.sh
+# doctor` prints both versions). The CLI is not a separate build — the Caskroom
+# "betterdisplaycli" is a one-line wrapper that execs the app binary — so CLI
+# behavior always tracks whatever version is in /Applications.
+#
+# `betterdisplaycli version` still hangs, and it does NOT just hang: it strands a
+# second full app instance, extra menu-bar icon and all, which looks exactly like
+# a duplicate installation. Two accumulated on 2026-07-28. Never call it — read
+# the version from /Applications/BetterDisplay.app/Contents/Info.plist instead
+# (`bd-apply.sh doctor` does this, and flags any strays it finds).
 # On 5.x several `get` flags regressed to "Failed." — nativeResolution,
 # displayColorSpace, bitDepth, active. Nothing here reads them; use
 # system_profiler SPDisplaysDataType / displayplacer for those facts.
@@ -268,6 +278,33 @@ print_status() {
     fi
 }
 
+# bd_stray_instances — list BetterDisplay app processes that a CLI call started
+# and never cleaned up. `betterdisplaycli version` is the known offender: it hangs
+# and leaves a SECOND full app instance running, complete with its own menu-bar
+# icon, so the rig LOOKS like it has several BetterDisplay installations when
+# exactly one bundle exists on disk. Two accumulated on 2026-07-28 alone (20:31
+# and 20:38, both from an agent asking the CLI for its version).
+#
+# Discriminator: the real app runs the binary with NO arguments; every CLI call
+# execs the same binary WITH arguments (the Homebrew "CLI" is a one-line wrapper
+# that does exactly that) and should exit in milliseconds. `ps -Ao pid,lstart,args`
+# puts the binary path in field 7 — five lstart fields follow the pid — so field 7
+# matching the binary exactly plus NF>7 means "invoked with args and still alive".
+bd_stray_instances() {
+    ps -Ao pid,lstart,args 2>/dev/null | awk '
+        $7 ~ /\/BetterDisplay\.app\/Contents\/MacOS\/BetterDisplay$/ && NF > 7 {
+            printf "  pid=%-7s started=%s %s %s  args=%s\n", $1, $3, $4, $5, $8
+        }'
+}
+
+# bd_app_version — read the version from Info.plist, NEVER from `betterdisplaycli
+# version`. That subcommand hangs and strands an app instance (see above); the
+# plist is the safe source and needs no running app.
+bd_app_version() {
+    /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' \
+        /Applications/BetterDisplay.app/Contents/Info.plist 2>/dev/null
+}
+
 # bd_display_tags — emit the tagID of every REGISTERED display, one per line.
 # Software-side enumeration off `get --identifiers`: unlike a hardwareBrightness
 # read it does NOT travel over DDC, so it stays truthful while the external is
@@ -333,6 +370,34 @@ doctor() {
         bd get --identifiers 2>/dev/null | grep -E '"(name|tagID)"' | sed 's/^/  /'
         printf '\nFix: set DOTFILES_BD_{DEV,PORT}_TAG in ~/.config/dotfiles/personal.env\n'
     fi
+
+    # Stray app instances left behind by a hung CLI call. Not fatal to DDC, but
+    # they duplicate the menu-bar icon and read as "multiple installations".
+    local strays
+    strays="$(bd_stray_instances)"
+    if [[ -n "$strays" ]]; then
+        printf '\nStray BetterDisplay instances (a CLI call that never exited):\n%s' "$strays"
+        printf 'These are extra copies of the ONE app in /Applications, not extra installs.\n'
+        printf 'Clear with: pkill -f "BetterDisplay/Contents/MacOS/BetterDisplay version"\n'
+        printf 'Avoid by never running `betterdisplaycli version` — it hangs. Use:\n'
+        printf '  bd-apply.sh doctor   (reports the version from Info.plist)\n'
+        rc=1
+    fi
+
+    # Homebrew vs. on-disk skew. Sparkle updates the bundle in place, so brew
+    # keeps believing the version it installed — and `brew upgrade`/`reinstall
+    # --cask betterdisplay` would then DOWNGRADE a Sparkle-updated app onto the
+    # cask's older build. Worth knowing before reaching for a brew-based repair.
+    local app_ver cask_ver
+    app_ver="$(bd_app_version)"
+    cask_ver="$(ls /opt/homebrew/Caskroom/betterdisplay 2>/dev/null | grep -E '^[0-9]' | tail -1)"
+    printf '\nVersions: app=%s (Info.plist)  homebrew-cask=%s\n' "${app_ver:-?}" "${cask_ver:-none}"
+    if [[ -n "$app_ver" && -n "$cask_ver" && "$app_ver" != "$cask_ver" ]]; then
+        printf '  NOTE skew — the app self-updated via Sparkle. `brew reinstall --cask\n'
+        printf '  betterdisplay` would DOWNGRADE %s -> %s. Not an error; just do not\n' "$app_ver" "$cask_ver"
+        printf '  reach for brew as a repair unless you mean to roll back.\n'
+    fi
+
     return $rc
 }
 
