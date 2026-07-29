@@ -85,17 +85,28 @@ DOTFILES_BD_PORT_TAG=60        # your external display tagID
 ```
 The bd-* scripts source this file at top.
 
+> **These go stale on a redock.** Reattaching a display through a different port
+> renumbers its tagID. `betterdisplaycli` then answers `Failed.` for every write to
+> the old tag **but still exits 0**, so nothing reports the breakage — DDC brightness
+> and color silently stop applying. Re-derive with
+> `betterdisplaycli get --identifiers`, then confirm with `bd-apply.sh doctor`
+> (exit 1 + live identifier table when a tag no longer resolves).
+
 ### Display layout (display-restore.sh)
 
 | Where | Lucas's value | What it is |
 |-------|--------------|------------|
-| `scripts/scripts/display-restore.sh` DEFAULT_LAYOUT | Two hardcoded display UUIDs | displayplacer per-screen specs for the maintainer's rig |
+| `scripts/scripts/display-restore.sh` DEFAULT_LAYOUT | Live-detected screen ids | built-in matched by displayplacer's "MacBook built in screen" type, external by elimination — no UUID is pinned, so a redock cannot silently disable a profile |
 
 **Override:** set `DOTFILES_DISPLAY_LAYOUT` in `personal.env` (newline-separated
-`displayplacer` specs — discover yours with `displayplacer list`). Without it,
-the layout profiles no-op harmlessly on foreign hardware — except `--solo`,
-which detects the single connected display live and WILL apply on any hardware
-(resolution override: `DOTFILES_DISPLAY_SOLO_RES`, default 2560x1440).
+`displayplacer` specs — discover yours with `displayplacer list`).
+
+Since 2026-07-27 every profile resolves its screen ids live, so **all of them apply
+on any hardware**, not just `--solo`. The resolutions, however, are still tuned to
+the maintainer's two panels — a 4K external and a 3456×2234 built-in. On different
+panels the profiles will apply *something*, but "true integer-2x" will not hold;
+override the whole layout via `DOTFILES_DISPLAY_LAYOUT`, or use `--solo` with
+`DOTFILES_DISPLAY_SOLO_RES` (default 2560x1440) for a single-display rig.
 
 ---
 

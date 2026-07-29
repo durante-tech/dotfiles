@@ -48,7 +48,10 @@ wlog "WAKE fired | displays=$(dcount) | last-pm:$(last_pm)"
 sleep 5
 profile=daily
 [[ -r "$PROFILE_FILE" ]] && profile="$(cat "$PROFILE_FILE" 2>/dev/null)"
-[[ "$profile" =~ ^(daily|stream|hires|native|portrait|solo)$ ]] || profile=daily
+# portrait-hires precedes portrait in the alternation so the longer literal is
+# tried first — an anchored ERE would backtrack to it anyway, but relying on that
+# is how a cached 'portrait-hires' silently degrades to 'daily' after a refactor.
+[[ "$profile" =~ ^(daily|stream|hires|native|portrait-hires|portrait|solo)$ ]] || profile=daily
 restore_rc=na
 if [[ -x "$RESTORE" ]]; then "$RESTORE" --"$profile" >/dev/null 2>&1; restore_rc=$?; fi
 wlog "  post-restore profile=$profile restore_rc=$restore_rc displays=$(dcount)"

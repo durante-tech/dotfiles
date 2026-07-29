@@ -5,26 +5,37 @@
 # Display reconfigurations silently wreck this layout: sleep/wake drops the
 # built-in to a wide scaled mode (so the OBS capture goes small + soft) and a
 # monitor or BetterDisplay virtual-screen connect/disconnect knocks the external
-# out of its rotation. This restores the known-good layout so daily work stays
-# true-2x sharp (built-in "looks like 1728x1117", backing == native 3456x2234;
-# external "looks like 1920x1080" landscape, backing == native 3840x2160 — zero
-# scaling). The --stream profile swaps the built-in
-# to "looks like 1728x1080" so the OBS capture is a clean 2:1 downscale to a
-# 1080 canvas (height == OBS canvas) for the duration of a stream.
+# out of its rotation. This restores the known-good layout.
+#
+# The built-in is true-2x sharp in every profile but --stream and --native:
+# "looks like 1728x1117", backing == native 3456x2234, zero scaling. The --stream
+# profile swaps it to "looks like 1728x1080" so the OBS capture is a clean 2:1
+# downscale to a 1080 canvas (height == OBS canvas) for the duration of a stream.
+#
+# The external's canonical profile is --portrait-hires (operator decision
+# 2026-07-28): rotated 90, "looks like 1440x2560". That trades sharpness for
+# vertical space on purpose — backing 2880x5120 is supersampled down to the
+# 2160x3840 native grid. --portrait is the pixel-perfect alternative (1080x1920,
+# backing == native) when text fidelity matters more than the extra 640px.
 #
 # Idempotent by default: only calls displayplacer when the live layout has
 # drifted from target, because a redundant apply can itself flicker / disturb the
 # window manager. --force applies unconditionally.
 #
-# Usage: display-restore.sh [--daily | --stream | --hires | --native | --portrait | --solo] [--force | --dry-run]
-#   --daily   : explicit alias for the default (built-in 1728x1117 + Samsung 1920x1080).
+# Usage: display-restore.sh [--daily | --stream | --hires | --native | --portrait |
+#                            --portrait-hires | --solo] [--force | --dry-run]
+#   --daily   : explicit alias for the default (built-in 1728x1117 + Dell 1920x1080).
 #   --stream  : built-in at 1728x1080 (OBS-clean 2:1). Default is 1728x1117 (sharp).
-#   --hires   : Samsung external at 2560x1440 HiDPI (~78% more desktop area, stays
+#   --hires   : Dell external at 2560x1440 HiDPI (~78% more desktop area, stays
 #               retina-scaled). Default is 1920x1080 true integer-2x (sharpest).
-#   --native  : BOTH panels at 1x native (built-in 3456x2234, Samsung 3840x2160),
+#   --native  : BOTH panels at 1x native (built-in 3456x2234, Dell 3840x2160),
 #               scaling:off — pixel-perfect 1:1, zero scaling, but UI renders tiny.
-#   --portrait: Samsung rotated 90 to true-2x 1080x1920 portrait (backing 2160x3840
+#   --portrait: Dell rotated 90 to true-2x 1080x1920 portrait (backing 2160x3840
 #               == native — pixel-perfect, 1920px of crisp vertical space).
+#   --portrait-hires : Dell rotated 90 at 1440x2560 HiDPI — 2560px of vertical
+#               space (+33% over --portrait) at the cost of sharpness: backing
+#               2880x5120 is supersampled down to the 2160x3840 native grid.
+#               CANONICAL as of 2026-07-28 (operator decision).
 #   --solo    : single-display / clamshell — drive the ONLY connected display at
 #               2560x1440 HiDPI landscape (override: DOTFILES_DISPLAY_SOLO_RES).
 #               UUID is detected live, so this works for any external 4K panel.
@@ -74,6 +85,7 @@ for a in "$@"; do
     --hires)           PROFILE=hires ;;
     --native)          PROFILE=native ;;
     --portrait)        PROFILE=portrait ;;
+    --portrait-hires)  PROFILE=portrait-hires ;;
     --solo)            PROFILE=solo ;;
     --force|--dry-run) ACTION="$a" ;;
   esac
@@ -97,25 +109,38 @@ else
   BUILTIN_RES=1728x1117
 fi
 
-# External Samsung 4K resolution + origin per profile. daily/stream run true
+# External Dell 4K resolution + origin per profile. daily/stream run true
 # integer-2x (1920x1080 logical, backing == native 3840x2160 — sharpest). --hires
 # drives it at 2560x1440 HiDPI: ~78% more desktop area, still retina-scaled, with a
 # slight non-integer softness (5120x2880 supersampled down to the 3840x2160 panel).
 # --native runs 1x native 3840x2160 (scaling:off, pixel-perfect 1:1, UI tiny).
-# --portrait rotates the Samsung 90 to true-2x 1080x1920 (res:1920x1080 degree:90,
-# backing 2160x3840 == native — pixel-perfect, 1920px crisp vertical). EXT_DEGREE
-# carries the rotation (0 for every landscape profile, 90 for portrait).
-# Origin places the Samsung to the RIGHT of the built-in for the landscape profiles
-# (operator arrangement 2026-06-30): left = builtinWidth (edges touch), top = +37.
-# daily/stream/hires keep builtinWidth=1728; native is 1x so builtinWidth=3456.
-# --portrait is the exception — it still stacks the rotated panel ABOVE at (324,-1920).
+#
+# ROTATED PROFILES — res: is stated in the POST-rotation orientation. displayplacer
+# lists BOTH orientations as selectable modes under "Resolutions for rotation 90"
+# (e.g. res:1920x1080 AND res:1080x1920 both exist there), and its `Resolution:`
+# readback for a rotated screen is the portrait-shaped one. Passing the landscape
+# form therefore selects a landscape desktop letterboxed onto a rotated panel —
+# NOT the intended portrait desktop — and permanently defeats drifted()'s
+# comparison, so the layout re-applies on every wake. --portrait carried that bug
+# from 2026-06-20 until 2026-07-28.
+#   --portrait       : 1080x1920 (backing 2160x3840 == native — pixel-perfect)
+#   --portrait-hires : 1440x2560 (backing 2880x5120 supersampled — more space, softer)
+#
+# EXT_DEGREE carries the rotation (0 for every landscape profile, 90 for both
+# portrait profiles). Origin places the Dell to the RIGHT of the built-in for the
+# landscape profiles (operator arrangement 2026-06-30): left = builtinWidth (edges
+# touch), top = +37. daily/stream/hires keep builtinWidth=1728; native is 1x so
+# builtinWidth=3456. --portrait stacks the rotated panel ABOVE at (324,-1920);
+# --portrait-hires keeps it to the RIGHT at the operator's live arrangement.
 EXT_DEGREE=0
 if [[ "$PROFILE" == native ]]; then
   EXT_RES=3840x2160; EXT_ORIGIN='(3456,37)'
 elif [[ "$PROFILE" == hires ]]; then
   EXT_RES=2560x1440; EXT_ORIGIN='(1728,37)'
 elif [[ "$PROFILE" == portrait ]]; then
-  EXT_RES=1920x1080; EXT_ORIGIN='(324,-1920)'; EXT_DEGREE=90
+  EXT_RES=1080x1920; EXT_ORIGIN='(324,-1920)'; EXT_DEGREE=90
+elif [[ "$PROFILE" == portrait-hires ]]; then
+  EXT_RES=1440x2560; EXT_ORIGIN='(1728,-765)'; EXT_DEGREE=90
 else
   EXT_RES=1920x1080; EXT_ORIGIN='(1728,37)'
 fi

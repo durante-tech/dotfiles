@@ -9,19 +9,27 @@
 # favoriteMode is a single set that exits 0 even on a silent DDC no-op, with no
 # closed-loop verify — re-adopting it would re-introduce "mode lost while monitor
 # asleep". favoriteMode slots are kept only as a manual recovery fallback
-# (bd-build-slots.sh). Version note: the running app is 4.4.0 (build 51969, via
-# Sparkle), though the Homebrew cask metadata is pinned at 4.1.1 — `betterdisplaycli
-# version` currently hangs (launches a 2nd app instance), so the skew is cosmetic
-# but worth tracking. The 4.3.0-era slot-load breakage was never re-verified on 4.4.0.
+# (bd-build-slots.sh).
+#
+# Version note (re-verified 2026-07-28): the running app is 5.0.1 (build 52622,
+# via Sparkle) on the STABLE channel — preReleaseChannel=0, internalReleaseChannel=0.
+# `betterdisplaycli version` still hangs (launches a 2nd app instance); read the
+# version from /Applications/BetterDisplay.app/Contents/Info.plist instead.
+# On 5.x several `get` flags regressed to "Failed." — nativeResolution,
+# displayColorSpace, bitDepth, active. Nothing here reads them; use
+# system_profiler SPDisplaysDataType / displayplacer for those facts.
+# The 4.3.0-era slot-load breakage was never re-verified on 5.x.
 #
 # Usage:
 #   bd-apply.sh <mode>
-#   bd-apply.sh status
+#   bd-apply.sh status | verify | doctor
 #
 # Modes:
 #   Time-based:  dawn | day | afternoon | evening | night
 #   Task-based:  meeting | read | stream | cinema
 #   Utility:     status (print current state, no change)
+#                verify (diff live readback against the intent table)
+#                doctor (confirm both tagIDs still resolve — run after any redock)
 #
 # State persisted to ~/.cache/bd-state. Sketchybar notified via trigger.
 
@@ -37,12 +45,12 @@ LOCK_DIR="$HOME/.cache/bd-apply.lock"
 LOG_FILE="/tmp/bd-apply.log"
 CLI="/opt/homebrew/bin/betterdisplaycli"
 
-# Samsung (PORT) is a COLOR-REFERENCE display (operator decision 2026-06-13):
+# Dell (PORT) is a COLOR-REFERENCE display (operator decision 2026-06-13):
 # pin its white point + contrast to neutral/native on EVERY mode so time-of-day
 # never warps color fidelity. Only brightness follows the mode ("color locked,
 # brightness adapts"). These override the port_contrast/port_temp MODES columns
-# for the Samsung; override per-rig via the env vars below.
-PORT_REF_CONTRAST="${DOTFILES_BD_PORT_REF_CONTRAST:-75}"  # Samsung native contrast (OSD default)
+# for the Dell; override per-rig via the env vars below.
+PORT_REF_CONTRAST="${DOTFILES_BD_PORT_REF_CONTRAST:-75}"  # Dell native contrast (OSD default)
 PORT_REF_TEMP="${DOTFILES_BD_PORT_REF_TEMP:-0}"           # neutral white point (no DDC warm shift)
 
 # Single source of truth for every mode. apply_mode() AND verify_mode() both
@@ -206,11 +214,11 @@ set_port_feature() {
     return 1
 }
 
-# set_port <brightness%> [contrast% temp% — ignored] — Samsung is a color-
+# set_port <brightness%> [contrast% temp% — ignored] — Dell is a color-
 # reference display: only brightness follows the mode; contrast + temperature
 # are pinned to the neutral PORT_REF_* values on every mode to preserve color
 # fidelity. The port_contrast/port_temp args are accepted (call-site stability)
-# but intentionally NOT applied to the Samsung.
+# but intentionally NOT applied to the Dell.
 set_port() {
     set_port_feature hardwareBrightness "$1"
     set_port_feature hardwareContrast  "$PORT_REF_CONTRAST"
@@ -260,6 +268,40 @@ print_status() {
     fi
 }
 
+# doctor: confirm both configured tagIDs actually resolve to a live display
+# BEFORE trusting any apply. This exists because the tag is the one value here
+# that can go stale silently: reattaching the external through a different port
+# renumbers it, `betterdisplaycli get` then answers "Failed." for every feature
+# while still exiting 0, and set_port_feature's retry loop misattributes the
+# cause to "monitor asleep or DDC down". That mis-diagnosis cost two separate
+# debugging sessions (60 -> 166 on 2026-07-25, 166 -> 60 on 2026-07-28), so the
+# check is now one command instead of a memory.
+#
+# Exit 0 = both tags answer. Exit 1 = at least one is stale; the live identifier
+# table is printed so the correct value can be copied into personal.env.
+doctor() {
+    local rc=0 pair tag name probe
+    printf 'BetterDisplay tag reachability\n'
+    for pair in "DEV:$DEV_TAG" "PORT:$PORT_TAG"; do
+        name="${pair%%:*}"; tag="${pair#*:}"
+        probe="$(bd get --tagID="$tag" --hardwareBrightness 2>/dev/null)"
+        # A live tag answers with a float. "Failed." (or empty) means the tagID
+        # does not resolve — the display it named is gone or was renumbered.
+        if [[ "$probe" =~ ^-?[0-9]*\.?[0-9]+$ ]]; then
+            printf '  %-5s tagID=%-5s OK (hardwareBrightness=%s)\n' "$name" "$tag" "$probe"
+        else
+            printf '  %-5s tagID=%-5s STALE — got %s\n' "$name" "$tag" "${probe:-<empty>}"
+            rc=1
+        fi
+    done
+    if (( rc != 0 )); then
+        printf '\nLive displays:\n'
+        bd get --identifiers 2>/dev/null | grep -E '"(name|tagID)"' | sed 's/^/  /'
+        printf '\nFix: set DOTFILES_BD_{DEV,PORT}_TAG in ~/.config/dotfiles/personal.env\n'
+    fi
+    return $rc
+}
+
 # verify: probe live BD readback and diff against the intent table for the
 # currently-applied mode. Exit 0 if all values match, 1 if any drift.
 verify_mode() {
@@ -291,7 +333,7 @@ verify_mode() {
     # Convert intent percent → expected float for comparison.
     local exp_dev_sw exp_port_b exp_port_c exp_port_t
     exp_dev_sw="$(awk -v p="$dev_pct"  'BEGIN{printf "%.2f", p/100}')"
-    # Samsung contrast + temperature are pinned to the color-reference values on
+    # Dell contrast + temperature are pinned to the color-reference values on
     # every mode (not the per-mode columns), so verify against PORT_REF_*, not port_c/port_t.
     exp_port_b="$(awk -v p="$port_b"           'BEGIN{printf "%.2f", p/100}')"
     exp_port_c="$(awk -v p="$PORT_REF_CONTRAST" 'BEGIN{printf "%.2f", p/100}')"
@@ -349,13 +391,14 @@ main() {
     if [[ -z "$arg" ]]; then
         echo "usage: $(basename "$0") <mode>"
         echo "modes:    dawn day afternoon evening night meeting read stream cinema"
-        echo "commands: status verify"
+        echo "commands: status verify doctor"
         exit 1
     fi
 
     case "$arg" in
         status) print_status; return 0 ;;
         verify) verify_mode ;;
+        doctor) doctor ;;
         *) apply_mode "$arg" ;;
     esac
 }

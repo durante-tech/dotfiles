@@ -65,10 +65,41 @@ hdr "1. BetterDisplay tagIDs"
 
 DEV_TAG_DEFAULT=2
 PORT_TAG_DEFAULT=60
+
+# detect_bd_tag <internal|external> — read the live tagID straight off
+# BetterDisplay rather than offering a hardcoded constant as the default.
+# The constants above go stale on a redock (the tagID is renumbered) and the
+# resulting breakage is silent, so a live-detected default is the difference
+# between "personalize fixed it" and "personalize re-enshrined the stale value".
+#
+# --identifiers emits one JSON-ish block per device, fields in alphabetical
+# order, so deviceType and registryLocation are both seen before tagID. The
+# built-in framebuffer registers under disp0@; every external is dispextN@.
+# "DisplayGroup" is excluded by the closing quote in the /"Display"/ match.
+detect_bd_tag() {
+    betterdisplaycli get --identifiers 2>/dev/null | awk -v want="$1" '
+        /"deviceType"/       { isdisp = ($0 ~ /"Display"/) }
+        /"registryLocation"/ { isint  = ($0 ~ /disp0@/) }
+        /"tagID"/ {
+            t = $0; gsub(/[^0-9-]/, "", t)
+            if (isdisp) {
+                if (want == "internal" &&  isint) { print t; exit }
+                if (want == "external" && !isint) { print t; exit }
+            }
+            isdisp = 0; isint = 0
+        }'
+}
+
 if command -v betterdisplaycli >/dev/null 2>&1; then
     say "Detected BetterDisplay. Available displays:"
     betterdisplaycli get --identifiers 2>/dev/null | grep -E "name|tagID" | head -20 | sed 's/^/  /' || warn "(could not read identifiers — BetterDisplay running?)"
     echo
+    DETECTED_DEV=$(detect_bd_tag internal)
+    DETECTED_PORT=$(detect_bd_tag external)
+    [ -n "$DETECTED_DEV" ]  && DEV_TAG_DEFAULT=$DETECTED_DEV
+    [ -n "$DETECTED_PORT" ] && PORT_TAG_DEFAULT=$DETECTED_PORT
+    [ -n "$DETECTED_DEV$DETECTED_PORT" ] && \
+        ok "Auto-detected tagIDs — DEV=$DEV_TAG_DEFAULT PORT=$PORT_TAG_DEFAULT"
     say "DEV = your primary built-in display (where you edit code)."
     say "PORT = your external display (the one bd-apply.sh writes DDC to)."
 else
