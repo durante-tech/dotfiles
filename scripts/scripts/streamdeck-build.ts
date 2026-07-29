@@ -222,7 +222,7 @@ const ICONS: IconDef[] = [
   { key: "layout-native",    title: "NATIVE",    idle: { centerText: "1x",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "1x",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
   { key: "layout-solo",      title: "SOLO",      idle: { centerText: "So",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "So",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
   { key: "layout-portrait",  title: "PORTRAIT",  idle: { centerText: "Pt",  italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Pt",  italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
-  { key: "layout-portrait-hires", title: "PORT HI", idle: { centerText: "PH", italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "PH", italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
+  { key: "layout-portrait-hires", title: "PORT HI", idle: { centerText: "Ph", italic: true, color: TOKENS.fgMute, centerSize: 48 }, active: { centerText: "Ph", italic: true, color: TOKENS.primary, centerSize: 48, ring: true } },
   { key: "folder-screens",   title: "SCREENS",   idle: { centerText: "scr", italic: true, color: TOKENS.primary, centerSize: 42 }, active: { centerText: "scr", italic: true, color: TOKENS.primary, centerSize: 42 } },
 ];
 
