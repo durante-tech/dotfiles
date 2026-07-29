@@ -48,7 +48,7 @@ set -u
 # Personal values override the defaults below. See docs/PERSONALIZE.md.
 [ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
 
-DEV_TAG="${DOTFILES_BD_DEV_TAG:-2}"          # DEV-MAIN (default: MacBook Pro 14" XDR)
+DEV_TAG="${DOTFILES_BD_DEV_TAG:-2}"          # DEV-MAIN (default: MacBook Pro 16" XDR)
 PORT_TAG="${DOTFILES_BD_PORT_TAG:-60}"       # PORTRAIT-MONITOR (default: Dell U2718Q, DDC)
 STATE_FILE="$HOME/.cache/bd-state"
 LOCK_DIR="$HOME/.cache/bd-apply.lock"

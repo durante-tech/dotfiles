@@ -225,6 +225,7 @@ configure_environment() {
     # Symlink dotfiles-tracked Raycast script-commands into the indexed dir.
     link_raycast_commands
 
+
     # Wire the rtk token-saver hook into Claude Code's PreToolUse:Bash chain.
     configure_rtk_hook
 }
@@ -442,10 +443,61 @@ configure_rtk_hook() {
 # Verify Configuration
 # ============================================================================
 
+# check_stow_drift — report any package file the repo has but $HOME does not.
+#
+# The hardcoded symlink spot-check below only covers a handful of well-known
+# paths, so a package could gain files that were never stowed and nothing would
+# say so. That is exactly what happened: 17 scripts (display-restore.sh,
+# bd-apply.sh, render-aerospace.sh, ...) plus all of fastfetch and wezterm sat
+# unlinked in ~/ for weeks, because adding a file to a package does not re-run
+# stow. `stow -n -R` in simulation mode is the authoritative answer — anything it
+# would still LINK is a file that is missing from $HOME right now.
+#
+# Entries that are deliberately NOT stowed (aerospace/templates, wallpapers/
+# shaders, zsh docs + completion cache) are excluded by each package's
+# .stow-local-ignore, so they never show up here.
+check_stow_drift() {
+    print_header "Checking Stow Drift"
+
+    command -v stow >/dev/null 2>&1 || { print_warning "stow not installed — skipping"; return 0; }
+    cd "$DOTFILES_DIR" || return 1
+
+    local pkg drifted=0 out
+    for pkg in aerospace atuin espanso fastfetch ghostty karabiner kitty mise mpd \
+               nvim rmpc scripts sketchybar starship tmux ubersicht w3m wallpapers \
+               wezterm yazi zed zsh; do
+        [[ -d "$DOTFILES_DIR/$pkg" ]] || continue
+        # "(reverts previous action)" lines are stow's re-stow bookkeeping for links
+        # that already exist — only the remainder are genuinely missing.
+        #
+        # The trailing `|| true` is load-bearing under this file's `set -e`. A
+        # CLEAN package filters to zero lines, grep exits 1, and a bare
+        # `out="$(...)"` propagates that status — which aborted the whole script
+        # on the first healthy package, so `--check` printed this header and then
+        # died before reporting anything or running any later verification. The
+        # healthy path was the failing one.
+        out="$(stow -n -v -R -t ~ "$pkg" 2>&1 | grep '^LINK:' | grep -v 'reverts previous action' || true)"
+        if [[ -n "$out" ]]; then
+            print_warning "$pkg has unstowed file(s):"
+            sed 's/^/    /' <<< "$out"
+            drifted=$((drifted + 1))
+        fi
+    done
+
+    if [[ $drifted -eq 0 ]]; then
+        print_success "All packages fully stowed"
+    else
+        print_warning "$drifted package(s) drifted — fix with: stow -t ~ -R <package>"
+    fi
+    return 0
+}
+
 verify_config() {
     print_header "Verifying Configuration"
 
     local issues=0
+
+    check_stow_drift
 
     # Check symlinks
     echo "Checking symlinks..."

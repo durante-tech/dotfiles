@@ -6,9 +6,12 @@
 
 # Config version for compatibility and deprecations (max is 2; omitting = 1).
 # v2 makes persistent-workspaces explicit instead of inferred from keybinding
-# right-hand sides — required here because the E/N workspace bindings are
-# commented out (Brazilian accents) yet on-window-detected still routes apps
-# to E and N. See: https://nikitabobko.github.io/AeroSpace/guide#config-version
+# right-hand sides. Kept explicit as the safer contract: the list below is the
+# single declaration of which workspaces exist, so a workspace can never quietly
+# vanish because its binding moved or was retired (E and N are reached via
+# alt-w / alt-o rather than the pt-BR dead keys alt-e / alt-n, and workspace F
+# was retired 2026-07-28).
+# See: https://nikitabobko.github.io/AeroSpace/guide#config-version
 config-version = 2
 
 # You can use it to add commands that run after login to macOS user session.
@@ -24,7 +27,17 @@ after-startup-command = [
   # JankyBorders: only draw on focused window. Transparent inactive_color
   # prevents borders from being drawn around tile-hidden windows on other
   # workspaces (which otherwise bleed into the bottom-left as a sliver).
-  'exec-and-forget borders active_color=0xff8aadf4 inactive_color=0x00000000 width=4.0'
+  'exec-and-forget borders active_color=0xff8aadf4 inactive_color=0x00000000 width=4.0',
+  # Reconcile the live window tree with this config once the session settles.
+  # on-window-detected only fires when a window is FIRST detected, so it cannot
+  # place apps macOS restores at login before AeroSpace is ready, nor windows
+  # that were already open when a rule changed — both leave apps in the wrong
+  # workspace with no error anywhere. The sweep also re-asserts root-container
+  # orientation, which 'auto' fixes only at container-creation time and never
+  # re-evaluates when a workspace moves to a differently-shaped monitor.
+  # Backgrounded with a settle delay so it never blocks startup; logged rather
+  # than silent so a failed sweep is discoverable.
+  'exec-and-forget /bin/bash -c "sleep 10; ~/scripts/aerospace-resweep.sh >> /tmp/aerospace-resweep.log 2>&1"'
 ]
 
 # Notify Sketchybar about workspace change AND swap per-workspace wallpaper.
@@ -48,7 +61,7 @@ automatically-unhide-macos-hidden-apps = true
 # rationale in the config-version comment above). Keep in sync with the
 # bindings, [workspace-to-monitor-force-assignment], and on-window-detected
 # rules below when adding or removing a workspace.
-persistent-workspaces = ['1', '2', 'A', 'B', 'D', 'E', 'F', 'M', 'N', 'T']
+persistent-workspaces = ['1', '2', 'A', 'B', 'D', 'E', 'M', 'N', 'T']
 
 # Normalizations. See: https://nikitabobko.github.io/AeroSpace/guide#normalization
 enable-normalization-flatten-containers = true
@@ -85,9 +98,17 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 #                 Monitor pattern is the same as for 'workspace-to-monitor-force-assignment'.
 #                 See: https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
 [gaps]
-# Per-monitor gaps. Built-in Retina (14") gets tighter to recover screen real
-# estate; PORTRAIT (Dell 4K rotated) keeps the breathier 15px because there's
-# more pixel headroom and the eye expects more breathing room on a 27" panel.
+# Per-monitor gaps. Built-in Retina (16", logical 1728x1117) gets tighter to
+# recover screen real estate.
+#
+# PORTRAIT (Dell 28" 4K, rotated 90 — logical 1440x2560) keeps 15px, but note the
+# original rationale for that ("more pixel headroom") was written when the external
+# ran landscape and was the WIDER panel. Rotated it is the NARROWER one: 1440 vs
+# the built-in's 1728. Two windows side-by-side get 697px here against 849px on the
+# "small" screen, so the 15px inner gap costs proportionally more than the built-in's
+# 10px does. Kept at 15 deliberately — this panel is for STACKING (two windows get
+# 1240px of height vs 541px on the built-in), and horizontal splits on it are the
+# exception. Drop to 10 if side-by-side use ever becomes the norm here.
 inner.horizontal = [
   { monitor."@DOTFILES_MONITOR_BUILTIN@" = 10 },
   { monitor."@DOTFILES_MONITOR_EXTERNAL@" = 15 },
@@ -136,14 +157,42 @@ outer.top = [
 # screen; 3+ monitors -> 'secondary' does NOT resolve (AeroSpace defines it
 # only for exactly two monitors), so unmatched pins land on 'main' — run
 # ./personalize.sh to pin exact names on 3+-monitor rigs.
+
+# Monitor split, and why it is shaped this way (measured 2026-07-28 from
+# kMDItemUseCount — LAUNCH counts, not time-in-app, so treat as a strong signal
+# rather than a precise ranking):
+#
+#   T terminal   6,266   (kitty 6196, Ghostty 64, iTerm 6)
+#   B browser    5,099   (Dia 4980, Chrome 105, Safari 14)
+#   M messaging  1,551   (WhatsApp 1534, Messages 10, Slack 5, Discord 2)
+#   A ai            72   D dev  41 (Xcode only; Cursor NEVER launched)
+#   E email         19   N notes 6
+#
+# Before this change the portrait panel carried ~99% of all launches while the
+# built-in sat near-idle, AND the two heaviest workspaces (T and B) shared one
+# screen — so terminal <-> browser was a workspace switch instead of a glance.
+#
+# The fix follows the geometry: a browser wants WIDTH (built-in, 1728 logical),
+# a terminal wants HEIGHT (portrait, 2560 logical). B moved to the built-in.
+#
+# D is on the built-in for a different reason — ADJACENCY, not shape. Cursor runs
+# agents that are WATCHED while the actual work happens in kitty on T (operator,
+# 2026-07-28). Two surfaces used simultaneously must not share a monitor, or
+# every glance becomes a workspace switch. So D sits opposite T deliberately:
+#
+#   Built-in  B D A E N 1   watched / referenced  (browser, agents, AI, mail, notes)
+#   PORTRAIT  T M 2         worked in            (tmux gets the full 2560px)
+#
+# The corollary: do NOT "rebalance" D back onto the portrait panel on the
+# strength of its low launch count. The count is low because the work happens in
+# nvim-inside-tmux; the window still has to be visible at the same time.
 1 = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Main workspace on laptop
 2 = ['^@DOTFILES_MONITOR_EXTERNAL@$', 'secondary', 'main']   # Secondary workspace on portrait
 A = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # AI engineer apps (Claude, Codex) on laptop
-B = ['^@DOTFILES_MONITOR_EXTERNAL@$', 'secondary', 'main']   # Browser on portrait
-D = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Development on laptop
+B = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Browser on the WIDE built-in — see the utilization note below
+D = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Editors on the built-in — WATCHED while working in T
 E = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Email on laptop
-F = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Finder on laptop (floats)
-M = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Messaging on laptop
+M = ['^@DOTFILES_MONITOR_EXTERNAL@$', 'secondary', 'main']   # Messaging on portrait — chat is tall-narrow by nature
 N = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Notes on laptop
 T = ['^@DOTFILES_MONITOR_EXTERNAL@$', 'secondary', 'main']   # Terminal on portrait
 # 'main' binding mode declaration
@@ -219,15 +268,19 @@ alt-2 = 'workspace 2'
 # alt-9 = 'workspace 9'
 alt-a = 'workspace A' # for AI engineer apps (Claude, Codex) — also fires on Caps+A via Karabiner Hyper→alt rewrite
 alt-b = 'workspace B' # for browser
-# Unbound by design: alt-e is the pt-BR acute-accent dead key. Workspace E is
-# reached via Karabiner Hyper+E and kept alive by persistent-workspaces above.
-# alt-e = 'workspace E' # for email
-alt-f = 'workspace F' # for finder
+# alt-e is the pt-BR acute-accent dead key, so E lives on alt-w — W sits
+# immediately left of E on QWERTY, which is the closest thing to a positional
+# mnemonic available. Karabiner Hyper+E still works and is unchanged.
+alt-w = 'workspace E' # for email (alt-e is a pt-BR dead key)
+# alt-f retired 2026-07-28 with workspace F — Finder floats on the current screen
+# by design (see its on-window-detected rule), so F could never hold a window.
+# The key is left FREE rather than reassigned: an 'f' key opening a non-F
+# workspace is worse than an open slot.
 alt-d = 'workspace D' # for development
 alt-m = 'workspace M' #
-# Unbound by design: alt-n is the pt-BR tilde dead key. Workspace N is
-# reached via Karabiner Hyper+N and kept alive by persistent-workspaces above.
-# alt-n = 'workspace N' # for notes
+# alt-n is the pt-BR tilde dead key, so N lives on alt-o — mnemonic: nOtes /
+# Obsidian. Karabiner Hyper+N still works and is unchanged.
+alt-o = 'workspace N' # for notes (alt-n is a pt-BR dead key)
 # alt-p = 'workspace P'
 alt-t = 'workspace T' # for terminal shell
 # alt-v = 'workspace V'
@@ -247,7 +300,6 @@ alt-shift-b = 'move-node-to-workspace B'
 # Unbound by design (pt-BR acute dead key) — move windows to E via
 # on-window-detected rules or `aerospace move-node-to-workspace E`.
 # alt-shift-e = 'move-node-to-workspace E'
-alt-shift-f = 'move-node-to-workspace F'
 alt-shift-d = 'move-node-to-workspace D'
 alt-shift-m = 'move-node-to-workspace M'
 # Unbound by design (pt-BR tilde dead key) — move windows to N via
@@ -255,6 +307,12 @@ alt-shift-m = 'move-node-to-workspace M'
 # alt-shift-n = 'move-node-to-workspace N'
 # alt-shift-p = 'move-node-to-workspace P'
 alt-shift-t = 'move-node-to-workspace T'
+# E and N never had move bindings at all — alt-shift-e / alt-shift-n are the same
+# pt-BR dead keys that blocked their switch bindings, so you could reach those
+# workspaces but never send a window to one. These complete the symmetry on the
+# same substitute keys used for switching (alt-w -> E, alt-o -> N).
+alt-shift-w = 'move-node-to-workspace E'
+alt-shift-o = 'move-node-to-workspace N'
 # alt-shift-v = 'move-node-to-workspace V'
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
 alt-tab = 'workspace-back-and-forth'
@@ -498,3 +556,46 @@ run = ['layout tiling', 'move-node-to-workspace E']
 [[on-window-detected]]
 if.app-id = 'com.apple.mail'
 run = ['layout tiling', 'move-node-to-workspace E']
+
+# ---------------------------------------------------------------------------
+# Previously-homeless apps (added 2026-07-28)
+#
+# Each of these is a real windowed app that had NO rule, so it landed on
+# whichever workspace happened to be focused — the main source of "windows end
+# up in random places". Utilities that are genuinely meant to float or live in
+# the menu bar (Raycast, Maccy, Karabiner, Übersicht, Setapp, ...) are
+# deliberately still unrouted; they are not windows you arrange.
+# ---------------------------------------------------------------------------
+
+# LM Studio → A. Local-model chat belongs with the other AI surfaces.
+[[on-window-detected]]
+if.app-id = 'ai.elementlabs.lmstudio'
+run = ['layout tiling', 'move-node-to-workspace A']
+
+# Godot → D. Game/engine editor, same class as the other IDEs.
+[[on-window-detected]]
+if.app-id = 'org.godotengine.godot'
+run = ['layout tiling', 'move-node-to-workspace D']
+
+# Frame0 → D. Wireframing sits next to the editors, not with the browsers.
+[[on-window-detected]]
+if.app-id = 'com.electron.frame0'
+run = ['layout tiling', 'move-node-to-workspace D']
+
+# OBS → 2 (portrait). JUDGEMENT CALL, flagged as such: the --stream display
+# profile drives the BUILT-IN at 1728x1080 because that is the panel OBS
+# captures, so parking OBS's own control window there would put it inside the
+# shot. 2 is the generic secondary workspace on the portrait panel — off the
+# capture, still one key away. Move it to 1 if you would rather have OBS on the
+# laptop screen and capture a different source.
+[[on-window-detected]]
+if.app-id = 'com.obsproject.obs-studio'
+run = ['layout tiling', 'move-node-to-workspace 2']
+
+# OrbStack → floating, matching the Docker Desktop precedent above. A container
+# manager is something you glance at and dismiss, not a window you tile into a
+# workspace; before this it had no rule at all and landed on whatever workspace
+# happened to be focused.
+[[on-window-detected]]
+if.app-id = 'dev.kdrag0n.MacVirt'
+run = 'layout floating'

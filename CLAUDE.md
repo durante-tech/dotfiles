@@ -708,13 +708,12 @@ they vanished from listings).
 | **1** | Built-in Retina | Main workspace |
 | **2** | Portrait Monitor | Secondary |
 | **A** (AI) | Built-in | Claude, Codex, ChatGPT, Perplexity |
-| **D** (Development) | Built-in | IDEs, Cursor, VS Code, Zed |
-| **T** (Terminal) | Portrait Monitor | Ghostty, terminals |
-| **B** (Browser) | Portrait Monitor | Chrome, Zen, Arc, Dia, Safari, Firefox |
-| **M** (Messaging) | Built-in | Slack, Discord, Telegram, WhatsApp, Signal |
-| **N** (Notes) | Built-in | Notion, Obsidian, Apple Notes (no alt-n binding — Karabiner Hyper+N) |
-| **F** (Finder) | Built-in | (Finder floats on the current screen — not routed to F) |
-| **E** (Email) | Built-in | Spark, Apple Mail (no alt-e binding — Karabiner Hyper+E) |
+| **D** (Development) | Built-in Retina | Xcode, Cursor, Godot, Frame0 — deliberately OPPOSITE T: Cursor agents are watched while work happens in kitty, so they must not share a monitor |
+| **T** (Terminal) | Portrait Monitor | Ghostty, kitty, terminals — gets the full 2560px for tmux |
+| **B** (Browser) | Built-in Retina | Dia, Chrome, Safari, Zen, Arc, Firefox (moved 2026-07-28 — a browser wants width; 1728 > 1440) |
+| **M** (Messaging) | Portrait Monitor | Slack, Discord, Telegram, WhatsApp, Signal (moved 2026-07-28 — chat is tall-narrow) |
+| **N** (Notes) | Built-in | Notion, Obsidian, Apple Notes (`Alt+O` — alt-n is a pt-BR dead key; Hyper+N also works) |
+| **E** (Email) | Built-in | Spark, Apple Mail (`Alt+W` — alt-e is a pt-BR dead key; Hyper+E also works) |
 
 ### Main Keybindings (Alt key prefix)
 
@@ -724,8 +723,10 @@ they vanished from listings).
 | `Alt+Shift+h/j/k/l` | Move window left/down/up/right |
 | `Alt+Ctrl+h/j/k/l` | Swap adjacent windows |
 | `Alt+[` / `Alt+]` | Cycle windows depth-first (dfs-prev/next) |
-| `Alt+1/2/A/B/D/T/M/F` | Switch to workspace (E/N via Karabiner Hyper+E/N) |
-| `Alt+Shift+1/2/A/B/D/T/M/F` | Move window to workspace |
+| `Alt+1/2/A/B/D/T/M` | Switch to workspace |
+| `Alt+W` / `Alt+O` | Switch to E (Email) / N (Notes) — alt-e/alt-n are pt-BR dead keys |
+| `Alt+Shift+1/2/A/B/D/T/M` | Move window to workspace |
+| `Alt+Shift+W` / `Alt+Shift+O` | Move window to E / N (new — these had no move binding at all) |
 | `Alt+Tab` or `Alt+0` | Workspace back-and-forth |
 | `Alt+Shift+Tab` | Move workspace to other monitor |
 | `Alt+Enter` | Open Ghostty |

@@ -1,0 +1,28 @@
+# stow ignore list for the aerospace package.
+#
+# NOTE: this file REPLACES stow's built-in defaults, so the standard entries are
+# repeated below — dropping them would start stowing .git metadata and editor
+# backups into $HOME.
+#
+# templates/ is the git source of truth that render-aerospace.sh reads to produce
+# .config/aerospace/aerospace.toml. It is repo-internal; stowing it would create
+# a stray ~/templates symlink that nothing reads.
+^/templates
+
+# --- stow defaults, preserved ---
+RCS
+.+,v
+CVS
+\.\#.+
+\.cvsignore
+\.svn
+_darcs
+\.hg
+\.git
+\.gitignore
+\.gitmodules
+.+~
+\#.*\#
+^/README.*
+^/LICENSE.*
+^/COPYING
