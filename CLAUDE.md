@@ -711,7 +711,7 @@ they vanished from listings).
 | **D** (Development) | Built-in | IDEs, Cursor, VS Code, Zed |
 | **T** (Terminal) | Portrait Monitor | Ghostty, terminals |
 | **B** (Browser) | Portrait Monitor | Chrome, Zen, Arc, Dia, Safari, Firefox |
-| **M** (Messaging) | Built-in | Slack, Discord, Telegram, WhatsApp, Signal |
+| **M** (Messaging) | Portrait Monitor | Slack, Discord, Telegram, WhatsApp, Signal (moved 2026-07-28 — chat is tall-narrow) |
 | **N** (Notes) | Built-in | Notion, Obsidian, Apple Notes (no alt-n binding — Karabiner Hyper+N) |
 | **F** (Finder) | Built-in | (Finder floats on the current screen — not routed to F) |
 | **E** (Email) | Built-in | Spark, Apple Mail (no alt-e binding — Karabiner Hyper+E) |

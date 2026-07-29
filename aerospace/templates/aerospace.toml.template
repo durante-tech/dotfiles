@@ -85,9 +85,17 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 #                 Monitor pattern is the same as for 'workspace-to-monitor-force-assignment'.
 #                 See: https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
 [gaps]
-# Per-monitor gaps. Built-in Retina (14") gets tighter to recover screen real
-# estate; PORTRAIT (Dell 4K rotated) keeps the breathier 15px because there's
-# more pixel headroom and the eye expects more breathing room on a 27" panel.
+# Per-monitor gaps. Built-in Retina (16", logical 1728x1117) gets tighter to
+# recover screen real estate.
+#
+# PORTRAIT (Dell 28" 4K, rotated 90 — logical 1440x2560) keeps 15px, but note the
+# original rationale for that ("more pixel headroom") was written when the external
+# ran landscape and was the WIDER panel. Rotated it is the NARROWER one: 1440 vs
+# the built-in's 1728. Two windows side-by-side get 697px here against 849px on the
+# "small" screen, so the 15px inner gap costs proportionally more than the built-in's
+# 10px does. Kept at 15 deliberately — this panel is for STACKING (two windows get
+# 1240px of height vs 541px on the built-in), and horizontal splits on it are the
+# exception. Drop to 10 if side-by-side use ever becomes the norm here.
 inner.horizontal = [
   { monitor."@DOTFILES_MONITOR_BUILTIN@" = 10 },
   { monitor."@DOTFILES_MONITOR_EXTERNAL@" = 15 },
@@ -143,7 +151,7 @@ B = ['^@DOTFILES_MONITOR_EXTERNAL@$', 'secondary', 'main']   # Browser on portra
 D = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Development on laptop
 E = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Email on laptop
 F = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Finder on laptop (floats)
-M = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Messaging on laptop
+M = ['^@DOTFILES_MONITOR_EXTERNAL@$', 'secondary', 'main']   # Messaging on portrait — chat is tall-narrow by nature
 N = ['@DOTFILES_MONITOR_BUILTIN@', 'main']                   # Notes on laptop
 T = ['^@DOTFILES_MONITOR_EXTERNAL@$', 'secondary', 'main']   # Terminal on portrait
 # 'main' binding mode declaration
