@@ -16,14 +16,17 @@ This is a macOS-focused dotfiles repository using **GNU Stow** for symlink manag
 # Full automated installation (runs install.sh)
 /bin/bash install.sh
 
-# Manual stow all packages from dotfiles directory
-stow -t ~ .
+# Manual stow of every package (reads stow-packages.txt, same list install.sh uses)
+sed -e 's/#.*//' -e 's/[[:space:]]//g' stow-packages.txt | grep -v '^$' \
+  | xargs stow -R -t ~
 
-# Stow individual packages (authoritative list = PACKAGES in install.sh:
-# aerospace atuin espanso fastfetch ghostty karabiner kitty mise mpd nvim rmpc
-# scripts sketchybar starship tmux ubersicht w3m wallpapers wezterm yazi zed zsh.
-# launchagents/, raycast/, and macos/ are NOT stow targets — setup.sh --configure
-# renders/installs them.)
+# DO NOT run `stow -t ~ .` — this repo is stowed PER PACKAGE, and there is no
+# root .stow-local-ignore. Treating the repo root as one package symlinks all 51
+# top-level entries into $HOME (~/CLAUDE.md, ~/MEMORY, ~/install.sh, ~/.github)
+# and links ~/nvim instead of ~/.config/nvim, so nothing is actually deployed.
+
+# Stow individual packages (authoritative list = stow-packages.txt; that file
+# also documents why launchagents/, raycast/, macos/ and site/ are excluded)
 stow -t ~ zsh nvim tmux starship aerospace ghostty w3m yazi sketchybar
 
 # Re-stow after configuration changes
@@ -898,14 +901,54 @@ Hot-reloads on config change. Receives `aerospace_workspace_change` events.
 
 **Location**: `scripts/scripts/` (in PATH via `.zprofile`)
 
+**Sessions & file pickers**
+
 | Script | Alias | Description |
 |--------|-------|-------------|
 | `tmux-sessionizer` | `tns` | FZF project picker, creates/switches tmux sessions. Searches ~/dotfiles, ~/Projects, ~/Developer. Runs `.tmux-sessionizer` in project root if present. |
+| `kitty-sessionizer` | — | Same picker, kitty-native (no tmux) |
+| `kitty-config-menu` | — | FZF config file picker (replaces the tmux `prefix + d` display-menu) |
 | `fzf_listoldfiles.sh` | `nlof` | FZF recent Neovim files with bat preview, opens in nvim |
 | `zoxide_openfiles_nvim.sh` | `nzo` | Zoxide + fd + FZF + bat preview, opens in nvim |
-| `fzf-git.sh` | (sourced) | FZF-enhanced git: branch browser, commit viewer, ref inspector. `Ctrl+O` open in browser, `Ctrl+D` show diff |
+| `fzf-git.sh` | (sourced) | FZF-enhanced git: branch browser, commit viewer, ref inspector. `Ctrl+O` open in browser, `Ctrl+D` show diff. **Vendored** from junegunn/fzf-git.sh — keep edits minimal |
+| `gh_create_repo.sh` | `gh-create` | Create private repo + push + open in browser |
 
-**Adding New Scripts**: Create in `scripts/scripts/`, `chmod +x`, available immediately (no re-stow needed).
+**Display & BetterDisplay** (see the bd-* section below for the mode model)
+
+| Script | Description |
+|--------|-------------|
+| `bd-apply.sh` | Mode-switching entrypoint — 9 modes plus `status` / `verify` / `doctor`. Drives the external panel over raw DDC VCP; `doctor` first when anything looks wrong |
+| `bd-cycle.sh` | `[next\|prev]` — advance/reverse through ORDER (sketchybar handler) |
+| `bd-lmu-watch.sh` | Ambient-light bridge — auto-switches mode from the light sensor |
+| `bd-wake.sh` | Re-apply the current mode after wake (sleepwatcher `~/.wakeup`) |
+| `bd-build-slots.sh` | Build BetterDisplay favorite-mode slots from the live bd-apply.sh modes |
+| `display-restore.sh` | Re-assert the canonical monitor layout (resolution, rotation, origin). `--portrait-hires` is canonical; 7 profiles total |
+| `unlock-watch.swift` | Compiled Swift helper — runs `~/.wakeup` on screen unlock (launchd cannot express this trigger) |
+
+**Window management & desktop**
+
+| Script | Description |
+|--------|-------------|
+| `render-aerospace.sh` | Render `aerospace.toml` from the template. `--doctor` checks monitor patterns, AeroSpace version, persistent-workspaces drift |
+| `aerospace-resweep.sh` | Re-apply `on-window-detected` routing to windows already open (startup reconciliation) |
+| `kitty-font-per-workspace.sh` | Resize kitty font live based on focused AeroSpace workspace |
+| `ubersicht-screen-sync.sh` | Keep the Übersicht dashboard pinned to the external display |
+| `wallpaper-cycle.sh` | Random wallpaper from `~/Pictures/Wallpapers` |
+| `wallpaper-rotate.sh` | Durante-themed wallpaper per monitor |
+| `wallpaper-workspace.sh` | Wallpaper follows the AeroSpace workspace name |
+
+**Streaming / build-in-public** (Bun TypeScript — `<name>` is the executable, `<name>.ts` the source)
+
+| Script | Description |
+|--------|-------------|
+| `obs` | Minimal OBS WebSocket v5 CLI (scene switching, recording) |
+| `obs-scene-build` | Idempotently (re)build the 5 DuranteOS scenes over OBS WebSocket v5 |
+| `obs-popup.sh` | tmux popup for OBS scene/recording control via fzf |
+| `dos-stream` | Runtime control plane for the build-in-public pipeline (`phase <observe\|think\|…>`) |
+| `dos-stream-sidecar` | Serve real build activity to the terminal-frame overlay |
+| `streamdeck-build` | Build the Stream Deck profile from a source `.streamDeckProfile` |
+
+**Adding New Scripts**: Create in `scripts/scripts/`, `chmod +x`, available immediately (no re-stow needed). Shebang must be on **line 1** — CI's ShellCheck job gates on `error` severity and a comment above the shebang is one (`SC1128`).
 
 ---
 
@@ -1073,8 +1116,8 @@ chmod +x ~/scripts/*
 <!-- Auto-generated body lives in docs/Sentinel/SNAPSHOT.md. Next sentinel scan writes there, not back into this section. -->
 
 - **Stack:** macOS-only dotfiles deployed via GNU Stow across ~22 packages; polyglot — Zsh/Bash (config + automation), Lua (Neovim/lazy.nvim), TOML (AeroSpace/Starship), plus Bun-run TypeScript scripts and an Astro/React docs site under `site/`.
-- **Test:** `# no automated suite — verify manually`. **Lint:** `# CI: .github/workflows/lint.yml`.
-- **Health:** 100% (21 healthy / 21 conventions, 3 debt indicators) — last scan 2026-06-24.
+- **Test:** `# no automated suite — verify manually` (see `VERIFY.md`). **Lint:** `# CI: .github/workflows/lint.yml` — 4 jobs: ShellCheck (gates at **`severity: error`**), Lua (advisory, `|| true`), TOML, stow dry run (reads `stow-packages.txt`).
+- **Health:** 100% (21 healthy / 21 conventions, 3 debt indicators) — last **static** scan 2026-06-24. That score is convention-matching only and does not read CI: on 2026-07-29 the CI gate was found red on every run since 2026-05-27. Treat the score as a style measure, not a health measure; the live signal is `gh run list`. Current debt: `docs/Sentinel/TECH-DEBT.md` (manual addendum 2026-07-29).
 - **Enforced patterns:** kebab-case script names; `snake_case()` shell functions; `DOTFILES_`-prefixed override vars; `set -e`/`set -u` after shebang; `#!/usr/bin/env bash` (`#!/bin/bash` for launchd/bash-3.2 scripts); `#!/usr/bin/env bun` for TS scripts; `command -v <tool> && eval` guards in `.zshrc`; one-file-per-plugin `return { ... }` Neovim specs; `personal.env` existence-guarded sourcing; LaunchAgents as `.plist.template` (`__USER__` + `__DOTFILES_DIR__` placeholders, rendered by setup.sh; repo-owned `com.lucas.*` supersedes brew-services); Raycast script-commands `exec`-delegate to canonical scripts; compiled native helpers (Swift, e.g. `unlock-watch.swift`) built to `~/.local/bin` by setup.sh `build_native_helpers()` (`swiftc`-guarded) for triggers launchd can't express (distributed notifications).
 - **Full snapshot** (Tech Stack, Architecture, Conventions, Key Decisions, Setup, Health, open debt): [`docs/Sentinel/SNAPSHOT.md`](docs/Sentinel/SNAPSHOT.md).
 - **Architecture artifacts:** `docs/Sentinel/MODULE-MAP.md`, `C4-CONTEXT.md`, `C4-CONTAINER.md`, `ADRS.md`, `TECH-DEBT.md`, `DURANTE-NATIVE.md`.
