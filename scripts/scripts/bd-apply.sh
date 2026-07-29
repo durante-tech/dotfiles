@@ -334,10 +334,12 @@ bd_display_tags() {
 # rewrite a correct personal.env. DDC reachability is still reported, but only as
 # a second, non-fatal line.
 #
-# Exit 0 = both tags are registered. Exit 1 = at least one is stale; the live
+# Exit 0 = healthy. Exit 1 = something needs attention: a tag is stale (the live
 # identifier table is printed so the correct value can be copied into
-# personal.env. Exit 2 = could not enumerate at all (CLI missing / BD not running),
-# which is not evidence either way.
+# personal.env) and/or stray app instances are running. Exit 2 = could not
+# enumerate at all (CLI missing / BD not running), which is not evidence either
+# way — deliberately distinct from 1 so "I could not check" never reads as
+# "your config is wrong".
 doctor() {
     local rc=0 pair tag name probe tags
     printf 'BetterDisplay tag reachability\n'
