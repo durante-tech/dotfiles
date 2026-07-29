@@ -580,7 +580,16 @@ doctor() {
     # cask's older build. Worth knowing before reaching for a brew-based repair.
     local app_ver cask_ver
     app_ver="$(bd_app_version)"
-    cask_ver="$(ls /opt/homebrew/Caskroom/betterdisplay 2>/dev/null | grep -E '^[0-9]' | tail -1)"
+    # Glob rather than `ls | grep`: the Caskroom holds one directory per
+    # installed version, so iterating entries and keeping the last
+    # version-looking basename gives the same answer without parsing ls output.
+    cask_ver=""
+    local _cask_dir
+    for _cask_dir in /opt/homebrew/Caskroom/betterdisplay/*; do
+        [[ -e "$_cask_dir" ]] || continue          # unmatched glob stays literal
+        _cask_dir="${_cask_dir##*/}"
+        [[ "$_cask_dir" == [0-9]* ]] && cask_ver="$_cask_dir"
+    done
     printf '\nVersions: app=%s (Info.plist)  homebrew-cask=%s\n' "${app_ver:-?}" "${cask_ver:-none}"
     if [[ -n "$app_ver" && -n "$cask_ver" && "$app_ver" != "$cask_ver" ]]; then
         printf '  NOTE skew — the app self-updated via Sparkle. `brew reinstall --cask\n'

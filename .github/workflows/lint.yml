@@ -5,6 +5,10 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # Manual trigger. Without it there is no way to exercise this workflow against
+  # an unchanged tree — which mattered on 2026-07-29, when Actions had been off
+  # at the org level and no run existed for any recent commit to re-run.
+  workflow_dispatch:
 
 jobs:
   shellcheck:
@@ -13,30 +17,40 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # severity: error is deliberate. At the default (all severities) this job
-      # gated on style notes — SC2086 in sketchybar plugins, SC2206 where the
-      # word-splitting is intentional — so it could never pass, and it did not:
-      # this workflow failed on EVERY run on main from 2026-05-27 to 2026-06-10,
-      # which is how the repo ended up with a permanently-red quality gate nobody
-      # read. Gating on `error` makes a red run mean something again.
+      # severity: warning. At the action's default (every severity) this job
+      # gated on style notes and could never pass — it failed on EVERY run on
+      # main from 2026-05-27 to 2026-06-10, which is how the repo ended up with a
+      # permanently-red gate nobody read. It was first pinned to `error`, then
+      # tightened to `warning` here once the 31-warning backlog was actually
+      # cleared rather than suppressed.
       #
-      # Remaining debt at warning/note level is tracked in
-      # docs/Sentinel/TECH-DEBT.md with a ratchet plan; tighten this to `warning`
-      # once that backlog is cleared, not before.
+      # 52 note-level findings remain (mostly SC2086 in sketchybar plugins where
+      # the word-splitting is deliberate). Do NOT drop to the default severity to
+      # pick those up unless they are fixed first — that is exactly how this gate
+      # died the first time.
       - name: Run ShellCheck on custom scripts
         uses: ludeeus/action-shellcheck@master
         env:
           SHELLCHECK_OPTS: -e SC1090 -e SC1091 -e SC2034 -e SC2155
         with:
           scandir: .
-          severity: error
+          severity: warning
           ignore_paths: >-
             tmux/.config/tmux/.tmux/plugins
             site
             .dos
             .pi
             nvim
+            zsh
           check_together: "yes"
+          # zsh/ is excluded because ShellCheck does not support zsh at all — not
+          # as a severity, as a dialect. .zshrc uses an anonymous function with
+          # glob qualifiers (`if () { setopt localoptions extendedglob; ... }`)
+          # which is valid zsh and unparseable as bash, so it emitted SC1072/
+          # SC1073 *errors* that no amount of correct zsh could ever clear.
+          # .zprofile drew SC2148 for having no shebang, which is right for a
+          # sourced zsh startup file. Linting them was never going to be
+          # meaningful; excluding them is the fix, not a suppression.
 
   lua-lint:
     name: Lua Lint

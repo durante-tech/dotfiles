@@ -39,8 +39,10 @@ matching only. It did not look at CI, which was red the whole time.
 - **ci: `Dotfiles CI` failed on `main` on every run from 2026-05-27 through
   2026-06-10** (12/12 sampled, most recent run 27254391329). The ShellCheck job ran
   at default severity, so it gated on style notes and could never pass. A gate that
-  is always red is not a gate — it trained everyone to ignore it. Fixed by pinning
-  `severity: error` and fixing all 5 error-level findings at source.
+  is always red is not a gate — it trained everyone to ignore it. Fixed by fixing
+  all 5 error-level findings at source, then the 31 warnings, and pinning
+  `severity: warning`. A `workflow_dispatch` trigger was added so the workflow can
+  be exercised against an unchanged tree.
 - **ci: stow dry run covered 15 of 22 packages** and swallowed failures
   (`stow … || echo "✗ $pkg"` with no exit code), so espanso, fastfetch, kitty,
   mise, ubersicht, wallpapers and wezterm were never verified and a conflict in
@@ -57,17 +59,54 @@ matching only. It did not look at CI, which was red the whole time.
 - **tooling: `setup.sh --check` probed for `fnm` and `pyenv`**, both retired in
   favour of mise, so a correct machine was told twice it was missing tools.
 
+- **lint: the 31-warning backlog is cleared and CI now gates at
+  `severity: warning`.** Done properly rather than suppressed — two of the fixes
+  were real latent bugs:
+  - `fzf_listoldfiles.sh` built both its arrays with `arr=($(...))`, splitting on
+    IFS. Any recent file whose path contained a space was shredded into fragments
+    that then failed the `-f` test and silently vanished from the picker; with
+    `--multi`, selecting such a path made nvim open phantom files. Now read
+    line-wise. (`mapfile` is unavailable — macOS `/bin/bash` is 3.2.)
+  - Four `sketchybar/items/*.sh` declared `#!/bin/sh` while using bash arrays.
+    Harmless in practice because they are `source`d by a bash `sketchybarrc` and
+    macOS `/bin/sh` is bash in POSIX mode, but the shebang was a lie. Now
+    `#!/bin/bash`, matching every sibling.
+  - 9 SC2206 sites were plain unquoted `$COUNTER` in array-element position —
+    quoted, behaviour-identical. The 5 SC2046 in the **vendored** `fzf-git.sh` are
+    suppressed by directive instead, so the file stays diffable against upstream.
+  - 3 SC2097/SC2098 pairs in `setup.sh`, `install.sh`, `personalize.sh` were
+    **false positives** — the `DOTFILES_DIR="$X" "$X/path"` idiom expands the
+    outer value, same string — and now carry a targeted disable with that
+    reasoning inline.
+
+### Open — HIGH
+
+- **ci: GitHub Actions is disabled at the ORGANIZATION level, so nothing runs at
+  all.** This is the deeper cause behind the red-gate finding above: the last run
+  of any kind was 2026-06-10, and **57 commits** have landed on `main` since
+  without triggering anything. The red runs predate the shutoff.
+  `PUT /repos/durante-tech/dotfiles/actions/permissions` returns
+  `409 Conflict: "GitHub Actions is disabled on this repository by the
+  organization"`. Until this is lifted, every CI fix in this repo is dormant and
+  the four jobs are decorative.
+  **Fix (needs org-admin scope, not just org-admin role):**
+  ```
+  gh auth refresh -h github.com -s admin:org
+  gh api -X PUT orgs/durante-tech/actions/permissions -f enabled_repositories=all
+  gh api -X PUT repos/durante-tech/dotfiles/actions/permissions -F enabled=true
+  ```
+  or toggle it at <https://github.com/organizations/durante-tech/settings/actions>.
+  Verify with `gh workflow run "Dotfiles CI" --ref main` (the `workflow_dispatch`
+  trigger exists for exactly this) then `gh run list`.
+
 ### Open — MEDIUM
 
-- **lint: 31 warning-level and 52 note-level ShellCheck findings remain**, mostly
-  SC2086/SC2206 in `sketchybar/.config/sketchybar/**` where the word-splitting is
-  deliberate (`--set $NAME "${item[@]}"`). Quoting them to satisfy the linter would
-  change behaviour in working config. **Ratchet plan:** clear the sketchybar
-  backlog, then move `severity: error` → `warning` in `.github/workflows/lint.yml`.
-  Do not tighten before, or the gate goes permanently red again.
-  - Not counted in that backlog: 3 SC2097/SC2098 pairs in `setup.sh:553`,
-    `install.sh:588`, `personalize.sh:283` are **false positives** — the
-    `DOTFILES_DIR="$X" "$X/path"` idiom expands the outer value, same string.
+- **lint: 52 note-level findings remain**, mostly SC2086 in
+  `sketchybar/.config/sketchybar/**` where the word-splitting is deliberate
+  (`--set $NAME "${item[@]}"`). Quoting those would change behaviour in working
+  config for no defect fixed. **Do not drop CI to the action's default severity
+  to pick them up** — that is precisely the configuration that left the gate
+  permanently red for two months.
 - **testing: still no automated suite.** `VERIFY.md` is a manual walk-through. The
   four CI jobs are the only mechanical checks, and three of them (Lua, TOML, stow)
   only assert syntax/absence-of-conflict, not behaviour. Highest-value gap: the

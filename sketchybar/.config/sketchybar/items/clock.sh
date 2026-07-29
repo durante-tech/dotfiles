@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 clock=(
     background.color="$PURE_BLACK"

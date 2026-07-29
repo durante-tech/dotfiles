@@ -571,6 +571,9 @@ verify_config() {
     # keys), persistent-workspaces drift. Warns without counting as an issue.
     if [[ -x "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" ]]; then
         echo -e "\nAeroSpace doctor..."
+        # shellcheck disable=SC2097,SC2098  # false positive: the prefix assignment
+        # exports DOTFILES_DIR into the child's environment, and the path expansion
+        # reads the OUTER variable — same string. Not the `FOO=bar echo $FOO` bug.
         if DOTFILES_DIR="$DOTFILES_DIR" "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" --doctor; then
             print_success "AeroSpace doctor checks passed"
         else
