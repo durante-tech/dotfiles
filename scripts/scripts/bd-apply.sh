@@ -234,9 +234,18 @@ set_dev() {
 # and must not be conflated when reading these logs.
 set_port_vcp() {
     local vcp="$1" val="$2"
-    local out cur attempt
+    local out cur attempt rc_set saw_numeric=0
     for (( attempt=1; attempt<=3; attempt++ )); do
-        out="$(bd set --tagID="$PORT_TAG" --ddc --vcp="$vcp" --value="$val" 2>&1)"
+        out="$(bd set --tagID="$PORT_TAG" --ddc --vcp="$vcp" --value="$val" 2>&1)"; rc_set=$?
+        # bd() returns 127 with NO output when $CLI is missing or not executable.
+        # Empty output does not match /failed/, and the follow-up read is empty
+        # too, so without this guard the whole function fell through to the
+        # dispatch-only branch and returned SUCCESS with the CLI absent — the
+        # exact false-green this rewrite exists to remove. Not retryable.
+        if (( rc_set == 127 )); then
+            log "FATAL PORT vcp:$vcp=$val — betterdisplaycli missing or not executable at $CLI"
+            return 1
+        fi
         if grep -qi 'failed' <<< "$out"; then
             log "PORT vcp:$vcp=$val rejected (attempt=$attempt) — reinitialize + retry"
             bd perform --tagID="$PORT_TAG" --reinitialize >/dev/null 2>&1 || true
@@ -246,6 +255,7 @@ set_port_vcp() {
         sleep 0.5
         cur="$(bd get --tagID="$PORT_TAG" --ddc --vcp="$vcp" 2>/dev/null | head -1)"
         if [[ "$cur" =~ ^[0-9]+$ ]]; then
+            saw_numeric=1
             # Panel answers reads — this is real verification against the display.
             if (( cur == val )); then
                 log "PORT vcp:$vcp=$val (verified=$cur attempt=$attempt)"
@@ -255,7 +265,21 @@ set_port_vcp() {
             sleep 1.0
             continue
         fi
-        # Panel does not answer reads (DisplayPort case). Dispatch-only signal.
+        # No numeric readback. Two very different situations share this shape:
+        #
+        #   (a) the panel structurally cannot answer reads (DisplayPort case) —
+        #       dispatch-only is the honest best available signal, OR
+        #   (b) the panel HAS answered a read earlier in this very call, so it can
+        #       read; this one came back empty as a transient bus hiccup. Treating
+        #       that as "no readback available" would let a CONFIRMED drift from a
+        #       previous attempt exit as success.
+        #
+        # saw_numeric distinguishes them. Only (a) may report success.
+        if (( saw_numeric )); then
+            log "PORT vcp:$vcp=$val readback lost after a prior successful read (attempt=$attempt) — retry"
+            sleep 1.0
+            continue
+        fi
         log "PORT vcp:$vcp=$val (dispatched, no readback available, attempt=$attempt)"
         return 0
     done
