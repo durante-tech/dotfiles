@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # volume item — icon + percentage label, click to open Sound prefs.
 # Originally a slider with width=0 (icon-only effectively); converted to a
@@ -14,8 +14,8 @@ volume=(
   icon.padding_left=8
   icon.padding_right=4
   background.color="$PURE_BLACK"
-  icon.color=$WHITE
-  label.color=$WHITE
+  icon.color="$WHITE"
+  label.color="$WHITE"
   label.padding_right=8
 )
 

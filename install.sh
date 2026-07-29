@@ -585,6 +585,9 @@ if [ -f "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" ]; then
     if [ "$DRY_RUN" = true ]; then
         print_dry "render-aerospace.sh"
     else
+        # shellcheck disable=SC2097,SC2098  # false positive: the prefix assignment
+        # exports DOTFILES_DIR into the child's environment, and the path expansion
+        # reads the OUTER variable — same string. Not the `FOO=bar echo $FOO` bug.
         DOTFILES_DIR="$DOTFILES_DIR" "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" || \
             print_warn "render-aerospace.sh failed — aerospace.toml may be stale"
     fi

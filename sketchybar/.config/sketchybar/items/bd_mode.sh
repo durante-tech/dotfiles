@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # bd_mode — current BetterDisplay mode indicator + click-to-cycle.
 # Listens for bd_mode_changed events (emitted by bd-apply.sh).

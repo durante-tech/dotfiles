@@ -42,8 +42,8 @@ else
                 *unhealthy*)        COLOR="$ORANGE" ;;
                 *Exited*|*Created*) COLOR="$GREY" ;;
             esac
-            args+=(--add item docker.row.$COUNT popup.docker
-                   --set docker.row.$COUNT label="${name}  ·  ${status}" label.color="$COLOR"
+            args+=(--add item "docker.row.$COUNT" popup.docker
+                   --set "docker.row.$COUNT" label="${name}  ·  ${status}" label.color="$COLOR"
                          icon.drawing=off background.color="$PURE_BLACK" background.drawing=on
                          click_script="sketchybar --set docker popup.drawing=off")
             COUNT=$((COUNT + 1))

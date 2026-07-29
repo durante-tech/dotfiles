@@ -280,6 +280,9 @@ hdr "Follow-up"
 # Auto-render aerospace.toml so the new monitor names take effect immediately.
 if [ -x "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" ]; then
     say "Rendering aerospace.toml from new monitor values..."
+    # shellcheck disable=SC2097,SC2098  # false positive: the prefix assignment
+    # exports DOTFILES_DIR into the child's environment, and the path expansion
+    # reads the OUTER variable — same string. Not the `FOO=bar echo $FOO` bug.
     DOTFILES_DIR="$DOTFILES_DIR" "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" || \
         warn "render-aerospace.sh failed — re-run manually"
     command -v aerospace >/dev/null 2>&1 && aerospace reload-config 2>/dev/null && ok "AeroSpace reloaded"
