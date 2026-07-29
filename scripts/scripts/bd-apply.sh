@@ -62,8 +62,20 @@ CLI="/opt/homebrew/bin/betterdisplaycli"
 # sitting beside a 500-nit XDR one.
 #
 # What still holds: the WHITE POINT stays pinned neutral. Temperature is the
-# setting that actually warps colour identity across modes; contrast at panel
-# maximum is a different question and is not a fidelity cost.
+# setting that actually warps colour identity across modes.
+#
+# CONTRAST STAYS AT 75, and that is not the old colour-reference pin — it is the
+# panel's NATIVE contrast point. Raising it above the factory default clips
+# whites, which costs exactly the near-white steps text antialiasing lives in.
+# Florian Hoech (author of DisplayCAL): "the 'contrast' control is usually
+# implemented in a way that alters the incoming signal, which can cause clipping
+# ... I'd suggest leaving 'contrast' at (factory) default." Dell's own manual
+# agrees: "Adjust the Brightness first, and then adjust the Contrast only if
+# further adjustment is necessary." This was briefly set to 100 on 2026-07-29 on
+# the mistaken reasoning that panel-max contrast costs nothing; it does.
+#
+# The same source settles which lever DOES address perceived flatness: "Gamma
+# (tone curve) and contrast are not related." Gamma is the one below.
 #
 # The brightness gap is physics, not configuration — DELL 350 nits vs BUILT-IN
 # 500 nits x EDR. With luminance already at 100 the only remaining levers are
@@ -71,7 +83,7 @@ CLI="/opt/homebrew/bin/betterdisplaycli"
 # and UI chrome live) without touching the white point. Gamma manipulates the
 # colour table, so it is a deliberate accuracy-for-legibility trade — set
 # DOTFILES_BD_PORT_GAMMA=0 to opt out entirely.
-PORT_REF_CONTRAST="${DOTFILES_BD_PORT_REF_CONTRAST:-100}"  # panel max (was 75, the OSD default)
+PORT_REF_CONTRAST="${DOTFILES_BD_PORT_REF_CONTRAST:-75}"   # NATIVE point — raising this clips whites, see below
 PORT_REF_TEMP="${DOTFILES_BD_PORT_REF_TEMP:-0}"            # neutral white point — STILL PINNED
 PORT_GAMMA="${DOTFILES_BD_PORT_GAMMA:-80}"                 # midtone lift %, 0 disables (80 = max, operator-chosen 2026-07-29)
 
