@@ -27,7 +27,17 @@ after-startup-command = [
   # JankyBorders: only draw on focused window. Transparent inactive_color
   # prevents borders from being drawn around tile-hidden windows on other
   # workspaces (which otherwise bleed into the bottom-left as a sliver).
-  'exec-and-forget borders active_color=0xff8aadf4 inactive_color=0x00000000 width=4.0'
+  'exec-and-forget borders active_color=0xff8aadf4 inactive_color=0x00000000 width=4.0',
+  # Reconcile the live window tree with this config once the session settles.
+  # on-window-detected only fires when a window is FIRST detected, so it cannot
+  # place apps macOS restores at login before AeroSpace is ready, nor windows
+  # that were already open when a rule changed — both leave apps in the wrong
+  # workspace with no error anywhere. The sweep also re-asserts root-container
+  # orientation, which 'auto' fixes only at container-creation time and never
+  # re-evaluates when a workspace moves to a differently-shaped monitor.
+  # Backgrounded with a settle delay so it never blocks startup; logged rather
+  # than silent so a failed sweep is discoverable.
+  'exec-and-forget /bin/bash -c "sleep 10; ~/scripts/aerospace-resweep.sh >> /tmp/aerospace-resweep.log 2>&1"'
 ]
 
 # Notify Sketchybar about workspace change AND swap per-workspace wallpaper.
