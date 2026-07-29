@@ -1,0 +1,2933 @@
+- generic [ref=e2]:
+  - generic [ref=e4]:
+    - link "Home Page" [ref=e7] [cursor=pointer]:
+      - /url: /
+      - text: 
+    - generic [ref=e8]:
+      - link "Monitor " [ref=e9] [cursor=pointer]:
+        - /url: /monitor
+        - generic [ref=e10]: Monitor
+        - generic [ref=e11]: 
+      - link "Products " [ref=e12] [cursor=pointer]:
+        - /url: /product-categories
+        - generic [ref=e13]: Products
+        - generic [ref=e14]: 
+      - link "In The Lab " [ref=e15] [cursor=pointer]:
+        - /url: /research
+        - generic [ref=e16]: In The Lab
+        - generic [ref=e17]: 
+      - link "Forums " [ref=e18] [cursor=pointer]:
+        - /url: /forums
+        - generic [ref=e19]: Forums
+        - generic [ref=e20]: 
+      - link "Newsletters" [ref=e21] [cursor=pointer]:
+        - /url: /newsletters
+        - generic [ref=e22]: Newsletters
+    - generic [ref=e23]:
+      - generic [ref=e24]: 
+      - generic [ref=e26]: 
+      - button "Login" [ref=e27]
+      - link "Join now" [ref=e28] [cursor=pointer]:
+        - /url: /join
+  - generic [ref=e30]:
+    - text:  
+    - generic [ref=e33]:
+      - generic [ref=e36]:
+        - link "Best" [ref=e37] [cursor=pointer]:
+          - /url: /monitor/reviews/best
+        - generic [ref=e38]:
+          - link "Gaming" [ref=e39] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-usage/gaming
+          - link "Monitors" [ref=e40] [cursor=pointer]:
+            - /url: /monitor/reviews/best/monitors
+          - link "Budget Gaming" [ref=e41] [cursor=pointer]:
+            - /url: /monitor/reviews/best/budget-gaming
+          - link "PS5/PS5 Pro" [ref=e42] [cursor=pointer]:
+            - /url: /monitor/reviews/best/ps5
+          - link "4k Gaming" [ref=e43] [cursor=pointer]:
+            - /url: /monitor/reviews/best/gaming-monitors-4k
+          - link "Budget" [ref=e44] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-price/budget
+          - link "OLED" [ref=e45] [cursor=pointer]:
+            - /url: /monitor/reviews/best/oled
+          - link "1440p Gaming" [ref=e46] [cursor=pointer]:
+            - /url: /monitor/reviews/best/1440p-gaming-monitors
+          - link "Office" [ref=e47] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-usage/business-office
+          - link "Mac Mini" [ref=e48] [cursor=pointer]:
+            - /url: /monitor/reviews/best/mac-mini
+          - link "Curved Gaming" [ref=e49] [cursor=pointer]:
+            - /url: /monitor/reviews/best/curved-gaming-monitors
+          - link "MacBook Pro" [ref=e50] [cursor=pointer]:
+            - /url: /monitor/reviews/best/monitors-macbook-pro
+          - link "4k" [ref=e51] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-resolution/4k-ultra-hd-uhd
+          - link "Curved" [ref=e52] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-features/curved
+          - link "Xbox Series X" [ref=e53] [cursor=pointer]:
+            - /url: /monitor/reviews/best/xbox-series-x
+          - link "Ultrawide" [ref=e54] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-features/ultrawide
+          - link "Brands" [ref=e55] [cursor=pointer]:
+            - /url: /monitor/reviews/best/brands
+          - link "Gaming Size" [ref=e56] [cursor=pointer]:
+            - /url: /monitor/reviews/best/best-gaming-size
+          - link "High Refresh Rate" [ref=e57] [cursor=pointer]:
+            - /url: /monitor/reviews/best/high-refresh-rate
+          - link "Photo Editing" [ref=e58] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-usage/photo-editing
+      - generic [ref=e60] [cursor=pointer]: 
+    - generic [ref=e66]:
+      - link "Tools" [ref=e67] [cursor=pointer]:
+        - /url: /monitor/tools
+      - generic [ref=e68]:
+        - link "Compare" [ref=e69] [cursor=pointer]:
+          - /url: /monitor/tools/compare
+        - link "Results Table Tool" [ref=e70] [cursor=pointer]:
+          - /url: /monitor/tools/table
+        - link "Review List" [ref=e71] [cursor=pointer]:
+          - /url: /monitor/reviews
+        - link "Review Index" [ref=e72] [cursor=pointer]:
+          - /url: /monitor/index
+        - link "Graph" [ref=e73] [cursor=pointer]:
+          - /url: /monitor/graph
+        - link "Review Pipeline" [ref=e74] [cursor=pointer]:
+          - /url: /review-pipeline/monitor
+        - link "Vote" [ref=e75] [cursor=pointer]:
+          - /url: /vote/monitor
+        - link "Custom Ratings" [ref=e76] [cursor=pointer]:
+          - /url: /user/ratings
+    - generic [ref=e79]:
+      - generic [ref=e82]:
+        - link "Popular" [ref=e83] [cursor=pointer]:
+          - /url: /monitor/reviews
+        - generic [ref=e84]:
+          - link "ASUS ROG Swift OLED PG27UCDM" [ref=e85] [cursor=pointer]:
+            - /url: /monitor/reviews/asus/rog-swift-oled-pg27ucdm
+          - link "LG 39GX950B-B" [ref=e86] [cursor=pointer]:
+            - /url: /monitor/reviews/lg/39gx950b-b
+          - link "AOC Q27G3XMN" [ref=e87] [cursor=pointer]:
+            - /url: /monitor/reviews/aoc/q27g3xmn
+          - link "Dell Alienware AW2726DM" [ref=e88] [cursor=pointer]:
+            - /url: /monitor/reviews/dell/alienware-aw2726dm
+          - link "ASUS ROG Strix OLED XG27AQDMG" [ref=e89] [cursor=pointer]:
+            - /url: /monitor/reviews/asus/rog-strix-oled-xg27aqdmg
+          - link "ASUS ROG Strix OLED XG32UCWMG" [ref=e90] [cursor=pointer]:
+            - /url: /monitor/reviews/asus/rog-strix-oled-xg32ucwmg
+          - link "AOC Q27G40XMN" [ref=e91] [cursor=pointer]:
+            - /url: /monitor/reviews/aoc/q27g40xmn
+          - link "ASUS ROG Swift OLED PG34WCDN" [ref=e92] [cursor=pointer]:
+            - /url: /monitor/reviews/asus/rog-swift-oled-pg34wcdn
+          - link "LG 27GX790B-B" [ref=e93] [cursor=pointer]:
+            - /url: /monitor/reviews/lg/27gx790b-b
+          - link "Dell S3225QC" [ref=e94] [cursor=pointer]:
+            - /url: /monitor/reviews/dell/s3225qc
+          - link "LG 27GX704A-B" [ref=e95] [cursor=pointer]:
+            - /url: /monitor/reviews/lg/27gx704a-b
+          - link "Samsung Odyssey OLED G60SD S27DG602S" [ref=e96] [cursor=pointer]:
+            - /url: /monitor/reviews/samsung/odyssey-oled-g6-g60sd-s27dg60
+          - link "Dell Alienware AW2725DM" [ref=e97] [cursor=pointer]:
+            - /url: /monitor/reviews/dell/alienware-aw2725dm
+          - link "Dell Alienware AW2725DF" [ref=e98] [cursor=pointer]:
+            - /url: /monitor/reviews/dell/alienware-aw2725df
+          - link "ASUS ROG Swift OLED PG32UCDM" [ref=e99] [cursor=pointer]:
+            - /url: /monitor/reviews/asus/rog-swift-oled-pg32ucdm
+          - link "Gigabyte MO27Q28G" [ref=e100] [cursor=pointer]:
+            - /url: /monitor/reviews/gigabyte/mo27q28g
+          - link "Dell U2725QE" [ref=e101] [cursor=pointer]:
+            - /url: /monitor/reviews/dell/u2725qe
+          - link "ASUS ROG Strix OLED XG27AQWMG" [ref=e102] [cursor=pointer]:
+            - /url: /monitor/reviews/asus/rog-strix-oled-xg27aqwmg
+          - link "KOORUI S2741LM" [ref=e103] [cursor=pointer]:
+            - /url: /monitor/reviews/koorui/s2741lm
+          - link "LG 27GM950B-B" [ref=e104] [cursor=pointer]:
+            - /url: /monitor/reviews/lg/27gm950b-b
+      - generic [ref=e106] [cursor=pointer]: 
+    - generic [ref=e109]:
+      - generic [ref=e110]: 403 Monitors bought and tested
+      - generic [ref=e111]:
+        - text: Supported by you via
+        - link "membership" [ref=e112] [cursor=pointer]:
+          - /url: /join
+        - text: ", and when you purchase through links on our site, we may earn an affiliate commission."
+    - list [ref=e114]:
+      - listitem [ref=e115]:
+        - link "Home" [ref=e116] [cursor=pointer]:
+          - /url: /
+      - listitem [ref=e117]:
+        - text: 
+        - link "Monitor" [ref=e118] [cursor=pointer]:
+          - /url: /monitor
+      - listitem [ref=e119]:
+        - text: 
+        - link "Reviews" [ref=e120] [cursor=pointer]:
+          - /url: /monitor/reviews
+      - listitem [ref=e121]:
+        - text: 
+        - link "Dell" [ref=e122] [cursor=pointer]:
+          - /url: /monitor/reviews/dell
+      - listitem [ref=e123]:
+        - text: 
+        - link "U2718Q" [ref=e124] [cursor=pointer]:
+          - /url: /monitor/reviews/dell/u2718q
+      - listitem [ref=e125]:  Review
+    - generic [ref=e128]:
+      - generic [ref=e129]:
+        - generic [ref=e131]: 
+        - generic [ref=e132]:
+          - text: "Notice:"
+          - generic [ref=e133]:
+            - text: We've
+            - link "revamped our membership program" [ref=e134] [cursor=pointer]:
+              - /url: /company/revamping-our-membership-program
+            - text: .
+      - generic [ref=e136]: 
+  - generic [ref=e137]:
+    - generic [ref=e139]:
+      - generic [ref=e141]:
+        - heading "Dell U2718Q Monitor Review" [level=1] [ref=e142]
+        - generic [ref=e143]:
+          - generic [ref=e146]:
+            - text: By
+            - link "Simon Barbier" [ref=e147] [cursor=pointer]:
+              - /url: /authors/simon-barbier
+            - text: ","
+            - link "Adam Babcock" [ref=e148] [cursor=pointer]:
+              - /url: /authors/adam-babcock
+            - text: ","
+            - link "Yannick Khong" [ref=e149] [cursor=pointer]:
+              - /url: /authors/yannick-khong-2
+          - generic [ref=e150]:
+            - generic [ref=e151]:
+              - generic [ref=e152]: Review updated Apr 14, 2020 at 11:28am
+              - generic [ref=e153]: Retest Nov 25, 2020 at 04:47pm
+            - generic [ref=e154]:
+              - text: Tested using Methodology v1.1
+              - generic [ref=e157]: 
+        - generic [ref=e160]:
+          - generic [ref=e161]:
+            - img "Dell U2718Q" [ref=e162]
+            - generic [ref=e169] [cursor=pointer]: 
+          - generic [ref=e171]:
+            - generic [ref=e172]:
+              - generic [ref=e173]: Size
+              - generic [ref=e174]: 27"
+            - generic [ref=e175]:
+              - generic [ref=e176]: Pixel Type
+              - generic [ref=e179]: 
+              - generic [ref=e181]: IPS
+            - generic [ref=e182]:
+              - generic [ref=e183]: Variable Refresh Rate
+              - generic [ref=e186]: 
+              - generic [ref=e188]: No VRR
+            - generic [ref=e189]:
+              - generic [ref=e190]: Max Refresh Rate
+              - generic [ref=e193]: 
+              - generic [ref=e195]: 60 Hz
+            - generic [ref=e196]:
+              - generic [ref=e197]: Native Resolution
+              - generic [ref=e198]: 3840 x 2160
+        - generic [ref=e200]:
+          - generic [ref=e206] [cursor=pointer]:
+            - generic [ref=e207]: 
+            - paragraph [ref=e208]: Track
+          - generic [ref=e214] [cursor=pointer]:
+            - generic [ref=e215]: 
+            - paragraph [ref=e216]: GIFT THIS REVIEW
+          - button " Share" [ref=e218]:
+            - generic [ref=e219]: 
+            - generic [ref=e220]: Share
+          - link " 0" [ref=e221] [cursor=pointer]:
+            - /url: "#page-comments"
+            - generic [ref=e222]: 
+            - text: "0"
+      - generic [ref=e223]:
+        - generic [ref=e225]:
+          - generic [ref=e227] [cursor=pointer]: 
+          - generic:
+            - list:
+              - generic:
+                - generic: 
+              - link "Intro":
+                - /url: "#page-top"
+                - generic:
+                  - generic: Intro
+              - link "Our Verdict":
+                - /url: "#page-verdict"
+                - generic:
+                  - generic: Our Verdict
+              - link "Changelog":
+                - /url: "#page-updates"
+                - generic:
+                  - generic: Changelog
+              - link "Differences":
+                - /url: "#page-test-differences"
+                - generic:
+                  - generic: Differences
+              - link "Popular Comparisons":
+                - /url: "#page-test-compared"
+                - generic:
+                  - generic: Popular Comparisons
+              - link "Video":
+                - /url: "#page-video"
+                - generic:
+                  - generic: Video
+              - link "Design  Style Stand Ergonomics Back Borders Thickness Build Quality":
+                - /url: "#test_4461"
+                - generic:
+                  - generic: Design
+                  - generic: 
+                - list:
+                  - link "Style":
+                    - /url: "#test_1348"
+                  - link "Stand":
+                    - /url: "#test_1352"
+                  - link "Ergonomics":
+                    - /url: "#test_1376"
+                  - link "Back":
+                    - /url: "#test_1358"
+                  - link "Borders":
+                    - /url: "#test_1361"
+                  - link "Thickness":
+                    - /url: "#test_1364"
+                  - link "Build Quality":
+                    - /url: "#test_1367"
+              - link "Picture Quality  Contrast Local Dimming SDR Peak Brightness HDR Peak Brightness Horizontal Viewing Angle Vertical Viewing Angle Gray Uniformity Black Uniformity Pre Calibration Post Calibration SDR Color Gamut SDR Color Volume HDR Color Gamut HDR Color Volume Image Retention Gradient Color Bleed Reflections Text Clarity":
+                - /url: "#test_1381"
+                - generic:
+                  - generic: Picture Quality
+                  - generic: 
+                - list:
+                  - link "Contrast":
+                    - /url: "#test_1383"
+                  - link "Local Dimming":
+                    - /url: "#test_1387"
+                  - link "SDR Peak Brightness":
+                    - /url: "#test_1393"
+                  - link "HDR Peak Brightness":
+                    - /url: "#test_1560"
+                  - link "Horizontal Viewing Angle":
+                    - /url: "#test_1417"
+                  - link "Vertical Viewing Angle":
+                    - /url: "#test_1440"
+                  - link "Gray Uniformity":
+                    - /url: "#test_1406"
+                  - link "Black Uniformity":
+                    - /url: "#test_1420"
+                  - link "Pre Calibration":
+                    - /url: "#test_1467"
+                  - link "Post Calibration":
+                    - /url: "#test_1468"
+                  - link "SDR Color Gamut":
+                    - /url: "#test_1491"
+                  - link "SDR Color Volume":
+                    - /url: "#test_1551"
+                  - link "HDR Color Gamut":
+                    - /url: "#test_1550"
+                  - link "HDR Color Volume":
+                    - /url: "#test_1542"
+                  - link "Image Retention":
+                    - /url: "#test_1445"
+                  - link "Gradient":
+                    - /url: "#test_1443"
+                  - link "Color Bleed":
+                    - /url: "#test_1587"
+                  - link "Reflections":
+                    - /url: "#test_1581"
+                  - link "Text Clarity":
+                    - /url: "#test_4264"
+              - link "Motion  Response Time @ Max Refresh Rate Response Time @ 60Hz Image Flicker Black Frame Insertion (BFI) Refresh Rate":
+                - /url: "#test_1425"
+                - generic:
+                  - generic: Motion
+                  - generic: 
+                - list:
+                  - link "Response Time @ Max Refresh Rate":
+                    - /url: "#test_1427"
+                  - link "Response Time @ 60Hz":
+                    - /url: "#test_4247"
+                  - link "Image Flicker":
+                    - /url: "#test_1433"
+                  - link "Black Frame Insertion (BFI)":
+                    - /url: "#test_4262"
+                  - link "Refresh Rate":
+                    - /url: "#test_1596"
+              - link "Inputs  Input Lag Resolution And Size Inputs Total Inputs":
+                - /url: "#test_1426"
+                - generic:
+                  - generic: Inputs
+                  - generic: 
+                - list:
+                  - link "Input Lag":
+                    - /url: "#test_1435"
+                  - link "Resolution And Size":
+                    - /url: "#test_1531"
+                  - link "Inputs":
+                    - /url: "#test_1605"
+                  - link "Total Inputs":
+                    - /url: "#test_1481"
+              - link "Features  Additional Features On-Screen Display (OSD) Controls In The Box":
+                - /url: "#test_1369"
+                - generic:
+                  - generic: Features
+                  - generic: 
+                - list:
+                  - link "Additional Features":
+                    - /url: "#test_1504"
+                  - link "On-Screen Display (OSD)":
+                    - /url: "#test_1539"
+                  - link "Controls":
+                    - /url: "#test_1370"
+                  - link "In The Box":
+                    - /url: "#test_1372"
+              - link "Retailers":
+                - /url: "#page-retailers"
+                - generic:
+                  - generic: Retailers
+              - link "Comments":
+                - /url: "#page-comments"
+                - generic:
+                  - generic: Comments
+        - generic [ref=e228]:
+          - generic [ref=e230]: The Dell U2718Q is a very good 4k IPS monitor. Like most Dell monitors, it has outstanding ergonomics, so it's easy to adjust it to an ideal viewing position. It has decent accuracy out of the box and wide viewing angles, great for media creation or for sharing the screen with someone else. Areas of similar color look amazing, with no noticeable banding in gradients. Unfortunately, although it supports HDR, this doesn't add very much, as it can't display a wide color gamut and it has a low contrast ratio, so blacks look gray in a dark room.
+          - generic [ref=e231]:
+            - heading "Our Verdict" [level=2] [ref=e232]
+            - generic [ref=e235]:
+              - generic [ref=e236]:
+                - generic [ref=e237]:
+                  - generic [ref=e238]:
+                    - generic [ref=e239] [cursor=pointer]: "0.0"
+                    - generic [ref=e240]: Mixed Usage
+                    - generic [ref=e243]: 
+                    - text: 
+                  - generic [ref=e245]:
+                    - generic [ref=e246]:
+                      - paragraph [ref=e248]: The Dell U2718Q is a good monitor for most uses. It has wide viewing angles and excellent ergonomics, great for use as an office monitor. It's a good basic gaming monitor, but it probably won't please most serious gamers. The high-resolution screen is also great for media creation or watching videos.
+                      - generic [ref=e249]:
+                        - generic [ref=e250]:
+                          - generic [ref=e251]: Pros
+                          - list [ref=e252]:
+                            - listitem [ref=e253]:
+                              - text: 
+                              - generic [ref=e254]: Wide viewing angles.
+                            - listitem [ref=e255]:
+                              - text: 
+                              - generic [ref=e256]: Easy to adjust stand with great ergonomics.
+                            - listitem [ref=e257]:
+                              - text: 
+                              - generic [ref=e258]: Outstanding gradient handling.
+                        - generic [ref=e259]:
+                          - generic [ref=e260]: Cons
+                          - list [ref=e261]:
+                            - listitem [ref=e262]:
+                              - text: 
+                              - generic [ref=e263]: Poor HDR performance.
+                            - listitem [ref=e264]:
+                              - text: 
+                              - generic [ref=e265]: Mediocre black uniformity and visible backlight bleed.
+                    - link "SEE PRICE Amazon.com.br" [ref=e267] [cursor=pointer]:
+                      - /url: https://geni.us/CEM1RhH?track=rtings-br-mn
+                      - generic [ref=e268]: SEE PRICE
+                      - text: Amazon.com.br
+                    - link "See our Mixed Usage Recommendations " [ref=e270] [cursor=pointer]:
+                      - /url: /monitor/reviews/best/monitors
+                      - text: See our Mixed Usage Recommendations
+                      - generic [ref=e272]: 
+                - text:               
+              - generic [ref=e273]:
+                - listitem [ref=e274]:
+                  - text: 
+                  - generic [ref=e275] [cursor=pointer]: "0.0"
+                  - generic [ref=e276]: Mixed Usage
+                - listitem [ref=e277]:
+                  - text: 
+                  - generic [ref=e278] [cursor=pointer]: "0.0"
+                  - generic [ref=e279]: Office
+                - listitem [ref=e280]:
+                  - text: 
+                  - generic [ref=e281] [cursor=pointer]: "0.0"
+                  - generic [ref=e282]: Gaming
+                - listitem [ref=e283]:
+                  - text: 
+                  - generic [ref=e284] [cursor=pointer]: "0.0"
+                  - generic [ref=e285]: Multimedia
+                - listitem [ref=e286]:
+                  - text: 
+                  - generic [ref=e287] [cursor=pointer]: "0.0"
+                  - generic [ref=e288]: Media Creation
+                - listitem [ref=e289]:
+                  - text: 
+                  - generic [ref=e290] [cursor=pointer]: "0.0"
+                  - generic [ref=e291]: HDR Gaming
+                - link " Create your own" [ref=e293] [cursor=pointer]:
+                  - /url: /login
+                  - generic [ref=e294]: 
+                  - text: Create your own
+          - generic [ref=e295]:
+            - heading "Changelog" [level=2] [ref=e296]
+            - generic [ref=e297]:
+              - list [ref=e298]:
+                - listitem [ref=e299]:
+                  - 'link "Review Updates: Dell U2718Q" [ref=e300] [cursor=pointer]':
+                    - /url: /discussions/U4iXGmOfupWwXWON/review-updates-dell-u2718q
+                    - generic [ref=e301]: 
+                  - text: "Updated Nov 25, 2020: Fixed an error with the weight."
+                - listitem [ref=e302]:
+                  - 'link "Review Updates: Dell U2718Q" [ref=e303] [cursor=pointer]':
+                    - /url: /discussions/U4iXGmOfupWwXWON/review-updates-dell-u2718q
+                    - generic [ref=e304]: 
+                  - text: "Updated Jun 11, 2020: We corrected a minor mistake in the Refresh Rate scoring."
+                - listitem [ref=e305]:
+                  - 'link "Review Updates: Dell U2718Q" [ref=e306] [cursor=pointer]':
+                    - /url: /discussions/U4iXGmOfupWwXWON/review-updates-dell-u2718q
+                    - generic [ref=e307]: 
+                  - text: "Updated Feb 17, 2020:"
+                  - generic [ref=e308]:
+                    - text: Converted to
+                    - link "Test Bench 1.1" [ref=e309] [cursor=pointer]:
+                      - /url: /monitor/tests/changelogs/1-1
+                    - text: .
+                - listitem [ref=e310]:
+                  - 'link "Review Updates: Dell U2718Q" [ref=e311] [cursor=pointer]':
+                    - /url: /discussions/U4iXGmOfupWwXWON/review-updates-dell-u2718q
+                    - generic [ref=e312]: 
+                  - text: "Updated Aug 08, 2018: Review published."
+              - generic [ref=e314]:
+                - text: Show more
+                - generic [ref=e315]: 
+          - generic [ref=e317]:
+            - heading "Check Price" [level=2] [ref=e318]
+            - generic [ref=e320]:
+              - generic [ref=e321]: 27"U2718Q
+              - link "SEE PRICE Amazon.com.br" [ref=e322] [cursor=pointer]:
+                - /url: https://geni.us/CEM1RhH?track=rtings-br-mn
+                - generic [ref=e323]: SEE PRICE
+                - generic [ref=e324]: Amazon.com.br
+          - generic [ref=e327]:
+            - heading "Differences Between Sizes And Variants" [level=2] [ref=e328]
+            - paragraph [ref=e330]:
+              - paragraph [ref=e331]: We've tested the 27" U2718Q, which is the only size available.
+              - paragraph [ref=e332]: If someone comes across a different type of panel or if their Dell U2718Q doesn't correspond to our review, let us know and we'll update the review. Note that some tests such as the gray uniformity may vary between individual units.
+              - paragraph [ref=e333]:
+                - text: The U2718Q we reviewed was manufactured in
+                - link "May 2018 (Revision A03)" [ref=e334] [cursor=pointer]:
+                  - /url: /images/reviews/monitor/dell/u2718q/u2718q-label-large.jpg
+                - text: .
+          - generic [ref=e335]:
+            - heading "Popular Monitor Comparisons" [level=2] [ref=e336]
+            - img "Comparison picture" [ref=e338]
+            - paragraph [ref=e340]:
+              - generic [ref=e341]:
+                - text: "Left:"
+                - link "Samsung CHG70" [ref=e342] [cursor=pointer]:
+                  - /url: /monitor/reviews/samsung/chg70
+                - text: ". Middle: Dell U2718Q Right:"
+                - link "Dell U2717D" [ref=e343] [cursor=pointer]:
+                  - /url: /monitor/reviews/dell/u2717d
+                - text: .
+              - paragraph [ref=e344]:
+                - text: The Dell U2718Q is a very good IPS monitor, and one of the
+                - link "best work monitors" [ref=e345] [cursor=pointer]:
+                  - /url: /monitor/reviews/best/by-usage/business-office
+                - text: we've tested, but there are better alternatives out there, especially if you want decent HDR performance. See our recommendations for the
+                - link "best monitors" [ref=e346] [cursor=pointer]:
+                  - /url: /monitor/reviews/best/monitors
+                - text: ", the"
+                - link "best monitors for dual setup" [ref=e347] [cursor=pointer]:
+                  - /url: /monitor/reviews/best/dual-setup
+                - text: ", and the"
+                - link "best 4k gaming monitors" [ref=e348] [cursor=pointer]:
+                  - /url: /monitor/reviews/best/gaming-monitors-4k
+                - text: . See also our recommendations for the
+                - link "best mice" [ref=e349] [cursor=pointer]:
+                  - /url: /mouse/reviews/best/mouse
+                - text: and the
+                - link "best keyboards" [ref=e350] [cursor=pointer]:
+                  - /url: /keyboard/reviews/best/keyboard
+                - text: .
+            - generic [ref=e351]:
+              - generic [ref=e352]:
+                - generic [ref=e353]:
+                  - generic [ref=e354]:
+                    - generic [ref=e355]: Dell UltraSharp U2720Q
+                    - generic [ref=e362] [cursor=pointer]: 
+                  - generic [ref=e363]:
+                    - link "SEE PRICE Amazon.com.br" [ref=e365] [cursor=pointer]:
+                      - /url: https://geni.us/YAnJal?track=rtings-br-mn
+                      - generic [ref=e366]: SEE PRICE
+                      - text: Amazon.com.br
+                    - paragraph [ref=e368]:
+                      - paragraph [ref=e369]:
+                        - text: The
+                        - link "Dell U2720Q" [ref=e370] [cursor=pointer]:
+                          - /url: /monitor/reviews/dell/ultrasharp-u2720q
+                        - text: is a 2020 refresh of the Dell U2718Q. Aside from some slight differences in their outer design and the added USB-C ports on the U2720Q, both monitors offer identical features. Performance is largely the same as well, although the U2720Q has a higher peak brightness, better SDR and HDR color gamuts, and it also has better reflection handling. However, the U2718Q has a faster response time and lower input lag.
+                  - generic [ref=e371]:
+                    - link " compare side-by-side" [ref=e372] [cursor=pointer]:
+                      - /url: /monitor/tools/compare/dell-u2718q-dell-ultrasharp-u2720q/652/8297
+                      - generic [ref=e373]: 
+                      - text: compare side-by-side
+                    - link "see our review " [ref=e374] [cursor=pointer]:
+                      - /url: /monitor/reviews/dell/ultrasharp-u2720q
+                      - text: see our review
+                      - generic [ref=e375]: 
+                - generic [ref=e376]:
+                  - generic [ref=e377]:
+                    - generic [ref=e378]: LG 27UD68-B
+                    - generic [ref=e385] [cursor=pointer]: 
+                  - generic [ref=e386]:
+                    - link "SEE PRICE Amazon.com.br" [ref=e388] [cursor=pointer]:
+                      - /url: https://geni.us/yLqfZMU?track=rtings-br-mn
+                      - generic [ref=e389]: SEE PRICE
+                      - text: Amazon.com.br
+                    - paragraph [ref=e391]:
+                      - paragraph [ref=e392]:
+                        - text: The Dell U2718Q is better than the
+                        - link "LG 27UD68P-B" [ref=e393] [cursor=pointer]:
+                          - /url: /monitor/reviews/lg/27ud68-b
+                        - text: . The Dell U2718Q has better black uniformity and doesn't suffer from temporary image retention. The U2718Q also supports HDR, although this doesn't add much due to the poor color volume and insufficient peak brightness. The LG 27UD68P-B is flicker-free and has better motion handling overall thanks to AMD FreeSync support.
+                  - generic [ref=e394]:
+                    - link " compare side-by-side" [ref=e395] [cursor=pointer]:
+                      - /url: /monitor/tools/compare/dell-u2718q-lg-27ud68-b/652/489
+                      - generic [ref=e396]: 
+                      - text: compare side-by-side
+                    - link "see our review " [ref=e397] [cursor=pointer]:
+                      - /url: /monitor/reviews/lg/27ud68-b
+                      - text: see our review
+                      - generic [ref=e398]: 
+                - generic [ref=e399]:
+                  - generic [ref=e400]:
+                    - generic [ref=e401]: Acer Predator X27 bmiphzx
+                    - generic [ref=e408] [cursor=pointer]: 
+                  - generic [ref=e409]:
+                    - link "SEE PRICE Amazon.com.br" [ref=e411] [cursor=pointer]:
+                      - /url: https://geni.us/ji06F?track=rtings-br-mn
+                      - generic [ref=e412]: SEE PRICE
+                      - text: Amazon.com.br
+                    - paragraph [ref=e414]:
+                      - paragraph [ref=e415]:
+                        - text: The
+                        - link "Acer Predator X27 bmiphzx" [ref=e416] [cursor=pointer]:
+                          - /url: /monitor/reviews/acer/predator-x27-bmiphzx
+                        - text: is slightly better than the Dell U2718Q. The X27 is brighter and offers a much better HDR experience, as it's brighter and can produce brighter highlights, as well as the added full array local dimming feature. The X27 has a much wider color gamut, suitable for professional use for print and marketing. The Dell U2718Q has more ergonomic options and is easier to adjust to an optimal viewing position.
+                  - generic [ref=e417]:
+                    - link " compare side-by-side" [ref=e418] [cursor=pointer]:
+                      - /url: /monitor/tools/compare/dell-u2718q-acer-predator-x27-bmiphzx/652/651
+                      - generic [ref=e419]: 
+                      - text: compare side-by-side
+                    - link "see our review " [ref=e420] [cursor=pointer]:
+                      - /url: /monitor/reviews/acer/predator-x27-bmiphzx
+                      - text: see our review
+                      - generic [ref=e421]: 
+                - generic [ref=e422]:
+                  - generic [ref=e423]:
+                    - generic [ref=e424]: ASUS ROG Swift PG279Q
+                    - generic [ref=e431] [cursor=pointer]: 
+                  - generic [ref=e432]:
+                    - link "SEE PRICE Amazon.com.br" [ref=e434] [cursor=pointer]:
+                      - /url: https://geni.us/gntno?track=rtings-br-mn
+                      - generic [ref=e435]: SEE PRICE
+                      - text: Amazon.com.br
+                    - paragraph [ref=e437]:
+                      - paragraph [ref=e438]:
+                        - text: The
+                        - link "ASUS ROG PG279Q" [ref=e439] [cursor=pointer]:
+                          - /url: /monitor/reviews/asus/rog-swift-pg279q
+                        - text: is a bit better than the Dell U2718Q. The PG279Q has much better motion handling. The high refresh rate delivers a nearly perfect response time with almost no motion blur, as well as being flicker-free. The ASUS also has an optional black frame insertion feature that can help clear up motion and supports NVIDIA's G-SYNC technology. The Dell has a higher resolution 4k screen, and supports HDR, even though HDR doesn't add much due to the U2718Q's limited color volume and low peak brightness.
+                  - generic [ref=e440]:
+                    - link " compare side-by-side" [ref=e441] [cursor=pointer]:
+                      - /url: /monitor/tools/compare/dell-u2718q-asus-rog-swift-pg279q/652/578
+                      - generic [ref=e442]: 
+                      - text: compare side-by-side
+                    - link "see our review " [ref=e443] [cursor=pointer]:
+                      - /url: /monitor/reviews/asus/rog-swift-pg279q
+                      - text: see our review
+                      - generic [ref=e444]: 
+              - generic [ref=e446]:
+                - text: Show more
+                - generic [ref=e447]: 
+          - generic [ref=e448]:
+            - heading "Video" [level=2] [ref=e449]
+            - button "Play Video" [ref=e452] [cursor=pointer]:
+              - img [ref=e453]
+          - generic [ref=e456]:
+            - generic [ref=e457]: How We Test Monitors
+            - generic [ref=e458]:
+              - img "How We Test Monitors" [ref=e460]
+              - generic [ref=e461]:
+                - paragraph [ref=e464]: We buy and test more than 30 monitors each year, all of which we purchase ourselves, without cherry-picked units or samples. We put a lot into each unbiased, straight-to-the-point review, and there's a whole process from purchasing to publishing, involving multiple teams and people. We do more than just use the monitor for a week; we use specialized, custom tools to measure various aspects and deliver objective, data-driven results. We also consider multiple factors before making any recommendations, including the monitor's cost, its performance compared to the competition, and whether it's easy to find.
+                - link "Learn more " [ref=e466] [cursor=pointer]:
+                  - /url: /monitor/learn/how-we-test
+                  - generic [ref=e467]:
+                    - text: Learn more
+                    - generic [ref=e468]: 
+          - generic [ref=e469]:
+            - heading "Test Results" [level=2] [ref=e470]
+            - img "perceptual testing image" [ref=e472]
+            - generic [ref=e473]:
+              - generic [ref=e475]:
+                - generic [ref=e476]: "Sort:"
+                - generic [ref=e478]:
+                  - generic: RATINGS
+                - generic: 
+              - generic [ref=e480]:
+                - generic [ref=e481]: "Category:"
+                - generic [ref=e483]:
+                  - generic: All
+                - generic: 
+            - generic [ref=e484]:
+              - generic [ref=e486]: Design
+              - generic [ref=e487]:
+                - generic [ref=e489]: Style
+                - generic [ref=e490]:
+                  - generic [ref=e493]:
+                    - generic [ref=e494]:
+                      - generic [ref=e495]: SAMPLE
+                      - generic [ref=e496]:
+                        - button "Join Now" [ref=e497] [cursor=pointer]
+                        - paragraph [ref=e498]: for pictures & test results
+                    - button "Dell U2718Q Design Picture Sample" [ref=e499] [cursor=pointer]:
+                      - img "Dell U2718Q Design Picture Sample" [ref=e501]
+                  - generic [ref=e502]:
+                    - generic [ref=e503]: Size
+                    - text: Locked27"
+                  - generic [ref=e504]:
+                    - generic [ref=e505]: Curved
+                    - text: Locked
+                    - generic [ref=e506] [cursor=pointer]: Locked
+                  - generic [ref=e507]:
+                    - generic [ref=e508]: Curve Radius
+                    - text: Locked
+                    - generic [ref=e509] [cursor=pointer]: Locked
+                  - generic [ref=e510]:
+                    - generic [ref=e511]:
+                      - text: Weight (without stand)
+                      - generic [ref=e514]: 
+                    - text: Locked
+                    - generic [ref=e516] [cursor=pointer]: Lock lbs (Lock kg)
+                  - generic [ref=e517]:
+                    - generic [ref=e518]:
+                      - text: Weight (with stand)
+                      - generic [ref=e521]: 
+                    - text: Locked
+                    - generic [ref=e523] [cursor=pointer]: Lock lbs (Lock kg)
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e525] [cursor=pointer]:
+                    - paragraph [ref=e526]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+              - generic [ref=e528]:
+                - generic [ref=e530]: Stand
+                - generic [ref=e531]:
+                  - generic [ref=e534]:
+                    - generic [ref=e535]:
+                      - generic [ref=e536]: SAMPLE
+                      - generic [ref=e537]:
+                        - button "Join Now" [ref=e538] [cursor=pointer]
+                        - paragraph [ref=e539]: for pictures & test results
+                    - button "Dell U2718Q Stand Picture Sample" [ref=e540] [cursor=pointer]:
+                      - img "Dell U2718Q Stand Picture Sample" [ref=e542]
+                  - generic [ref=e543]:
+                    - generic [ref=e544]:
+                      - text: Width
+                      - generic [ref=e547]: 
+                    - text: Locked
+                    - generic [ref=e549] [cursor=pointer]: Lock" (Lock cm)
+                  - generic [ref=e550]:
+                    - generic [ref=e551]:
+                      - text: Depth
+                      - generic [ref=e554]: 
+                    - text: Locked
+                    - generic [ref=e556] [cursor=pointer]: Lock" (Lock cm)
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e558] [cursor=pointer]:
+                    - paragraph [ref=e559]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+              - generic [ref=e561]:
+                - generic [ref=e562]:
+                  - generic [ref=e563] [cursor=pointer]: "0.0"
+                  - generic [ref=e564]:
+                    - text: Ergonomics
+                    - generic [ref=e567]: 
+                - generic [ref=e569]:
+                  - generic [ref=e572]:
+                    - generic [ref=e573]:
+                      - generic [ref=e574]: SAMPLE
+                      - generic [ref=e575]:
+                        - button "Join Now" [ref=e576] [cursor=pointer]
+                        - paragraph [ref=e577]: for pictures & test results
+                    - button "Dell U2718Q Ergonomics Picture Sample" [ref=e578] [cursor=pointer]:
+                      - img "Dell U2718Q Ergonomics Picture Sample" [ref=e580]
+                  - generic [ref=e581]:
+                    - generic [ref=e582]:
+                      - text: Height Adjustment
+                      - generic [ref=e585]: 
+                    - text: Locked
+                    - generic [ref=e587] [cursor=pointer]: Lock" (Lock cm)
+                  - generic [ref=e588]:
+                    - generic [ref=e589]: Switch Portrait/Landscape
+                    - text: Locked
+                    - generic [ref=e590] [cursor=pointer]: Locked
+                  - generic [ref=e591]:
+                    - generic [ref=e592]: Swivel Range
+                    - text: Locked
+                    - generic [ref=e593] [cursor=pointer]: Locked
+                  - generic [ref=e594]:
+                    - generic [ref=e595]: Tilt Range
+                    - text: Locked
+                    - generic [ref=e596] [cursor=pointer]: Locked
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e598] [cursor=pointer]:
+                    - paragraph [ref=e599]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+              - generic [ref=e601]:
+                - generic [ref=e603]: Back
+                - generic [ref=e604]:
+                  - generic [ref=e607]:
+                    - generic [ref=e608]:
+                      - generic [ref=e609]: SAMPLE
+                      - generic [ref=e610]:
+                        - button "Join Now" [ref=e611] [cursor=pointer]
+                        - paragraph [ref=e612]: for pictures & test results
+                    - button "Dell U2718Q Back Picture Sample" [ref=e613] [cursor=pointer]:
+                      - img "Dell U2718Q Back Picture Sample" [ref=e615]
+                  - generic [ref=e616]:
+                    - generic [ref=e617]: Wall Mount
+                    - text: Locked
+                    - generic [ref=e618] [cursor=pointer]: Locked
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e620] [cursor=pointer]:
+                    - paragraph [ref=e621]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+              - generic [ref=e623]:
+                - generic [ref=e625]: Borders
+                - generic [ref=e626]:
+                  - generic [ref=e629]:
+                    - generic [ref=e630]:
+                      - generic [ref=e631]: SAMPLE
+                      - generic [ref=e632]:
+                        - button "Join Now" [ref=e633] [cursor=pointer]
+                        - paragraph [ref=e634]: for pictures & test results
+                    - button "Dell U2718Q Borders Picture Sample" [ref=e635] [cursor=pointer]:
+                      - img "Dell U2718Q Borders Picture Sample" [ref=e637]
+                  - generic [ref=e638]:
+                    - generic [ref=e639]:
+                      - text: Borders
+                      - generic [ref=e642]: 
+                    - text: Locked
+                    - generic [ref=e644] [cursor=pointer]: Lock" (Lock cm)
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e646] [cursor=pointer]:
+                    - paragraph [ref=e647]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+              - generic [ref=e649]:
+                - generic [ref=e651]: Thickness
+                - generic [ref=e652]:
+                  - generic [ref=e655]:
+                    - generic [ref=e656]:
+                      - generic [ref=e657]: SAMPLE
+                      - generic [ref=e658]:
+                        - button "Join Now" [ref=e659] [cursor=pointer]
+                        - paragraph [ref=e660]: for pictures & test results
+                    - button "Dell U2718Q Thickness Picture Sample" [ref=e661] [cursor=pointer]:
+                      - img "Dell U2718Q Thickness Picture Sample" [ref=e663]
+                  - generic [ref=e664]:
+                    - generic [ref=e665]:
+                      - text: Thickness (with stand)
+                      - generic [ref=e668]: 
+                    - text: Locked
+                    - generic [ref=e670] [cursor=pointer]: Lock" (Lock cm)
+                  - generic [ref=e671]:
+                    - generic [ref=e672]:
+                      - text: Thickness (without stand)
+                      - generic [ref=e675]: 
+                    - text: Locked
+                    - generic [ref=e677] [cursor=pointer]: Lock" (Lock cm)
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e679] [cursor=pointer]:
+                    - paragraph [ref=e680]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+              - generic [ref=e682]:
+                - generic [ref=e683]:
+                  - generic [ref=e684] [cursor=pointer]: "0.0"
+                  - generic [ref=e685]:
+                    - text: Build Quality
+                    - generic [ref=e688]: 
+                - generic [ref=e690]:
+                  - generic [ref=e693]:
+                    - generic [ref=e694]:
+                      - generic [ref=e695]: SAMPLE
+                      - generic [ref=e696]:
+                        - button "Join Now" [ref=e697] [cursor=pointer]
+                        - paragraph [ref=e698]: for pictures & test results
+                    - button "Dell U2718Q Build Quality Picture Sample" [ref=e699] [cursor=pointer]:
+                      - img "Dell U2718Q Build Quality Picture Sample" [ref=e701]
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e703] [cursor=pointer]:
+                    - paragraph [ref=e704]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+              - generic [ref=e707]: Picture Quality
+              - generic [ref=e708]:
+                - generic [ref=e709]:
+                  - generic [ref=e710] [cursor=pointer]: "0.0"
+                  - generic [ref=e711]:
+                    - text: Contrast
+                    - generic [ref=e714]: 
+                - generic [ref=e716]:
+                  - generic [ref=e719]:
+                    - generic [ref=e720]:
+                      - generic [ref=e721]: SAMPLE
+                      - generic [ref=e722]:
+                        - button "Join Now" [ref=e723] [cursor=pointer]
+                        - paragraph [ref=e724]: for pictures & test results
+                    - button "Dell U2718Q Checkerboard Picture Sample" [ref=e725] [cursor=pointer]:
+                      - img "Dell U2718Q Checkerboard Picture Sample" [ref=e727]
+                  - generic [ref=e728]:
+                    - generic [ref=e729]:
+                      - text: Native Contrast
+                      - generic [ref=e732]: 
+                    - text: Locked
+                    - generic [ref=e734] [cursor=pointer]: "Lock : 1"
+                  - generic [ref=e735]:
+                    - generic [ref=e736]:
+                      - text: Contrast With Local Dimming
+                      - generic [ref=e739]: 
+                    - text: LockedN/A
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e742] [cursor=pointer]:
+                    - paragraph [ref=e743]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT CONTRAST " [ref=e746] [cursor=pointer]:
+                  - /url: /monitor/tests/picture-quality/contrast-ratio
+                  - text: LEARN ABOUT CONTRAST
+                  - generic [ref=e747]: 
+              - generic [ref=e748]:
+                - generic [ref=e749]:
+                  - generic [ref=e750] [cursor=pointer]: "0.0"
+                  - generic [ref=e751]:
+                    - text: Local Dimming
+                    - generic [ref=e754]: 
+                - generic [ref=e756]:
+                  - generic [ref=e758]:
+                    - generic [ref=e759]:
+                      - generic [ref=e760]: SAMPLE
+                      - generic [ref=e761]:
+                        - button "Join Now" [ref=e762] [cursor=pointer]
+                        - paragraph [ref=e763]: for videos & test results
+                    - button "Dell U2718Q Local Dimming Video Sample" [ref=e764] [cursor=pointer]:
+                      - img "Dell U2718Q Local Dimming Video Sample" [ref=e766]
+                  - generic [ref=e767]:
+                    - generic [ref=e768]:
+                      - text: Local Dimming
+                      - generic [ref=e771]: 
+                    - text: Locked
+                    - generic [ref=e773] [cursor=pointer]: Locked
+                  - generic [ref=e774]:
+                    - generic [ref=e775]:
+                      - text: Backlight
+                      - generic [ref=e778]: 
+                    - text: Locked
+                    - generic [ref=e780] [cursor=pointer]: Locked
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e782] [cursor=pointer]:
+                    - paragraph [ref=e783]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT LOCAL DIMMING " [ref=e786] [cursor=pointer]:
+                  - /url: /monitor/tests/picture-quality/local-dimming
+                  - text: LEARN ABOUT LOCAL DIMMING
+                  - generic [ref=e787]: 
+              - generic [ref=e788]:
+                - generic [ref=e789]:
+                  - generic [ref=e790] [cursor=pointer]: "0.0"
+                  - generic [ref=e791]:
+                    - text: SDR Peak Brightness
+                    - generic [ref=e794]: 
+                - generic [ref=e796]:
+                  - generic [ref=e797]:
+                    - generic [ref=e798]:
+                      - text: SDR Real Scene
+                      - generic [ref=e801]: 
+                    - text: Locked
+                    - generic [ref=e803] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e804]:
+                    - generic [ref=e805]:
+                      - text: SDR Peak 2% Window
+                      - generic [ref=e808]: 
+                    - text: Locked
+                    - generic [ref=e810] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e811]:
+                    - generic [ref=e812]:
+                      - text: SDR Peak 10% Window
+                      - generic [ref=e815]: 
+                    - text: Locked
+                    - generic [ref=e817] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e818]:
+                    - generic [ref=e819]:
+                      - text: SDR Peak 25% Window
+                      - generic [ref=e822]: 
+                    - text: Locked
+                    - generic [ref=e824] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e825]:
+                    - generic [ref=e826]:
+                      - text: SDR Peak 50% Window
+                      - generic [ref=e829]: 
+                    - text: Locked
+                    - generic [ref=e831] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e832]:
+                    - generic [ref=e833]:
+                      - text: SDR Peak 100% Window
+                      - generic [ref=e836]: 
+                    - text: Locked
+                    - generic [ref=e838] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e839]:
+                    - generic [ref=e840]:
+                      - text: SDR Sustained 2% Window
+                      - generic [ref=e843]: 
+                    - text: Locked
+                    - generic [ref=e845] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e846]:
+                    - generic [ref=e847]:
+                      - text: SDR Sustained 10% Window
+                      - generic [ref=e850]: 
+                    - text: Locked
+                    - generic [ref=e852] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e853]:
+                    - generic [ref=e854]:
+                      - text: SDR Sustained 25% Window
+                      - generic [ref=e857]: 
+                    - text: Locked
+                    - generic [ref=e859] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e860]:
+                    - generic [ref=e861]:
+                      - text: SDR Sustained 50% Window
+                      - generic [ref=e864]: 
+                    - text: Locked
+                    - generic [ref=e866] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e867]:
+                    - generic [ref=e868]:
+                      - text: SDR Sustained 100% Window
+                      - generic [ref=e871]: 
+                    - text: Locked
+                    - generic [ref=e873] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e874]:
+                    - generic [ref=e875]:
+                      - text: SDR ABL
+                      - generic [ref=e878]: 
+                    - text: Locked
+                    - generic [ref=e880] [cursor=pointer]: Lock
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e882] [cursor=pointer]:
+                    - paragraph [ref=e883]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT SDR PEAK BRIGHTNESS " [ref=e886] [cursor=pointer]:
+                  - /url: /monitor/tests/picture-quality/peak-brightness
+                  - text: LEARN ABOUT SDR PEAK BRIGHTNESS
+                  - generic [ref=e887]: 
+              - generic [ref=e888]:
+                - generic [ref=e889]:
+                  - generic [ref=e890] [cursor=pointer]: "0.0"
+                  - generic [ref=e891]:
+                    - text: HDR Peak Brightness
+                    - generic [ref=e894]: 
+                - generic [ref=e896]:
+                  - generic [ref=e897]:
+                    - generic [ref=e898]:
+                      - text: HDR Real Scene
+                      - generic [ref=e901]: 
+                    - text: Locked
+                    - generic [ref=e903] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e904]:
+                    - generic [ref=e905]:
+                      - text: HDR Peak 2% Window
+                      - generic [ref=e908]: 
+                    - text: Locked
+                    - generic [ref=e910] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e911]:
+                    - generic [ref=e912]:
+                      - text: HDR Peak 10% Window
+                      - generic [ref=e915]: 
+                    - text: Locked
+                    - generic [ref=e917] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e918]:
+                    - generic [ref=e919]:
+                      - text: HDR Peak 25% Window
+                      - generic [ref=e922]: 
+                    - text: Locked
+                    - generic [ref=e924] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e925]:
+                    - generic [ref=e926]:
+                      - text: HDR Peak 50% Window
+                      - generic [ref=e929]: 
+                    - text: Locked
+                    - generic [ref=e931] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e932]:
+                    - generic [ref=e933]:
+                      - text: HDR Peak 100% Window
+                      - generic [ref=e936]: 
+                    - text: Locked
+                    - generic [ref=e938] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e939]:
+                    - generic [ref=e940]:
+                      - text: HDR Sustained 2% Window
+                      - generic [ref=e943]: 
+                    - text: Locked
+                    - generic [ref=e945] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e946]:
+                    - generic [ref=e947]:
+                      - text: HDR Sustained 10% Window
+                      - generic [ref=e950]: 
+                    - text: Locked
+                    - generic [ref=e952] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e953]:
+                    - generic [ref=e954]:
+                      - text: HDR Sustained 25% Window
+                      - generic [ref=e957]: 
+                    - text: Locked
+                    - generic [ref=e959] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e960]:
+                    - generic [ref=e961]:
+                      - text: HDR Sustained 50% Window
+                      - generic [ref=e964]: 
+                    - text: Locked
+                    - generic [ref=e966] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e967]:
+                    - generic [ref=e968]:
+                      - text: HDR Sustained 100% Window
+                      - generic [ref=e971]: 
+                    - text: Locked
+                    - generic [ref=e973] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e974]:
+                    - generic [ref=e975]:
+                      - text: HDR ABL
+                      - generic [ref=e978]: 
+                    - text: Locked
+                    - generic [ref=e980] [cursor=pointer]: Lock
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e982] [cursor=pointer]:
+                    - paragraph [ref=e983]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT HDR PEAK BRIGHTNESS " [ref=e986] [cursor=pointer]:
+                  - /url: /monitor/tests/picture-quality/peak-brightness
+                  - text: LEARN ABOUT HDR PEAK BRIGHTNESS
+                  - generic [ref=e987]: 
+              - generic [ref=e988]:
+                - generic [ref=e989]:
+                  - generic [ref=e990] [cursor=pointer]: "0.0"
+                  - generic [ref=e991]:
+                    - text: Horizontal Viewing Angle
+                    - generic [ref=e994]: 
+                - generic [ref=e996]:
+                  - generic [ref=e998]:
+                    - generic [ref=e999]:
+                      - generic [ref=e1000]: SAMPLE
+                      - generic [ref=e1001]:
+                        - button "Join Now" [ref=e1002] [cursor=pointer]
+                        - paragraph [ref=e1003]: for videos & test results
+                    - button "Dell U2718Q Horizontal Viewing Angle Video Sample" [ref=e1004] [cursor=pointer]:
+                      - img "Dell U2718Q Horizontal Viewing Angle Video Sample" [ref=e1006]
+                  - generic [ref=e1009]:
+                    - generic [ref=e1010]:
+                      - generic [ref=e1011]: SAMPLE
+                      - generic [ref=e1012]:
+                        - button "Join Now" [ref=e1013] [cursor=pointer]
+                        - paragraph [ref=e1014]: for pictures & test results
+                    - button "Dell U2718Q Horizontal Chroma Graph Sample" [ref=e1015] [cursor=pointer]:
+                      - img "Dell U2718Q Horizontal Chroma Graph Sample" [ref=e1017]
+                  - generic [ref=e1018]:
+                    - generic [ref=e1019]:
+                      - text: Color Washout From Left
+                      - generic [ref=e1022]: 
+                    - text: Locked
+                    - generic [ref=e1024] [cursor=pointer]: Lock°
+                  - generic [ref=e1025]:
+                    - generic [ref=e1026]:
+                      - text: Color Washout From Right
+                      - generic [ref=e1029]: 
+                    - text: Locked
+                    - generic [ref=e1031] [cursor=pointer]: Lock°
+                  - generic [ref=e1034]:
+                    - generic [ref=e1035]:
+                      - generic [ref=e1036]: SAMPLE
+                      - generic [ref=e1037]:
+                        - button "Join Now" [ref=e1038] [cursor=pointer]
+                        - paragraph [ref=e1039]: for pictures & test results
+                    - button "Dell U2718Q Horizontal Hue Graph Sample" [ref=e1040] [cursor=pointer]:
+                      - img "Dell U2718Q Horizontal Hue Graph Sample" [ref=e1042]
+                  - generic [ref=e1043]:
+                    - generic [ref=e1044]:
+                      - text: Color Shift From Left
+                      - generic [ref=e1047]: 
+                    - text: Locked
+                    - generic [ref=e1049] [cursor=pointer]: Lock°
+                  - generic [ref=e1050]:
+                    - generic [ref=e1051]:
+                      - text: Color Shift From Right
+                      - generic [ref=e1054]: 
+                    - text: Locked
+                    - generic [ref=e1056] [cursor=pointer]: Lock°
+                  - generic [ref=e1059]:
+                    - generic [ref=e1060]:
+                      - generic [ref=e1061]: SAMPLE
+                      - generic [ref=e1062]:
+                        - button "Join Now" [ref=e1063] [cursor=pointer]
+                        - paragraph [ref=e1064]: for pictures & test results
+                    - button "Dell U2718Q Horizontal Lightness Graph Sample" [ref=e1065] [cursor=pointer]:
+                      - img "Dell U2718Q Horizontal Lightness Graph Sample" [ref=e1067]
+                  - generic [ref=e1068]:
+                    - generic [ref=e1069]:
+                      - text: Brightness Loss From Left
+                      - generic [ref=e1072]: 
+                    - text: Locked
+                    - generic [ref=e1074] [cursor=pointer]: Lock°
+                  - generic [ref=e1075]:
+                    - generic [ref=e1076]:
+                      - text: Brightness Loss From Right
+                      - generic [ref=e1079]: 
+                    - text: Locked
+                    - generic [ref=e1081] [cursor=pointer]: Lock°
+                  - generic [ref=e1082]:
+                    - generic [ref=e1083]:
+                      - text: Black Level Raise From Left
+                      - generic [ref=e1086]: 
+                    - text: Locked
+                    - generic [ref=e1088] [cursor=pointer]: Lock°
+                  - generic [ref=e1089]:
+                    - generic [ref=e1090]:
+                      - text: Black Level Raise From Right
+                      - generic [ref=e1093]: 
+                    - text: Locked
+                    - generic [ref=e1095] [cursor=pointer]: Lock°
+                  - generic [ref=e1096]:
+                    - generic [ref=e1097]:
+                      - text: Gamma Shift From Left
+                      - generic [ref=e1100]: 
+                    - text: Locked
+                    - generic [ref=e1102] [cursor=pointer]: Lock°
+                  - generic [ref=e1103]:
+                    - generic [ref=e1104]:
+                      - text: Gamma Shift From Right
+                      - generic [ref=e1107]: 
+                    - text: Locked
+                    - generic [ref=e1109] [cursor=pointer]: Lock°
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e1111] [cursor=pointer]:
+                    - paragraph [ref=e1112]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT HORIZONTAL VIEWING ANGLE " [ref=e1115] [cursor=pointer]:
+                  - /url: /monitor/tests/picture-quality/viewing-angle
+                  - text: LEARN ABOUT HORIZONTAL VIEWING ANGLE
+                  - generic [ref=e1116]: 
+              - generic [ref=e1117]:
+                - generic [ref=e1118]:
+                  - generic [ref=e1119] [cursor=pointer]: "0.0"
+                  - generic [ref=e1120]:
+                    - text: Vertical Viewing Angle
+                    - generic [ref=e1123]: 
+                - generic [ref=e1125]:
+                  - generic [ref=e1127]:
+                    - generic [ref=e1128]:
+                      - generic [ref=e1129]: SAMPLE
+                      - generic [ref=e1130]:
+                        - button "Join Now" [ref=e1131] [cursor=pointer]
+                        - paragraph [ref=e1132]: for videos & test results
+                    - button "Dell U2718Q Vertical Viewing Angle Video Sample" [ref=e1133] [cursor=pointer]:
+                      - img "Dell U2718Q Vertical Viewing Angle Video Sample" [ref=e1135]
+                  - generic [ref=e1138]:
+                    - generic [ref=e1139]:
+                      - generic [ref=e1140]: SAMPLE
+                      - generic [ref=e1141]:
+                        - button "Join Now" [ref=e1142] [cursor=pointer]
+                        - paragraph [ref=e1143]: for pictures & test results
+                    - button "Dell U2718Q Vertical Chroma Graph Sample" [ref=e1144] [cursor=pointer]:
+                      - img "Dell U2718Q Vertical Chroma Graph Sample" [ref=e1146]
+                  - generic [ref=e1147]:
+                    - generic [ref=e1148]:
+                      - text: Color Washout From Below
+                      - generic [ref=e1151]: 
+                    - text: Locked
+                    - generic [ref=e1153] [cursor=pointer]: Lock°
+                  - generic [ref=e1154]:
+                    - generic [ref=e1155]:
+                      - text: Color Washout From Above
+                      - generic [ref=e1158]: 
+                    - text: Locked
+                    - generic [ref=e1160] [cursor=pointer]: Lock°
+                  - generic [ref=e1163]:
+                    - generic [ref=e1164]:
+                      - generic [ref=e1165]: SAMPLE
+                      - generic [ref=e1166]:
+                        - button "Join Now" [ref=e1167] [cursor=pointer]
+                        - paragraph [ref=e1168]: for pictures & test results
+                    - button "Dell U2718Q Vertical Hue Graph Sample" [ref=e1169] [cursor=pointer]:
+                      - img "Dell U2718Q Vertical Hue Graph Sample" [ref=e1171]
+                  - generic [ref=e1172]:
+                    - generic [ref=e1173]:
+                      - text: Color Shift From Below
+                      - generic [ref=e1176]: 
+                    - text: Locked
+                    - generic [ref=e1178] [cursor=pointer]: Lock°
+                  - generic [ref=e1179]:
+                    - generic [ref=e1180]:
+                      - text: Color Shift From Above
+                      - generic [ref=e1183]: 
+                    - text: Locked
+                    - generic [ref=e1185] [cursor=pointer]: Lock°
+                  - generic [ref=e1188]:
+                    - generic [ref=e1189]:
+                      - generic [ref=e1190]: SAMPLE
+                      - generic [ref=e1191]:
+                        - button "Join Now" [ref=e1192] [cursor=pointer]
+                        - paragraph [ref=e1193]: for pictures & test results
+                    - button "Dell U2718Q Vertical Lightness Graph Sample" [ref=e1194] [cursor=pointer]:
+                      - img "Dell U2718Q Vertical Lightness Graph Sample" [ref=e1196]
+                  - generic [ref=e1197]:
+                    - generic [ref=e1198]:
+                      - text: Brightness Loss From Below
+                      - generic [ref=e1201]: 
+                    - text: Locked
+                    - generic [ref=e1203] [cursor=pointer]: Lock°
+                  - generic [ref=e1204]:
+                    - generic [ref=e1205]:
+                      - text: Brightness Loss From Above
+                      - generic [ref=e1208]: 
+                    - text: Locked
+                    - generic [ref=e1210] [cursor=pointer]: Lock°
+                  - generic [ref=e1211]:
+                    - generic [ref=e1212]:
+                      - text: Black Level Raise From Below
+                      - generic [ref=e1215]: 
+                    - text: Locked
+                    - generic [ref=e1217] [cursor=pointer]: Lock°
+                  - generic [ref=e1218]:
+                    - generic [ref=e1219]:
+                      - text: Black Level Raise From Above
+                      - generic [ref=e1222]: 
+                    - text: Locked
+                    - generic [ref=e1224] [cursor=pointer]: Lock°
+                  - generic [ref=e1225]:
+                    - generic [ref=e1226]:
+                      - text: Gamma Shift From Below
+                      - generic [ref=e1229]: 
+                    - text: Locked
+                    - generic [ref=e1231] [cursor=pointer]: Lock°
+                  - generic [ref=e1232]:
+                    - generic [ref=e1233]:
+                      - text: Gamma Shift From Above
+                      - generic [ref=e1236]: 
+                    - text: Locked
+                    - generic [ref=e1238] [cursor=pointer]: Lock°
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e1240] [cursor=pointer]:
+                    - paragraph [ref=e1241]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT VERTICAL VIEWING ANGLE " [ref=e1244] [cursor=pointer]:
+                  - /url: /monitor/tests/picture-quality/vertical-viewing-angle
+                  - text: LEARN ABOUT VERTICAL VIEWING ANGLE
+                  - generic [ref=e1245]: 
+              - generic [ref=e1246]:
+                - generic [ref=e1247]:
+                  - generic [ref=e1248] [cursor=pointer]: "0.0"
+                  - generic [ref=e1249]:
+                    - text: Gray Uniformity
+                    - generic [ref=e1252]: 
+                - generic [ref=e1254]:
+                  - generic [ref=e1257]:
+                    - generic [ref=e1258]:
+                      - generic [ref=e1259]: SAMPLE
+                      - generic [ref=e1260]:
+                        - button "Join Now" [ref=e1261] [cursor=pointer]
+                        - paragraph [ref=e1262]: for pictures & test results
+                    - button "Dell U2718Q 50% Uniformity Picture Sample" [ref=e1263] [cursor=pointer]:
+                      - img "Dell U2718Q 50% Uniformity Picture Sample" [ref=e1265]
+                  - generic [ref=e1266]:
+                    - generic [ref=e1267]:
+                      - text: 50% Std. Dev.
+                      - generic [ref=e1270]: 
+                    - text: Locked
+                    - generic [ref=e1272] [cursor=pointer]: Lock%
+                  - generic [ref=e1273]:
+                    - generic [ref=e1274]:
+                      - text: 50% DSE
+                      - generic [ref=e1277]: 
+                    - text: Locked
+                    - generic [ref=e1279] [cursor=pointer]: Lock%
+                  - generic [ref=e1282]:
+                    - generic [ref=e1283]:
+                      - generic [ref=e1284]: SAMPLE
+                      - generic [ref=e1285]:
+                        - button "Join Now" [ref=e1286] [cursor=pointer]
+                        - paragraph [ref=e1287]: for pictures & test results
+                    - button "Dell U2718Q 5% Uniformity Picture Sample" [ref=e1288] [cursor=pointer]:
+                      - img "Dell U2718Q 5% Uniformity Picture Sample" [ref=e1290]
+                  - generic [ref=e1291]:
+                    - generic [ref=e1292]:
+                      - text: 5% Std. Dev.
+                      - generic [ref=e1295]: 
+                    - text: Locked
+                    - generic [ref=e1297] [cursor=pointer]: Lock%
+                  - generic [ref=e1298]:
+                    - generic [ref=e1299]:
+                      - text: 5% DSE
+                      - generic [ref=e1302]: 
+                    - text: Locked
+                    - generic [ref=e1304] [cursor=pointer]: Lock%
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e1306] [cursor=pointer]:
+                    - paragraph [ref=e1307]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT GRAY UNIFORMITY " [ref=e1310] [cursor=pointer]:
+                  - /url: /monitor/tests/picture-quality/gray-uniformity
+                  - text: LEARN ABOUT GRAY UNIFORMITY
+                  - generic [ref=e1311]: 
+              - generic [ref=e1312]:
+                - generic [ref=e1313]:
+                  - generic [ref=e1314] [cursor=pointer]: "0.0"
+                  - generic [ref=e1315]:
+                    - text: Black Uniformity
+                    - generic [ref=e1318]: 
+                - generic [ref=e1320]:
+                  - generic [ref=e1323]:
+                    - generic [ref=e1324]:
+                      - generic [ref=e1325]: SAMPLE
+                      - generic [ref=e1326]:
+                        - button "Join Now" [ref=e1327] [cursor=pointer]
+                        - paragraph [ref=e1328]: for pictures & test results
+                    - button "Dell U2718Q Native Black Uniformity Picture Sample" [ref=e1329] [cursor=pointer]:
+                      - img "Dell U2718Q Native Black Uniformity Picture Sample" [ref=e1331]
+                  - generic [ref=e1332]:
+                    - generic [ref=e1333]:
+                      - text: Native Std. Dev.
+                      - generic [ref=e1336]: 
+                    - text: Locked
+                    - generic [ref=e1338] [cursor=pointer]: Lock%
+                  - generic [ref=e1339]:
+                    - generic [ref=e1340]:
+                      - text: Std. Dev. w/ L.D.
+                      - generic [ref=e1343]: 
+                    - text: LockedN/A
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e1346] [cursor=pointer]:
+                    - paragraph [ref=e1347]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT BLACK UNIFORMITY " [ref=e1350] [cursor=pointer]:
+                  - /url: /monitor/tests/picture-quality/black-uniformity
+                  - text: LEARN ABOUT BLACK UNIFORMITY
+                  - generic [ref=e1351]: 
+              - generic [ref=e1352]:
+                - generic [ref=e1353]:
+                  - generic [ref=e1354] [cursor=pointer]: "0.0"
+                  - generic [ref=e1355]:
+                    - text: Pre Calibration
+                    - generic [ref=e1358]: 
+                - generic [ref=e1360]:
+                  - generic [ref=e1363]:
+                    - generic [ref=e1364]:
+                      - generic [ref=e1365]: SAMPLE
+                      - generic [ref=e1366]:
+                        - button "Join Now" [ref=e1367] [cursor=pointer]
+                        - paragraph [ref=e1368]: for pictures & test results
+                    - button "Dell U2718Q Pre Calibration Picture Sample" [ref=e1369] [cursor=pointer]:
+                      - img "Dell U2718Q Pre Calibration Picture Sample" [ref=e1371]
+                  - generic [ref=e1374]:
+                    - generic [ref=e1375]:
+                      - generic [ref=e1376]: SAMPLE
+                      - generic [ref=e1377]:
+                        - button "Join Now" [ref=e1378] [cursor=pointer]
+                        - paragraph [ref=e1379]: for pictures & test results
+                    - button "Dell U2718Q Pre Gamma Curve Picture Sample" [ref=e1380] [cursor=pointer]:
+                      - img "Dell U2718Q Pre Gamma Curve Picture Sample" [ref=e1382]
+                  - generic [ref=e1385]:
+                    - generic [ref=e1386]:
+                      - generic [ref=e1387]: SAMPLE
+                      - generic [ref=e1388]:
+                        - button "Join Now" [ref=e1389] [cursor=pointer]
+                        - paragraph [ref=e1390]: for pictures & test results
+                    - button "Dell U2718Q Pre Color Picture Sample" [ref=e1391] [cursor=pointer]:
+                      - img "Dell U2718Q Pre Color Picture Sample" [ref=e1393]
+                  - generic [ref=e1394]:
+                    - generic [ref=e1395]:
+                      - text: Picture Mode
+                      - generic [ref=e1398]: 
+                    - text: Locked
+                    - generic [ref=e1400] [cursor=pointer]: Locked
+                  - generic [ref=e1401]:
+                    - generic [ref=e1402]:
+                      - text: Luminance
+                      - generic [ref=e1405]: 
+                    - text: Locked
+                    - generic [ref=e1407] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e1408]:
+                    - generic [ref=e1409]:
+                      - text: Luminance Settings
+                      - generic [ref=e1412]: 
+                    - text: Locked
+                    - generic [ref=e1414] [cursor=pointer]: Lock
+                  - generic [ref=e1415]:
+                    - generic [ref=e1416]:
+                      - text: Contrast Setting
+                      - generic [ref=e1419]: 
+                    - text: Locked
+                    - generic [ref=e1421] [cursor=pointer]: Lock
+                  - generic [ref=e1422]:
+                    - generic [ref=e1423]:
+                      - text: RGB Controls
+                      - generic [ref=e1426]: 
+                    - text: Locked
+                    - generic [ref=e1428] [cursor=pointer]: Locked
+                  - generic [ref=e1429]:
+                    - generic [ref=e1430]:
+                      - text: Gamma Setting
+                      - generic [ref=e1433]: 
+                    - text: Locked
+                    - generic [ref=e1435] [cursor=pointer]: Locked
+                  - generic [ref=e1436]:
+                    - generic [ref=e1437]:
+                      - text: Color Temperature
+                      - generic [ref=e1440]: 
+                    - text: Locked
+                    - generic [ref=e1442] [cursor=pointer]: Lock K
+                  - generic [ref=e1443]:
+                    - generic [ref=e1444]:
+                      - text: White Balance dE
+                      - generic [ref=e1447]: 
+                    - text: Locked
+                    - generic [ref=e1449] [cursor=pointer]: Lock
+                  - generic [ref=e1450]:
+                    - generic [ref=e1451]:
+                      - text: Color dE
+                      - generic [ref=e1454]: 
+                    - text: Locked
+                    - generic [ref=e1456] [cursor=pointer]: Lock
+                  - generic [ref=e1457]:
+                    - generic [ref=e1458]:
+                      - text: Gamma
+                      - generic [ref=e1461]: 
+                    - text: Locked
+                    - generic [ref=e1463] [cursor=pointer]: Lock
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e1465] [cursor=pointer]:
+                    - paragraph [ref=e1466]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT PRE CALIBRATION " [ref=e1469] [cursor=pointer]:
+                  - /url: /monitor/tests/picture-quality/color-accuracy
+                  - text: LEARN ABOUT PRE CALIBRATION
+                  - generic [ref=e1470]: 
+              - generic [ref=e1471]:
+                - generic [ref=e1472]:
+                  - generic [ref=e1473] [cursor=pointer]: "0.0"
+                  - generic [ref=e1474]:
+                    - text: Post Calibration
+                    - generic [ref=e1477]: 
+                - generic [ref=e1479]:
+                  - generic [ref=e1482]:
+                    - generic [ref=e1483]:
+                      - generic [ref=e1484]: SAMPLE
+                      - generic [ref=e1485]:
+                        - button "Join Now" [ref=e1486] [cursor=pointer]
+                        - paragraph [ref=e1487]: for pictures & test results
+                    - button "Dell U2718Q Post Calibration Picture Sample" [ref=e1488] [cursor=pointer]:
+                      - img "Dell U2718Q Post Calibration Picture Sample" [ref=e1490]
+                  - generic [ref=e1493]:
+                    - generic [ref=e1494]:
+                      - generic [ref=e1495]: SAMPLE
+                      - generic [ref=e1496]:
+                        - button "Join Now" [ref=e1497] [cursor=pointer]
+                        - paragraph [ref=e1498]: for pictures & test results
+                    - button "Dell U2718Q Post Gamma Curve Picture Sample" [ref=e1499] [cursor=pointer]:
+                      - img "Dell U2718Q Post Gamma Curve Picture Sample" [ref=e1501]
+                  - generic [ref=e1504]:
+                    - generic [ref=e1505]:
+                      - generic [ref=e1506]: SAMPLE
+                      - generic [ref=e1507]:
+                        - button "Join Now" [ref=e1508] [cursor=pointer]
+                        - paragraph [ref=e1509]: for pictures & test results
+                    - button "Dell U2718Q Post Color Picture Sample" [ref=e1510] [cursor=pointer]:
+                      - img "Dell U2718Q Post Color Picture Sample" [ref=e1512]
+                  - generic [ref=e1513]:
+                    - generic [ref=e1514]:
+                      - text: Picture Mode
+                      - generic [ref=e1517]: 
+                    - text: Locked
+                    - generic [ref=e1519] [cursor=pointer]: Locked
+                  - generic [ref=e1520]:
+                    - generic [ref=e1521]:
+                      - text: Luminance
+                      - generic [ref=e1524]: 
+                    - text: Locked
+                    - generic [ref=e1526] [cursor=pointer]: Lock cd/m²
+                  - generic [ref=e1527]:
+                    - generic [ref=e1528]:
+                      - text: Luminance Settings
+                      - generic [ref=e1531]: 
+                    - text: Locked
+                    - generic [ref=e1533] [cursor=pointer]: Lock
+                  - generic [ref=e1534]:
+                    - generic [ref=e1535]:
+                      - text: Contrast Setting
+                      - generic [ref=e1538]: 
+                    - text: Locked
+                    - generic [ref=e1540] [cursor=pointer]: Lock
+                  - generic [ref=e1541]:
+                    - generic [ref=e1542]:
+                      - text: RGB Controls
+                      - generic [ref=e1545]: 
+                    - text: Locked
+                    - generic [ref=e1547] [cursor=pointer]: Locked
+                  - generic [ref=e1548]:
+                    - generic [ref=e1549]:
+                      - text: Gamma Setting
+                      - generic [ref=e1552]: 
+                    - text: Locked
+                    - generic [ref=e1554] [cursor=pointer]: Locked
+                  - generic [ref=e1555]:
+                    - generic [ref=e1556]:
+                      - text: Color Temperature
+                      - generic [ref=e1559]: 
+                    - text: Locked
+                    - generic [ref=e1561] [cursor=pointer]: Lock K
+                  - generic [ref=e1562]:
+                    - generic [ref=e1563]:
+                      - text: White Balance dE
+                      - generic [ref=e1566]: 
+                    - text: Locked
+                    - generic [ref=e1568] [cursor=pointer]: Lock
+                  - generic [ref=e1569]:
+                    - generic [ref=e1570]:
+                      - text: Color dE
+                      - generic [ref=e1573]: 
+                    - text: Locked
+                    - generic [ref=e1575] [cursor=pointer]: Lock
+                  - generic [ref=e1576]:
+                    - generic [ref=e1577]:
+                      - text: Gamma
+                      - generic [ref=e1580]: 
+                    - text: Locked
+                    - generic [ref=e1582] [cursor=pointer]: Lock
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e1584] [cursor=pointer]:
+                    - paragraph [ref=e1585]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT POST CALIBRATION " [ref=e1588] [cursor=pointer]:
+                  - /url: /monitor/tests/picture-quality/color-accuracy
+                  - text: LEARN ABOUT POST CALIBRATION
+                  - generic [ref=e1589]: 
+              - generic [ref=e1590]:
+                - generic [ref=e1591]:
+                  - generic [ref=e1592] [cursor=pointer]: "0.0"
+                  - generic [ref=e1593]:
+                    - text: SDR Color Gamut
+                    - generic [ref=e1596]: 
+                - generic [ref=e1598]:
+                  - generic [ref=e1601]:
+                    - generic [ref=e1602]:
+                      - generic [ref=e1603]: SAMPLE
+                      - generic [ref=e1604]:
+                        - button "Join Now" [ref=e1605] [cursor=pointer]
+                        - paragraph [ref=e1606]: for pictures & test results
+                    - button "Dell U2718Q Color Gamut sRGB Picture Sample" [ref=e1607] [cursor=pointer]:
+                      - img "Dell U2718Q Color Gamut sRGB Picture Sample" [ref=e1609]
+                  - generic [ref=e1610]:
+                    - generic [ref=e1611]:
+                      - text: sRGB xy
+                      - generic [ref=e1614]: 
+                    - text: Locked
+                    - generic [ref=e1616] [cursor=pointer]: Lock%
+                  - generic [ref=e1619]:
+                    - generic [ref=e1620]:
+                      - generic [ref=e1621]: SAMPLE
+                      - generic [ref=e1622]:
+                        - button "Join Now" [ref=e1623] [cursor=pointer]
+                        - paragraph [ref=e1624]: for pictures & test results
+                    - button "Dell U2718Q Color Gamut ARGB Picture Sample" [ref=e1625] [cursor=pointer]:
+                      - img "Dell U2718Q Color Gamut ARGB Picture Sample" [ref=e1627]
+                  - generic [ref=e1628]:
+                    - generic [ref=e1629]:
+                      - text: Adobe RGB xy
+                      - generic [ref=e1632]: 
+                    - text: Locked
+                    - generic [ref=e1634] [cursor=pointer]: Lock%
+                  - generic [ref=e1635]:
+                    - generic [ref=e1636]:
+                      - text: sRGB Picture Mode
+                      - generic [ref=e1639]: 
+                    - text: Locked
+                    - generic [ref=e1641] [cursor=pointer]: Locked
+                  - generic [ref=e1642]:
+                    - generic [ref=e1643]:
+                      - text: Adobe RGB Picture Mode
+                      - generic [ref=e1646]: 
+                    - text: Locked
+                    - generic [ref=e1648] [cursor=pointer]: Locked
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e1650] [cursor=pointer]:
+                    - paragraph [ref=e1651]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT SDR COLOR GAMUT " [ref=e1654] [cursor=pointer]:
+                  - /url: /monitor/tests/picture-quality/color-gamut
+                  - text: LEARN ABOUT SDR COLOR GAMUT
+                  - generic [ref=e1655]: 
+              - generic [ref=e1656]:
+                - generic [ref=e1657]:
+                  - generic [ref=e1658] [cursor=pointer]: "0.0"
+                  - generic [ref=e1659]:
+                    - text: SDR Color Volume
+                    - generic [ref=e1662]: 
+                - generic [ref=e1664]:
+                  - generic [ref=e1667]:
+                    - generic [ref=e1668]:
+                      - generic [ref=e1669]: SAMPLE
+                      - generic [ref=e1670]:
+                        - button "Join Now" [ref=e1671] [cursor=pointer]
+                        - paragraph [ref=e1672]: for pictures & test results
+                    - button "Dell U2718Q sRGB Color Volume ITP Picture Sample" [ref=e1673] [cursor=pointer]:
+                      - img "Dell U2718Q sRGB Color Volume ITP Picture Sample" [ref=e1675]
+                  - generic [ref=e1676]:
+                    - generic [ref=e1677]:
+                      - text: sRGB In ICtCp
+                      - generic [ref=e1680]: 
+                    - text: Locked
+                    - generic [ref=e1682] [cursor=pointer]: Lock%
+                  - generic [ref=e1685]:
+                    - generic [ref=e1686]:
+                      - generic [ref=e1687]: SAMPLE
+                      - generic [ref=e1688]:
+                        - button "Join Now" [ref=e1689] [cursor=pointer]
+                        - paragraph [ref=e1690]: for pictures & test results
+                    - button "Dell U2718Q Adobe RGB Color Volume ITP Picture Sample" [ref=e1691] [cursor=pointer]:
+                      - img "Dell U2718Q Adobe RGB Color Volume ITP Picture Sample" [ref=e1693]
+                  - generic [ref=e1694]:
+                    - generic [ref=e1695]:
+                      - text: Adobe RGB In ICtCp
+                      - generic [ref=e1698]: 
+                    - text: Locked
+                    - generic [ref=e1700] [cursor=pointer]: Lock%
+                  - generic [ref=e1701]:
+                    - generic [ref=e1702]:
+                      - text: sRGB Picture Mode
+                      - generic [ref=e1705]: 
+                    - text: Locked
+                    - generic [ref=e1707] [cursor=pointer]: Locked
+                  - generic [ref=e1708]:
+                    - generic [ref=e1709]:
+                      - text: Adobe RGB Picture Mode
+                      - generic [ref=e1712]: 
+                    - text: Locked
+                    - generic [ref=e1714] [cursor=pointer]: Locked
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e1716] [cursor=pointer]:
+                    - paragraph [ref=e1717]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT SDR COLOR VOLUME " [ref=e1720] [cursor=pointer]:
+                  - /url: /monitor/tests/picture-quality/color-volume
+                  - text: LEARN ABOUT SDR COLOR VOLUME
+                  - generic [ref=e1721]: 
+              - generic [ref=e1722]:
+                - generic [ref=e1723]:
+                  - generic [ref=e1724] [cursor=pointer]: "0.0"
+                  - generic [ref=e1725]:
+                    - text: HDR Color Gamut
+                    - generic [ref=e1728]: 
+                - generic [ref=e1730]:
+                  - generic [ref=e1731]:
+                    - generic [ref=e1732]:
+                      - text: Wide Color Gamut
+                      - generic [ref=e1735]: 
+                    - text: Locked
+                    - generic [ref=e1737] [cursor=pointer]: Locked
+                  - generic [ref=e1740]:
+                    - generic [ref=e1741]:
+                      - generic [ref=e1742]: SAMPLE
+                      - generic [ref=e1743]:
+                        - button "Join Now" [ref=e1744] [cursor=pointer]
+                        - paragraph [ref=e1745]: for pictures & test results
+                    - button "Dell U2718Q Color Gamut DCI-P3 Picture Sample" [ref=e1746] [cursor=pointer]:
+                      - img "Dell U2718Q Color Gamut DCI-P3 Picture Sample" [ref=e1748]
+                  - generic [ref=e1749]:
+                    - generic [ref=e1750]:
+                      - text: DCI P3 xy
+                      - generic [ref=e1753]: 
+                    - text: Locked
+                    - generic [ref=e1755] [cursor=pointer]: Lock%
+                  - generic [ref=e1758]:
+                    - generic [ref=e1759]:
+                      - generic [ref=e1760]: SAMPLE
+                      - generic [ref=e1761]:
+                        - button "Join Now" [ref=e1762] [cursor=pointer]
+                        - paragraph [ref=e1763]: for pictures & test results
+                    - button "Dell U2718Q Color Gamut Rec.2020 Picture Sample" [ref=e1764] [cursor=pointer]:
+                      - img "Dell U2718Q Color Gamut Rec.2020 Picture Sample" [ref=e1766]
+                  - generic [ref=e1767]:
+                    - generic [ref=e1768]:
+                      - text: Rec. 2020 xy
+                      - generic [ref=e1771]: 
+                    - text: Locked
+                    - generic [ref=e1773] [cursor=pointer]: Lock%
+                  - generic [ref=e1774]:
+                    - generic [ref=e1775]:
+                      - text: DCI P3 Picture Mode
+                      - generic [ref=e1778]: 
+                    - text: Locked
+                    - generic [ref=e1780] [cursor=pointer]: Locked
+                  - generic [ref=e1781]:
+                    - generic [ref=e1782]:
+                      - text: Rec. 2020 Picture Mode
+                      - generic [ref=e1785]: 
+                    - text: Locked
+                    - generic [ref=e1787] [cursor=pointer]: Locked
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e1789] [cursor=pointer]:
+                    - paragraph [ref=e1790]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT HDR COLOR GAMUT " [ref=e1793] [cursor=pointer]:
+                  - /url: /monitor/tests/picture-quality/color-gamut
+                  - text: LEARN ABOUT HDR COLOR GAMUT
+                  - generic [ref=e1794]: 
+              - generic [ref=e1795]:
+                - generic [ref=e1796]:
+                  - generic [ref=e1797] [cursor=pointer]: "0.0"
+                  - generic [ref=e1798]:
+                    - text: HDR Color Volume
+                    - generic [ref=e1801]: 
+                - generic [ref=e1803]:
+                  - generic [ref=e1806]:
+                    - generic [ref=e1807]:
+                      - generic [ref=e1808]: SAMPLE
+                      - generic [ref=e1809]:
+                        - button "Join Now" [ref=e1810] [cursor=pointer]
+                        - paragraph [ref=e1811]: for pictures & test results
+                    - button "Dell U2718Q P3 Color Volume ITP Picture Sample" [ref=e1812] [cursor=pointer]:
+                      - img "Dell U2718Q P3 Color Volume ITP Picture Sample" [ref=e1814]
+                  - generic [ref=e1815]:
+                    - generic [ref=e1816]:
+                      - text: DCI-P3 In ICtCp
+                      - generic [ref=e1819]: 
+                    - text: Locked
+                    - generic [ref=e1821] [cursor=pointer]: Lock%
+                  - generic [ref=e1824]:
+                    - generic [ref=e1825]:
+                      - generic [ref=e1826]: SAMPLE
+                      - generic [ref=e1827]:
+                        - button "Join Now" [ref=e1828] [cursor=pointer]
+                        - paragraph [ref=e1829]: for pictures & test results
+                    - button "Dell U2718Q 2020 Color Volume ITP Picture Sample" [ref=e1830] [cursor=pointer]:
+                      - img "Dell U2718Q 2020 Color Volume ITP Picture Sample" [ref=e1832]
+                  - generic [ref=e1833]:
+                    - generic [ref=e1834]:
+                      - text: Rec. 2020 In ICtCp
+                      - generic [ref=e1837]: 
+                    - text: Locked
+                    - generic [ref=e1839] [cursor=pointer]: Lock%
+                  - generic [ref=e1840]:
+                    - generic [ref=e1841]:
+                      - text: DCI P3 Picture Mode
+                      - generic [ref=e1844]: 
+                    - text: Locked
+                    - generic [ref=e1846] [cursor=pointer]: Locked
+                  - generic [ref=e1847]:
+                    - generic [ref=e1848]:
+                      - text: Rec. 2020 Picture Mode
+                      - generic [ref=e1851]: 
+                    - text: Locked
+                    - generic [ref=e1853] [cursor=pointer]: Locked
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e1855] [cursor=pointer]:
+                    - paragraph [ref=e1856]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT HDR COLOR VOLUME " [ref=e1859] [cursor=pointer]:
+                  - /url: /monitor/tests/picture-quality/color-volume
+                  - text: LEARN ABOUT HDR COLOR VOLUME
+                  - generic [ref=e1860]: 
+              - generic [ref=e1861]:
+                - generic [ref=e1862]:
+                  - generic [ref=e1863] [cursor=pointer]: "0.0"
+                  - generic [ref=e1864]:
+                    - text: Image Retention
+                    - generic [ref=e1867]: 
+                - generic [ref=e1869]:
+                  - generic [ref=e1872]:
+                    - generic [ref=e1873]:
+                      - generic [ref=e1874]: SAMPLE
+                      - generic [ref=e1875]:
+                        - button "Join Now" [ref=e1876] [cursor=pointer]
+                        - paragraph [ref=e1877]: for pictures & test results
+                    - button "Dell U2718Q Image Retention Picture Sample" [ref=e1878] [cursor=pointer]:
+                      - img "Dell U2718Q Image Retention Picture Sample" [ref=e1880]
+                  - generic [ref=e1881]:
+                    - generic [ref=e1882]:
+                      - text: IR After 0 Min Recovery
+                      - generic [ref=e1885]: 
+                    - text: Locked
+                    - generic [ref=e1887] [cursor=pointer]: Lock%
+                  - generic [ref=e1888]:
+                    - generic [ref=e1889]:
+                      - text: IR After 2 Min Recovery
+                      - generic [ref=e1892]: 
+                    - text: Locked
+                    - generic [ref=e1894] [cursor=pointer]: Lock%
+                  - generic [ref=e1895]:
+                    - generic [ref=e1896]:
+                      - text: IR After 4 Min Recovery
+                      - generic [ref=e1899]: 
+                    - text: Locked
+                    - generic [ref=e1901] [cursor=pointer]: Lock%
+                  - generic [ref=e1902]:
+                    - generic [ref=e1903]:
+                      - text: IR After 6 Min Recovery
+                      - generic [ref=e1906]: 
+                    - text: Locked
+                    - generic [ref=e1908] [cursor=pointer]: Lock%
+                  - generic [ref=e1909]:
+                    - generic [ref=e1910]:
+                      - text: IR After 8 Min Recovery
+                      - generic [ref=e1913]: 
+                    - text: Locked
+                    - generic [ref=e1915] [cursor=pointer]: Lock%
+                  - generic [ref=e1916]:
+                    - generic [ref=e1917]:
+                      - text: IR After 10 Min Recovery
+                      - generic [ref=e1920]: 
+                    - text: Locked
+                    - generic [ref=e1922] [cursor=pointer]: Lock%
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e1924] [cursor=pointer]:
+                    - paragraph [ref=e1925]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT IMAGE RETENTION " [ref=e1928] [cursor=pointer]:
+                  - /url: /monitor/tests/picture-quality/image-retention
+                  - text: LEARN ABOUT IMAGE RETENTION
+                  - generic [ref=e1929]: 
+              - generic [ref=e1930]:
+                - generic [ref=e1931]:
+                  - generic [ref=e1932] [cursor=pointer]: "0.0"
+                  - generic [ref=e1933]:
+                    - text: Gradient
+                    - generic [ref=e1936]: 
+                - generic [ref=e1938]:
+                  - generic [ref=e1941]:
+                    - generic [ref=e1942]:
+                      - generic [ref=e1943]: SAMPLE
+                      - generic [ref=e1944]:
+                        - button "Join Now" [ref=e1945] [cursor=pointer]
+                        - paragraph [ref=e1946]: for pictures & test results
+                    - button "Dell U2718Q Gradient Picture Sample" [ref=e1947] [cursor=pointer]:
+                      - img "Dell U2718Q Gradient Picture Sample" [ref=e1949]
+                  - generic [ref=e1950]:
+                    - generic [ref=e1951]:
+                      - text: Color Depth
+                      - generic [ref=e1954]: 
+                    - text: Locked
+                    - generic [ref=e1956] [cursor=pointer]: Lock Bit
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e1958] [cursor=pointer]:
+                    - paragraph [ref=e1959]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT GRADIENT " [ref=e1962] [cursor=pointer]:
+                  - /url: /monitor/tests/picture-quality/gradients
+                  - text: LEARN ABOUT GRADIENT
+                  - generic [ref=e1963]: 
+              - generic [ref=e1964]:
+                - generic [ref=e1965]:
+                  - generic [ref=e1966] [cursor=pointer]: "0.0"
+                  - generic [ref=e1967]:
+                    - text: Color Bleed
+                    - generic [ref=e1970]: 
+                - generic [ref=e1972]:
+                  - generic [ref=e1975]:
+                    - generic [ref=e1976]:
+                      - generic [ref=e1977]: SAMPLE
+                      - generic [ref=e1978]:
+                        - button "Join Now" [ref=e1979] [cursor=pointer]
+                        - paragraph [ref=e1980]: for pictures & test results
+                    - button "Dell U2718Q Color Bleed Horizontal Sample" [ref=e1981] [cursor=pointer]:
+                      - img "Dell U2718Q Color Bleed Horizontal Sample" [ref=e1983]
+                  - generic [ref=e1984]:
+                    - generic [ref=e1985]:
+                      - text: Pixel Row Error
+                      - generic [ref=e1988]: 
+                    - text: Locked
+                    - generic [ref=e1990] [cursor=pointer]: Lock%
+                  - generic [ref=e1993]:
+                    - generic [ref=e1994]:
+                      - generic [ref=e1995]: SAMPLE
+                      - generic [ref=e1996]:
+                        - button "Join Now" [ref=e1997] [cursor=pointer]
+                        - paragraph [ref=e1998]: for pictures & test results
+                    - button "Dell U2718Q Color Bleed Vertical Sample" [ref=e1999] [cursor=pointer]:
+                      - img "Dell U2718Q Color Bleed Vertical Sample" [ref=e2001]
+                  - generic [ref=e2002]:
+                    - generic [ref=e2003]:
+                      - text: Pixel Column Error
+                      - generic [ref=e2006]: 
+                    - text: Locked
+                    - generic [ref=e2008] [cursor=pointer]: Lock%
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e2010] [cursor=pointer]:
+                    - paragraph [ref=e2011]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT COLOR BLEED " [ref=e2014] [cursor=pointer]:
+                  - /url: /monitor/tests/picture-quality/color-bleed
+                  - text: LEARN ABOUT COLOR BLEED
+                  - generic [ref=e2015]: 
+              - generic [ref=e2016]:
+                - generic [ref=e2017]:
+                  - generic [ref=e2018] [cursor=pointer]: "0.0"
+                  - generic [ref=e2019]:
+                    - text: Reflections
+                    - generic [ref=e2022]: 
+                - generic [ref=e2024]:
+                  - generic [ref=e2027]:
+                    - generic [ref=e2028]:
+                      - generic [ref=e2029]: SAMPLE
+                      - generic [ref=e2030]:
+                        - button "Join Now" [ref=e2031] [cursor=pointer]
+                        - paragraph [ref=e2032]: for pictures & test results
+                    - button "Dell U2718Q Average Room Sample" [ref=e2033] [cursor=pointer]:
+                      - img "Dell U2718Q Average Room Sample" [ref=e2035]
+                  - generic [ref=e2038]:
+                    - generic [ref=e2039]:
+                      - generic [ref=e2040]: SAMPLE
+                      - generic [ref=e2041]:
+                        - button "Join Now" [ref=e2042] [cursor=pointer]
+                        - paragraph [ref=e2043]: for pictures & test results
+                    - button "Dell U2718Q Average Room Off Picture Sample" [ref=e2044] [cursor=pointer]:
+                      - img "Dell U2718Q Average Room Off Picture Sample" [ref=e2046]
+                  - generic [ref=e2049]:
+                    - generic [ref=e2050]:
+                      - generic [ref=e2051]: SAMPLE
+                      - generic [ref=e2052]:
+                        - button "Join Now" [ref=e2053] [cursor=pointer]
+                        - paragraph [ref=e2054]: for pictures & test results
+                    - button "Dell U2718Q Bright Room Off Picture Sample" [ref=e2055] [cursor=pointer]:
+                      - img "Dell U2718Q Bright Room Off Picture Sample" [ref=e2057]
+                  - generic [ref=e2058]:
+                    - generic [ref=e2059]:
+                      - text: Screen Finish
+                      - generic [ref=e2062]: 
+                    - text: Locked
+                    - generic [ref=e2064] [cursor=pointer]: Locked
+                  - generic [ref=e2065]:
+                    - generic [ref=e2066]:
+                      - text: Total Reflections
+                      - generic [ref=e2069]: 
+                    - text: Locked
+                    - generic [ref=e2071] [cursor=pointer]: Lock%
+                  - generic [ref=e2072]:
+                    - generic [ref=e2073]:
+                      - text: Indirect Reflections
+                      - generic [ref=e2076]: 
+                    - text: Locked
+                    - generic [ref=e2078] [cursor=pointer]: Lock%
+                  - generic [ref=e2079]:
+                    - generic [ref=e2080]:
+                      - text: Calculated Direct Reflections
+                      - generic [ref=e2083]: 
+                    - text: Locked
+                    - generic [ref=e2085] [cursor=pointer]: Lock%
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e2087] [cursor=pointer]:
+                    - paragraph [ref=e2088]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT REFLECTIONS " [ref=e2091] [cursor=pointer]:
+                  - /url: /monitor/tests/picture-quality/reflections
+                  - text: LEARN ABOUT REFLECTIONS
+                  - generic [ref=e2092]: 
+              - generic [ref=e2093]:
+                - generic [ref=e2094]:
+                  - generic [ref=e2095] [cursor=pointer]: "0.0"
+                  - generic [ref=e2096]:
+                    - text: Text Clarity
+                    - generic [ref=e2099]: 
+                - generic [ref=e2101]:
+                  - generic [ref=e2104]:
+                    - generic [ref=e2105]:
+                      - generic [ref=e2106]: SAMPLE
+                      - generic [ref=e2107]:
+                        - button "Join Now" [ref=e2108] [cursor=pointer]
+                        - paragraph [ref=e2109]: for pictures & test results
+                    - button "Dell U2718Q ClearType On Sample" [ref=e2110] [cursor=pointer]:
+                      - img "Dell U2718Q ClearType On Sample" [ref=e2112]
+                  - generic [ref=e2113]:
+                    - generic [ref=e2114]:
+                      - text: Pixel Type
+                      - generic [ref=e2117]: 
+                    - text: LockedIPS
+                  - generic [ref=e2121]:
+                    - generic [ref=e2122]:
+                      - generic [ref=e2123]: SAMPLE
+                      - generic [ref=e2124]:
+                        - button "Join Now" [ref=e2125] [cursor=pointer]
+                        - paragraph [ref=e2126]: for pictures & test results
+                    - button "Dell U2718Q ClearType Off Sample" [ref=e2127] [cursor=pointer]:
+                      - img "Dell U2718Q ClearType Off Sample" [ref=e2129]
+                  - generic [ref=e2132]:
+                    - generic [ref=e2133]:
+                      - generic [ref=e2134]: SAMPLE
+                      - generic [ref=e2135]:
+                        - button "Join Now" [ref=e2136] [cursor=pointer]
+                        - paragraph [ref=e2137]: for pictures & test results
+                    - button "Dell U2718Q Pixels Sample" [ref=e2138] [cursor=pointer]:
+                      - img "Dell U2718Q Pixels Sample" [ref=e2140]
+                  - generic [ref=e2141]:
+                    - generic [ref=e2142]:
+                      - text: Sub-Pixel Layout
+                      - generic [ref=e2145]: 
+                    - text: Locked
+                    - generic [ref=e2147] [cursor=pointer]: Locked
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e2149] [cursor=pointer]:
+                    - paragraph [ref=e2150]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT TEXT CLARITY " [ref=e2153] [cursor=pointer]:
+                  - /url: /monitor/tests/picture-quality/text-clarity
+                  - text: LEARN ABOUT TEXT CLARITY
+                  - generic [ref=e2154]: 
+              - generic [ref=e2156]: Motion
+              - generic [ref=e2157]:
+                - generic [ref=e2158]:
+                  - generic [ref=e2159] [cursor=pointer]: "0.0"
+                  - generic [ref=e2160]:
+                    - text: Response Time @ Max Refresh Rate
+                    - generic [ref=e2163]: 
+                - generic [ref=e2165]:
+                  - generic [ref=e2168]:
+                    - generic [ref=e2169]:
+                      - generic [ref=e2170]: SAMPLE
+                      - generic [ref=e2171]:
+                        - button "Join Now" [ref=e2172] [cursor=pointer]
+                        - paragraph [ref=e2173]: for pictures & test results
+                    - button "Dell U2718Q Motion Blur Picture Sample" [ref=e2174] [cursor=pointer]:
+                      - img "Dell U2718Q Motion Blur Picture Sample" [ref=e2176]
+                  - generic [ref=e2179]:
+                    - generic [ref=e2180]:
+                      - generic [ref=e2181]: SAMPLE
+                      - generic [ref=e2182]:
+                        - button "Join Now" [ref=e2183] [cursor=pointer]
+                        - paragraph [ref=e2184]: for pictures & test results
+                    - button "Dell U2718Q Response Time Table Sample" [ref=e2185] [cursor=pointer]:
+                      - img "Dell U2718Q Response Time Table Sample" [ref=e2187]
+                  - generic [ref=e2188]:
+                    - generic [ref=e2189]:
+                      - text: Best Overdrive Setting
+                      - generic [ref=e2192]: 
+                    - text: Locked
+                    - generic [ref=e2194] [cursor=pointer]: Locked
+                  - generic [ref=e2195]:
+                    - generic [ref=e2196]:
+                      - text: Rise / Fall Time
+                      - generic [ref=e2199]: 
+                    - text: Locked
+                    - generic [ref=e2201] [cursor=pointer]: Lock ms
+                  - generic [ref=e2202]:
+                    - generic [ref=e2203]:
+                      - text: Total Response Time
+                      - generic [ref=e2206]: 
+                    - text: Locked
+                    - generic [ref=e2208] [cursor=pointer]: Lock ms
+                  - generic [ref=e2209]:
+                    - generic [ref=e2210]:
+                      - text: Overshoot Error
+                      - generic [ref=e2213]: 
+                    - text: Locked
+                    - generic [ref=e2215] [cursor=pointer]: Lock%
+                  - generic [ref=e2216]:
+                    - generic [ref=e2217]:
+                      - text: Dark Rise / Fall Time
+                      - generic [ref=e2220]: 
+                    - text: Locked
+                    - generic [ref=e2222] [cursor=pointer]: Lock ms
+                  - generic [ref=e2223]:
+                    - generic [ref=e2224]:
+                      - text: Dark Total Response Time
+                      - generic [ref=e2227]: 
+                    - text: Locked
+                    - generic [ref=e2229] [cursor=pointer]: Lock ms
+                  - generic [ref=e2230]:
+                    - generic [ref=e2231]:
+                      - text: Dark Overshoot Error
+                      - generic [ref=e2234]: 
+                    - text: Locked
+                    - generic [ref=e2236] [cursor=pointer]: Lock%
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e2238] [cursor=pointer]:
+                    - paragraph [ref=e2239]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT RESPONSE TIME @ MAX REFRESH RATE " [ref=e2242] [cursor=pointer]:
+                  - /url: /monitor/tests/motion/motion-blur-and-response-time
+                  - text: LEARN ABOUT RESPONSE TIME @ MAX REFRESH RATE
+                  - generic [ref=e2243]: 
+              - generic [ref=e2244]:
+                - generic [ref=e2245]:
+                  - generic [ref=e2246] [cursor=pointer]: "0.0"
+                  - generic [ref=e2247]:
+                    - text: Response Time @ 60Hz
+                    - generic [ref=e2250]: 
+                - generic [ref=e2252]:
+                  - generic [ref=e2255]:
+                    - generic [ref=e2256]:
+                      - generic [ref=e2257]: SAMPLE
+                      - generic [ref=e2258]:
+                        - button "Join Now" [ref=e2259] [cursor=pointer]
+                        - paragraph [ref=e2260]: for pictures & test results
+                    - button "Dell U2718Q Motion Blur Picture Sample" [ref=e2261] [cursor=pointer]:
+                      - img "Dell U2718Q Motion Blur Picture Sample" [ref=e2263]
+                  - generic [ref=e2266]:
+                    - generic [ref=e2267]:
+                      - generic [ref=e2268]: SAMPLE
+                      - generic [ref=e2269]:
+                        - button "Join Now" [ref=e2270] [cursor=pointer]
+                        - paragraph [ref=e2271]: for pictures & test results
+                    - button "Dell U2718Q Response Time Table Sample" [ref=e2272] [cursor=pointer]:
+                      - img "Dell U2718Q Response Time Table Sample" [ref=e2274]
+                  - generic [ref=e2275]:
+                    - generic [ref=e2276]:
+                      - text: Best Overdrive Setting
+                      - generic [ref=e2279]: 
+                    - text: Locked
+                    - generic [ref=e2281] [cursor=pointer]: Locked
+                  - generic [ref=e2282]:
+                    - generic [ref=e2283]:
+                      - text: Rise / Fall Time
+                      - generic [ref=e2286]: 
+                    - text: Locked
+                    - generic [ref=e2288] [cursor=pointer]: Lock ms
+                  - generic [ref=e2289]:
+                    - generic [ref=e2290]:
+                      - text: Total Response Time
+                      - generic [ref=e2293]: 
+                    - text: Locked
+                    - generic [ref=e2295] [cursor=pointer]: Lock ms
+                  - generic [ref=e2296]:
+                    - generic [ref=e2297]:
+                      - text: Overshoot Error
+                      - generic [ref=e2300]: 
+                    - text: Locked
+                    - generic [ref=e2302] [cursor=pointer]: Lock%
+                  - generic [ref=e2303]:
+                    - generic [ref=e2304]:
+                      - text: Dark Rise / Fall Time
+                      - generic [ref=e2307]: 
+                    - text: Locked
+                    - generic [ref=e2309] [cursor=pointer]: Lock ms
+                  - generic [ref=e2310]:
+                    - generic [ref=e2311]:
+                      - text: Dark Total Response Time
+                      - generic [ref=e2314]: 
+                    - text: Locked
+                    - generic [ref=e2316] [cursor=pointer]: Lock ms
+                  - generic [ref=e2317]:
+                    - generic [ref=e2318]:
+                      - text: Dark Overshoot Error
+                      - generic [ref=e2321]: 
+                    - text: Locked
+                    - generic [ref=e2323] [cursor=pointer]: Lock%
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e2325] [cursor=pointer]:
+                    - paragraph [ref=e2326]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT RESPONSE TIME @ 60HZ " [ref=e2329] [cursor=pointer]:
+                  - /url: /monitor/tests/motion/motion-blur-and-response-time
+                  - text: LEARN ABOUT RESPONSE TIME @ 60HZ
+                  - generic [ref=e2330]: 
+              - generic [ref=e2331]:
+                - generic [ref=e2332]:
+                  - generic [ref=e2333] [cursor=pointer]: "0.0"
+                  - generic [ref=e2334]:
+                    - text: Image Flicker
+                    - generic [ref=e2337]: 
+                - generic [ref=e2339]:
+                  - generic [ref=e2342]:
+                    - generic [ref=e2343]:
+                      - generic [ref=e2344]: SAMPLE
+                      - generic [ref=e2345]:
+                        - button "Join Now" [ref=e2346] [cursor=pointer]
+                        - paragraph [ref=e2347]: for pictures & test results
+                    - button "Dell U2718Q Backlight Picture Sample" [ref=e2348] [cursor=pointer]:
+                      - img "Dell U2718Q Backlight Picture Sample" [ref=e2350]
+                  - generic [ref=e2351]:
+                    - generic [ref=e2352]: Flicker-Free
+                    - text: Locked
+                    - generic [ref=e2353] [cursor=pointer]: Locked
+                  - generic [ref=e2354]:
+                    - generic [ref=e2355]:
+                      - text: PWM Dimming Frequency
+                      - generic [ref=e2358]: 
+                    - text: Locked
+                    - generic [ref=e2360] [cursor=pointer]: Locked
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e2362] [cursor=pointer]:
+                    - paragraph [ref=e2363]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT IMAGE FLICKER " [ref=e2366] [cursor=pointer]:
+                  - /url: /monitor/tests/motion/image-flicker
+                  - text: LEARN ABOUT IMAGE FLICKER
+                  - generic [ref=e2367]: 
+              - generic [ref=e2368]:
+                - generic [ref=e2369]:
+                  - generic [ref=e2370] [cursor=pointer]: "0.0"
+                  - generic [ref=e2371]:
+                    - text: Black Frame Insertion (BFI)
+                    - generic [ref=e2374]: 
+                - generic [ref=e2376]:
+                  - generic [ref=e2377]:
+                    - generic [ref=e2378]:
+                      - text: Black Frame Insertion (BFI)
+                      - generic [ref=e2381]: 
+                    - text: Locked
+                    - generic [ref=e2383] [cursor=pointer]: Locked
+                  - generic [ref=e2384]:
+                    - generic [ref=e2385]:
+                      - text: BFI Maximum Frequency
+                      - generic [ref=e2388]: 
+                    - text: LockedN/A
+                  - generic [ref=e2390]:
+                    - generic [ref=e2391]:
+                      - text: BFI Minimum Frequency
+                      - generic [ref=e2394]: 
+                    - text: LockedN/A
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e2397] [cursor=pointer]:
+                    - paragraph [ref=e2398]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT BLACK FRAME INSERTION (BFI) " [ref=e2401] [cursor=pointer]:
+                  - /url: /monitor/tests/motion/black-frame-insertion
+                  - text: LEARN ABOUT BLACK FRAME INSERTION (BFI)
+                  - generic [ref=e2402]: 
+              - generic [ref=e2403]:
+                - generic [ref=e2404]:
+                  - generic [ref=e2405] [cursor=pointer]: "0.0"
+                  - generic [ref=e2406]:
+                    - text: Refresh Rate
+                    - generic [ref=e2409]: 
+                - generic [ref=e2411]:
+                  - generic [ref=e2412]:
+                    - generic [ref=e2413]:
+                      - text: Variable Refresh Rate
+                      - generic [ref=e2416]: 
+                    - text: LockedNo VRR
+                  - generic [ref=e2418]:
+                    - generic [ref=e2419]:
+                      - text: Native
+                      - generic [ref=e2422]: 
+                    - text: Locked
+                    - generic [ref=e2424] [cursor=pointer]: Lock Hz
+                  - generic [ref=e2425]:
+                    - generic [ref=e2426]:
+                      - text: Max Refresh Rate
+                      - generic [ref=e2429]: 
+                    - text: Locked60 Hz
+                  - generic [ref=e2431]:
+                    - generic [ref=e2432]:
+                      - text: Variable Refresh Rate
+                      - generic [ref=e2435]: 
+                    - text: Locked
+                    - generic [ref=e2437] [cursor=pointer]: Locked
+                  - generic [ref=e2438]:
+                    - generic [ref=e2439]:
+                      - text: FreeSync
+                      - generic [ref=e2442]: 
+                    - text: Locked
+                    - generic [ref=e2444] [cursor=pointer]: Locked
+                  - generic [ref=e2445]:
+                    - generic [ref=e2446]:
+                      - text: G-SYNC
+                      - generic [ref=e2449]: 
+                    - text: Locked
+                    - generic [ref=e2451] [cursor=pointer]: Locked
+                  - generic [ref=e2452]:
+                    - generic [ref=e2453]:
+                      - text: VRR Maximum
+                      - generic [ref=e2456]: 
+                    - text: LockedN/A
+                  - generic [ref=e2458]:
+                    - generic [ref=e2459]:
+                      - text: VRR Minimum
+                      - generic [ref=e2462]: 
+                    - text: Locked
+                    - generic [ref=e2464] [cursor=pointer]: Locked
+                  - generic [ref=e2465]:
+                    - generic [ref=e2466]: VRR Supported Connectors
+                    - text: Locked
+                    - generic [ref=e2467] [cursor=pointer]: Locked
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e2469] [cursor=pointer]:
+                    - paragraph [ref=e2470]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT REFRESH RATE " [ref=e2473] [cursor=pointer]:
+                  - /url: /monitor/tests/motion/refresh-rate
+                  - text: LEARN ABOUT REFRESH RATE
+                  - generic [ref=e2474]: 
+              - generic [ref=e2476]: Inputs
+              - generic [ref=e2477]:
+                - generic [ref=e2478]:
+                  - generic [ref=e2479] [cursor=pointer]: "0.0"
+                  - generic [ref=e2480]:
+                    - text: Input Lag
+                    - generic [ref=e2483]: 
+                - generic [ref=e2485]:
+                  - generic [ref=e2486]:
+                    - generic [ref=e2487]:
+                      - text: Native Resolution
+                      - generic [ref=e2490]: 
+                    - text: Locked
+                    - generic [ref=e2492] [cursor=pointer]: Lock ms
+                  - generic [ref=e2493]:
+                    - generic [ref=e2494]:
+                      - text: Native Resolution @ 60Hz
+                      - generic [ref=e2497]: 
+                    - text: Locked
+                    - generic [ref=e2499] [cursor=pointer]: Lock ms
+                  - generic [ref=e2500]:
+                    - generic [ref=e2501]:
+                      - text: Variable Refresh Rate
+                      - generic [ref=e2504]: 
+                    - text: LockedN/A
+                  - generic [ref=e2506]:
+                    - generic [ref=e2507]:
+                      - text: Variable Refresh Rate @ 60Hz
+                      - generic [ref=e2510]: 
+                    - text: LockedN/A
+                  - generic [ref=e2512]:
+                    - generic [ref=e2513]:
+                      - text: 10 Bit HDR
+                      - generic [ref=e2516]: 
+                    - text: Locked
+                    - generic [ref=e2518] [cursor=pointer]: Lock ms
+                  - generic [ref=e2519]:
+                    - generic [ref=e2520]:
+                      - text: Black Frame Insertion (BFI)
+                      - generic [ref=e2523]: 
+                    - text: LockedN/A
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e2526] [cursor=pointer]:
+                    - paragraph [ref=e2527]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT INPUT LAG " [ref=e2530] [cursor=pointer]:
+                  - /url: /monitor/tests/inputs/input-lag
+                  - text: LEARN ABOUT INPUT LAG
+                  - generic [ref=e2531]: 
+              - generic [ref=e2532]:
+                - generic [ref=e2533]:
+                  - generic [ref=e2534] [cursor=pointer]: "0.0"
+                  - generic [ref=e2535]:
+                    - text: Resolution And Size
+                    - generic [ref=e2538]: 
+                - generic [ref=e2540]:
+                  - generic [ref=e2541]:
+                    - generic [ref=e2542]: Native Resolution
+                    - text: Locked3840 x 2160
+                  - generic [ref=e2543]:
+                    - generic [ref=e2544]: Aspect Ratio
+                    - text: Locked
+                    - generic [ref=e2545] [cursor=pointer]: Locked
+                  - generic [ref=e2546]:
+                    - generic [ref=e2547]: Megapixels
+                    - text: Locked
+                    - generic [ref=e2548] [cursor=pointer]: Lock MP
+                  - generic [ref=e2549]:
+                    - generic [ref=e2550]:
+                      - text: Pixel Density
+                      - generic [ref=e2553]: 
+                    - text: Locked
+                    - generic [ref=e2555] [cursor=pointer]: Lock PPI
+                  - generic [ref=e2556]:
+                    - generic [ref=e2557]: Screen Diagonal
+                    - text: Locked
+                    - generic [ref=e2558] [cursor=pointer]: Lock"
+                  - generic [ref=e2559]:
+                    - generic [ref=e2560]: Screen Area
+                    - text: Locked
+                    - generic [ref=e2561] [cursor=pointer]: Lock in²
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e2563] [cursor=pointer]:
+                    - paragraph [ref=e2564]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+                - link "LEARN ABOUT RESOLUTION AND SIZE " [ref=e2567] [cursor=pointer]:
+                  - /url: /monitor/tests/inputs/resolution-size
+                  - text: LEARN ABOUT RESOLUTION AND SIZE
+                  - generic [ref=e2568]: 
+              - generic [ref=e2569]:
+                - generic [ref=e2571]: Inputs
+                - generic [ref=e2572]:
+                  - generic [ref=e2575]:
+                    - generic [ref=e2576]:
+                      - generic [ref=e2577]: SAMPLE
+                      - generic [ref=e2578]:
+                        - button "Join Now" [ref=e2579] [cursor=pointer]
+                        - paragraph [ref=e2580]: for pictures & test results
+                    - button "Dell U2718Q Inputs 1 Sample" [ref=e2581] [cursor=pointer]:
+                      - img "Dell U2718Q Inputs 1 Sample" [ref=e2583]
+                  - generic [ref=e2586]:
+                    - generic [ref=e2587]:
+                      - generic [ref=e2588]: SAMPLE
+                      - generic [ref=e2589]:
+                        - button "Join Now" [ref=e2590] [cursor=pointer]
+                        - paragraph [ref=e2591]: for pictures & test results
+                    - button "Dell U2718Q Inputs 2 Sample" [ref=e2592] [cursor=pointer]:
+                      - img "Dell U2718Q Inputs 2 Sample" [ref=e2594]
+              - generic [ref=e2596]:
+                - generic [ref=e2598]: Total Inputs
+                - generic [ref=e2599]:
+                  - generic [ref=e2600]:
+                    - generic [ref=e2601]: DisplayPort
+                    - text: Locked
+                    - generic [ref=e2602] [cursor=pointer]: Locked
+                  - generic [ref=e2603]:
+                    - generic [ref=e2604]: Mini DisplayPort
+                    - text: Locked
+                    - generic [ref=e2605] [cursor=pointer]: Locked
+                  - generic [ref=e2606]:
+                    - generic [ref=e2607]: HDMI
+                    - text: Locked
+                    - generic [ref=e2608] [cursor=pointer]: Locked
+                  - generic [ref=e2609]:
+                    - generic [ref=e2610]: DVI
+                    - text: Locked
+                    - generic [ref=e2611] [cursor=pointer]: Locked
+                  - generic [ref=e2612]:
+                    - generic [ref=e2613]: VGA
+                    - text: Locked
+                    - generic [ref=e2614] [cursor=pointer]: Locked
+                  - generic [ref=e2615]:
+                    - generic [ref=e2616]: DisplayPort Out
+                    - text: Locked
+                    - generic [ref=e2617] [cursor=pointer]: Locked
+                  - generic [ref=e2618]:
+                    - generic [ref=e2619]: USB
+                    - text: Locked
+                    - generic [ref=e2620] [cursor=pointer]: Locked
+                  - generic [ref=e2621]:
+                    - generic [ref=e2622]: USB C
+                    - text: Locked
+                    - generic [ref=e2623] [cursor=pointer]: Locked
+                  - generic [ref=e2624]:
+                    - generic [ref=e2625]: Analog Audio Out 3.5mm
+                    - text: Locked
+                    - generic [ref=e2626] [cursor=pointer]: Locked
+                  - generic [ref=e2627]:
+                    - generic [ref=e2628]: Microphone In 3.5mm
+                    - text: Locked
+                    - generic [ref=e2629] [cursor=pointer]: Locked
+                  - generic [ref=e2630]:
+                    - generic [ref=e2631]: Digital Optical Audio Out
+                    - text: Locked
+                    - generic [ref=e2632] [cursor=pointer]: Locked
+                  - generic [ref=e2633]:
+                    - generic [ref=e2634]: Analog Audio Out RCA
+                    - text: Locked
+                    - generic [ref=e2635] [cursor=pointer]: Locked
+                  - generic [ref=e2636]:
+                    - generic [ref=e2637]: Power Supply
+                    - text: Locked
+                    - generic [ref=e2638] [cursor=pointer]: Locked
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e2640] [cursor=pointer]:
+                    - paragraph [ref=e2641]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+              - generic [ref=e2644]: Features
+              - generic [ref=e2645]:
+                - generic [ref=e2647]:
+                  - text: Additional Features
+                  - generic [ref=e2650]: 
+                - generic [ref=e2652]:
+                  - generic [ref=e2653]:
+                    - generic [ref=e2654]:
+                      - text: RGB Illumination
+                      - generic [ref=e2657]: 
+                    - text: Locked
+                    - generic [ref=e2659] [cursor=pointer]: Locked
+                  - generic [ref=e2660]:
+                    - generic [ref=e2661]:
+                      - text: Speakers
+                      - generic [ref=e2664]: 
+                    - text: Locked
+                    - generic [ref=e2666] [cursor=pointer]: Locked
+                  - generic [ref=e2667]:
+                    - generic [ref=e2668]: HDR10
+                    - text: Locked
+                    - generic [ref=e2669] [cursor=pointer]: Locked
+                  - generic [ref=e2670]:
+                    - generic [ref=e2671]:
+                      - text: Multiple Input Display
+                      - generic [ref=e2674]: 
+                    - text: Locked
+                    - generic [ref=e2676] [cursor=pointer]: Locked
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e2678] [cursor=pointer]:
+                    - paragraph [ref=e2679]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+              - generic [ref=e2681]:
+                - generic [ref=e2683]: On-Screen Display (OSD)
+                - generic [ref=e2687]:
+                  - generic [ref=e2688]:
+                    - generic [ref=e2689]: SAMPLE
+                    - generic [ref=e2690]:
+                      - button "Join Now" [ref=e2691] [cursor=pointer]
+                      - paragraph [ref=e2692]: for pictures & test results
+                  - button "Dell U2718Q OSD Picture Sample" [ref=e2693] [cursor=pointer]:
+                    - img "Dell U2718Q OSD Picture Sample" [ref=e2695]
+              - generic [ref=e2697]:
+                - generic [ref=e2699]: Controls
+                - generic [ref=e2700]:
+                  - generic [ref=e2703]:
+                    - generic [ref=e2704]:
+                      - generic [ref=e2705]: SAMPLE
+                      - generic [ref=e2706]:
+                        - button "Join Now" [ref=e2707] [cursor=pointer]
+                        - paragraph [ref=e2708]: for pictures & test results
+                    - button "Dell U2718Q Controls Picture Sample" [ref=e2709] [cursor=pointer]:
+                      - img "Dell U2718Q Controls Picture Sample" [ref=e2711]
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e2713] [cursor=pointer]:
+                    - paragraph [ref=e2714]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+              - generic [ref=e2716]:
+                - generic [ref=e2718]: In The Box
+                - generic [ref=e2719]:
+                  - generic [ref=e2722]:
+                    - generic [ref=e2723]:
+                      - generic [ref=e2724]: SAMPLE
+                      - generic [ref=e2725]:
+                        - button "Join Now" [ref=e2726] [cursor=pointer]
+                        - paragraph [ref=e2727]: for pictures & test results
+                    - button "Dell U2718Q In The Box Picture Sample" [ref=e2728] [cursor=pointer]:
+                      - img "Dell U2718Q In The Box Picture Sample" [ref=e2730]
+                  - button "Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads." [ref=e2732] [cursor=pointer]:
+                    - paragraph [ref=e2733]: Become a member to view the full test results and text of the reviews, as well as extra website features and tools with no ads.
+          - generic [ref=e2737]: Missing something for your decision? Tell us!
+          - generic [ref=e2739]:
+            - generic [ref=e2740]: Newsletters
+            - generic [ref=e2741]: Stay up-to-date on the latest product reviews and deals, delivered straight to your inbox.
+            - generic [ref=e2742]:
+              - textbox "Enter your email address" [ref=e2743]
+              - button "Sign Up" [disabled] [ref=e2744]
+            - generic [ref=e2745]:
+              - text: By signing up for this newsletter, you consent to our
+              - link "Terms of Use" [ref=e2746] [cursor=pointer]:
+                - /url: /company/terms-of-use
+              - text: and
+              - link "Privacy Policy" [ref=e2747] [cursor=pointer]:
+                - /url: /company/privacy-policy
+              - text: . You may unsubscribe from the newsletter at any time.
+            - generic [ref=e2748]:
+              - generic [ref=e2749]:
+                - generic [ref=e2750]:
+                  - button "" [ref=e2751]:
+                    - generic [ref=e2752] [cursor=pointer]: 
+                  - generic [ref=e2753]: The Essential
+                - generic [ref=e2754]: A quick roundup of our latest reviews, and key product updates.
+              - generic [ref=e2755]:
+                - generic [ref=e2756]:
+                  - button "" [ref=e2757]:
+                    - generic [ref=e2758] [cursor=pointer]: 
+                  - generic [ref=e2759]: RTINGS Deals
+                - generic [ref=e2760]: Handpicked discounts on top-rated products across every category.
+              - generic [ref=e2761]:
+                - generic [ref=e2762]:
+                  - button "" [ref=e2763]:
+                    - generic [ref=e2764] [cursor=pointer]: 
+                  - generic [ref=e2765]: R&D Newsletter
+                - generic [ref=e2766]: Behind-the-scenes testing insights and deep-dive findings from our lab.
+              - generic [ref=e2767]:
+                - generic [ref=e2768]:
+                  - button "" [ref=e2769]:
+                    - generic [ref=e2770] [cursor=pointer]: 
+                  - generic [ref=e2771]: Computers
+                - generic [ref=e2772]: Updates on the best laptops, monitors, keyboards, mice, and more.
+    - generic [ref=e2807]:
+      - heading "Recommended Articles" [level=2] [ref=e2808]
+      - generic [ref=e2809]:
+        - link "The 7 Best Gaming Monitors The 7 Best Gaming Monitors" [ref=e2810] [cursor=pointer]:
+          - /url: /monitor/reviews/best/by-usage/gaming
+          - img "The 7 Best Gaming Monitors" [ref=e2812]
+          - generic [ref=e2813]: The 7 Best Gaming Monitors
+        - generic [ref=e2814]:
+          - link "The 6 Best Monitors The 6 Best Monitors" [ref=e2815] [cursor=pointer]:
+            - /url: /monitor/reviews/best/monitors
+            - img "The 6 Best Monitors" [ref=e2817]
+            - generic [ref=e2818]: The 6 Best Monitors
+          - link "The 6 Best Budget And Cheap Monitors The 6 Best Budget And Cheap Monitors" [ref=e2819] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-price/budget
+            - img "The 6 Best Budget And Cheap Monitors" [ref=e2821]
+            - generic [ref=e2822]: The 6 Best Budget And Cheap Monitors
+          - link "The 6 Best OLED Monitors The 6 Best OLED Monitors" [ref=e2823] [cursor=pointer]:
+            - /url: /monitor/reviews/best/oled
+            - img "The 6 Best OLED Monitors" [ref=e2825]
+            - generic [ref=e2826]: The 6 Best OLED Monitors
+          - link "The 5 Best Monitors For Mac Mini The 5 Best Monitors For Mac Mini" [ref=e2827] [cursor=pointer]:
+            - /url: /monitor/reviews/best/mac-mini
+            - img "The 5 Best Monitors For Mac Mini" [ref=e2829]
+            - generic [ref=e2830]: The 5 Best Monitors For Mac Mini
+          - link "The 5 Best Work Monitors The 5 Best Work Monitors" [ref=e2831] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-usage/business-office
+            - img "The 5 Best Work Monitors" [ref=e2833]
+            - generic [ref=e2834]: The 5 Best Work Monitors
+          - link "The 5 Best Monitors For MacBook Pro And MacBook Air The 5 Best Monitors For MacBook Pro And MacBook Air" [ref=e2835] [cursor=pointer]:
+            - /url: /monitor/reviews/best/monitors-macbook-pro
+            - img "The 5 Best Monitors For MacBook Pro And MacBook Air" [ref=e2837]
+            - generic [ref=e2838]: The 5 Best Monitors For MacBook Pro And MacBook Air
+          - link "The 5 Best 4k Monitors The 5 Best 4k Monitors" [ref=e2839] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-resolution/4k-ultra-hd-uhd
+            - img "The 5 Best 4k Monitors" [ref=e2841]
+            - generic [ref=e2842]: The 5 Best 4k Monitors
+          - link "The 4 Best Curved Monitors The 4 Best Curved Monitors" [ref=e2843] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-features/curved
+            - img "The 4 Best Curved Monitors" [ref=e2845]
+            - generic [ref=e2846]: The 4 Best Curved Monitors
+          - link "The 4 Best Ultrawide Monitors The 4 Best Ultrawide Monitors" [ref=e2847] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-features/ultrawide
+            - img "The 4 Best Ultrawide Monitors" [ref=e2849]
+            - generic [ref=e2850]: The 4 Best Ultrawide Monitors
+          - link "The 7 Best Monitor Brands The 7 Best Monitor Brands" [ref=e2851] [cursor=pointer]:
+            - /url: /monitor/reviews/best/brands
+            - img "The 7 Best Monitor Brands" [ref=e2853]
+            - generic [ref=e2854]: The 7 Best Monitor Brands
+          - link "The 5 Best Monitor Sizes For Gaming The 5 Best Monitor Sizes For Gaming" [ref=e2855] [cursor=pointer]:
+            - /url: /monitor/reviews/best/best-gaming-size
+            - img "The 5 Best Monitor Sizes For Gaming" [ref=e2857]
+            - generic [ref=e2858]: The 5 Best Monitor Sizes For Gaming
+          - link "The 6 Best High Refresh Rate Monitors The 6 Best High Refresh Rate Monitors" [ref=e2859] [cursor=pointer]:
+            - /url: /monitor/reviews/best/high-refresh-rate
+            - img "The 6 Best High Refresh Rate Monitors" [ref=e2861]
+            - generic [ref=e2862]: The 6 Best High Refresh Rate Monitors
+          - link "The 5 Best Monitors For Photo Editing The 5 Best Monitors For Photo Editing" [ref=e2863] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-usage/photo-editing
+            - img "The 5 Best Monitors For Photo Editing" [ref=e2865]
+            - generic [ref=e2866]: The 5 Best Monitors For Photo Editing
+          - link "The 5 Best Monitors For Dual Setup The 5 Best Monitors For Dual Setup" [ref=e2867] [cursor=pointer]:
+            - /url: /monitor/reviews/best/dual-setup
+            - img "The 5 Best Monitors For Dual Setup" [ref=e2869]
+            - generic [ref=e2870]: The 5 Best Monitors For Dual Setup
+          - link "The 5 Best 1440p Monitors The 5 Best 1440p Monitors" [ref=e2871] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-resolution/1440p-quad-hd-qhd
+            - img "The 5 Best 1440p Monitors" [ref=e2873]
+            - generic [ref=e2874]: The 5 Best 1440p Monitors
+          - link "The 6 Best 27-Inch Monitors The 6 Best 27-Inch Monitors" [ref=e2875] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-size/27-inch
+            - img "The 6 Best 27-Inch Monitors" [ref=e2877]
+            - generic [ref=e2878]: The 6 Best 27-Inch Monitors
+          - link "The 3 Best 24-25 Inch Monitors The 3 Best 24-25 Inch Monitors" [ref=e2879] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-size/24-25-inch
+            - img "The 3 Best 24-25 Inch Monitors" [ref=e2881]
+            - generic [ref=e2882]: The 3 Best 24-25 Inch Monitors
+          - link "The 5 Best Monitors For Video Editing The 5 Best Monitors For Video Editing" [ref=e2883] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-usage/video-editing
+            - img "The 5 Best Monitors For Video Editing" [ref=e2885]
+            - generic [ref=e2886]: The 5 Best Monitors For Video Editing
+          - link "The 4 Best 32-Inch Monitors The 4 Best 32-Inch Monitors" [ref=e2887] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-size/32-inch
+            - img "The 4 Best 32-Inch Monitors" [ref=e2889]
+            - generic [ref=e2890]: The 4 Best 32-Inch Monitors
+          - link "The 4 Best Portable Monitors The 4 Best Portable Monitors" [ref=e2891] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-size/portable
+            - img "The 4 Best Portable Monitors" [ref=e2893]
+            - generic [ref=e2894]: The 4 Best Portable Monitors
+          - link "The 5 Best Monitors For Programming The 5 Best Monitors For Programming" [ref=e2895] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-usage/programming-and-coding
+            - img "The 5 Best Monitors For Programming" [ref=e2897]
+            - generic [ref=e2898]: The 5 Best Monitors For Programming
+          - link "The 3 Best 1080p Monitors The 3 Best 1080p Monitors" [ref=e2899] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-resolution/1080p-full-hd
+            - img "The 3 Best 1080p Monitors" [ref=e2901]
+            - generic [ref=e2902]: The 3 Best 1080p Monitors
+          - link "The 3 Best Mini LED Monitors The 3 Best Mini LED Monitors" [ref=e2903] [cursor=pointer]:
+            - /url: /monitor/reviews/best/mini-led
+            - img "The 3 Best Mini LED Monitors" [ref=e2905]
+            - generic [ref=e2906]: The 3 Best Mini LED Monitors
+          - link "The 5 Best Vertical Monitors The 5 Best Vertical Monitors" [ref=e2907] [cursor=pointer]:
+            - /url: /monitor/reviews/best/vertical
+            - img "The 5 Best Vertical Monitors" [ref=e2909]
+            - generic [ref=e2910]: The 5 Best Vertical Monitors
+          - link "The 5 Best Monitors For Graphic Design The 5 Best Monitors For Graphic Design" [ref=e2911] [cursor=pointer]:
+            - /url: /monitor/reviews/best/graphic-design
+            - img "The 5 Best Monitors For Graphic Design" [ref=e2913]
+            - generic [ref=e2914]: The 5 Best Monitors For Graphic Design
+          - link "The 6 Best 240Hz Monitors The 6 Best 240Hz Monitors" [ref=e2915] [cursor=pointer]:
+            - /url: /monitor/reviews/best/240hz
+            - img "The 6 Best 240Hz Monitors" [ref=e2917]
+            - generic [ref=e2918]: The 6 Best 240Hz Monitors
+          - link "The 3 Best 5k Monitors The 3 Best 5k Monitors" [ref=e2919] [cursor=pointer]:
+            - /url: /monitor/reviews/best/5k
+            - img "The 3 Best 5k Monitors" [ref=e2921]
+            - generic [ref=e2922]: The 3 Best 5k Monitors
+          - link "The 3 Best Monitors Under $200 The 3 Best Monitors Under $200" [ref=e2923] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-price/under-200
+            - img "The 3 Best Monitors Under $200" [ref=e2925]
+            - generic [ref=e2926]: The 3 Best Monitors Under $200
+          - link "The 5 Best Dell Monitors The 5 Best Dell Monitors" [ref=e2927] [cursor=pointer]:
+            - /url: /monitor/reviews/dell
+            - img "The 5 Best Dell Monitors" [ref=e2929]
+            - generic [ref=e2930]: The 5 Best Dell Monitors
+          - link "The 4 Best Samsung Monitors The 4 Best Samsung Monitors" [ref=e2931] [cursor=pointer]:
+            - /url: /monitor/reviews/samsung
+            - img "The 4 Best Samsung Monitors" [ref=e2933]
+            - generic [ref=e2934]: The 4 Best Samsung Monitors
+          - link "The 4 Best 34-49 Inch Monitors The 4 Best 34-49 Inch Monitors" [ref=e2935] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-size/34-49-inch
+            - img "The 4 Best 34-49 Inch Monitors" [ref=e2937]
+            - generic [ref=e2938]: The 4 Best 34-49 Inch Monitors
+          - link "The 5 Best Monitors For Mac Studio The 5 Best Monitors For Mac Studio" [ref=e2939] [cursor=pointer]:
+            - /url: /monitor/reviews/best/mac-studio
+            - img "The 5 Best Monitors For Mac Studio" [ref=e2941]
+            - generic [ref=e2942]: The 5 Best Monitors For Mac Studio
+          - link "The 5 Best 120Hz Monitors The 5 Best 120Hz Monitors" [ref=e2943] [cursor=pointer]:
+            - /url: /monitor/reviews/best/120hz
+            - img "The 5 Best 120Hz Monitors" [ref=e2945]
+            - generic [ref=e2946]: The 5 Best 120Hz Monitors
+          - link "The 5 Best ASUS Monitors The 5 Best ASUS Monitors" [ref=e2947] [cursor=pointer]:
+            - /url: /monitor/reviews/asus
+            - img "The 5 Best ASUS Monitors" [ref=e2949]
+            - generic [ref=e2950]: The 5 Best ASUS Monitors
+          - link "The 5 Best USB-C Monitors The 5 Best USB-C Monitors" [ref=e2951] [cursor=pointer]:
+            - /url: /monitor/reviews/best/usb-c
+            - img "The 5 Best USB-C Monitors" [ref=e2953]
+            - generic [ref=e2954]: The 5 Best USB-C Monitors
+          - link "The 4 Best LG Monitors The 4 Best LG Monitors" [ref=e2955] [cursor=pointer]:
+            - /url: /monitor/reviews/lg
+            - img "The 4 Best LG Monitors" [ref=e2957]
+            - generic [ref=e2958]: The 4 Best LG Monitors
+          - link "The 5 Best HDR Monitors The 5 Best HDR Monitors" [ref=e2959] [cursor=pointer]:
+            - /url: /monitor/reviews/best/4k-hdr
+            - img "The 5 Best HDR Monitors" [ref=e2961]
+            - generic [ref=e2962]: The 5 Best HDR Monitors
+          - link "The 4 Best Monitors Under $500 The 4 Best Monitors Under $500" [ref=e2963] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-price/under-500
+            - img "The 4 Best Monitors Under $500" [ref=e2965]
+            - generic [ref=e2966]: The 4 Best Monitors Under $500
+          - link "The 4 Best 144Hz Monitors The 4 Best 144Hz Monitors" [ref=e2967] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-refresh-rate/144hz
+            - img "The 4 Best 144Hz Monitors" [ref=e2969]
+            - generic [ref=e2970]: The 4 Best 144Hz Monitors
+          - link "The 4 Best Multimedia Monitors The 4 Best Multimedia Monitors" [ref=e2971] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-usage/multimedia
+            - img "The 4 Best Multimedia Monitors" [ref=e2973]
+            - generic [ref=e2974]: The 4 Best Multimedia Monitors
+          - link "The 4 Best 1440p 144Hz Monitors The 4 Best 1440p 144Hz Monitors" [ref=e2975] [cursor=pointer]:
+            - /url: /monitor/reviews/best/1440p-144hz
+            - img "The 4 Best 1440p 144Hz Monitors" [ref=e2977]
+            - generic [ref=e2978]: The 4 Best 1440p 144Hz Monitors
+          - link "The 5 Best HDR Gaming Monitors The 5 Best HDR Gaming Monitors" [ref=e2979] [cursor=pointer]:
+            - /url: /monitor/reviews/best/by-usage/hdr-gaming
+            - img "The 5 Best HDR Gaming Monitors" [ref=e2981]
+            - generic [ref=e2982]: The 5 Best HDR Gaming Monitors
+          - link "The 4 Best 4k 144Hz Monitors The 4 Best 4k 144Hz Monitors" [ref=e2983] [cursor=pointer]:
+            - /url: /monitor/reviews/best/4k-144hz
+            - img "The 4 Best 4k 144Hz Monitors" [ref=e2985]
+            - generic [ref=e2986]: The 4 Best 4k 144Hz Monitors
+      - heading "Best Monitors For Gaming" [level=2] [ref=e2994]
+      - generic [ref=e2995]:
+        - link "The 5 Best Budget And Cheap Gaming Monitors The 5 Best Budget And Cheap Gaming Monitors" [ref=e2996] [cursor=pointer]:
+          - /url: /monitor/reviews/best/budget-gaming
+          - img "The 5 Best Budget And Cheap Gaming Monitors" [ref=e2998]
+          - generic [ref=e2999]: The 5 Best Budget And Cheap Gaming Monitors
+        - link "The 6 Best Monitors For PS5/PS5 Pro The 6 Best Monitors For PS5/PS5 Pro" [ref=e3000] [cursor=pointer]:
+          - /url: /monitor/reviews/best/ps5
+          - img "The 6 Best Monitors For PS5/PS5 Pro" [ref=e3002]
+          - generic [ref=e3003]: The 6 Best Monitors For PS5/PS5 Pro
+        - link "The 4 Best 4k Gaming Monitors The 4 Best 4k Gaming Monitors" [ref=e3004] [cursor=pointer]:
+          - /url: /monitor/reviews/best/gaming-monitors-4k
+          - img "The 4 Best 4k Gaming Monitors" [ref=e3006]
+          - generic [ref=e3007]: The 4 Best 4k Gaming Monitors
+        - link "The 6 Best 1440p Gaming Monitors The 6 Best 1440p Gaming Monitors" [ref=e3008] [cursor=pointer]:
+          - /url: /monitor/reviews/best/1440p-gaming-monitors
+          - img "The 6 Best 1440p Gaming Monitors" [ref=e3010]
+          - generic [ref=e3011]: The 6 Best 1440p Gaming Monitors
+        - link "The 4 Best Curved Gaming Monitors The 4 Best Curved Gaming Monitors" [ref=e3012] [cursor=pointer]:
+          - /url: /monitor/reviews/best/curved-gaming-monitors
+          - img "The 4 Best Curved Gaming Monitors" [ref=e3014]
+          - generic [ref=e3015]: The 4 Best Curved Gaming Monitors
+        - link "The 5 Best Monitors For Xbox Series X The 5 Best Monitors For Xbox Series X" [ref=e3016] [cursor=pointer]:
+          - /url: /monitor/reviews/best/xbox-series-x
+          - img "The 5 Best Monitors For Xbox Series X" [ref=e3018]
+          - generic [ref=e3019]: The 5 Best Monitors For Xbox Series X
+        - link "The 6 Best 27-Inch Gaming Monitors The 6 Best 27-Inch Gaming Monitors" [ref=e3020] [cursor=pointer]:
+          - /url: /monitor/reviews/best/27-inch-gaming
+          - img "The 6 Best 27-Inch Gaming Monitors" [ref=e3022]
+          - generic [ref=e3023]: The 6 Best 27-Inch Gaming Monitors
+        - link "The 3 Best Ultrawide Gaming Monitors The 3 Best Ultrawide Gaming Monitors" [ref=e3024] [cursor=pointer]:
+          - /url: /monitor/reviews/best/ultrawide-gaming
+          - img "The 3 Best Ultrawide Gaming Monitors" [ref=e3026]
+          - generic [ref=e3027]: The 3 Best Ultrawide Gaming Monitors
+        - link "The 5 Best Monitors For Xbox Series S The 5 Best Monitors For Xbox Series S" [ref=e3028] [cursor=pointer]:
+          - /url: /monitor/reviews/best/xbox-series-s
+          - img "The 5 Best Monitors For Xbox Series S" [ref=e3030]
+          - generic [ref=e3031]: The 5 Best Monitors For Xbox Series S
+        - link "The 3 Best Gaming Monitors Under $300 The 3 Best Gaming Monitors Under $300" [ref=e3032] [cursor=pointer]:
+          - /url: /monitor/reviews/best/gaming-monitors-under-300
+          - img "The 3 Best Gaming Monitors Under $300" [ref=e3034]
+          - generic [ref=e3035]: The 3 Best Gaming Monitors Under $300
+        - link "The 5 Best Monitors For The Nintendo Switch 2 The 5 Best Monitors For The Nintendo Switch 2" [ref=e3036] [cursor=pointer]:
+          - /url: /monitor/reviews/best/switch-2
+          - img "The 5 Best Monitors For The Nintendo Switch 2" [ref=e3038]
+          - generic [ref=e3039]: The 5 Best Monitors For The Nintendo Switch 2
+        - link "The 6 Best G-SYNC Monitors The 6 Best G-SYNC Monitors" [ref=e3040] [cursor=pointer]:
+          - /url: /monitor/reviews/best/g-sync
+          - img "The 6 Best G-SYNC Monitors" [ref=e3042]
+          - generic [ref=e3043]: The 6 Best G-SYNC Monitors
+    - generic [ref=e3050]:
+      - generic [ref=e3052]:
+        - heading "Comments" [level=2] [ref=e3053]
+        - list [ref=e3054]:
+          - listitem [ref=e3055]:
+            - generic [ref=e3056]: 
+            - generic [ref=e3057]: Product
+      - generic [ref=e3058]:
+        - generic [ref=e3062]:
+          - link "" [ref=e3063] [cursor=pointer]:
+            - /url: /profiles/rtingsupdatesbot
+            - generic [ref=e3064]: 
+          - text: • Posted 3 years ago
+        - 'heading "Dell U2718Q: Main Discussion " [level=3] [ref=e3066]':
+          - text: "Dell U2718Q: Main Discussion"
+          - generic [ref=e3073] [cursor=pointer]: 
+        - paragraph [ref=e3076]: Let us know why you want us to review the product here, or encourage others to vote for this product.Comments transferred from merged discussions are also included.
+        - generic [ref=e3078]:
+          - generic [ref=e3079]:
+            - generic [ref=e3085]:
+              - generic [ref=e3086]: 
+              - generic [ref=e3087]: follow discussion
+            - link "See All Monitors Discussions" [ref=e3088] [cursor=pointer]:
+              - /url: /forums/monitors
+            - generic [ref=e3090] [cursor=pointer]:
+              - generic [ref=e3091]: 
+              - generic [ref=e3092]: Share
+          - link "0 " [ref=e3094] [cursor=pointer]:
+            - /url: /discussions/U4iXGmOfupWwXWON/review-updates-dell-u2718q
+            - text: "0"
+            - generic [ref=e3095]: 
+      - generic [ref=e3096]:
+        - generic [ref=e3097]:
+          - generic [ref=e3099]: To post a comment you need to Log in
+          - generic [ref=e3100]:
+            - textbox "Have anything to say?" [ref=e3102]
+            - generic [ref=e3104]:
+              - text: 
+              - button "Post Comment" [disabled] [ref=e3105]
+        - generic [ref=e3106]: No comments yet, refresh to see new ones
+  - generic [ref=e3110]:
+    - link "Home Page" [ref=e3111] [cursor=pointer]:
+      - /url: /
+      - text: 
+    - generic [ref=e3112]:
+      - generic [ref=e3113]:
+        - generic [ref=e3114]:
+          - text: We make money directly from you via
+          - link "Membership" [ref=e3115] [cursor=pointer]:
+            - /url: /join
+          - text: (which gives you access to extra features), when you buy from the
+          - link "RTINGS.com Shop" [ref=e3116] [cursor=pointer]:
+            - /url: https://shop.rtings.com
+          - text: ", and when you buy a product after clicking a link to a retailer."
+          - link "Learn more about how we work" [ref=e3117] [cursor=pointer]:
+            - /url: /company/about-us
+          - text: .
+        - generic [ref=e3118]:
+          - text: We buy our own products, just like you, mostly from the United States. When a product is discontinued or no longer popular, we sell the review units locally. See what
+          - link "products we currently have for sale" [ref=e3119] [cursor=pointer]:
+            - /url: https://www.laboratoirertings.com/revente-de-produits
+          - text: .
+      - generic [ref=e3120]:
+        - list [ref=e3121]:
+          - listitem [ref=e3122]:
+            - link "About us" [ref=e3123] [cursor=pointer]:
+              - /url: /company/about-us
+          - listitem [ref=e3124]:
+            - link "How We Make Money" [ref=e3125] [cursor=pointer]:
+              - /url: /company/how-we-make-money
+          - listitem [ref=e3126]:
+            - link "Membership" [ref=e3127] [cursor=pointer]:
+              - /url: /join
+          - listitem [ref=e3128]:
+            - link "Careers" [ref=e3129] [cursor=pointer]:
+              - /url: https://www.laboratoirertings.com/carrieres
+          - listitem [ref=e3130]:
+            - link "Review Unit Resale" [ref=e3131] [cursor=pointer]:
+              - /url: https://www.laboratoirertings.com/revente-de-produits
+          - listitem [ref=e3132]:
+            - link "Out of Spec" [ref=e3133] [cursor=pointer]:
+              - /url: /company/out-of-spec-policy
+          - listitem [ref=e3134]:
+            - link "Forum Guidelines" [ref=e3135] [cursor=pointer]:
+              - /url: /company/forum-guidelines
+          - listitem [ref=e3136]:
+            - link "Contact us" [ref=e3137] [cursor=pointer]:
+              - /url: /company/contact-us
+          - listitem [ref=e3138]:
+            - link "Privacy Policy" [ref=e3139] [cursor=pointer]:
+              - /url: /company/privacy-policy
+          - listitem [ref=e3140]:
+            - button "Privacy Options" [ref=e3141] [cursor=pointer]
+          - listitem [ref=e3142]:
+            - link "Terms of Use" [ref=e3143] [cursor=pointer]:
+              - /url: /company/terms-of-use
+          - listitem [ref=e3144]:
+            - link "Corporate Site" [ref=e3145] [cursor=pointer]:
+              - /url: https://www.laboratoirertings.com
+        - list [ref=e3146]:
+          - listitem [ref=e3147]:
+            - link " Newsletters" [ref=e3148] [cursor=pointer]:
+              - /url: /newsletters
+              - generic [ref=e3149]: 
+              - text: Newsletters
+          - listitem [ref=e3150]:
+            - link " YouTube" [ref=e3151] [cursor=pointer]:
+              - /url: //www.youtube.com/user/RtingsTV
+              - generic [ref=e3152]: 
+              - text: YouTube
+          - listitem [ref=e3153]:
+            - link " R&D on YouTube" [ref=e3154] [cursor=pointer]:
+              - /url: //www.youtube.com/@RTINGSRD
+              - generic [ref=e3155]: 
+              - text: R&D on YouTube
+          - listitem [ref=e3156]:
+            - link " RSS" [ref=e3157] [cursor=pointer]:
+              - /url: /rss-feeds
+              - generic [ref=e3158]: 
+              - text: RSS
+          - listitem [ref=e3159]:
+            - link " Discord" [ref=e3160] [cursor=pointer]:
+              - /url: https://discord.gg/GFv6FyUcm7
+              - generic [ref=e3161]: 
+              - text: Discord
+          - listitem [ref=e3162]:
+            - link " Facebook" [ref=e3163] [cursor=pointer]:
+              - /url: //www.facebook.com/rtingsdotcom
+              - generic [ref=e3164]: 
+              - text: Facebook
+          - listitem [ref=e3165]:
+            - link " X" [ref=e3166] [cursor=pointer]:
+              - /url: //x.com/rtingsdotcom
+              - generic [ref=e3167]: 
+              - text: X
+          - listitem [ref=e3168]:
+            - link " Instagram" [ref=e3169] [cursor=pointer]:
+              - /url: //www.instagram.com/rtingsdotcom/
+              - generic [ref=e3170]: 
+              - text: Instagram
+    - generic [ref=e3171]: © 2026 9298-5266 Quebec Inc. All Rights Reserved.

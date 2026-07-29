@@ -55,13 +55,25 @@ LOCK_DIR="$HOME/.cache/bd-apply.lock"
 LOG_FILE="/tmp/bd-apply.log"
 CLI="/opt/homebrew/bin/betterdisplaycli"
 
-# Dell (PORT) is a COLOR-REFERENCE display (operator decision 2026-06-13):
-# pin its white point + contrast to neutral/native on EVERY mode so time-of-day
-# never warps color fidelity. Only brightness follows the mode ("color locked,
-# brightness adapts"). These override the port_contrast/port_temp MODES columns
-# for the Dell; override per-rig via the env vars below.
-PORT_REF_CONTRAST="${DOTFILES_BD_PORT_REF_CONTRAST:-75}"  # Dell native contrast (OSD default)
-PORT_REF_TEMP="${DOTFILES_BD_PORT_REF_TEMP:-0}"           # neutral white point (no DDC warm shift)
+# The Dell was designated a COLOR-REFERENCE display on 2026-06-13, which pinned
+# its contrast to the 75 OSD default on every mode. RETIRED 2026-07-29 (operator):
+# the panel runs Slack, WhatsApp, Discord and kitty — colour fidelity is not
+# load-bearing there, and the pin was actively costing contrast on a 350-nit panel
+# sitting beside a 500-nit XDR one.
+#
+# What still holds: the WHITE POINT stays pinned neutral. Temperature is the
+# setting that actually warps colour identity across modes; contrast at panel
+# maximum is a different question and is not a fidelity cost.
+#
+# The brightness gap is physics, not configuration — DELL 350 nits vs BUILT-IN
+# 500 nits x EDR. With luminance already at 100 the only remaining levers are
+# perceptual: contrast at max, and a gamma lift that raises MIDTONES (where text
+# and UI chrome live) without touching the white point. Gamma manipulates the
+# colour table, so it is a deliberate accuracy-for-legibility trade — set
+# DOTFILES_BD_PORT_GAMMA=0 to opt out entirely.
+PORT_REF_CONTRAST="${DOTFILES_BD_PORT_REF_CONTRAST:-100}"  # panel max (was 75, the OSD default)
+PORT_REF_TEMP="${DOTFILES_BD_PORT_REF_TEMP:-0}"            # neutral white point — STILL PINNED
+PORT_GAMMA="${DOTFILES_BD_PORT_GAMMA:-80}"                 # midtone lift %, 0 disables (80 = max, operator-chosen 2026-07-29)
 
 # Single source of truth for every mode. apply_mode() AND verify_mode() both
 # read this table, so verify can no longer silently agree with a stale copy.
@@ -162,7 +174,10 @@ resolve_port_tag() {
         PORT_TAG="$found"
     fi
 }
-resolve_port_tag
+# NOT called at source time. bd-cycle.sh sources this file purely to reuse ORDER,
+# and an unguarded call here fired a live `get --identifiers` on every source —
+# two round-trips per sketchybar click, with no timeout, in a file that already
+# documents this CLI hanging and stranding app instances. main() invokes it.
 
 # acquire_lock — serialize concurrent apply_mode runs. The five launchd timers,
 # bd-lmu-watch, bd-wake (sleepwatcher), and a manual bd-cycle can fire near
@@ -278,7 +293,14 @@ set_dev() {
 port_vcp_read() {
     local vcp="$1" out err tmp
     [[ -x "$CLI" ]] || return 1
-    tmp="$(mktemp -t bdvcp)" || return 1
+    # NOT `mktemp -t bdvcp`. That is BSD syntax, and this repo's own .zprofile
+    # puts GNU coreutils ahead of /usr/bin on PATH for every login shell, where
+    # GNU mktemp rejects a template with no X's ("too few X's in template"). The
+    # call then failed before the CLI ran, so every MANUAL doctor/verify — the
+    # documented post-redock path — reported "cannot read" even over HDMI where
+    # reads work. launchd was unaffected (no gnubin on its PATH), which is exactly
+    # why it survived testing. An explicit template is portable to both.
+    tmp="$(mktemp "${TMPDIR:-/tmp}/bdvcp.XXXXXX")" || return 1
     out="$("$CLI" get --tagID="$PORT_TAG" --ddc --vcp="$vcp" 2>"$tmp" | head -1)"
     err="$(cat "$tmp" 2>/dev/null)"; rm -f "$tmp"
     grep -qi 'failed' <<< "$err" && return 1
@@ -317,7 +339,7 @@ port_vcp_read() {
 # and must not be conflated when reading these logs.
 set_port_vcp() {
     local vcp="$1" val="$2"
-    local out cur attempt rc_set saw_numeric=0
+    local out cur attempt rc_set saw_numeric=0 no_read=0
     for (( attempt=1; attempt<=3; attempt++ )); do
         out="$(bd set --tagID="$PORT_TAG" --ddc --vcp="$vcp" --value="$val" 2>&1)"; rc_set=$?
         # bd() returns 127 with NO output when $CLI is missing or not executable.
@@ -363,7 +385,18 @@ set_port_vcp() {
             sleep 1.0
             continue
         fi
-        log "PORT vcp:$vcp=$val (dispatched, no readback available, attempt=$attempt)"
+        # A SINGLE non-numeric read does not prove the connection cannot verify —
+        # port_vcp_read has no retry of its own, and a one-off bus hiccup on a
+        # read-capable link (HDMI) looks identical to the structural DisplayPort
+        # case. Require the miss to persist before concluding it is structural,
+        # otherwise one transient sample buys an unverified success.
+        no_read=$(( no_read + 1 ))
+        if (( no_read < 2 )); then
+            log "PORT vcp:$vcp=$val no readback yet (attempt=$attempt) — retry before assuming none"
+            sleep 1.0
+            continue
+        fi
+        log "PORT vcp:$vcp=$val (dispatched, no readback available after $no_read attempts)"
         return 0
     done
     log "WARN PORT vcp:$vcp=$val FAILED after 3 attempts (monitor asleep or DDC down)"
@@ -408,6 +441,10 @@ set_port() {
     set_port_vcp     luminance "$1"
     set_port_vcp     contrast  "$PORT_REF_CONTRAST"
     set_port_feature temperature "$PORT_REF_TEMP"
+    # Software midtone lift. Skipped entirely at 0 so the opt-out leaves no trace
+    # in the colour table rather than writing a neutral value over it.
+    [[ "$PORT_GAMMA" != "0" ]] && set_port_feature gamma "$PORT_GAMMA"
+    return 0
 }
 
 apply_mode() {
@@ -722,6 +759,7 @@ diff_ok() {
 
 main() {
     local arg="${1:-}"
+    resolve_port_tag
     if [[ -z "$arg" ]]; then
         echo "usage: $(basename "$0") <mode>"
         echo "modes:    dawn day afternoon evening night meeting read stream cinema"
