@@ -272,42 +272,6 @@ set_dev() {
 # a sleeping external monitor, so the exit code is worthless — the readback is
 # the only honest success signal. This is why a mode change scheduled while
 # the portrait monitor sleeps used to be lost permanently.
-# port_vcp_read <vcp-name> — read one DDC control from the PANEL, or fail.
-#
-# The discriminator here is stderr, not stdout, and getting that wrong produced a
-# false "verified" in this very script. Measured behaviour of
-# `betterdisplaycli get --ddc --vcp=luminance` on a panel whose DDC reads do NOT
-# work (this rig over DisplayPort):
-#
-#   cold read          stdout=""    stderr="Failed."
-#   0.5s after a write stdout="44"  stderr="Failed."   <- CACHED ECHO of the write
-#   3s after a write   stdout=""    stderr="Failed."
-#
-# BetterDisplay serves the just-written value back for a few seconds while still
-# reporting the read as failed. A readback taken shortly after a write therefore
-# returns exactly what was written no matter what the display did — the same
-# cache-verifying-itself defect this whole rewrite exists to remove, reproduced
-# one layer down. stderr stays honest throughout, so it is the signal.
-#
-# Note this cannot use bd(), which redirects stderr into the log file.
-port_vcp_read() {
-    local vcp="$1" out err tmp
-    [[ -x "$CLI" ]] || return 1
-    # NOT `mktemp -t bdvcp`. That is BSD syntax, and this repo's own .zprofile
-    # puts GNU coreutils ahead of /usr/bin on PATH for every login shell, where
-    # GNU mktemp rejects a template with no X's ("too few X's in template"). The
-    # call then failed before the CLI ran, so every MANUAL doctor/verify — the
-    # documented post-redock path — reported "cannot read" even over HDMI where
-    # reads work. launchd was unaffected (no gnubin on its PATH), which is exactly
-    # why it survived testing. An explicit template is portable to both.
-    tmp="$(mktemp "${TMPDIR:-/tmp}/bdvcp.XXXXXX")" || return 1
-    out="$("$CLI" get --tagID="$PORT_TAG" --ddc --vcp="$vcp" 2>"$tmp" | head -1)"
-    err="$(cat "$tmp" 2>/dev/null)"; rm -f "$tmp"
-    grep -qi 'failed' <<< "$err" && return 1
-    [[ "$out" =~ ^[0-9]+$ ]] || return 1
-    printf '%s' "$out"
-}
-
 # set_port_vcp <vcp-name> <value 0-100> — write one DDC control to the external
 # panel as a RAW VCP command.
 #
@@ -323,8 +287,25 @@ port_vcp_read() {
 # was true. A raw VCP write bypasses the capability gate entirely and does reach
 # the display (operator-confirmed: luminance 20 -> visibly dim, 100 -> restored).
 #
-# VERIFICATION IS CONNECTION-DEPENDENT, so this tries the strong signal first and
-# degrades explicitly rather than pretending. Measured on the same panel:
+# NO READBACK. Three attempts were made to verify these writes against the display
+# and all three verified BetterDisplay's own write cache instead. Measured:
+#
+#   0.5s after a write   stdout="77"  stderr=""          <- cached echo, CLEAN stderr
+#   6s after a write     stdout=""    stderr="Failed."   <- the truth on DisplayPort
+#
+# The cache returns the just-written value with no error for several seconds, so
+# neither the value nor stderr discriminates at the moment a readback is taken.
+# Waiting the cache out costs ~6s per write, ~12s per mode change, on five launchd
+# timers plus the ambient watcher plus every wake — not worth it for a brightness
+# preset (operator decision 2026-07-29).
+#
+# So this dispatches and says so. "dispatched" means the command was ACCEPTED by
+# the CLI — validated by the fact that a bogus VCP name and a bogus tagID both
+# print "Failed." — not that the panel obeyed. That is a weaker claim than the old
+# code made, and it is the true one. doctor and verify report PORT hardware values
+# as UNVERIFIABLE rather than inventing agreement.
+#
+# Prior context this replaces:
 #
 #   over DisplayPort : capabilities report unacquirable, `get --ddc --vcp=...`
 #                      -> "Failed."  — no readback possible
@@ -339,14 +320,9 @@ port_vcp_read() {
 # and must not be conflated when reading these logs.
 set_port_vcp() {
     local vcp="$1" val="$2"
-    local out cur attempt rc_set saw_numeric=0 no_read=0
+    local out attempt rc_set
     for (( attempt=1; attempt<=3; attempt++ )); do
         out="$(bd set --tagID="$PORT_TAG" --ddc --vcp="$vcp" --value="$val" 2>&1)"; rc_set=$?
-        # bd() returns 127 with NO output when $CLI is missing or not executable.
-        # Empty output does not match /failed/, and the follow-up read is empty
-        # too, so without this guard the whole function fell through to the
-        # dispatch-only branch and returned SUCCESS with the CLI absent — the
-        # exact false-green this rewrite exists to remove. Not retryable.
         if (( rc_set == 127 )); then
             log "FATAL PORT vcp:$vcp=$val — betterdisplaycli missing or not executable at $CLI"
             return 1
@@ -357,46 +333,7 @@ set_port_vcp() {
             sleep 1.0
             continue
         fi
-        sleep 0.5
-        cur="$(port_vcp_read "$vcp")" || cur=''
-        if [[ "$cur" =~ ^[0-9]+$ ]]; then
-            saw_numeric=1
-            # Panel answers reads — this is real verification against the display.
-            if (( cur == val )); then
-                log "PORT vcp:$vcp=$val (verified=$cur attempt=$attempt)"
-                return 0
-            fi
-            log "PORT vcp:$vcp=$val drift (panel reports $cur, attempt=$attempt) — retry"
-            sleep 1.0
-            continue
-        fi
-        # No numeric readback. Two very different situations share this shape:
-        #
-        #   (a) the panel structurally cannot answer reads (DisplayPort case) —
-        #       dispatch-only is the honest best available signal, OR
-        #   (b) the panel HAS answered a read earlier in this very call, so it can
-        #       read; this one came back empty as a transient bus hiccup. Treating
-        #       that as "no readback available" would let a CONFIRMED drift from a
-        #       previous attempt exit as success.
-        #
-        # saw_numeric distinguishes them. Only (a) may report success.
-        if (( saw_numeric )); then
-            log "PORT vcp:$vcp=$val readback lost after a prior successful read (attempt=$attempt) — retry"
-            sleep 1.0
-            continue
-        fi
-        # A SINGLE non-numeric read does not prove the connection cannot verify —
-        # port_vcp_read has no retry of its own, and a one-off bus hiccup on a
-        # read-capable link (HDMI) looks identical to the structural DisplayPort
-        # case. Require the miss to persist before concluding it is structural,
-        # otherwise one transient sample buys an unverified success.
-        no_read=$(( no_read + 1 ))
-        if (( no_read < 2 )); then
-            log "PORT vcp:$vcp=$val no readback yet (attempt=$attempt) — retry before assuming none"
-            sleep 1.0
-            continue
-        fi
-        log "PORT vcp:$vcp=$val (dispatched, no readback available after $no_read attempts)"
+        log "PORT vcp:$vcp=$val (dispatched attempt=$attempt)"
         return 0
     done
     log "WARN PORT vcp:$vcp=$val FAILED after 3 attempts (monitor asleep or DDC down)"
@@ -578,7 +515,7 @@ doctor() {
             # confident OK for days while writes never reached the display.
             # Probe the panel itself; that is the only answer worth printing.
             local vcp
-            vcp="$(port_vcp_read luminance)" || vcp=""
+            vcp=""          # no trustworthy DDC readback on this panel — see set_port_vcp
             if [[ "$vcp" =~ ^[0-9]+$ ]]; then
                 printf '  %-5s tagID=%-5s OK — panel answers DDC (luminance=%s)\n' "$name" "$tag" "$vcp"
             else
@@ -677,8 +614,8 @@ verify_mode() {
     # this function compares against. A panel that does not answer reads (the
     # DisplayPort case) yields `?`, which surfaces as a mismatch rather than a
     # false pass — "cannot verify" must never render as "ok".
-    cur_port_b="$(port_vcp_read luminance)" || cur_port_b=""
-    cur_port_c="$(port_vcp_read contrast)" || cur_port_c=""
+    cur_port_b=""   # no trustworthy DDC readback on this panel — see set_port_vcp
+    cur_port_c=""   # no trustworthy DDC readback on this panel — see set_port_vcp
     [[ "$cur_port_b" =~ ^[0-9]+$ ]] && cur_port_b="$(awk -v v="$cur_port_b" 'BEGIN{printf "%.2f", v/100}')" || cur_port_b='?'
     [[ "$cur_port_c" =~ ^[0-9]+$ ]] && cur_port_c="$(awk -v v="$cur_port_c" 'BEGIN{printf "%.2f", v/100}')" || cur_port_c='?'
     # temperature is a SOFTWARE colour-table control applied by BD itself, so its
