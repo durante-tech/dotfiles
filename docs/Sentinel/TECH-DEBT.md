@@ -22,3 +22,64 @@ Findings bucketed by Phase 2d tiers - highest-impact first within each tier.
 
 ### Resolved since last scan (2026-06-18)
 - **hygiene: .sentinel/ scan scratch is now gitignored** (commit c63aecb) — was a LOW debt item last scan.
+
+---
+
+## Manual addendum — 2026-07-29
+
+<!-- Hand-written, NOT from a sentinel scan. The generated body above reflects the
+     2026-06-22 pass and predates the July display/DDC workstream. Kept separate so
+     the next scan can regenerate everything above without losing this. -->
+
+The "Score: 0/20 — 100% consistent" line above was measured by static convention
+matching only. It did not look at CI, which was red the whole time.
+
+### Resolved 2026-07-29
+
+- **ci: `Dotfiles CI` failed on `main` on every run from 2026-05-27 through
+  2026-06-10** (12/12 sampled, most recent run 27254391329). The ShellCheck job ran
+  at default severity, so it gated on style notes and could never pass. A gate that
+  is always red is not a gate — it trained everyone to ignore it. Fixed by pinning
+  `severity: error` and fixing all 5 error-level findings at source.
+- **ci: stow dry run covered 15 of 22 packages** and swallowed failures
+  (`stow … || echo "✗ $pkg"` with no exit code), so espanso, fastfetch, kitty,
+  mise, ubersicht, wallpapers and wezterm were never verified and a conflict in
+  any of them would still have shipped green. Now reads `stow-packages.txt` and
+  exits nonzero.
+- **hygiene: the stow package list was triplicated** across `install.sh`,
+  `setup.sh` and `lint.yml`, and the three had already diverged. Collapsed to
+  `stow-packages.txt`.
+- **docs: `CLAUDE.md` documented `stow -t ~ .`** as "manual stow all packages".
+  There is no root `.stow-local-ignore`, so that command creates 51 symlinks in
+  `$HOME` (`~/CLAUDE.md`, `~/MEMORY`, `~/install.sh`) and links `~/nvim` instead of
+  `~/.config/nvim` — it deploys nothing correctly. Replaced with the manifest-driven
+  form and an explicit do-not-run note.
+- **tooling: `setup.sh --check` probed for `fnm` and `pyenv`**, both retired in
+  favour of mise, so a correct machine was told twice it was missing tools.
+
+### Open — MEDIUM
+
+- **lint: 31 warning-level and 52 note-level ShellCheck findings remain**, mostly
+  SC2086/SC2206 in `sketchybar/.config/sketchybar/**` where the word-splitting is
+  deliberate (`--set $NAME "${item[@]}"`). Quoting them to satisfy the linter would
+  change behaviour in working config. **Ratchet plan:** clear the sketchybar
+  backlog, then move `severity: error` → `warning` in `.github/workflows/lint.yml`.
+  Do not tighten before, or the gate goes permanently red again.
+  - Not counted in that backlog: 3 SC2097/SC2098 pairs in `setup.sh:553`,
+    `install.sh:588`, `personalize.sh:283` are **false positives** — the
+    `DOTFILES_DIR="$X" "$X/path"` idiom expands the outer value, same string.
+- **testing: still no automated suite.** `VERIFY.md` is a manual walk-through. The
+  four CI jobs are the only mechanical checks, and three of them (Lua, TOML, stow)
+  only assert syntax/absence-of-conflict, not behaviour. Highest-value gap: the
+  bd-* DDC path, which has now had four separate false-verification bugs
+  (`5332555`, `f505858`, `dace08b`, plus the `mktemp` break in `654e964`) precisely
+  because nothing tests it.
+
+### Open — LOW
+
+- **vcs: split git author identity** — 'Lord Sinquaad' vs 'Lucas Gertel'. Unchanged
+  since the generated pass above. A `.mailmap` fixes it.
+- **clarity: `bd-apply.sh:631-632` are dead branches.** `cur_port_b`/`cur_port_c` are
+  hard-set to `""` on the two lines above, so the `[[ … =~ ^[0-9]+$ ]]` guards always
+  take the `?` path. Harmless, but a reader reasonably assumes a DDC readback happens
+  there when none does.

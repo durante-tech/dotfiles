@@ -590,11 +590,21 @@ if [ -f "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" ]; then
     fi
 fi
 
-# Re-stow to handle updates (-R flag)
-PACKAGES="aerospace atuin espanso fastfetch ghostty karabiner kitty mise mpd nvim rmpc scripts sketchybar starship tmux ubersicht w3m wallpapers wezterm yazi zed zsh"
-# Note: launchagents/ is intentionally NOT in this list — it contains
-# .plist.template files rendered by setup.sh's render_launchagents().
-# wallpapers/ stows the shaders/README into ~/Pictures (not strictly XDG).
+# Re-stow to handle updates (-R flag). The package list lives in
+# stow-packages.txt — see that file for what is deliberately excluded and why.
+PACKAGE_MANIFEST="$DOTFILES_DIR/stow-packages.txt"
+if [ ! -r "$PACKAGE_MANIFEST" ]; then
+    print_error "Missing $PACKAGE_MANIFEST — cannot determine which packages to stow"
+    exit 1
+fi
+# `|| true` is load-bearing under this file's `set -e`: an empty or all-comment
+# manifest filters to zero lines, grep exits 1, and a bare assignment propagates
+# that status — aborting the install mid-run with no message. Fail explicitly.
+PACKAGES="$(sed -e 's/#.*//' -e 's/[[:space:]]//g' "$PACKAGE_MANIFEST" | grep -v '^$' | tr '\n' ' ' || true)"
+if [ -z "${PACKAGES// /}" ]; then
+    print_error "$PACKAGE_MANIFEST lists no packages — nothing to stow"
+    exit 1
+fi
 
 for pkg in $PACKAGES; do
     if [ -d "$DOTFILES_DIR/$pkg" ]; then

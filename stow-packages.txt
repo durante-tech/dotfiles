@@ -1,0 +1,42 @@
+# Stow package manifest — THE single source of truth.
+#
+# Read by install.sh (stow -R), setup.sh (check_stow_drift) and
+# .github/workflows/lint.yml (stow dry run). Those three used to carry three
+# hand-maintained copies of this list, and they had already drifted: CI was
+# dry-run-verifying 15 of the 22 packages, so a stow conflict in espanso,
+# fastfetch, kitty, mise, ubersicht, wallpapers or wezterm could ship green.
+#
+# One name per line. Blank lines and #-comments are ignored.
+#
+# NOT listed here, deliberately:
+#   launchagents/  — .plist.template files rendered by setup.sh --configure
+#   raycast/       — script-commands symlinked by setup.sh link_raycast_commands
+#   macos/         — defaults scripts, executed not stowed
+#   site/          — Astro docs site, not deployed to $HOME
+#
+# Entries inside a package that must not be stowed (aerospace/templates,
+# wallpapers shaders, zsh docs) are excluded by that package's own
+# .stow-local-ignore, not from here.
+
+aerospace
+atuin
+espanso
+fastfetch
+ghostty
+karabiner
+kitty
+mise
+mpd
+nvim
+rmpc
+scripts
+sketchybar
+starship
+tmux
+ubersicht
+w3m
+wallpapers
+wezterm
+yazi
+zed
+zsh

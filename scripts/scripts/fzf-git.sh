@@ -1,6 +1,18 @@
+# shellcheck shell=bash disable=SC2296
 # Fzf with Git in the shell
 # You can find this whole script from Junegunn Github repo below
 # https://github.com/junegunn/fzf-git.sh
+#
+# VENDORED — keep edits minimal so upstream can be re-pulled cleanly.
+# The directive above is ours, not upstream's:
+#   shell=bash  — the file is sourced, never executed, so it has no shebang;
+#                 without this the linter assumes POSIX sh.
+#   SC2296      — this script is deliberately zsh/bash dual and uses zsh-only
+#                 expansions (`${(q)item}`, `${(%):-%x}`) behind runtime shell
+#                 detection. Those are correct zsh, but unparseable as bash.
+#
+# Careful: a comment whose first word is the linter's own name is itself parsed
+# as a directive, which is why the two lines above are worded around it.
 
 # Script is used in .zshrc 
 

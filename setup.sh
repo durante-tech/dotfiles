@@ -73,9 +73,12 @@ check_dependencies() {
     check_command "aerospace" || print_warning "aerospace not found (optional)"
     check_command "sketchybar" || print_warning "sketchybar not found (optional)"
 
+    # mise is the single polyglot manager for Node + Python; it replaced
+    # fnm + pyenv + nvm + asdf (install.sh brew-installs it). This check still
+    # asked for fnm and pyenv, so a correctly-provisioned machine was told twice
+    # that it was missing tools the repo deliberately no longer uses.
     echo -e "\nLanguage managers:"
-    check_command "fnm" || print_warning "fnm not found (Node.js)"
-    check_command "pyenv" || print_warning "pyenv not found (Python)"
+    check_command "mise" || print_warning "mise not found (Node + Python versions)"
 
     if [[ $missing -gt 0 ]]; then
         echo -e "\n${YELLOW}$missing essential tools missing. Run ./install.sh first.${NC}"
@@ -462,10 +465,28 @@ check_stow_drift() {
     command -v stow >/dev/null 2>&1 || { print_warning "stow not installed — skipping"; return 0; }
     cd "$DOTFILES_DIR" || return 1
 
+    # Package list comes from stow-packages.txt, the single source of truth this
+    # shares with install.sh and the CI stow dry run. It used to be a third
+    # hand-maintained copy.
+    local manifest="$DOTFILES_DIR/stow-packages.txt"
+    if [[ ! -r "$manifest" ]]; then
+        print_warning "Missing $manifest — skipping stow drift check"
+        return 0
+    fi
+    # `|| true` for the same reason as the grep pipeline below — under `set -e`
+    # an empty manifest would abort the whole --check run instead of warning.
+    local packages
+    packages="$(sed -e 's/#.*//' -e 's/[[:space:]]//g' "$manifest" | grep -v '^$' || true)"
+    if [[ -z "$packages" ]]; then
+        print_warning "$manifest lists no packages — skipping stow drift check"
+        return 0
+    fi
+
+    # here-string, not a pipe — `drifted` must accumulate in THIS shell. Same
+    # subshell trap the comment below documents for the grep pipeline.
     local pkg drifted=0 out
-    for pkg in aerospace atuin espanso fastfetch ghostty karabiner kitty mise mpd \
-               nvim rmpc scripts sketchybar starship tmux ubersicht w3m wallpapers \
-               wezterm yazi zed zsh; do
+    while IFS= read -r pkg; do
+        [[ -n "$pkg" ]] || continue
         [[ -d "$DOTFILES_DIR/$pkg" ]] || continue
         # "(reverts previous action)" lines are stow's re-stow bookkeeping for links
         # that already exist — only the remainder are genuinely missing.
@@ -482,7 +503,7 @@ check_stow_drift() {
             sed 's/^/    /' <<< "$out"
             drifted=$((drifted + 1))
         fi
-    done
+    done <<< "$packages"
 
     if [[ $drifted -eq 0 ]]; then
         print_success "All packages fully stowed"
