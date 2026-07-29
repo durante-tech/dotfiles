@@ -42,48 +42,73 @@ command -v aerospace >/dev/null 2>&1 || { echo "aerospace not found" >&2; exit 1
 #   if.app-id = 'com.foo.bar'
 #   run = ['layout tiling', 'move-node-to-workspace X']
 # so we remember the last app-id seen and emit when a move target appears.
+# Rules come in TWO forms and both must be collected. An earlier version of this
+# script only handled `if.app-id`, which silently dropped every
+# `if.app-name-regex-substring` rule — including
+# 'slack|discord|telegram|teams' -> M and the whole JetBrains family -> D. Those
+# windows were invisible to the sweep: no match, no move, no warning.
+#
+# Emitted as "<kind>\t<key>\t<workspace>", kind being `id` or `re`.
 MAP="$(awk '
-  /^\[\[on-window-detected\]\]/ { app=""; next }
-  /^if\.app-id/                 { gsub(/.*= *.|.$/, "", $0); app=$0; next }
+  /^\[\[on-window-detected\]\]/ { key=""; kind=""; next }
+  /^if\.app-id/                 { gsub(/.*= *.|.$/, "", $0); key=$0; kind="id"; next }
+  /^if\.app-name-regex-substring/ { gsub(/.*= *.|.$/, "", $0); key=$0; kind="re"; next }
   /move-node-to-workspace/ {
-      if (app != "") {
+      if (key != "") {
           match($0, /move-node-to-workspace [A-Za-z0-9]+/)
           ws = substr($0, RSTART+23, RLENGTH-23)
-          print app "\t" ws
-          app=""
+          print kind "\t" key "\t" ws
+          key=""; kind=""
       }
   }
 ' "$CONFIG")"
 
 [[ -z "$MAP" ]] && { echo "no workspace-routing rules found in $CONFIG" >&2; exit 1; }
 
+# want_workspace_for <app-id> <app-name> — bundle-id match first (exact, cheap),
+# then the regex rules against the app NAME. AeroSpace matches those
+# case-insensitively (the rules are lowercase and match "Slack"), so we do too.
+want_workspace_for() {
+    local id="$1" name="$2" kind key ws
+    while IFS=$'\t' read -r kind key ws; do
+        [[ -z "$kind" ]] && continue
+        if [[ "$kind" == "id" && "$key" == "$id" ]]; then printf '%s' "$ws"; return 0; fi
+    done <<< "$MAP"
+    while IFS=$'\t' read -r kind key ws; do
+        [[ "$kind" == "re" ]] || continue
+        if grep -qiE -- "$key" <<< "$name"; then printf '%s' "$ws"; return 0; fi
+    done <<< "$MAP"
+    return 1
+}
+
 # One listing of every window with its bundle id, rather than one aerospace call
 # per rule. `--all` is an alias that CONFLICTS with the filtering flags, so the
 # per-app form needs `--monitor all` — and its error goes to stderr, which an
 # earlier draft of this script swallowed with 2>/dev/null and silently swept
 # nothing while reporting success. stderr is deliberately NOT suppressed here.
+# app-name is carried alongside the bundle id so the regex rules have something
+# to match against.
 WINDOWS="$(aerospace list-windows --monitor all \
-             --format '%{window-id}	%{workspace}	%{app-bundle-id}')" || {
+             --format '%{window-id}	%{workspace}	%{app-bundle-id}	%{app-name}')" || {
     echo "failed to list windows" >&2; exit 1; }
 
 moved=0 checked=0
-while IFS=$'\t' read -r wid cur_ws bundle; do
+while IFS=$'\t' read -r wid cur_ws bundle name; do
     [[ -z "$wid" || -z "$bundle" ]] && continue
-    want_ws="$(awk -F'\t' -v b="$bundle" '$1==b {print $2; exit}' <<< "$MAP")"
     # No routing rule, or a float-only rule: leave the window where it is.
+    want_ws="$(want_workspace_for "$bundle" "$name")" || continue
     [[ -z "$want_ws" ]] && continue
     checked=$((checked + 1))
     [[ "$cur_ws" == "$want_ws" ]] && continue
     if $DRY; then
         printf '  would move %-6s %-38s %s -> %s\n' "$wid" "$bundle" "$cur_ws" "$want_ws"
+        moved=$((moved + 1))
+    elif aerospace move-node-to-workspace --window-id "$wid" "$want_ws"; then
+        printf '  moved %-6s %-38s %s -> %s\n' "$wid" "$bundle" "$cur_ws" "$want_ws"
+        moved=$((moved + 1))
     else
-        if aerospace move-node-to-workspace --window-id "$wid" "$want_ws"; then
-            printf '  moved %-6s %-38s %s -> %s\n' "$wid" "$bundle" "$cur_ws" "$want_ws"
-        else
-            printf '  FAILED %-6s %-38s -> %s\n' "$wid" "$bundle" "$want_ws" >&2
-        fi
+        printf '  FAILED %-6s %-38s -> %s\n' "$wid" "$bundle" "$want_ws" >&2
     fi
-    moved=$((moved + 1))
 done <<< "$WINDOWS"
 
 if [[ "$moved" -eq 0 ]]; then
@@ -135,15 +160,26 @@ while IFS=$'\t' read -r ws mon cur_layout; do
     esac
     [[ -z "$tall" ]] && continue
     want=$([[ "$tall" == "1" ]] && echo vertical || echo horizontal)
-    have=$([[ "$cur_layout" == v_tiles ]] && echo vertical || echo horizontal)
+    # The layout field has FOUR values, not two: v_tiles, h_tiles, v_accordion,
+    # h_accordion. Comparing only against v_tiles read a v_accordion workspace as
+    # "horizontal" and skipped genuine drift — and accordion is one keystroke
+    # away (alt-comma binds `layout accordion horizontal vertical`).
+    case "$cur_layout" in
+        v_tiles|v_accordion) have=vertical ;;
+        *)                   have=horizontal ;;
+    esac
     [[ "$want" == "$have" ]] && continue
     if $DRY; then
         printf '  would set %-3s (%s) %s -> %s\n' "$ws" "$mon" "$have" "$want"
+        fixed=$((fixed + 1))
+    elif aerospace layout --workspace "$ws" --root "$want"; then
+        printf '  set %-3s (%s) %s -> %s\n' "$ws" "$mon" "$have" "$want"
+        fixed=$((fixed + 1))
     else
-        aerospace layout --workspace "$ws" --root "$want" \
-            && printf '  set %-3s (%s) %s -> %s\n' "$ws" "$mon" "$have" "$want"
+        # Counting an unconditional increment as success let the summary claim
+        # "corrected N" for a run that silently did nothing.
+        printf '  FAILED to set %-3s (%s) -> %s\n' "$ws" "$mon" "$want" >&2
     fi
-    fixed=$((fixed + 1))
 done < <(aerospace list-windows --monitor all \
            --format '%{workspace}	%{monitor-name}	%{workspace-root-container-layout}' \
          | sort -u)
