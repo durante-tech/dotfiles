@@ -41,7 +41,16 @@ jobs:
             .dos
             .pi
             nvim
+            zsh
           check_together: "yes"
+          # zsh/ is excluded because ShellCheck does not support zsh at all — not
+          # as a severity, as a dialect. .zshrc uses an anonymous function with
+          # glob qualifiers (`if () { setopt localoptions extendedglob; ... }`)
+          # which is valid zsh and unparseable as bash, so it emitted SC1072/
+          # SC1073 *errors* that no amount of correct zsh could ever clear.
+          # .zprofile drew SC2148 for having no shebang, which is right for a
+          # sourced zsh startup file. Linting them was never going to be
+          # meaningful; excluding them is the fix, not a suppression.
 
   lua-lint:
     name: Lua Lint
