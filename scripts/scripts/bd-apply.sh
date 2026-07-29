@@ -79,13 +79,23 @@ CLI="/opt/homebrew/bin/betterdisplaycli"
 #
 # The brightness gap is physics, not configuration — DELL 350 nits vs BUILT-IN
 # 500 nits x EDR. With luminance already at 100 the only remaining levers are
-# perceptual: contrast at max, and a gamma lift that raises MIDTONES (where text
-# and UI chrome live) without touching the white point. Gamma manipulates the
-# colour table, so it is a deliberate accuracy-for-legibility trade — set
-# DOTFILES_BD_PORT_GAMMA=0 to opt out entirely.
+# perceptual: contrast at the native point, and a gamma lift that raises MIDTONES
+# (where text and UI chrome live) without touching the white point. Gamma
+# manipulates the colour table, so it is an accuracy-for-legibility trade.
+#
+# GAMMA IS OFF (2026-07-29, operator preference after living with it). The lift
+# was set to 80 earlier the same day, then the operator tuned gamma to 0 at the
+# panel and preferred it — with the macOS colour profile also adjusted, the
+# midtone lift was no longer buying legibility, only costing accuracy.
+#
+# 0 does not write gamma 0 — set_port() skips the write entirely, leaving the
+# colour table untouched. This matters: the ambient watcher re-applies the full
+# mode on every light-level change, so a non-zero value here silently overwrites
+# any gamma the operator sets by hand, usually within minutes. That is exactly
+# what this line is preventing. Set DOTFILES_BD_PORT_GAMMA=80 to restore the lift.
 PORT_REF_CONTRAST="${DOTFILES_BD_PORT_REF_CONTRAST:-75}"   # NATIVE point — raising this clips whites, see below
 PORT_REF_TEMP="${DOTFILES_BD_PORT_REF_TEMP:-0}"            # neutral white point — STILL PINNED
-PORT_GAMMA="${DOTFILES_BD_PORT_GAMMA:-80}"                 # midtone lift %, 0 disables (80 = max, operator-chosen 2026-07-29)
+PORT_GAMMA="${DOTFILES_BD_PORT_GAMMA:-0}"                  # midtone lift %, 0 = do not touch gamma (operator-chosen 2026-07-29)
 
 # Single source of truth for every mode. apply_mode() AND verify_mode() both
 # read this table, so verify can no longer silently agree with a stale copy.
