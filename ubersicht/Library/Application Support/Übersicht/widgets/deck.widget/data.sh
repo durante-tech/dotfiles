@@ -6,7 +6,30 @@ from pathlib import Path
 from datetime import datetime, timezone
 
 HOME = Path.home()
-HOT_DIRS = [HOME / "Durante", HOME / "dotfiles", HOME / ".claude"]
+
+# Roots are resolved and de-overlapped before walking. ~/.claude is a SYMLINK
+# into ~/Durante/Releases/<v>/.claude, and while os.walk refuses to follow
+# symlinked *subdirectories* it does follow a symlinked *root* — so listing both
+# walked the same tree twice and every hit appeared twice in a 6-row panel.
+# Compared as strings rather than Path.is_relative_to() so this keeps working on
+# the /usr/bin/python3 (3.9) that Übersicht resolves under a GUI PATH.
+def _dedupe_roots(paths):
+    kept, kept_str = [], []
+    for p in paths:
+        try:
+            rp = p.resolve()
+        except OSError:
+            continue
+        if not rp.exists():
+            continue
+        s = str(rp)
+        if any(s == k or s.startswith(k + os.sep) for k in kept_str):
+            continue
+        kept.append(rp)
+        kept_str.append(s)
+    return kept
+
+HOT_DIRS = _dedupe_roots([HOME / "Durante", HOME / "dotfiles", HOME / ".claude"])
 
 # Repo list comes from the canonical DOS project registry (.dos-projects.json)
 # instead of a hardcoded list that drifts. Deprecated projects are skipped;
@@ -39,9 +62,14 @@ def registry_repos():
 
 REPO_PATHS = list(dict.fromkeys(BASE_REPOS + registry_repos()))
 EXTS = {".md", ".ts", ".tsx", ".jsx", ".lua", ".py", ".sh", ".toml", ".yaml", ".yml"}
+# "worktrees" is the load-bearing entry. The filter below always descends into
+# .claude, and ~/Durante/.claude/worktrees holds full git worktree checkouts —
+# 228,757 files touched in a 24h window, ~99% of everything this walk saw. The
+# panel was rendering six worktree scratch files instead of the operator's work,
+# and the walk cost ~50s against a 60s refresh.
 EXCLUDE_PARTS = {"node_modules", ".git", ".venv", "dist", "build", ".next", "target",
                  "shell-snapshots", "STATE", "todos", "intel-context-cache",
-                 "intel-context-fired", "transcripts", "ack-state"}
+                 "intel-context-fired", "transcripts", "ack-state", "worktrees"}
 EXCLUDE_NAMES = {"session-name-cache.sh"}
 
 now = time.time()
@@ -66,7 +94,12 @@ cutoff = now - 86400  # 24h window
 for root in HOT_DIRS:
     if not root.exists(): continue
     for path, dirs, files in os.walk(root):
-        dirs[:] = [d for d in dirs if d not in EXCLUDE_PARTS and not d.startswith(".") or d == ".claude"]
+        # Parenthesised to state the binding Python already applies:
+        # (not-excluded AND not-a-dotdir) OR (it is .claude). The trailing clause
+        # is why .claude is always descended — deliberate, since the DOS memory
+        # tree lives there, but it is also what made "worktrees" load-bearing above.
+        dirs[:] = [d for d in dirs
+                   if (d not in EXCLUDE_PARTS and not d.startswith(".")) or d == ".claude"]
         for f in files:
             if f in EXCLUDE_NAMES: continue
             if not any(f.endswith(e) for e in EXTS): continue

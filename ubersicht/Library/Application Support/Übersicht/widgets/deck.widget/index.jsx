@@ -2,7 +2,9 @@
 // Surfaces hot files, active repos, inbox, last insight. Catppuccin Mocha · middle-right · yellow accent.
 
 export const command = `bash "$HOME/Library/Application Support/Übersicht/widgets/deck.widget/data.sh"`
-export const refreshFrequency = 60 * 1000
+// 5min, matching every other data.sh-backed widget here. At 60s this overlapped
+// itself: the walk took ~50s, so the panel spent most of every minute rebuilding.
+export const refreshFrequency = 5 * 60 * 1000
 
 export const className = `
   bottom: 60px;
