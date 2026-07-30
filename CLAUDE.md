@@ -698,7 +698,10 @@ vim.lsp.enable("server_name")
 `aerospace/.config/aerospace/aerospace.toml` is gitignored render output. Edit the
 template, then `scripts/scripts/render-aerospace.sh && aerospace reload-config`.
 `render-aerospace.sh --doctor` checks monitor patterns, AeroSpace version
-(config-version=2 keys need >= 0.20.0), and persistent-workspaces drift.
+(config-version=2 keys need >= 0.20.0), persistent-workspaces drift, and
+window-detection health — a long-running AeroSpace can stop seeing newly
+launched apps, which kills every `on-window-detected` rule silently while the
+config still validates clean. The fix for that one is restarting AeroSpace.
 
 Uses `config-version = 2` with an explicit `persistent-workspaces` list — all 10
 workspaces stay alive when empty (E and N have no alt bindings; without the list
@@ -929,7 +932,7 @@ Hot-reloads on config change. Receives `aerospace_workspace_change` events.
 
 | Script | Description |
 |--------|-------------|
-| `render-aerospace.sh` | Render `aerospace.toml` from the template. `--doctor` checks monitor patterns, AeroSpace version, persistent-workspaces drift |
+| `render-aerospace.sh` | Render `aerospace.toml` from the template. `--doctor` checks monitor patterns, AeroSpace version, persistent-workspaces drift, window-detection health |
 | `aerospace-resweep.sh` | Re-apply `on-window-detected` routing to windows already open (startup reconciliation) |
 | `kitty-font-per-workspace.sh` | Resize kitty font live based on focused AeroSpace workspace |
 | `ubersicht-screen-sync.sh` | Keep the Übersicht dashboard pinned to the external display |

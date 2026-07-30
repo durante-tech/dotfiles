@@ -37,6 +37,16 @@ after-startup-command = [
   # re-evaluates when a workspace moves to a differently-shaped monitor.
   # Backgrounded with a settle delay so it never blocks startup; logged rather
   # than silent so a failed sweep is discoverable.
+  #
+  # AeroSpace >= 0.21 ships `aerospace run-callback --for-every-window
+  # on-window-detected`, which re-applies the ROUTING half natively and from the
+  # LOADED config rather than a re-parse of the TOML. The script stays because it
+  # also re-asserts root-container orientation, which no built-in command covers.
+  # Prefer the native command for a quick manual re-route; keep this for startup.
+  #
+  # Note this fires at STARTUP only. It cannot help a long-lived instance that
+  # stops detecting new windows mid-session — for that failure mode see
+  # `render-aerospace.sh --doctor` (doctor_detection), which names it explicitly.
   'exec-and-forget /bin/bash -c "sleep 10; ~/scripts/aerospace-resweep.sh >> /tmp/aerospace-resweep.log 2>&1"'
 ]
 
@@ -386,8 +396,13 @@ enter = 'mode main'
 if.app-id = 'com.apple.finder'
 run = 'layout floating'  # Opens on current screen, not forced to workspace F
 
+# Screenshot tools float rather than tile — capture and annotation windows are
+# transient, and tiling them displaces the real layout for the few seconds they
+# live. Matching only 'Shottr' meant this rule never fired on this machine: the
+# installed tool is CleanShot X (com.getcleanshot.app-setapp). Both names are
+# matched so the rule survives switching between them.
 [[on-window-detected]]
-if.app-name-regex-substring = 'Shottr'
+if.app-name-regex-substring = 'Shottr|CleanShot'
 run = 'layout floating'
 
 [[on-window-detected]]
@@ -437,18 +452,20 @@ run = "move-node-to-workspace N"
 if.app-id = 'com.apple.Notes'
 run = "move-node-to-workspace N"
 
-# AI apps → A (Claude, Codex, ChatGPT, Perplexity, wispr-flow)
+# AI apps → A (Claude, ChatGPT, Perplexity, wispr-flow)
+#
+# OpenAI ships ONE desktop app, not two: ChatGPT.app's bundle id is
+# 'com.openai.codex' (verified against the installed bundle, 2026-07-30). The
+# earlier 'com.openai.chat' rule alongside it matched nothing and was removed —
+# it also carried a `layout floating` that consequently never applied, so
+# ChatGPT tiles on A. Add 'layout floating' to the rule below if it should float.
 [[on-window-detected]]
 if.app-id = 'com.anthropic.claudefordesktop'
 run = "move-node-to-workspace A"
 
 [[on-window-detected]]
-if.app-id = 'com.openai.codex'
+if.app-id = 'com.openai.codex'  # ChatGPT.app
 run = "move-node-to-workspace A"
-
-[[on-window-detected]]
-if.app-id = 'com.openai.chat'
-run = ['layout floating', 'move-node-to-workspace A']
 
 [[on-window-detected]]
 if.app-id = 'ai.perplexity.mac'
