@@ -26,6 +26,10 @@ STATE_DIR = HOME / ".claude" / "MEMORY" / "STATE"
 
 SEV_ORDER = {"crit": 0, "warn": 1, "info": 2}
 
+# Parity: Tools/attention-census.ts BUILDING_PHASES (execute ≡ build; guarded by
+# attention-census-widget-parity.test.ts in the dos repo).
+BUILDING_PHASES = ("build", "execute")
+
 now = datetime.now(timezone.utc)
 
 def parse_ts(s):
@@ -144,8 +148,9 @@ try:
         if nfail == 0:
             continue
         plural = "check" if nfail == 1 else "checks"
+        is_draft = pr["isDraft"]
         add_row(
-            "checks-failing", "crit",
+            "checks-failing", "info" if is_draft else "crit",
             f"{pr['repo']}#{pr['number']} — {nfail} {plural} failing",
             detail=pr["title"], age="", source="gh",
         )
@@ -223,7 +228,7 @@ try:
         label = None
         if phase == "verify" and age_sec > 24 * 3600:
             label = "verify-stuck"
-        elif phase == "build" and passed == 0 and age_sec > 12 * 3600:
+        elif phase in BUILDING_PHASES and passed == 0 and age_sec > 12 * 3600:
             label = "build-stuck"
         elif age_sec > 7 * 86400:
             label = "stale"
