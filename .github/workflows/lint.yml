@@ -5,6 +5,10 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # Manual trigger. Without it there is no way to exercise this workflow against
+  # an unchanged tree — which mattered on 2026-07-29, when Actions had been off
+  # at the org level and no run existed for any recent commit to re-run.
+  workflow_dispatch:
 
 jobs:
   shellcheck:
@@ -13,19 +17,40 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # severity: warning. At the action's default (every severity) this job
+      # gated on style notes and could never pass — it failed on EVERY run on
+      # main from 2026-05-27 to 2026-06-10, which is how the repo ended up with a
+      # permanently-red gate nobody read. It was first pinned to `error`, then
+      # tightened to `warning` here once the 31-warning backlog was actually
+      # cleared rather than suppressed.
+      #
+      # 52 note-level findings remain (mostly SC2086 in sketchybar plugins where
+      # the word-splitting is deliberate). Do NOT drop to the default severity to
+      # pick those up unless they are fixed first — that is exactly how this gate
+      # died the first time.
       - name: Run ShellCheck on custom scripts
         uses: ludeeus/action-shellcheck@master
         env:
           SHELLCHECK_OPTS: -e SC1090 -e SC1091 -e SC2034 -e SC2155
         with:
           scandir: .
+          severity: warning
           ignore_paths: >-
             tmux/.config/tmux/.tmux/plugins
             site
             .dos
             .pi
             nvim
+            zsh
           check_together: "yes"
+          # zsh/ is excluded because ShellCheck does not support zsh at all — not
+          # as a severity, as a dialect. .zshrc uses an anonymous function with
+          # glob qualifiers (`if () { setopt localoptions extendedglob; ... }`)
+          # which is valid zsh and unparseable as bash, so it emitted SC1072/
+          # SC1073 *errors* that no amount of correct zsh could ever clear.
+          # .zprofile drew SC2148 for having no shebang, which is right for a
+          # sourced zsh startup file. Linting them was never going to be
+          # meaningful; excluding them is the fix, not a suppression.
 
   lua-lint:
     name: Lua Lint
@@ -76,15 +101,39 @@ jobs:
       - name: Install stow
         run: brew install stow
 
+      # Packages come from stow-packages.txt, shared with install.sh and
+      # setup.sh. This step used to carry its own list of 15 of the 22 packages,
+      # so espanso, fastfetch, kitty, mise, ubersicht, wallpapers and wezterm
+      # were never dry-run-verified and a conflict in any of them shipped green.
       - name: Verify stow packages (dry run)
         run: |
+          set -euo pipefail
           mkdir -p /tmp/fakehome/.config
-          packages=(
-            aerospace atuin ghostty karabiner mpd nvim rmpc
-            scripts sketchybar starship tmux w3m yazi zed zsh
-          )
-          for pkg in "${packages[@]}"; do
-            if [ -d "$pkg" ]; then
-              stow -n -t /tmp/fakehome "$pkg" 2>&1 && echo "✓ $pkg" || echo "✗ $pkg"
+          # `|| true` is load-bearing under set -euo pipefail: an empty manifest
+          # filters to zero lines and grep exits 1, which would abort the step
+          # with no diagnostic. Fail on the explicit check instead.
+          packages="$(sed -e 's/#.*//' -e 's/[[:space:]]//g' stow-packages.txt | grep -v '^$' || true)"
+          if [ -z "$packages" ]; then
+            echo "stow-packages.txt lists no packages"
+            exit 1
+          fi
+          echo "manifest lists $(echo "$packages" | wc -l | tr -d ' ') packages"
+          failed=0
+          # here-string, not a pipe: a `while read` on the right of a pipe runs in
+          # a subshell and the `failed` assignment would never reach this scope,
+          # turning every failure into a silent pass.
+          while IFS= read -r pkg; do
+            [ -n "$pkg" ] || continue
+            if [ ! -d "$pkg" ]; then
+              echo "✗ $pkg — listed in stow-packages.txt but no such directory"
+              failed=1
+              continue
             fi
-          done
+            if stow -n -t /tmp/fakehome "$pkg" 2>&1; then
+              echo "✓ $pkg"
+            else
+              echo "✗ $pkg"
+              failed=1
+            fi
+          done <<< "$packages"
+          exit "$failed"

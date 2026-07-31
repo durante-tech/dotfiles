@@ -20,8 +20,8 @@ toggle_mics() {
 		if [ "${device}" = "$CURRENT" ]; then
 			COLOR=$WHITE
 		fi
-		args+=(--add item mic.device.$COUNTER popup."$NAME"
-			--set mic.device.$COUNTER label="${device}"
+		args+=(--add item "mic.device.$COUNTER" popup."$NAME"
+			--set "mic.device.$COUNTER" label="${device}"
 			label.color="$COLOR"
             background.color="$PURE_BLACK"
             background.drawing=on

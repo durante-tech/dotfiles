@@ -1,5 +1,9 @@
+#!/usr/bin/env bash
 # create git repo using gh
-#!/bin/bash
+#
+# The shebang used to sit on line 2, under this comment. The kernel only reads
+# line 1, so `./gh_create_repo.sh` was executed by /bin/sh, not bash — it
+# happened to work only because nothing below is bash-specific.
 
 name=${1:-${PWD##*/}}
 

@@ -44,10 +44,10 @@ re-stow: `stow -R -t ~ aerospace && aerospace reload-config`.
 
 | Where | Lucas's value | What it is |
 |-------|--------------|------------|
-| `scripts/scripts/bd-apply.sh:22` | `DEV_TAG=2` | tagID for the primary (built-in) display |
-| `scripts/scripts/bd-apply.sh:23` | `PORT_TAG=60` | tagID for the external (portrait/secondary) display |
-| `scripts/scripts/bd-lmu-watch.sh:27` | `PORT_TAG=60` | same — for ambient-light watch |
-| `scripts/scripts/bd-build-slots.sh:17-18` | `DEV=2` / `PORT=60` | same — for slot-build (legacy) |
+| `scripts/scripts/bd-apply.sh:41` | `DEV_TAG=2` | tagID for the primary (built-in) display |
+| `scripts/scripts/bd-apply.sh:42` | `PORT_TAG=60` | tagID for the external (portrait/secondary) display |
+| `scripts/scripts/bd-lmu-watch.sh:34` | `PORT_TAG=60` | same — for ambient-light watch |
+| `scripts/scripts/bd-build-slots.sh:32-33` | `DEV=2` / `PORT=60` | same — for slot-build (legacy) |
 
 **Discover yours:**
 ```bash
@@ -72,9 +72,10 @@ external); additional monitors host whatever you drag to them. Validate
 anytime:
 
 ```bash
-scripts/scripts/render-aerospace.sh --doctor   # 3 checks: monitor patterns, AeroSpace
+scripts/scripts/render-aerospace.sh --doctor   # 4 checks: monitor patterns, AeroSpace
                                                # version >= 0.20.0, persistent-workspaces
-                                               # drift (exit 1 if any warns)
+                                               # drift, window-detection health
+                                               # (exit 1 if any warns)
 ./setup.sh --check                             # includes the same doctor
 ```
 
@@ -85,17 +86,28 @@ DOTFILES_BD_PORT_TAG=60        # your external display tagID
 ```
 The bd-* scripts source this file at top.
 
+> **These go stale on a redock.** Reattaching a display through a different port
+> renumbers its tagID. `betterdisplaycli` then answers `Failed.` for every write to
+> the old tag **but still exits 0**, so nothing reports the breakage — DDC brightness
+> and color silently stop applying. Re-derive with
+> `betterdisplaycli get --identifiers`, then confirm with `bd-apply.sh doctor`
+> (exit 1 + live identifier table when a tag no longer resolves).
+
 ### Display layout (display-restore.sh)
 
 | Where | Lucas's value | What it is |
 |-------|--------------|------------|
-| `scripts/scripts/display-restore.sh` DEFAULT_LAYOUT | Two hardcoded display UUIDs | displayplacer per-screen specs for the maintainer's rig |
+| `scripts/scripts/display-restore.sh` DEFAULT_LAYOUT | Live-detected screen ids | built-in matched by displayplacer's "MacBook built in screen" type, external by elimination — no UUID is pinned, so a redock cannot silently disable a profile |
 
 **Override:** set `DOTFILES_DISPLAY_LAYOUT` in `personal.env` (newline-separated
-`displayplacer` specs — discover yours with `displayplacer list`). Without it,
-the layout profiles no-op harmlessly on foreign hardware — except `--solo`,
-which detects the single connected display live and WILL apply on any hardware
-(resolution override: `DOTFILES_DISPLAY_SOLO_RES`, default 2560x1440).
+`displayplacer` specs — discover yours with `displayplacer list`).
+
+Since 2026-07-27 every profile resolves its screen ids live, so **all of them apply
+on any hardware**, not just `--solo`. The resolutions, however, are still tuned to
+the maintainer's two panels — a 4K external and a 3456×2234 built-in. On different
+panels the profiles will apply *something*, but "true integer-2x" will not hold;
+override the whole layout via `DOTFILES_DISPLAY_LAYOUT`, or use `--solo` with
+`DOTFILES_DISPLAY_SOLO_RES` (default 2560x1440) for a single-display rig.
 
 ---
 

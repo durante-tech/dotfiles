@@ -4,7 +4,7 @@
 # @raycast.mode silent
 # @raycast.icon 📐
 # @raycast.packageName DOS · Screen
-# @raycast.description Rotate Samsung to true-2x 1080x1920 portrait
+# @raycast.description Dell rotated 90 at 1080x1920 — pixel-perfect true 2x
 
 # Raycast launches with no shell env — pick up DOTFILES_DIR from personal.env.
 [ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"

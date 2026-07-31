@@ -13,9 +13,11 @@
 #
 # Usage: render-aerospace.sh [--dry-run | --doctor]
 #   --dry-run  show what would be rendered, write nothing
-#   --doctor   check-only, three checks (exit 1 if any warns):
+#   --doctor   check-only, four checks (exit 1 if any warns):
 #              monitor patterns vs connected displays, AeroSpace version
-#              >= 0.20.0 (config-version=2 keys), persistent-workspaces drift
+#              >= 0.20.0 (config-version=2 keys), persistent-workspaces drift,
+#              and window-detection health (rules are dead if AeroSpace has
+#              stopped seeing newly-launched apps — see doctor_detection)
 
 set -eu
 
@@ -114,11 +116,72 @@ doctor_workspaces() {
     echo "doctor: OK   persistent-workspaces covers every referenced workspace"
 }
 
+# --- window-detection doctor ---------------------------------------------------
+# AeroSpace runs on-window-detected the moment it FIRST sees a window. If the
+# running instance stops observing newly-launched apps, every routing rule
+# silently stops firing: no error, no log entry, and the config still validates
+# clean. The only symptom is "new windows don't move any more" — which reads as
+# a config bug and is not one.
+#
+# Observed 2026-07-30 on a 40h-old instance that had lived through a display
+# reconfiguration: every app launched within an hour of AeroSpace start was
+# managed, and every app launched afterwards (Chrome, ChatGPT, Safari) was
+# invisible to it while plainly on screen. Fix is to restart AeroSpace.
+#
+# Ground truth is lsappinfo, a macOS built-in, so this adds no dependency. An
+# app that is running with a real UI but missing from `aerospace list-apps` is
+# invisible to the window manager. UIElement apps (menubar agents — BetterDisplay,
+# Stream Deck, Logi Options+) are skipped: they carry no managed window by design
+# and would otherwise report as permanent false positives.
+doctor_detection() {
+    command -v aerospace >/dev/null 2>&1 || return 0
+    if ! command -v lsappinfo >/dev/null 2>&1; then
+        echo "doctor: lsappinfo not found — skipping window-detection check"
+        return 0
+    fi
+
+    local seen ids id asn drift=0 checked=0
+    seen=$(aerospace list-apps --format '%{app-bundle-id}' 2>/dev/null | sort -u) || true
+    if [ -z "$seen" ]; then
+        echo "doctor: could not list apps (AeroSpace not running?) — skipping detection check"
+        return 0
+    fi
+
+    # app-ids carry no @SENTINEL@ placeholders, so the template is as good as the
+    # render and is always present.
+    ids=$(grep -oE "^if\.app-id = '[^']+'" "$TEMPLATE" | sed "s/.*'\(.*\)'/\1/" | sort -u) || true
+
+    while IFS= read -r id; do
+        [ -n "$id" ] || continue
+        asn=$(lsappinfo find bundleID="$id" 2>/dev/null | head -1) || true
+        [ -n "$asn" ] || continue   # not running — nothing to detect
+        if lsappinfo info "$asn" 2>/dev/null | grep -q 'type="UIElement"'; then
+            continue                # menubar agent, legitimately window-less
+        fi
+        checked=$((checked + 1))
+        if ! printf '%s\n' "$seen" | grep -qxF -- "$id"; then
+            [ "$drift" -eq 0 ] && \
+                echo "doctor: WARN AeroSpace cannot see these running, windowed apps:"
+            echo "             $id"
+            drift=$((drift + 1))
+        fi
+    done <<< "$ids"
+
+    if [ "$drift" -gt 0 ]; then
+        echo "             on-window-detected never fires for them, so their routing"
+        echo "             rules are dead while the config looks correct."
+        echo "             Restart AeroSpace, then re-run this check."
+        return 1
+    fi
+    echo "doctor: OK   AeroSpace sees all $checked running rule-covered app(s)"
+}
+
 run_doctors() {
     local bad=0
     doctor_monitors   || bad=1
     doctor_version    || bad=1
     doctor_workspaces || bad=1
+    doctor_detection  || bad=1
     return $bad
 }
 

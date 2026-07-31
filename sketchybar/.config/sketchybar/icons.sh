@@ -1,3 +1,8 @@
+#!/bin/bash
+# Sourced fragment (sketchybarrc:5), never executed. The shebang is here to
+# match its sibling colors.sh and to tell shellcheck the dialect — without it
+# the file is linted as POSIX sh and every bash array below reads as an error.
+
 # Battery Icons
 BATTERY_100=
 BATTERY_75=

@@ -29,7 +29,7 @@ set -u
 
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 APPLY="$DOTFILES_DIR/scripts/scripts/bd-apply.sh"
-DEV="${DOTFILES_BD_DEV_TAG:-2}"          # DEV-MAIN tagID (default: MBP 14")
+DEV="${DOTFILES_BD_DEV_TAG:-2}"          # DEV-MAIN tagID (default: MBP 16")
 PORT="${DOTFILES_BD_PORT_TAG:-60}"       # PORTRAIT-MONITOR tagID (default: Dell U2718Q)
 
 # Slot order — index i maps to favoriteMode slot (i+1).

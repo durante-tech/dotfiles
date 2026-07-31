@@ -29,9 +29,9 @@ default=(
         background.color="$ITEM_BG_COLOR"
         background.corner_radius=5
         background.height=25
-        icon.color=$WHITE
+        icon.color="$WHITE"
         icon.y_offset=1
-        label.color=$WHITE
+        label.color="$WHITE"
         label.y_offset=1
         icon.padding_left=10
         icon.padding_right=4
@@ -52,7 +52,10 @@ sketchybar --add item workspace_visibility center \
 ##### Left Items #####
 source "$ITEM_DIR/space.sh"
 # adds layout background for workspaces
-sketchybar --add bracket workspaces space.1 space.2 space.A space.B space.D space.F space.M space.N space.T space.E \
+# $SPACE_ITEMS is built by space.sh from the LIVE aerospace workspace list —
+# never hardcode the workspaces here again (a literal list kept drawing a dead
+# `F` indicator after that workspace was retired on 2026-07-28).
+sketchybar --add bracket workspaces "${SPACE_ITEMS[@]}" \
            --set workspaces background.color="$PURE_BLACK" \
 
 source "$ITEM_DIR/aerospace_mode.sh"

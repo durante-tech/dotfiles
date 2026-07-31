@@ -73,9 +73,12 @@ check_dependencies() {
     check_command "aerospace" || print_warning "aerospace not found (optional)"
     check_command "sketchybar" || print_warning "sketchybar not found (optional)"
 
+    # mise is the single polyglot manager for Node + Python; it replaced
+    # fnm + pyenv + nvm + asdf (install.sh brew-installs it). This check still
+    # asked for fnm and pyenv, so a correctly-provisioned machine was told twice
+    # that it was missing tools the repo deliberately no longer uses.
     echo -e "\nLanguage managers:"
-    check_command "fnm" || print_warning "fnm not found (Node.js)"
-    check_command "pyenv" || print_warning "pyenv not found (Python)"
+    check_command "mise" || print_warning "mise not found (Node + Python versions)"
 
     if [[ $missing -gt 0 ]]; then
         echo -e "\n${YELLOW}$missing essential tools missing. Run ./install.sh first.${NC}"
@@ -224,6 +227,7 @@ configure_environment() {
 
     # Symlink dotfiles-tracked Raycast script-commands into the indexed dir.
     link_raycast_commands
+
 
     # Wire the rtk token-saver hook into Claude Code's PreToolUse:Bash chain.
     configure_rtk_hook
@@ -442,10 +446,79 @@ configure_rtk_hook() {
 # Verify Configuration
 # ============================================================================
 
+# check_stow_drift — report any package file the repo has but $HOME does not.
+#
+# The hardcoded symlink spot-check below only covers a handful of well-known
+# paths, so a package could gain files that were never stowed and nothing would
+# say so. That is exactly what happened: 17 scripts (display-restore.sh,
+# bd-apply.sh, render-aerospace.sh, ...) plus all of fastfetch and wezterm sat
+# unlinked in ~/ for weeks, because adding a file to a package does not re-run
+# stow. `stow -n -R` in simulation mode is the authoritative answer — anything it
+# would still LINK is a file that is missing from $HOME right now.
+#
+# Entries that are deliberately NOT stowed (aerospace/templates, wallpapers/
+# shaders, zsh docs + completion cache) are excluded by each package's
+# .stow-local-ignore, so they never show up here.
+check_stow_drift() {
+    print_header "Checking Stow Drift"
+
+    command -v stow >/dev/null 2>&1 || { print_warning "stow not installed — skipping"; return 0; }
+    cd "$DOTFILES_DIR" || return 1
+
+    # Package list comes from stow-packages.txt, the single source of truth this
+    # shares with install.sh and the CI stow dry run. It used to be a third
+    # hand-maintained copy.
+    local manifest="$DOTFILES_DIR/stow-packages.txt"
+    if [[ ! -r "$manifest" ]]; then
+        print_warning "Missing $manifest — skipping stow drift check"
+        return 0
+    fi
+    # `|| true` for the same reason as the grep pipeline below — under `set -e`
+    # an empty manifest would abort the whole --check run instead of warning.
+    local packages
+    packages="$(sed -e 's/#.*//' -e 's/[[:space:]]//g' "$manifest" | grep -v '^$' || true)"
+    if [[ -z "$packages" ]]; then
+        print_warning "$manifest lists no packages — skipping stow drift check"
+        return 0
+    fi
+
+    # here-string, not a pipe — `drifted` must accumulate in THIS shell. Same
+    # subshell trap the comment below documents for the grep pipeline.
+    local pkg drifted=0 out
+    while IFS= read -r pkg; do
+        [[ -n "$pkg" ]] || continue
+        [[ -d "$DOTFILES_DIR/$pkg" ]] || continue
+        # "(reverts previous action)" lines are stow's re-stow bookkeeping for links
+        # that already exist — only the remainder are genuinely missing.
+        #
+        # The trailing `|| true` is load-bearing under this file's `set -e`. A
+        # CLEAN package filters to zero lines, grep exits 1, and a bare
+        # `out="$(...)"` propagates that status — which aborted the whole script
+        # on the first healthy package, so `--check` printed this header and then
+        # died before reporting anything or running any later verification. The
+        # healthy path was the failing one.
+        out="$(stow -n -v -R -t ~ "$pkg" 2>&1 | grep '^LINK:' | grep -v 'reverts previous action' || true)"
+        if [[ -n "$out" ]]; then
+            print_warning "$pkg has unstowed file(s):"
+            sed 's/^/    /' <<< "$out"
+            drifted=$((drifted + 1))
+        fi
+    done <<< "$packages"
+
+    if [[ $drifted -eq 0 ]]; then
+        print_success "All packages fully stowed"
+    else
+        print_warning "$drifted package(s) drifted — fix with: stow -t ~ -R <package>"
+    fi
+    return 0
+}
+
 verify_config() {
     print_header "Verifying Configuration"
 
     local issues=0
+
+    check_stow_drift
 
     # Check symlinks
     echo "Checking symlinks..."
@@ -498,6 +571,9 @@ verify_config() {
     # keys), persistent-workspaces drift. Warns without counting as an issue.
     if [[ -x "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" ]]; then
         echo -e "\nAeroSpace doctor..."
+        # shellcheck disable=SC2097,SC2098  # false positive: the prefix assignment
+        # exports DOTFILES_DIR into the child's environment, and the path expansion
+        # reads the OUTER variable — same string. Not the `FOO=bar echo $FOO` bug.
         if DOTFILES_DIR="$DOTFILES_DIR" "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" --doctor; then
             print_success "AeroSpace doctor checks passed"
         else

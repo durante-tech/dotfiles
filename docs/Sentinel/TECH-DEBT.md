@@ -22,3 +22,103 @@ Findings bucketed by Phase 2d tiers - highest-impact first within each tier.
 
 ### Resolved since last scan (2026-06-18)
 - **hygiene: .sentinel/ scan scratch is now gitignored** (commit c63aecb) — was a LOW debt item last scan.
+
+---
+
+## Manual addendum — 2026-07-29
+
+<!-- Hand-written, NOT from a sentinel scan. The generated body above reflects the
+     2026-06-22 pass and predates the July display/DDC workstream. Kept separate so
+     the next scan can regenerate everything above without losing this. -->
+
+The "Score: 0/20 — 100% consistent" line above was measured by static convention
+matching only. It did not look at CI, which was red the whole time.
+
+### Resolved 2026-07-29
+
+- **ci: `Dotfiles CI` failed on `main` on every run from 2026-05-27 through
+  2026-06-10** (12/12 sampled, most recent run 27254391329). The ShellCheck job ran
+  at default severity, so it gated on style notes and could never pass. A gate that
+  is always red is not a gate — it trained everyone to ignore it. Fixed by fixing
+  all 5 error-level findings at source, then the 31 warnings, and pinning
+  `severity: warning`. A `workflow_dispatch` trigger was added so the workflow can
+  be exercised against an unchanged tree.
+- **ci: stow dry run covered 15 of 22 packages** and swallowed failures
+  (`stow … || echo "✗ $pkg"` with no exit code), so espanso, fastfetch, kitty,
+  mise, ubersicht, wallpapers and wezterm were never verified and a conflict in
+  any of them would still have shipped green. Now reads `stow-packages.txt` and
+  exits nonzero.
+- **hygiene: the stow package list was triplicated** across `install.sh`,
+  `setup.sh` and `lint.yml`, and the three had already diverged. Collapsed to
+  `stow-packages.txt`.
+- **docs: `CLAUDE.md` documented `stow -t ~ .`** as "manual stow all packages".
+  There is no root `.stow-local-ignore`, so that command creates 51 symlinks in
+  `$HOME` (`~/CLAUDE.md`, `~/MEMORY`, `~/install.sh`) and links `~/nvim` instead of
+  `~/.config/nvim` — it deploys nothing correctly. Replaced with the manifest-driven
+  form and an explicit do-not-run note.
+- **tooling: `setup.sh --check` probed for `fnm` and `pyenv`**, both retired in
+  favour of mise, so a correct machine was told twice it was missing tools.
+
+- **lint: the 31-warning backlog is cleared and CI now gates at
+  `severity: warning`.** Done properly rather than suppressed — two of the fixes
+  were real latent bugs:
+  - `fzf_listoldfiles.sh` built both its arrays with `arr=($(...))`, splitting on
+    IFS. Any recent file whose path contained a space was shredded into fragments
+    that then failed the `-f` test and silently vanished from the picker; with
+    `--multi`, selecting such a path made nvim open phantom files. Now read
+    line-wise. (`mapfile` is unavailable — macOS `/bin/bash` is 3.2.)
+  - Four `sketchybar/items/*.sh` declared `#!/bin/sh` while using bash arrays.
+    Harmless in practice because they are `source`d by a bash `sketchybarrc` and
+    macOS `/bin/sh` is bash in POSIX mode, but the shebang was a lie. Now
+    `#!/bin/bash`, matching every sibling.
+  - 9 SC2206 sites were plain unquoted `$COUNTER` in array-element position —
+    quoted, behaviour-identical. The 5 SC2046 in the **vendored** `fzf-git.sh` are
+    suppressed by directive instead, so the file stays diffable against upstream.
+  - 3 SC2097/SC2098 pairs in `setup.sh`, `install.sh`, `personalize.sh` were
+    **false positives** — the `DOTFILES_DIR="$X" "$X/path"` idiom expands the
+    outer value, same string — and now carry a targeted disable with that
+    reasoning inline.
+
+### Open — HIGH
+
+- **ci: GitHub Actions is disabled at the ORGANIZATION level, so nothing runs at
+  all.** This is the deeper cause behind the red-gate finding above: the last run
+  of any kind was 2026-06-10, and **57 commits** have landed on `main` since
+  without triggering anything. The red runs predate the shutoff.
+  `PUT /repos/durante-tech/dotfiles/actions/permissions` returns
+  `409 Conflict: "GitHub Actions is disabled on this repository by the
+  organization"`. Until this is lifted, every CI fix in this repo is dormant and
+  the four jobs are decorative.
+  **Fix (needs org-admin scope, not just org-admin role):**
+  ```
+  gh auth refresh -h github.com -s admin:org
+  gh api -X PUT orgs/durante-tech/actions/permissions -f enabled_repositories=all
+  gh api -X PUT repos/durante-tech/dotfiles/actions/permissions -F enabled=true
+  ```
+  or toggle it at <https://github.com/organizations/durante-tech/settings/actions>.
+  Verify with `gh workflow run "Dotfiles CI" --ref main` (the `workflow_dispatch`
+  trigger exists for exactly this) then `gh run list`.
+
+### Open — MEDIUM
+
+- **lint: 52 note-level findings remain**, mostly SC2086 in
+  `sketchybar/.config/sketchybar/**` where the word-splitting is deliberate
+  (`--set $NAME "${item[@]}"`). Quoting those would change behaviour in working
+  config for no defect fixed. **Do not drop CI to the action's default severity
+  to pick them up** — that is precisely the configuration that left the gate
+  permanently red for two months.
+- **testing: still no automated suite.** `VERIFY.md` is a manual walk-through. The
+  four CI jobs are the only mechanical checks, and three of them (Lua, TOML, stow)
+  only assert syntax/absence-of-conflict, not behaviour. Highest-value gap: the
+  bd-* DDC path, which has now had four separate false-verification bugs
+  (`5332555`, `f505858`, `dace08b`, plus the `mktemp` break in `654e964`) precisely
+  because nothing tests it.
+
+### Open — LOW
+
+- **vcs: split git author identity** — 'Lord Sinquaad' vs 'Lucas Gertel'. Unchanged
+  since the generated pass above. A `.mailmap` fixes it.
+- **clarity: `bd-apply.sh:631-632` are dead branches.** `cur_port_b`/`cur_port_c` are
+  hard-set to `""` on the two lines above, so the `[[ … =~ ^[0-9]+$ ]]` guards always
+  take the `?` path. Harmless, but a reader reasonably assumes a DDC readback happens
+  there when none does.

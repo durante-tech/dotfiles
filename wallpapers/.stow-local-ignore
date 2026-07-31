@@ -1,0 +1,28 @@
+# stow ignore list for the wallpapers package.
+#
+# NOTE: this file REPLACES stow's built-in defaults, so the standard entries are
+# repeated below.
+#
+# Nothing consumes a STOWED copy of this package. The Plash shaders are dragged
+# in from the repo path directly (INSTALL.md), and the wallpaper scripts read
+# ~/Pictures/Wallpapers, which is a real directory outside the repo. Stowing to
+# $HOME would only create a stray ~/shaders symlink.
+^/shaders
+
+# --- stow defaults, preserved ---
+RCS
+.+,v
+CVS
+\.\#.+
+\.cvsignore
+\.svn
+_darcs
+\.hg
+\.git
+\.gitignore
+\.gitmodules
+.+~
+\#.*\#
+^/README.*
+^/LICENSE.*
+^/COPYING

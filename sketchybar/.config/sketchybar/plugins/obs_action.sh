@@ -10,6 +10,11 @@ OBS_BIN="$(command -v obs || echo "$HOME/scripts/obs")"
 # sketchybar runs under launchd — pick up DOTFILES_DIR override from personal.env.
 [ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
 RESTORE="${DOTFILES_DIR:-$HOME/dotfiles}/scripts/scripts/display-restore.sh"
+# Layout profile display-restore.sh persists, plus our stash of the profile that
+# was active before a stream started (so ending the stream returns to it rather
+# than to the script's daily fallback).
+PROFILE_FILE="$HOME/.cache/bd-profile"
+PRESTREAM_FILE="$HOME/.cache/bd-profile.prestream"
 ACTION="$1"
 LOG=/tmp/obs-action.log
 
@@ -51,12 +56,30 @@ case "$ACTION" in
             "$OBS_BIN" stream toggle >/dev/null 2>&1 || logf "stream toggle failed (exit $?)"
             # Match display geometry to the new stream state (backgrounded so the
             # sketchybar action returns fast; displayplacer takes a beat):
-            #   going LIVE    -> 1728x1080 (clean OBS 2:1 capture to 1080 canvas)
-            #   going offline -> 1728x1117 (true-2x sharp daily)
+            #   going LIVE    -> --stream (1728x1080, clean OBS 2:1 to a 1080 canvas)
+            #   going offline -> whatever profile we were on BEFORE going live
+            #
+            # The return leg must NOT be a bare "$RESTORE" --force: that resolves
+            # to the script's fallback (--daily) and, worse, display-restore.sh
+            # persists it to ~/.cache/bd-profile — so one stream toggle demotes the
+            # rig off its canonical profile (--portrait-hires) permanently, and
+            # bd-wake.sh then re-applies the demoted profile on every wake. Stash
+            # the outgoing profile and restore THAT.
             if [ "$pre_toggle_live" = offline ]; then
+                [ -r "$PROFILE_FILE" ] && cp "$PROFILE_FILE" "$PRESTREAM_FILE" 2>/dev/null
                 "$RESTORE" --stream --force >/dev/null 2>&1 &
             else
-                "$RESTORE" --force >/dev/null 2>&1 &
+                prev=daily
+                [ -r "$PRESTREAM_FILE" ] && prev="$(cat "$PRESTREAM_FILE" 2>/dev/null)"
+                # Whitelist the profile names display-restore.sh accepts, minus
+                # 'stream' (returning to stream would be a no-op round trip) —
+                # an unrecognised or empty stash falls back to daily.
+                case "$prev" in
+                    daily|hires|native|portrait-hires|portrait|solo) ;;
+                    *) prev=daily ;;
+                esac
+                logf "stream offline -> restoring layout profile '$prev'"
+                "$RESTORE" --"$prev" --force >/dev/null 2>&1 &
             fi
         fi
         sleep 0.3; refresh_header

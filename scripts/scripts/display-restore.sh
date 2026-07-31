@@ -5,30 +5,46 @@
 # Display reconfigurations silently wreck this layout: sleep/wake drops the
 # built-in to a wide scaled mode (so the OBS capture goes small + soft) and a
 # monitor or BetterDisplay virtual-screen connect/disconnect knocks the external
-# out of its rotation. This restores the known-good layout so daily work stays
-# true-2x sharp (built-in "looks like 1728x1117", backing == native 3456x2234;
-# external "looks like 1920x1080" landscape, backing == native 3840x2160 — zero
-# scaling). The --stream profile swaps the built-in
-# to "looks like 1728x1080" so the OBS capture is a clean 2:1 downscale to a
-# 1080 canvas (height == OBS canvas) for the duration of a stream.
+# out of its rotation. This restores the known-good layout.
+#
+# The built-in is true-2x sharp in every profile but --stream and --native:
+# "looks like 1728x1117", backing == native 3456x2234, zero scaling. The --stream
+# profile swaps it to "looks like 1728x1080" so the OBS capture is a clean 2:1
+# downscale to a 1080 canvas (height == OBS canvas) for the duration of a stream.
+#
+# The external's canonical profile is --portrait-hires (operator decision
+# 2026-07-28): rotated 90, "looks like 1440x2560". That trades sharpness for
+# vertical space on purpose — backing 2880x5120 is supersampled down to the
+# 2160x3840 native grid. --portrait is the pixel-perfect alternative (1080x1920,
+# backing == native) when text fidelity matters more than the extra 640px.
 #
 # Idempotent by default: only calls displayplacer when the live layout has
 # drifted from target, because a redundant apply can itself flicker / disturb the
 # window manager. --force applies unconditionally.
 #
-# Usage: display-restore.sh [--daily | --stream | --hires | --native | --portrait | --solo] [--force | --dry-run]
-#   --daily   : explicit alias for the default (built-in 1728x1117 + Samsung 1920x1080).
+# Usage: display-restore.sh [--daily | --stream | --hires | --native | --portrait |
+#                            --portrait-hires | --solo] [--force | --dry-run]
+#   --daily   : explicit alias for the default (built-in 1728x1117 + Dell 1920x1080).
 #   --stream  : built-in at 1728x1080 (OBS-clean 2:1). Default is 1728x1117 (sharp).
-#   --hires   : Samsung external at 2560x1440 HiDPI (~78% more desktop area, stays
+#   --hires   : Dell external at 2560x1440 HiDPI (~78% more desktop area, stays
 #               retina-scaled). Default is 1920x1080 true integer-2x (sharpest).
-#   --native  : BOTH panels at 1x native (built-in 3456x2234, Samsung 3840x2160),
+#   --native  : BOTH panels at 1x native (built-in 3456x2234, Dell 3840x2160),
 #               scaling:off — pixel-perfect 1:1, zero scaling, but UI renders tiny.
-#   --portrait: Samsung rotated 90 to true-2x 1080x1920 portrait (backing 2160x3840
+#   --portrait: Dell rotated 90 to true-2x 1080x1920 portrait (backing 2160x3840
 #               == native — pixel-perfect, 1920px of crisp vertical space).
+#   --portrait-hires : Dell rotated 90 at 1440x2560 HiDPI — 2560px of vertical
+#               space (+33% over --portrait) at the cost of sharpness: backing
+#               2880x5120 is supersampled down to the 2160x3840 native grid.
+#               CANONICAL as of 2026-07-28 (operator decision).
 #   --solo    : single-display / clamshell — drive the ONLY connected display at
 #               2560x1440 HiDPI landscape (override: DOTFILES_DISPLAY_SOLO_RES).
-#               UUID is detected live, so this works for any external 4K panel
-#               (the two-screen profiles above are pinned to this rig's UUIDs).
+#               UUID is detected live, so this works for any external 4K panel.
+#
+# Every profile detects its screen ids live (built-in by displayplacer's
+# "MacBook built in screen" type, external by elimination) — no UUID is pinned,
+# so a redock that renumbers a persistent id cannot silently disable a profile.
+# A two-screen profile run in clamshell drops the absent built-in and applies
+# its external half at the origin.
 #               Bare laptop (single display == built-in): applies the canonical
 #               built-in true-2x 1728x1117@120 instead. With >1 display
 #               connected it FALLS BACK to the daily layout (so a bd-profile
@@ -69,6 +85,7 @@ for a in "$@"; do
     --hires)           PROFILE=hires ;;
     --native)          PROFILE=native ;;
     --portrait)        PROFILE=portrait ;;
+    --portrait-hires)  PROFILE=portrait-hires ;;
     --solo)            PROFILE=solo ;;
     --force|--dry-run) ACTION="$a" ;;
   esac
@@ -92,42 +109,79 @@ else
   BUILTIN_RES=1728x1117
 fi
 
-# External Samsung 4K resolution + origin per profile. daily/stream run true
+# External Dell 4K resolution + origin per profile. daily/stream run true
 # integer-2x (1920x1080 logical, backing == native 3840x2160 — sharpest). --hires
 # drives it at 2560x1440 HiDPI: ~78% more desktop area, still retina-scaled, with a
 # slight non-integer softness (5120x2880 supersampled down to the 3840x2160 panel).
 # --native runs 1x native 3840x2160 (scaling:off, pixel-perfect 1:1, UI tiny).
-# --portrait rotates the Samsung 90 to true-2x 1080x1920 (res:1920x1080 degree:90,
-# backing 2160x3840 == native — pixel-perfect, 1920px crisp vertical). EXT_DEGREE
-# carries the rotation (0 for every landscape profile, 90 for portrait).
-# Origin places the Samsung to the RIGHT of the built-in for the landscape profiles
-# (operator arrangement 2026-06-30): left = builtinWidth (edges touch), top = +37.
-# daily/stream/hires keep builtinWidth=1728; native is 1x so builtinWidth=3456.
-# --portrait is the exception — it still stacks the rotated panel ABOVE at (324,-1920).
+#
+# ROTATED PROFILES — res: is stated in the POST-rotation orientation. displayplacer
+# lists BOTH orientations as selectable modes under "Resolutions for rotation 90"
+# (e.g. res:1920x1080 AND res:1080x1920 both exist there), and its `Resolution:`
+# readback for a rotated screen is the portrait-shaped one. Passing the landscape
+# form therefore selects a landscape desktop letterboxed onto a rotated panel —
+# NOT the intended portrait desktop — and permanently defeats drifted()'s
+# comparison, so the layout re-applies on every wake. --portrait carried that bug
+# from 2026-06-20 until 2026-07-28.
+#   --portrait       : 1080x1920 (backing 2160x3840 == native — pixel-perfect)
+#   --portrait-hires : 1440x2560 (backing 2880x5120 supersampled — more space, softer)
+#
+# EXT_DEGREE carries the rotation (0 for every landscape profile, 90 for both
+# portrait profiles). Origin places the Dell to the RIGHT of the built-in for the
+# landscape profiles (operator arrangement 2026-06-30): left = builtinWidth (edges
+# touch), top = +37. daily/stream/hires keep builtinWidth=1728; native is 1x so
+# builtinWidth=3456. --portrait stacks the rotated panel ABOVE at (324,-1920);
+# --portrait-hires keeps it to the RIGHT at the operator's live arrangement.
 EXT_DEGREE=0
 if [[ "$PROFILE" == native ]]; then
   EXT_RES=3840x2160; EXT_ORIGIN='(3456,37)'
 elif [[ "$PROFILE" == hires ]]; then
   EXT_RES=2560x1440; EXT_ORIGIN='(1728,37)'
 elif [[ "$PROFILE" == portrait ]]; then
-  EXT_RES=1920x1080; EXT_ORIGIN='(324,-1920)'; EXT_DEGREE=90
+  EXT_RES=1080x1920; EXT_ORIGIN='(324,-1920)'; EXT_DEGREE=90
+elif [[ "$PROFILE" == portrait-hires ]]; then
+  EXT_RES=1440x2560; EXT_ORIGIN='(1728,-765)'; EXT_DEGREE=90
 else
   EXT_RES=1920x1080; EXT_ORIGIN='(1728,37)'
 fi
 
-# Maintainer default (this rig). Override via DOTFILES_DISPLAY_LAYOUT.
-DEFAULT_LAYOUT=(
-  "id:37D8832A-2D66-02CA-B9F7-8F30A301B230 res:$BUILTIN_RES hz:120 color_depth:8 enabled:true scaling:$SCALING origin:(0,0) degree:0"
-  "id:E3434867-5A33-48E9-8FAE-B8DC6CC682B6 res:$EXT_RES hz:60 color_depth:8 enabled:true scaling:$SCALING origin:$EXT_ORIGIN degree:$EXT_DEGREE"
-)
+# displayplacer is needed to DETECT screen ids below as well as to apply, so the
+# availability guard has to run before the layout is assembled.
+[[ -x "$DP" ]] || { log "displayplacer not found at $DP"; exit 127; }
+
+# Resolve screen ids LIVE. Pinned UUIDs do not survive a redock: reattaching the
+# external through a different port renumbers its persistent id, after which
+# every two-screen profile silently no-ops — displayplacer prints "Unable to
+# find screen <uuid>" per screen and the deck key looks inert (observed
+# 2026-07-27: --hires from Raycast, both ids stale). Only the live-detecting
+# --solo path survived. The built-in is identified by displayplacer's "MacBook
+# built in screen" type; the first screen that is not the built-in is external.
+DP_LIST="$("$DP" list 2>/dev/null)"
+BUILTIN_ID="$(awk '/Persistent screen id:/{id=$4} /^Type:/{if(id!=""){if($0~/MacBook built in/){print id;exit} id=""}}' <<< "$DP_LIST")"
+EXT_ID="$(awk '/Persistent screen id:/{id=$4} /^Type:/{if(id!=""){if($0!~/MacBook built in/){print id;exit} id=""}}' <<< "$DP_LIST")"
+
+# Maintainer default (this rig), assembled from the live ids. Override via
+# DOTFILES_DISPLAY_LAYOUT. Each panel is emitted only when actually connected,
+# so a clamshell dock (built-in absent) still applies the profile's external
+# resolution instead of addressing a panel that is not there. With the built-in
+# absent the external is the ONLY screen, so it takes the origin rather than an
+# offset past a panel that is not present.
+DEFAULT_LAYOUT=()
+if [[ -n "$BUILTIN_ID" ]]; then
+  DEFAULT_LAYOUT+=("id:$BUILTIN_ID res:$BUILTIN_RES hz:120 color_depth:8 enabled:true scaling:$SCALING origin:(0,0) degree:0")
+else
+  EXT_ORIGIN='(0,0)'
+fi
+[[ -n "$EXT_ID" ]] && DEFAULT_LAYOUT+=("id:$EXT_ID res:$EXT_RES hz:60 color_depth:8 enabled:true scaling:$SCALING origin:$EXT_ORIGIN degree:$EXT_DEGREE")
 
 if [[ -n "${DOTFILES_DISPLAY_LAYOUT:-}" ]]; then
   args=(); while IFS= read -r l; do [[ -n "$l" ]] && args+=("$l"); done <<< "$DOTFILES_DISPLAY_LAYOUT"
-else
+elif [[ "${#DEFAULT_LAYOUT[@]}" -gt 0 ]]; then
   args=("${DEFAULT_LAYOUT[@]}")
+else
+  log "no displays detected — nothing to restore"
+  exit 0
 fi
-
-[[ -x "$DP" ]] || { log "displayplacer not found at $DP"; exit 127; }
 
 # --solo overrides the assembled layout entirely: detect the single live display
 # at runtime (no hardcoded UUID — clamshell docks vary). One list snapshot for
@@ -161,16 +215,50 @@ fi
 mkdir -p "$HOME/.cache" 2>/dev/null || true
 printf '%s\n' "$PROFILE" > "$HOME/.cache/bd-profile" 2>/dev/null || true
 
-# drifted — true if any target screen's live res|scaling|rotation differs from
-# the target. Scaling matters: 2560x1440 at scaling:off on a 4K panel is a soft
-# non-retina 1x mode that res+rotation alone would wrongly read as canonical.
+# spec_field <key> <displayplacer-spec-line> — pull one "key:value" out of a spec
+# regardless of field ORDER. The previous single-regex parse assumed the
+# generated order (res ... scaling ... degree); a hand-written
+# DOTFILES_DISPLAY_LAYOUT that orders fields differently failed to match, leaving
+# `want` set to the entire line so the layout re-applied on every single check.
+spec_field() {
+  grep -oE "(^|[[:space:]])$1:[^[:space:]]+" <<< "$2" | head -1 | sed -E "s/.*$1://"
+}
+
+# drifted — true if any target screen's live res|scaling|rotation|origin differs
+# from the target. Scaling matters: 2560x1440 at scaling:off on a 4K panel is a
+# soft non-retina 1x mode that res+rotation alone would wrongly read as canonical.
+#
+# Origin matters too, and used to be ignored: the two rotated profiles put the
+# panel in physically different places (--portrait stacks it ABOVE at (324,-1920),
+# --portrait-hires sits to the RIGHT at (1728,-765)), so a panel dragged in System
+# Settings kept its res/rotation and was reported "already canonical" forever.
+# displayplacer's Origin readback round-trips our value exactly (verified against
+# the live rig), because the built-in is always the main display at (0,0) and
+# macOS renumbers nothing. Origin is compared only when the spec actually states
+# one, so a custom layout that omits it opts out rather than drifting forever.
 drifted() {
   [[ "${1:-}" == "--force" ]] && return 0
-  local line id want cur
+  local line id want cur cur_r cur_s cur_o cur_d
   for line in "${args[@]}"; do
-    id="$(sed -E 's/.*id:([A-Za-z0-9-]+).*/\1/' <<< "$line")"
-    want="$(sed -E 's/.*res:([0-9]+x[0-9]+).*scaling:(on|off).*degree:([0-9]+).*/\1|\2|\3/' <<< "$line")"
-    cur="$("$DP" list 2>/dev/null | awk -v u="$id" 'index($0,u){f=1} f&&/Resolution:/{r=$2} f&&/Scaling:/{s=$2} f&&/Rotation:/{print r"|"s"|"$2; exit}')"
+    id="$(spec_field id "$line")"
+    # One pass over the target screen's block. displayplacer prints Resolution,
+    # Scaling, Origin, then Rotation; Origin carries a " - main display" suffix
+    # on the primary, so take $2 only.
+    cur="$("$DP" list 2>/dev/null | awk -v u="$id" '
+      index($0,u){f=1}
+      f&&/Resolution:/{r=$2}
+      f&&/Scaling:/{s=$2}
+      f&&/Origin:/{o=$2}
+      f&&/Rotation:/{print r"|"s"|"o"|"$2; exit}')"
+    IFS='|' read -r cur_r cur_s cur_o cur_d <<< "$cur"
+
+    want="$(spec_field res "$line")|$(spec_field scaling "$line")|$(spec_field degree "$line")"
+    cur="$cur_r|$cur_s|$cur_d"
+    if grep -qE "(^|[[:space:]])origin:" <<< "$line"; then
+      want="$want|$(spec_field origin "$line")"
+      cur="$cur|$cur_o"
+    fi
+
     [[ "$cur" != "$want" ]] && { log "drift on $id: live=$cur want=$want"; return 0; }
   done
   return 1
