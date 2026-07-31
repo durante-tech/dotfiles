@@ -7,6 +7,7 @@ export const command = `bash "$HOME/Library/Application Support/Übersicht/widge
 export const refreshFrequency = 5 * 60 * 1000
 
 export const className = `
+  box-sizing: border-box;
   bottom: 60px;
   left: 1160px;
   width: 540px;

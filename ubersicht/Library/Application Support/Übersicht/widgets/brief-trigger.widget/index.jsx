@@ -19,7 +19,9 @@ const isRunning = () => Date.now() < __runningUntil
 
 export const className = `
   box-sizing: border-box;
-  top: 50%;
+  /* 42% (not 50%): keeps the ring + labels clear of deck.widget's variable-height
+     panel growing up from bottom:60 — at 50% the deck overlapped the labels. */
+  top: 42%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 180px;

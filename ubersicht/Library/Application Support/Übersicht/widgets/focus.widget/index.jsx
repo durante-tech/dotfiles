@@ -1,12 +1,14 @@
 // focus.widget — north-star intention from intention.txt
-// Edit intention.txt to set today's focus. Catppuccin Mocha · bottom-left · yellow accent.
+// Edit intention.txt to set today's focus. Catppuccin Mocha · top center-left · yellow accent.
+// Moved out of bottom-left (was bottom:60 left:60) — that corner is
+// today-focus.widget's anchor now; three panels were stacking there.
 
 export const command = `cat "$HOME/Library/Application Support/Übersicht/widgets/focus.widget/intention.txt" 2>/dev/null | head -1`
 export const refreshFrequency = 5 * 60 * 1000
 
 export const className = `
-  bottom: 60px;
-  left: 60px;
+  top: 80px;
+  left: 640px;
   max-width: 380px;
   font-family: 'JetBrainsMono Nerd Font', 'JetBrains Mono', 'Hack Nerd Font', monospace;
   background: rgba(17, 17, 27, 0.55);

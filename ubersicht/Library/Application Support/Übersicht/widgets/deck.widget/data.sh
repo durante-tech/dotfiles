@@ -69,13 +69,16 @@ EXTS = {".md", ".ts", ".tsx", ".jsx", ".lua", ".py", ".sh", ".toml", ".yaml", ".
 # and the walk cost ~50s against a 60s refresh.
 EXCLUDE_PARTS = {"node_modules", ".git", ".venv", "dist", "build", ".next", "target",
                  "shell-snapshots", "STATE", "todos", "intel-context-cache",
-                 "intel-context-fired", "transcripts", "ack-state", "worktrees"}
+                 "intel-context-fired", "transcripts", "ack-state",
+                 "generated", "coverage", "__pycache__", "worktrees"}
 EXCLUDE_NAMES = {"session-name-cache.sh"}
 
 now = time.time()
 
 def age_str(ts):
-    d = now - ts
+    # Clamp: codegen (e.g. Prisma) can stamp mtimes marginally in the future,
+    # which rendered as "-1s". Anything not in the past reads as "now".
+    d = max(0, now - ts)
     if d < 60:    return f"{int(d)}s"
     if d < 3600:  return f"{int(d/60)}m"
     if d < 86400: return f"{int(d/3600)}h"
@@ -112,13 +115,21 @@ for root in HOT_DIRS:
             hits.append((mt, fp))
 
 hits.sort(reverse=True)
-hot_files = []
-for mt, fp in hits[:6]:
+# Diversity cap: at most 2 files per directory, so one hot build/codegen dir
+# cannot monopolize all six rows (the failure mode was 6× prisma/generated).
+hot_files, per_dir = [], {}
+for mt, fp in hits:
+    key = str(fp.parent)
+    if per_dir.get(key, 0) >= 2:
+        continue
+    per_dir[key] = per_dir.get(key, 0) + 1
     hot_files.append({
         "path": short(fp),
         "name": fp.name,
         "age":  age_str(mt),
     })
+    if len(hot_files) >= 6:
+        break
 
 # ── REPOS ──────────────────────────────────────────────────
 def gx(repo, *args, timeout=2):

@@ -4,7 +4,7 @@
 # Stages: work (work.json) · prs (gh, cached) · sync (pull-hold.json)
 #         deploy (fleet-board.md DEPLOY LINE row) · release (version.json)
 exec python3 - <<'PY'
-import json, os, re, subprocess, sys
+import json, os, re, subprocess, sys, time
 from pathlib import Path
 from datetime import datetime, timezone
 
@@ -160,7 +160,13 @@ def stage_prs():
 # ── sync ────────────────────────────────────────────────────────────────────
 def stage_sync():
     path = HOME / "Durante" / "MEMORY" / "STATE" / "pull-hold.json"
-    data = json.loads(path.read_text())
+    try:
+        data = json.loads(path.read_text())
+    except json.JSONDecodeError:
+        # Writer flushes this file every sync leg; a read that lands mid-write
+        # flashed "HOLD FILE ABSENT" for a whole refresh cycle. One short retry.
+        time.sleep(0.15)
+        data = json.loads(path.read_text())
     repos = data["repos"]
     parent, sub = repos["parent"], repos["submodule"]
     return {

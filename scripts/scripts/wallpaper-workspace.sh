@@ -9,6 +9,10 @@
 # wallpaper on the portrait monitor.
 #
 # Lookup chain (first hit wins):
+#   0. Fresh (<36h) daily nano-banana art from ~/Pictures/Wallpapers/daily/
+#      (generated each evening by the DailyBrief agent from the day's Visual
+#      Metaphor) — unless <NAME> is in WALLPAPER_DAILY_EXCLUDE. Default
+#      exclude: "T" (portrait monitor — daily art is 16:9 landscape).
 #   1. ~/Pictures/Wallpapers/workspace-<NAME>.{jpg,png,jpeg,heic}
 #   2. ~/Pictures/Wallpapers/default.{jpg,png}
 #   3. (no-op — leave current wallpaper alone)
@@ -29,12 +33,30 @@ AEROSPACE="/opt/homebrew/bin/aerospace"
 
 # Resolve the image to set.
 PICK=""
+
+# Chain step 0 — the day's generated art takes the landscape workspaces
+# while it's fresh; identity files return when it ages out.
+DAILY_EXCLUDE="${WALLPAPER_DAILY_EXCLUDE:-T}"
+case " $DAILY_EXCLUDE " in
+  *" $WS "*) : ;;
+  *)
+    newest="$(ls -t "$DIR"/daily/dailybrief-*.png "$DIR"/daily/dailybrief-*.jpg 2>/dev/null | head -1)"
+    if [ -n "$newest" ]; then
+      now_epoch="$(date +%s)"
+      file_epoch="$(stat -f %m "$newest" 2>/dev/null || echo 0)"
+      [ $((now_epoch - file_epoch)) -lt 129600 ] && PICK="$newest"   # 36h
+    fi
+    ;;
+esac
+
+if [ -z "$PICK" ]; then
 for ext in jpg png jpeg heic; do
   if [ -f "$DIR/workspace-$WS.$ext" ]; then
     PICK="$DIR/workspace-$WS.$ext"
     break
   fi
 done
+fi
 if [ -z "$PICK" ]; then
   for ext in jpg png; do
     if [ -f "$DIR/default.$ext" ]; then PICK="$DIR/default.$ext"; break; fi

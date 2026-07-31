@@ -86,13 +86,26 @@ def strip_md(s):
     s = re.sub(r"`([^`]+)`",     r"\1", s)
     return s.strip()
 
-action_header_re = re.compile(r"^\s*\*\*\s*(\d+)\s*\.\s*(.+?)\s*\*\*\s*$")
+# Primary: "**1. Title**". Fallbacks seen in real LLM output despite the
+# prompt mandate: "**Priority 1 — Title**" (em/en dash or colon separator)
+# and "1. **Title**". Try in order; first match wins per line.
+action_header_res = [
+    re.compile(r"^\s*\*\*\s*(?:priority\s*)?(\d+)\s*[.:—–-]\s*(.+?)\s*\*\*\s*$", re.IGNORECASE),
+    re.compile(r"^\s*(\d+)\s*\.\s*\*\*\s*(.+?)\s*\*\*\s*$"),
+]
+
+def match_action_header(line):
+    for rgx in action_header_res:
+        m = rgx.match(line)
+        if m:
+            return m
+    return None
 
 actions = []
 i = 0
 while i < len(body_lines):
     ln = body_lines[i]
-    m = action_header_re.match(ln)
+    m = match_action_header(ln)
     if not m:
         i += 1
         continue
@@ -106,7 +119,7 @@ while i < len(body_lines):
     while j < len(body_lines):
         nxt = body_lines[j]
         if not nxt.strip(): break
-        if action_header_re.match(nxt): break
+        if match_action_header(nxt): break
         why_parts.append(strip_md(nxt))
         j += 1
     why = " ".join(why_parts).strip()

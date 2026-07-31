@@ -236,13 +236,17 @@ const WorkBand = ({ work }) => {
       {items.map((s, i) => (
         <div className="row" key={i}>
           <span className="phase">{s.phase}</span>
-          <span className="progress">{s.progress}</span>
+          {/* "0/0" is a session that hasn't reported criteria yet — noise, not
+              progress. Only render the counter once it means something. */}
+          {s.progress && s.progress !== "0/0" && (
+            <span className="progress">{s.progress}</span>
+          )}
           {s.task}
           <span className="age">{s.age}</span>
         </div>
       ))}
       <div className="subline">
-        {(work || {}).hidden || 0} hidden · {(work || {}).total_active || 0} active total
+        {(work || {}).total_active || 0} active · {(work || {}).hidden || 0} background
       </div>
     </div>
   )

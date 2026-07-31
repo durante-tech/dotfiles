@@ -4,11 +4,12 @@
 export const command = `bash "$HOME/Library/Application Support/Übersicht/widgets/drift-warden.widget/data.sh"`
 export const refreshFrequency = 30 * 1000
 
-// Position calibrated to focus.widget at bottom:60 left:60 width:380.
-// Top-right corner of focus card sits ~at left:440, bottom:130.
+// Position calibrated to focus.widget at top:80 left:640 max-width:380
+// (2026-07 re-lane — focus moved out of bottom-left). Dot sits at the
+// card's top-right corner: left ≈ 640 + 375, top ≈ card top − 4.
 export const className = `
-  bottom: 125px;
-  left: 435px;
+  top: 76px;
+  left: 1015px;
   width: 10px;
   height: 10px;
   user-select: none;
