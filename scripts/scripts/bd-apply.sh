@@ -251,6 +251,27 @@ set_dev_sw() {
     return 1
 }
 
+# dev_present — is the built-in actually connected? False in clamshell.
+#
+# set_dev already reads before writing (Amendment F), but a readback against an
+# ABSENT display returns the literal "Failed." rather than a value. That reads
+# as "differs from target", so every write fires and the full retry budget is
+# spent — ~6s of xdrPreset + hwBrightness + softwareBrightness attempts against
+# hardware that is not there. Measured: 8244ms total for one apply in clamshell,
+# of which the DEV phase was ~6s and the panel did not move until it gave up.
+# That delay is precisely what makes a bd-* Stream Deck key feel dead.
+#
+# The retry budget is NOT the bug — it exists so a SLEEPING external recovers a
+# mode change instead of dropping it. It simply cannot distinguish "asleep, keep
+# trying" from "absent, skip". One cheap probe answers that before the budget is
+# spent. Deliberately uncached: a stale yes/no across a dock or undock would
+# reintroduce exactly the silent-no-op class this file exists to prevent.
+dev_present() {
+    local v
+    v="$(bd get --tagID="$DEV_TAG" --hardwareBrightness 2>/dev/null | tr -d '[:space:]')"
+    [[ "$v" =~ ^-?[0-9]*\.?[0-9]+$ ]]
+}
+
 # set_dev <brightness%> <xdrPreset>
 # Foundation rule (Amendment F): only fire BetterDisplay set commands when the
 # target value differs from the current readback. Reasserting xdrPreset or
@@ -422,7 +443,14 @@ apply_mode() {
     # DEV-MAIN uses XDR P3-1600 for EDR headroom (sw upscale on 100% hw) across
     # all modes. DEV_PRESET is constant today — if meeting/read/stream should
     # switch to sRGB for color accuracy, add a per-row preset field to MODES.
-    set_dev "$dev_pct" "$DEV_PRESET"
+    # Guarded on dev_present: in clamshell the built-in is absent and the DEV
+    # phase would burn ~6s failing before the external is ever touched. The
+    # docked path is unchanged — this only skips work that cannot succeed.
+    if dev_present; then
+        set_dev "$dev_pct" "$DEV_PRESET"
+    else
+        log "DEV absent (clamshell) — skipping DEV phase"
+    fi
     set_port "$port_b" "$port_c" "$port_t"
 
     local source="${BD_SOURCE:-manual}"
