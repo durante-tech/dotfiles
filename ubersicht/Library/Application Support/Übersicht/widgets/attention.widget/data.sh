@@ -291,7 +291,11 @@ try:
     if prs:
         n_green = sum(
             1 for pr in prs
-            if not pr["isDraft"] and not any(c in FAILING for c in pr["checks"])
+            # .get() not [""]: a cache entry written before `isDraft` existed would
+            # KeyError here. The except below would swallow it, but silently — this
+            # whole row would vanish rather than degrade. Same access style as the
+            # checks-failing builder above.
+            if not pr.get("isDraft") and not any(c in FAILING for c in pr.get("checks", []))
         )
         if n_green > 0:
             plural = "PR" if n_green == 1 else "PRs"
