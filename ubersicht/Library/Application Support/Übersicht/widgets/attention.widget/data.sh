@@ -26,6 +26,13 @@ STATE_DIR = HOME / ".claude" / "MEMORY" / "STATE"
 
 SEV_ORDER = {"crit": 0, "warn": 1, "info": 2}
 
+# Phases that count as "building" for the build-stuck threshold. `execute` is the
+# Algorithm's name for the same state `build` names here — a PRD sitting in
+# `execute` with 0 criteria passed is stuck exactly as one sitting in `build` is.
+# Mirrors BUILDING_PHASES in ~/Durante/Tools/attention-census.ts; the fork-parity
+# test Tools/__tests__/attention-census-widget-parity.test.ts pins them equal.
+BUILDING_PHASES = ("build", "execute")
+
 now = datetime.now(timezone.utc)
 
 def parse_ts(s):
@@ -137,16 +144,25 @@ except Exception:
     gh_state = "offline-cached"
     prs = None
 
-# ── 1. checks-failing (crit) ────────────────────────────────────────────────
+# ── 1. checks-failing (crit for ready PRs, info for drafts) ─────────────────
+# Operator ruling 2026-07-25: a DRAFT PR's red CI is not a call to action — the
+# author has explicitly marked it not-ready and the deploy line will not touch it
+# (FLEETPROTOCOL: drafts are never merged). Measured that day: all 5 crit rows on
+# this widget were draft PRs, occupying 5 of 7 visible slots and burying every
+# real work-stuck row below the cut. Demoted, NOT dropped — the signal is kept at
+# `info`, which SEV_ORDER sorts below `warn`, so a draft's failures stay auditable
+# without crowding out actionable work.
 try:
     for pr in (prs or []):
         nfail = sum(1 for c in pr["checks"] if c in FAILING)
         if nfail == 0:
             continue
         plural = "check" if nfail == 1 else "checks"
+        is_draft = bool(pr.get("isDraft"))
         add_row(
-            "checks-failing", "crit",
-            f"{pr['repo']}#{pr['number']} — {nfail} {plural} failing",
+            "checks-failing", "info" if is_draft else "crit",
+            f"{pr['repo']}#{pr['number']} — {nfail} {plural} failing"
+            + (" (draft)" if is_draft else ""),
             detail=pr["title"], age="", source="gh",
         )
 except Exception:
@@ -223,7 +239,7 @@ try:
         label = None
         if phase == "verify" and age_sec > 24 * 3600:
             label = "verify-stuck"
-        elif phase == "build" and passed == 0 and age_sec > 12 * 3600:
+        elif phase in BUILDING_PHASES and passed == 0 and age_sec > 12 * 3600:
             label = "build-stuck"
         elif age_sec > 7 * 86400:
             label = "stale"
@@ -275,7 +291,11 @@ try:
     if prs:
         n_green = sum(
             1 for pr in prs
-            if not pr["isDraft"] and not any(c in FAILING for c in pr["checks"])
+            # .get() not [""]: a cache entry written before `isDraft` existed would
+            # KeyError here. The except below would swallow it, but silently — this
+            # whole row would vanish rather than degrade. Same access style as the
+            # checks-failing builder above.
+            if not pr.get("isDraft") and not any(c in FAILING for c in pr.get("checks", []))
         )
         if n_green > 0:
             plural = "PR" if n_green == 1 else "PRs"
