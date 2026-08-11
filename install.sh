@@ -20,7 +20,14 @@ DOTFILES_REPO="https://github.com/durante-tech/dotfiles.git"
 # (install.sh may run via curl before the clone exists, so it cannot derive
 # the path from its own location like setup.sh/personalize.sh do).
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
-TPM_DIR="$HOME/.tmux/plugins/tpm"
+# TPM lives at a NON-DEFAULT path. tmux.conf relocates it via
+#   set-environment -g TMUX_PLUGIN_MANAGER_PATH ~/.config/tmux/.tmux/plugins
+# and sources it from there on the last line (`run '.../tpm/tpm'`). Cloning to
+# TPM's default $HOME/.tmux/plugins/tpm installs it where tmux.conf never
+# looks, so a fresh machine came up with ZERO plugins loaded — no catppuccin
+# theme, no battery/online status, no sessionx — while install.sh reported
+# success. Keep this in sync with tmux.conf's TMUX_PLUGIN_MANAGER_PATH.
+TPM_DIR="$HOME/.config/tmux/.tmux/plugins/tpm"
 
 # Colors for output
 RED='\033[0;31m'
