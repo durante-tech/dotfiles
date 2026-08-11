@@ -186,8 +186,15 @@ cask "keycastr"
 cask "espanso"
 # Clipboard history manager (Cmd+Shift+C to open)
 cask "maccy"
-# Customise mouse behavior
-cask "linearmouse"
+# Customise mouse behavior — PINNED to v0.11.2, DO NOT re-enable this cask.
+#   The cask tracks latest (>=0.11.3), which carries upstream PR #1209. That PR
+#   made LinearMouse FSEvents-watch "stable parent roots" — /, /Users, $HOME,
+#   ~/.config, ~/Library — so every filesystem event in $HOME runs a callback
+#   doing readlink + a full URL reparse. Measured under an identical 3000-file
+#   load: 0.11.2 peaks at 1%, 0.11.4 at 92%, 0.12.0-beta.4 at 99%.
+#   Casks cannot be `brew pin`ned, so install via:
+#       scripts/scripts/install-linearmouse.sh
+# cask "linearmouse"
 # System monitor for the menu bar
 cask "stats"
 # Inter sans-serif typeface (used by sketchybar / design tokens)

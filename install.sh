@@ -428,7 +428,15 @@ if [ "$SKIP_CASKS" = false ]; then
     cask_install aerospace
     cask_install keycastr
     cask_install betterdisplay
-    cask_install linearmouse
+    # LinearMouse is NOT installed via cask — it is pinned to v0.11.2.
+    # >=0.11.3 carries upstream PR #1209, which FSEvents-watches $HOME and its
+    # parent roots and pegs a core on a busy home directory (1% vs 92% peak
+    # under an identical load). See scripts/scripts/install-linearmouse.sh.
+    if [ "$DRY_RUN" = true ]; then
+        print_dry "install-linearmouse.sh (pinned v0.11.2)"
+    else
+        "$DOTFILES_DIR/scripts/scripts/install-linearmouse.sh" || print_warn "LinearMouse pinned install failed"
+    fi
     cask_install ubersicht       # webview widgets above wallpaper
     cask_install espanso         # system-wide text expander
     cask_install maccy           # clipboard history manager
