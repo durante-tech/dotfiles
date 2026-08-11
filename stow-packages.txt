@@ -25,6 +25,7 @@ fastfetch
 ghostty
 karabiner
 kitty
+linearmouse
 mise
 mpd
 nvim
