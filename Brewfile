@@ -198,6 +198,12 @@ cask "font-manrope"
 cask "kitty"
 # Xcode project generator (Swift / iOS dev)
 cask "tuist"
+# CLI for the Claude Platform (Anthropic)
+cask "ant"
+# Game engine — routed to AeroSpace workspace D by app-id org.godotengine.godot
+cask "godot"
+# Reverse proxy / secure tunnels to localhost
+cask "ngrok"
 vscode "aaravb.chrome-extension-developer-tools"
 vscode "aaron-bond.better-comments"
 vscode "anthropic.claude-code"
