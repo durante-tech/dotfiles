@@ -15,15 +15,25 @@
     <key>Label</key>
     <string>com.lucas.ubersicht</string>
 
-    <!-- `open -gj -a` launches the GUI app cleanly via LaunchServices.
+    <!-- `open -gj` launches the GUI app cleanly via LaunchServices.
          Direct-binary launch races on app-nap and Screen Recording perms;
-         going through `open` is the bulletproof path. -->
+         going through `open` is the bulletproof path.
+
+         Target by bundle ID (-b), NOT by name (-a). The app is "Übersicht",
+         and that Ü exists in two Unicode normalizations: NFC (U+00DC, bytes
+         c3 9c) and NFD (U + combining diaeresis, bytes 55 cc 88). This file
+         is NFC; the app on disk is NFD. APFS compares normalization-
+         insensitively so paths resolve fine, but `open -a` matches the app
+         NAME as an exact byte string through LaunchServices and does not
+         normalize — so `-a Übersicht` failed with "Unable to find
+         application named 'Übersicht'" and exited 1 on every login. The
+         bundle ID is pure ASCII and has no normalization to get wrong. -->
     <key>ProgramArguments</key>
     <array>
         <string>/usr/bin/open</string>
         <string>-gj</string>
-        <string>-a</string>
-        <string>Übersicht</string>
+        <string>-b</string>
+        <string>tracesOf.Uebersicht</string>
     </array>
 
     <!-- Fire once at login. KeepAlive=false because Übersicht's WKWebView
