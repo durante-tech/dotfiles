@@ -72,10 +72,10 @@ external); additional monitors host whatever you drag to them. Validate
 anytime:
 
 ```bash
-scripts/scripts/render-aerospace.sh --doctor   # 4 checks: monitor patterns, AeroSpace
+scripts/scripts/render-aerospace.sh --doctor   # 5 checks: monitor patterns, AeroSpace
                                                # version >= 0.20.0, persistent-workspaces
-                                               # drift, window-detection health
-                                               # (exit 1 if any warns)
+                                               # drift, window-detection health, stale
+                                               # render (exit 1 if any warns)
 ./setup.sh --check                             # includes the same doctor
 ```
 
