@@ -255,13 +255,15 @@ cd "$HOME/dotfiles"
 | 1 | Xcode CLT | Installs if missing |
 | 2 | Homebrew | Installs if missing |
 | 3 | Brew formulae | 79 CLI tools (mise, neovim, tmux, fzf, atuin, ollama, gum, glow, wallpaper, sleepwatcher, etc.) |
+| 3.5 | Brewfile reconciliation | `brew bundle install --file=Brewfile` — installs anything in the Brewfile the explicit list missed. Never uninstalls; retired-tool cleanup is opt-in via docs/UPGRADE.md |
 | 4 | Brew casks | 22 GUI apps (Ghostty, Espanso, Maccy, Übersicht, boring.notch, etc.) |
 | 5 | Bun + ccusage + Fabric | Non-Homebrew tools |
 | 6 | Stow dotfiles | Symlinks 23 packages into `~/.config/`, `~/Library/`, and `~/` |
+| 6a | Personalization prompt | Fresh installs only. **Blocks on an interactive `Run ./personalize.sh now? [Y/n]` read** when `~/.config/dotfiles/personal.env` is missing and stdin is a TTY — answer it, or an unattended driver looks hung |
 | 6b | `mise install` | Pulls Node + Python versions pinned in `mise/.config/mise/config.toml` |
 | 6c | `setup.sh --configure` | Renders LaunchAgent plists from templates (substitutes `$USER`), creates dirs, installs TPM |
 | 6d | Espanso service | `espanso service register && espanso start` |
-| 7 | TPM tmux plugins | Auto-installs via `~/.tmux/plugins/tpm/bin/install_plugins` |
+| 7 | TPM tmux plugins | Auto-installs via `~/.config/tmux/.tmux/plugins/tpm/bin/install_plugins` — TPM lives at that NON-default path because tmux.conf relocates it with `TMUX_PLUGIN_MANAGER_PATH`. A clone at `~/.tmux/plugins/tpm` is never read: the machine comes up with zero plugins while install.sh reports success (0464e10) |
 | 8 | Neovim plugins | `nvim --headless +Lazy! sync +qa` |
 | 9 | macOS defaults | Runs `./macos/.macos` (44 entries) — needs sudo |
 | 10 | Verification | Checks critical CLI tools resolve |

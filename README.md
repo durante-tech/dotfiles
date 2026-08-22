@@ -57,9 +57,10 @@ The full 12-step install runs `install.sh` which internally drives: Xcode CLT â†
 
 ---
 
-## Preview
-
-<!-- Take these screenshots and add to assets/ -->
+<!-- ## Preview â€” hidden until the screenshots exist.
+assets/ holds only hero.png, so these four references rendered as broken-image
+icons on github.com, directly under the hero shot. Add assets/terminal.png,
+neovim.png, tmux.png and yazi.png, then uncomment this whole block.
 
 | Terminal + Sketchybar | Neovim IDE |
 |:---:|:---:|
@@ -68,8 +69,7 @@ The full 12-step install runs `install.sh` which internally drives: Xcode CLT â†
 | Tmux Sessions | File Manager (Yazi) |
 |:---:|:---:|
 | ![Tmux](assets/tmux.png) | ![Yazi](assets/yazi.png) |
-
----
+-->
 
 ## What's Included
 

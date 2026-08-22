@@ -160,6 +160,7 @@ nvim/
 | `github` | `github "search term"` | Open GitHub search in browser |
 | `ya` | `ya` | Yazi file manager with cd-on-exit |
 | `yt` | `yt <url>` or `yt -t <url>` | Download YouTube transcript via Fabric |
+| `wps` | `wps [matrix\|aurora\|flowfield]` | Open a `wallpapers/shaders/*.html` shader in Plash |
 
 ### Complete Alias Reference
 
@@ -253,7 +254,10 @@ nvim/
 | `clds` | `claude --model sonnet` |
 | `cldy` | `claude --dangerously-skip-permissions --model sonnet` |
 | `cldyo` / `lfg` | `claude --dangerously-skip-permissions --model opus` |
+| `cldpy` | `claude -p --dangerously-skip-permissions` |
+| `cldpyo` | `claude -p --dangerously-skip-permissions --model opus` |
 | `cldr` | `claude --resume` |
+| `dosa` | `dos -l -m full --dangerously-skip-permissions` — DuranteOS launcher; only resolves when the private `~/Durante` toolchain is installed |
 
 **Fabric AI:**
 
@@ -265,6 +269,48 @@ nvim/
 | `fbs` | `fabric --stream` |
 | `fbsp` | `fabric --stream --pattern` |
 | `{pattern}` | Auto-generated per-pattern aliases (cached in `~/.cache/fabric-aliases.zsh`) |
+
+**Markdown & GitHub:**
+
+| Alias | Command |
+|-------|---------|
+| `gm` | `glow` — render markdown in the terminal |
+| `gmp` | `glow -p` — paged, for long docs |
+| `ghd` | `gh dash` — interactive PR/issue browser |
+
+**Local LLM (Ollama):**
+
+| Alias | Command |
+|-------|---------|
+| `ollama-up` | `brew services run ollama` — this session only. `start` would register a boot LaunchAgent; avoid unless you want always-on ollama |
+| `ollama-down` | `brew services stop ollama` |
+| `ollama-ls` | `ollama list` |
+
+**Wallpaper:**
+
+| Alias | Description |
+|-------|-------------|
+| `wp` | `wallpaper` — get/set the current wallpaper |
+| `wpn` | Rotate now, time-banded (`wallpaper-rotate.sh`) |
+| `wpa` | Rotate from the FULL gallery, ignoring the time band |
+| `wpr` | Random image from `~/Pictures/Wallpapers` (`wallpaper-cycle.sh`) |
+| `wpw` | Manual per-workspace trigger (`wallpaper-workspace.sh`) |
+| `wpl` | Tail `~/Library/Logs/wallpaper-rotate.log` |
+
+**BetterDisplay** — defined only when `betterdisplaycli` is on PATH. Everything
+here routes through `scripts/scripts/bd-apply.sh`; reach for these before the
+full script path, and never for `--favoriteMode` (broken on 4.3.0 pre-release):
+
+| Alias | Action |
+|-------|--------|
+| `bd-apply` | The script itself — `bd-apply <mode>\|status\|verify\|doctor` |
+| `bd-dawn` / `bd-day` / `bd-afternoon` / `bd-evening` / `bd-night` | Time-of-day modes |
+| `bd-meeting` / `bd-read` / `bd-cinema` | Task modes |
+| `bd-status` | Print the current mode |
+| `bd-stream` / `bd-stream-stop` | (functions) Connect/disconnect the STREAM-CAPTURE virtual screen for OBS |
+| `bd-up` / `bd-down` | (functions) Brightness ±10% across the synced display group |
+| `bd-snap` | (function) Dump display state to `~/Documents/betterdisplay-<ts>.json` |
+| `bd-srgb` / `bd-xdr` | (functions) DEV-MAIN colorspace toggles (sRGB caps at 100%, XDR reaches 160%) |
 
 **Other:**
 
@@ -549,7 +595,7 @@ Spell checking enabled, textwidth 80 for markdown files.
 
 **Image Support**: `<leader>pi` paste image from clipboard (requires `brew install pngpaste`)
 
-**PDF Reader**: `<leader>pb` bookmarks, `<leader>pt` TOC, `<leader>pd` dark mode
+**PDF Reader** (whole group on capital `<leader>P` — `<leader>p` is the snacks picker prefix): `<leader>Pb` bookmarks, `<leader>Pr` recent PDFs, `<leader>Pt` TOC, `<leader>Pd` / `<leader>Ps` / `<leader>Px` dark / standard / text view mode
 
 **Debugging (DAP)**: `<leader>db` toggle breakpoint, `<leader>dc` continue. Go debugging via dap-go.
 
@@ -694,7 +740,9 @@ vim.lsp.enable("server_name")
 `aerospace/.config/aerospace/aerospace.toml` is gitignored render output. Edit the
 template, then `scripts/scripts/render-aerospace.sh && aerospace reload-config`.
 `render-aerospace.sh --doctor` checks monitor patterns, AeroSpace version
-(config-version=2 keys need >= 0.20.0), persistent-workspaces drift, and
+(config-version=2 keys need >= 0.20.0), persistent-workspaces drift, a stale
+render (template pulled or edited but never re-rendered — the deployed
+aerospace.toml is gitignored, so nothing else notices), and
 window-detection health — a long-running AeroSpace can stop seeing newly
 launched apps, which kills every `on-window-detected` rule silently while the
 config still validates clean. The fix for that one is restarting AeroSpace.
@@ -890,11 +938,16 @@ Modular plugin architecture with Catppuccin colors and Hack Nerd Font.
 
 ### Sections
 
-**Left**: Workspace indicators (AeroSpace integration), front app, Docker status
-**Left-Middle**: MacUpdater, ClearVPN, voice server, calendar
-**Right**: Clock, weather, CPU, memory, microphone, network, GitHub notifications, media player (Spotify/Music), battery
+sketchybar has exactly three positions: `left`, `center`, `right`. There is no
+"left-middle" — an item added there is rejected and never appears, with the
+failure buried in `/opt/homebrew/var/log/sketchybar/sketchybar.err.log`.
 
-Hot-reloads on config change. Receives `aerospace_workspace_change` events.
+**Left** (left→right): workspace indicators (AeroSpace, derived live by `items/space.sh`), aerospace mode, front app, Docker, MacUpdater, ClearVPN, voice server, calendar
+**Center**: `workspace_visibility` — an invisible dispatcher (`drawing=off`), not a status item
+**Right**: battery, clock, bd_mode, weather, CPU, memory, network, GitHub notifications, microphone, volume, OBS, Spotify — source order in `sketchybarrc` is right→left visually, so battery sits rightmost
+
+Hot-reloads on config change. Receives `aerospace_workspace_change` events;
+`plugins/workspace_visibility.sh` holds the per-workspace show/hide table.
 
 ---
 
@@ -923,6 +976,7 @@ Hot-reloads on config change. Receives `aerospace_workspace_change` events.
 | `bd-lmu-watch.sh` | Ambient-light bridge — auto-switches mode from the light sensor |
 | `bd-wake.sh` | Re-apply the current mode after wake (sleepwatcher `~/.wakeup`) |
 | `bd-build-slots.sh` | Build BetterDisplay favorite-mode slots from the live bd-apply.sh modes |
+| `bd-hdr-toggle.sh` | Flip HDR on the external panel — `on` / `off` / `status`, every write confirmed by readback (`betterdisplaycli set` exits 0 even when it silently no-ops). Deliberately NOT a bd-apply mode: HDR is orthogonal to the time-of-day axis, and held on it lifts blacks on SDR desktop work |
 | `display-restore.sh` | Re-assert the canonical monitor layout (resolution, rotation, origin). `--portrait-hires` is canonical; 7 profiles total |
 | `unlock-watch.swift` | Compiled Swift helper — runs `~/.wakeup` on screen unlock (launchd cannot express this trigger) |
 
@@ -930,7 +984,7 @@ Hot-reloads on config change. Receives `aerospace_workspace_change` events.
 
 | Script | Description |
 |--------|-------------|
-| `render-aerospace.sh` | Render `aerospace.toml` from the template. `--doctor` checks monitor patterns, AeroSpace version, persistent-workspaces drift, window-detection health |
+| `render-aerospace.sh` | Render `aerospace.toml` from the template. `--doctor` checks monitor patterns, AeroSpace version, persistent-workspaces drift, window-detection health, stale render |
 | `aerospace-resweep.sh` | Re-apply `on-window-detected` routing to windows already open (startup reconciliation) |
 | `kitty-font-per-workspace.sh` | Resize kitty font live based on focused AeroSpace workspace |
 | `ubersicht-screen-sync.sh` | Keep the Übersicht dashboard pinned to the external display |
@@ -948,6 +1002,12 @@ Hot-reloads on config change. Receives `aerospace_workspace_change` events.
 | `dos-stream` | Runtime control plane for the build-in-public pipeline (`phase <observe\|think\|…>`) |
 | `dos-stream-sidecar` | Serve real build activity to the terminal-frame overlay |
 | `streamdeck-build` | Build the Stream Deck profile from a source `.streamDeckProfile` |
+
+**Install helpers**
+
+| Script | Description |
+|--------|-------------|
+| `install-linearmouse.sh` | Install LinearMouse **pinned to v0.11.2** (`--force` to reinstall). Called by install.sh during phase 4, which is why the cask is commented out in the Brewfile: 0.11.3+ carries upstream PR #1209, whose FSEvents watcher watches all of `$HOME` and pegs a core (measured 1% vs 92% peak under identical load). `brew bundle` or `brew install --cask linearmouse` silently brings the regression back — d6f222a |
 
 **Adding New Scripts**: Create in `scripts/scripts/`, `chmod +x`, then
 `stow -t ~ scripts`. A stow **is** required: `~/scripts` is a real directory (it
