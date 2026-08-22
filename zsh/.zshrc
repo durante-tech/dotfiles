@@ -9,7 +9,12 @@
 # reload, stacked another copy of each (both were already doubled in the live
 # PATH). -U drops later duplicates on assignment and keeps the leftmost, so a
 # prepend still wins its position.
-typeset -U path PATH
+#
+# fpath/FPATH needs the identical treatment and never had it: FPATH is exported
+# below, so every nested interactive shell inherits it and then prepends the
+# grok/docker completion dirs again -- both were already stacked 3 deep in the
+# live fpath. Duplicates make compinit re-scan the same dirs on every rebuild.
+typeset -U path PATH fpath FPATH
 
 # Kitty-in-tmux: propagate KITTY env vars so kitty graphics protocol works
 if [[ -n "$TMUX" && -z "$KITTY_PID" ]]; then
@@ -64,10 +69,15 @@ command -v starship &>/dev/null && eval "$(starship init zsh)"
 # Completion system — MUST init before any tool that calls `compdef` (zoxide
 # and fzf below both register completions). Running it after them caused
 # `compdef:_comps: assignment to invalid subscript range` on re-source. fpath
-# already includes the deno completions dir set above; docker's completions add
-# to fpath later and intentionally rely on this cached dump.
-# Completion dirs that must be in fpath BEFORE compinit builds the dump:
+# already includes the deno completions dir set above.
+# Completion dirs that must be in fpath BEFORE compinit builds the dump.
+# compinit scans $fpath at the moment it runs (zshcompsys: "When compinit is
+# run, it searches all such files accessible via $fpath"), and -C skips even
+# that scan and just sources the dump -- so a dir appended to fpath AFTER this
+# point is invisible on both paths and its completions are never registered.
+# Docker's block used to do exactly that near EOF; it lives here now.
 [[ -d "$HOME/.grok/completions/zsh" ]] && fpath=("$HOME/.grok/completions/zsh" $fpath)
+[[ -d "$HOME/.docker/completions" ]] && fpath=("$HOME/.docker/completions" $fpath)
 # Rebuild the dump at most once a day so new completion dirs get picked up;
 # otherwise trust the cache (-C) — a full compinit re-scans fpath every shell.
 autoload -Uz compinit
@@ -98,7 +108,23 @@ command -v fzf &>/dev/null && eval "$(fzf --zsh)"
 export ATUIN_NOBIND="true"
 command -v atuin &>/dev/null && eval "$(atuin init zsh)"
 # bindkey '^r' _atuin_search_widget
-bindkey '^r' atuin-up-search-viins
+# atuin-search-viins, NOT atuin-up-search-viins. The up-* widget is the ARROW-KEY
+# widget: atuin init zsh defines _atuin_up_search with a single-line guard that
+# falls through to `zle up-line` whenever the buffer contains a newline, so
+# Ctrl+R silently stopped searching inside a for/while continuation or a pasted
+# multiline command. It also passes --shell-up-key-binding, which reads
+# filter_mode_shell_up_key_binding / search_mode_shell_up_key_binding instead of
+# filter_mode / search_mode (both commented out in config.toml today, so the
+# paths coincide — until one is uncommented). Upstream binds
+# `bindkey -M viins '^r' atuin-search-viins` and reserves up-* for '^[[A'.
+#
+# Bound per-keymap, not bare. A bare `bindkey` only touches the CURRENT keymap,
+# which under `set -o vi` is viins — so Ctrl+R in vi COMMAND mode fell through to
+# whatever else claimed it. Measured here: `bindkey -M vicmd '^r'` reported
+# `fzf-history-widget`, i.e. the same key ran two different history searchers
+# depending on which mode you happened to be in.
+bindkey -M viins '^r' atuin-search-viins
+bindkey -M vicmd '^r' atuin-search-vicmd
 
 #User configuration
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -388,7 +414,8 @@ elif command -v claude >/dev/null 2>&1; then
 fi
 # Zsh completions: compinit now runs earlier (before the zoxide/fzf compdef
 # callers, near the starship init) to fix `_comps: assignment to invalid
-# subscript range`. Docker's fpath addition below still relies on that dump.
+# subscript range`. Docker's fpath addition moved up next to it -- appended
+# after compinit it was never scanned into the dump at all.
 
 # Source project-specific aliases if they exist
 [[ -f ~/Developer/tac/scripts/aliases.sh ]] && source ~/Developer/tac/scripts/aliases.sh
@@ -399,8 +426,9 @@ fi
 # bun completions (sourced in .zprofile, not duplicated here)
 
 # The following lines have been added by Docker Desktop to enable Docker CLI completions.
-# (compinit already ran cached above — don't re-run here)
-[[ -d "$HOME/.docker/completions" ]] && fpath=("$HOME/.docker/completions" $fpath)
+# Its fpath line was moved above the compinit call (see "Completion dirs that
+# must be in fpath BEFORE compinit"); here it ran too late to be scanned. The
+# markers stay so Docker Desktop's updater does not append a fresh copy.
 # End of Docker CLI completions
 
 # Added by LM Studio CLI (lms) — only if installed

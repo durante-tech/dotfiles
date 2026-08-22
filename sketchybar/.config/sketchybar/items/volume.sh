@@ -5,11 +5,16 @@
 # regular item so update_freq actually fires the script on first load.
 #
 # update_freq is a stale-guard, not the refresh path: the volume_change
-# subscription below fires the instant CoreAudio volume changes, mouse.clicked
-# and system_woke cover the other two cases, and sketchybarrc triggers
-# volume_change once at load. At 5s the routine tick spawned bash + osascript
-# ~17k times a day (plugins/volume.sh populate_from_system) to re-read a value
-# nothing had changed.
+# subscription below fires the instant CoreAudio volume changes, system_woke
+# covers wake, and sketchybarrc's --update populates it at load. At 5s the
+# routine tick spawned bash + osascript ~17k times a day
+# (plugins/volume.sh populate_from_system) to re-read a value nothing changed.
+#
+# Deliberately NOT subscribed to mouse.clicked. sketchybar only exports
+# $PERCENTAGE from bar_item_cancel_drag(), which is guarded by has_slider
+# (v2.24.0 src/bar_item.c); this item is a plain `item`, so the handler that
+# read $PERCENTAGE could never fire and the subscription only cost one extra
+# forked bash per click on top of click_script.
 volume=(
   script="$PLUGIN_DIR/volume.sh"
   click_script="$PLUGIN_DIR/volume_click.sh"
@@ -28,4 +33,4 @@ volume=(
 
 sketchybar --add item volume right \
            --set volume "${volume[@]}" \
-           --subscribe volume volume_change mouse.clicked system_woke
+           --subscribe volume volume_change system_woke

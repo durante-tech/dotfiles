@@ -57,7 +57,9 @@ zsh -i -c 'node --version && python --version' 2>&1 | grep -q "v" && echo "OK No
 zsh -i -c 'type _direnv_hook' 2>&1 | grep -q "function" && echo "OK direnv hooked" || echo "FAIL direnv not hooked"
 
 # Atuin is initialized
-zsh -i -c 'type _atuin_search_widget' 2>&1 | grep -q "function" && echo "OK Atuin loaded" || echo "FAIL Atuin not loaded"
+# _atuin_search is the shell FUNCTION; _atuin_search_widget is a ZLE widget and
+# `type` cannot see ZLE widgets, so that spelling always printed FAIL.
+zsh -i -c 'type _atuin_search' 2>&1 | grep -q "function" && echo "OK Atuin loaded" || echo "FAIL Atuin not loaded"
 ```
 
 **If shell setup fails:**

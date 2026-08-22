@@ -521,7 +521,7 @@ Sessions are git-branch-specific, auto-save on exit, auto-restore on open.
 
 | Binding | Action |
 |---------|--------|
-| `<leader>mp` | Format file/range (async, 3s timeout) |
+| `<leader>mp` | Format file/range (sync, 2s timeout) |
 | `<leader>mf` | Format injected code |
 
 **Nvim-Lint**: biomejs (JS/TS), pylint (Python). Auto-lints on save/enter/leave-insert. `<leader>l` for manual lint.
@@ -780,7 +780,7 @@ they have no alt binding at all.
 | `Alt+Shift+1/2/A/B/D/T/M` | Move window to workspace |
 | `Alt+Shift+W` / `Alt+Shift+O` | Move window to E / N (new — these had no move binding at all) |
 | `Alt+Tab` or `Alt+0` | Workspace back-and-forth |
-| `Alt+Shift+Tab` | Move workspace to other monitor |
+| `Alt+Shift+Tab` | Focus the other monitor (wraps) |
 | `Alt+Enter` | Open Ghostty |
 | `Alt+Shift+Space` | Fullscreen toggle |
 | `Alt+/` | Toggle layout (tiles/horiz/vert) |
@@ -813,10 +813,9 @@ Per-monitor: Built-in 10px (15 bottom), Portrait 15px (50 top). Accordion paddin
 | Binding | Action |
 |---------|--------|
 | `Cmd+B > r` | Reload config |
-| `Cmd+B > x` | Close tab |
-| `Cmd+B > c` | New tab |
+| `Cmd+B > x` | Close surface (the split, or the window if it is the last one) |
+| `Cmd+B > c` | New window — `macos-titlebar-style = hidden` disallows native tabs, so `new_tab` opens a window |
 | `Cmd+B > n` | New window |
-| `Cmd+B > 1-9` | Go to tab N |
 | `Cmd+B > \` | Split right |
 | `Cmd+B > -` | Split down |
 | `Cmd+B > e` | Equalize splits |
@@ -824,7 +823,7 @@ Per-monitor: Built-in 10px (15 bottom), Portrait 15px (50 top). Accordion paddin
 | `Cmd+B > ,` | Quick terminal |
 | `Cmd+I` | Inspector toggle |
 
-**Visual**: Rose-pine theme, 75% opacity, 23px blur, JetBrainsMono Nerd Font (16pt), inverted block cursor (no blink).
+**Visual**: Rose-pine theme, 75% opacity, 23px blur, JetBrainsMono Nerd Font (16pt), inverted block cursor (no blink), hidden titlebar (which is why there are no tab bindings — tmux windows are the tabbing layer).
 
 ---
 
@@ -900,7 +899,8 @@ Vi-style keybindings. Catppuccin Mocha colors. (Inline images configured but ine
 | `Ctrl+h/l` | Previous / next tab |
 | `d` | Close tab |
 | `/` / `?` | Search forward / back |
-| `H` / `L` | History back / forward |
+| `H` / `B` / `Ctrl+O` | Go back — w3m's BACK *closes* the buffer it leaves |
+| `L` | Next buffer (NEXT). Not "forward": the page `H` left no longer exists |
 | `o` / `O` | Go to URL / tab go to URL |
 | `v` | View source |
 | `a` / `b` | Add / view bookmarks |
@@ -911,7 +911,9 @@ Vi-style keybindings. Catppuccin Mocha colors. (Inline images configured but ine
 
 ## Starship Prompt
 
-**Theme**: Catppuccin Mocha. Shows directory (with icon substitutions), git branch (with remote provider icon), git status, programming language versions.
+**Theme**: Catppuccin Mocha. Two-sided prompt: `format` (left) carries the directory (with icon substitutions), the git remote-provider glyph, branch, git state and status, and the vi-mode character; `right_format = "$all"` (right) carries everything else — language versions, package/bun version, command duration, jobs, cloud context.
+
+> `$all` contains only the modules **not** named in `format`. Adding a module to `format` to "show it" silently removes it from the right prompt instead of duplicating it — verified: adding `$package` to `format` moved `is 󰏗 v0.0.1` from the right prompt to the left.
 
 ### Vi-Mode Character Indicators
 
@@ -924,11 +926,13 @@ Vi-style keybindings. Catppuccin Mocha colors. (Inline images configured but ine
 
 ### Directory Substitutions
 
-Documents -> icon, Downloads -> icon, Music -> icon, Pictures -> icon, Github -> icon, Developer -> icon, Durante -> icon, Study -> icon.
+Documents -> icon, Downloads -> icon, Music -> icon, Pictures -> icon, Github -> icon, Developer -> icon, Experiments -> icon, Durante -> icon, Study -> icon.
 
 ### Language Detection
 
 Auto-detects and shows versions for: Node.js, C, Rust, Go, PHP, Java, Kotlin, Haskell, Python, Docker context.
+
+Those ten are only the modules **re-symbolled** with Nerd Font glyphs — not the enabled set. `right_format = "$all"` enables Starship's full default module set, so other detected toolchains (bun, package, deno, cloud contexts, …) also appear, at upstream defaults.
 
 ---
 
@@ -1124,6 +1128,7 @@ AeroSpace, Ghostty macOS options, Sketchybar are macOS-only. For Linux: replace 
 
 - AeroSpace (accessibility)
 - Raycast (accessibility)
+- Karabiner-Elements (Input Monitoring **and** Accessibility — Karabiner-Core-Service links `AXIsProcessTrustedWithOptions`/`kAXTrustedCheckOptionPrompt`, so without the Accessibility grant the whole Hyper layer stops remapping while `karabiner_cli --lint-complex-modifications` still reports `ok`; see docs/getting-started/installation.md)
 
 Grant in System Settings > Privacy & Security after first launch.
 

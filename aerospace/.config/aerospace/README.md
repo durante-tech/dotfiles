@@ -194,18 +194,16 @@ exec-on-workspace-change = ['/bin/bash', '-c',
 - `$AEROSPACE_PREV_WORKSPACE` - Previous workspace name
 
 ### on-mode-changed
-Triggers when you enter/exit a mode (like resize mode). Currently commented out.
+Triggers when you enter/exit a mode (like resize mode). Live in this repo's config.
 
-**Important:** Unlike `exec-on-workspace-change`, this callback runs **AeroSpace commands**, not bash directly. Use `exec-and-forget` to run external scripts:
+**Important:** the list entries are AeroSpace commands, but `exec-and-forget` itself runs `/bin/bash -c '<bash-script>'` and passes the rest of the string to bash verbatim (`aerospace-exec-and-forget(1)`) — so shell syntax, command substitution included, works inside it.
 
 ```toml
 # Run sketchybar trigger when mode changes
-on-mode-changed = ['exec-and-forget sketchybar --trigger mode_change MODE=$AEROSPACE_MODE']
+on-mode-changed = ['exec-and-forget sketchybar --trigger mode_change MODE=$(aerospace list-modes --current)']
 ```
 
-**Available env vars:**
-- `$AEROSPACE_MODE` - Current mode name
-- `$AEROSPACE_PREV_MODE` - Previous mode name
+**Available env vars:** none for this callback. AeroSpace injects `AEROSPACE_WINDOW_ID` / `AEROSPACE_WORKSPACE` into callback commands and `AEROSPACE_FOCUSED_WORKSPACE` / `AEROSPACE_PREV_WORKSPACE` into `exec-on-workspace-change`. `$AEROSPACE_MODE` and `$AEROSPACE_PREV_MODE` were listed here but have never existed in any release (zero hits in the 0.21.3-Beta binary), so bash expanded them to the empty string — query `aerospace list-modes --current` instead.
 
 **Ideas:**
 - Show mode indicator in Sketchybar (e.g., "RESIZE" badge)

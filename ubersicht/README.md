@@ -78,11 +78,25 @@ so they can never grow into a neighbor:
 | Left 1 | pipeline | `top:70 left:60 w:540` |
 | Left 2 | memory-tide (sparkline) | `top:560 left:60` |
 | Left 3 | attention (max 4 rows, detail on top 2) | `top:720 left:60 w:540` |
-| Top-center-left | focus (intention mantra) | `top:80 left:640` |
 | Center-right-bottom | deck | `bottom:60 left:1160 w:540` |
 
 The Left 4, Center, Center-bottom and Right-bottom lanes were freed by the
 2026-08-22 widget removal above; the lanes that remain are unchanged.
+
+### Built-in-display widgets (NOT dashboard lanes)
+
+`scripts/scripts/ubersicht-screen-sync.sh` pins these three to the built-in
+Retina panel with `showOnMainScreen` — its `BUILTIN_WIDGETS` list is the source
+of truth, and the live `WidgetSettings.json` agrees. Their CSS coordinates are
+therefore against the 1728-wide built-in display, **not** the 2560px dashboard
+above. `focus` used to be listed in the lane table, which sent anyone
+re-anchoring it to the wrong screen width:
+
+| Widget | Anchor |
+|---|---|
+| clock | `top:80 left:50%` (centered) |
+| focus (intention mantra) | `top:80 left:640 max-w:380` |
+| drift-warden (10px dot) | `top:76 left:1015` |
 
 ## Daily nano-banana wallpaper
 

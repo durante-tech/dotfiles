@@ -59,7 +59,15 @@ exec-on-workspace-change = ['/bin/bash', '-c',
 
 # Mode-change feedback: sketchybar's aerospace_mode item shows RESIZE (yellow)
 # / SERVICE (red) and hides on main — see sketchybar items/aerospace_mode.sh
-on-mode-changed = ['exec-and-forget sketchybar --trigger aerospace_mode_change MODE=$AEROSPACE_MODE']
+#
+# $AEROSPACE_MODE does not exist and never has: the guide only ever injects
+# AEROSPACE_WINDOW_ID / AEROSPACE_WORKSPACE into callback commands (plus
+# AEROSPACE_FOCUSED_WORKSPACE / _PREV_WORKSPACE for exec-on-workspace-change),
+# and the 0.21.3-Beta binary's string table has zero hits for AEROSPACE_MODE.
+# exec-and-forget runs /bin/bash -c, so bash expanded it to the empty string,
+# the plugin's MODE="${MODE:-main}" fell back to main, and the badge hid itself
+# on EVERY mode change. Ask the server for the mode instead.
+on-mode-changed = ['exec-and-forget sketchybar --trigger aerospace_mode_change MODE=$(aerospace list-modes --current)']
 
 # Start AeroSpace at login
 start-at-login = true
@@ -326,8 +334,13 @@ alt-shift-o = 'move-node-to-workspace N'
 # alt-shift-v = 'move-node-to-workspace V'
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
 alt-tab = 'workspace-back-and-forth'
-# See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
-alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
+# move-workspace-to-monitor "fails for workspaces that have monitor force
+# assignment" (aerospace-move-workspace-to-monitor(1)), and every workspace this
+# config declares is force-assigned below -- so the old binding here could never
+# do anything. Monitor FOCUS is what was actually missing: alt-h/j/k/l all use
+# --boundaries-action wrap-around-the-workspace, which never leaves the panel.
+# See: https://nikitabobko.github.io/AeroSpace/commands#focus-monitor
+alt-shift-tab = 'focus-monitor --wrap-around next'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
 # Original alt-shift-semicolon entry was commented out for Brazilian accents;
@@ -375,11 +388,12 @@ alt-shift-l = ['join-with right', 'mode main']
 
 # BetterDisplay mode-switching chord. Entry: alt-shift-x. Single key picks the mode.
 [mode.bd-mode.binding]
-# AeroSpace's exec-and-forget runs commands directly (no shell). @DOTFILES_DIR@
-# is substituted with the absolute repo path by render-aerospace.sh at render
-# time — do NOT swap it for a runtime env var; the rendered aerospace.toml is a
-# static file with no further substitution. /bin/bash -c wrap kept for shell
-# semantics of the invoked script.
+# exec-and-forget runs `/bin/bash -c '<bash-script>'` and passes the rest of the
+# string to bash as-is (aerospace-exec-and-forget(1)), so shell syntax already
+# works here; the explicit /bin/bash -c wrap below is belt-and-braces, not a
+# requirement. @DOTFILES_DIR@ is substituted with the absolute repo path by
+# render-aerospace.sh at render time — do NOT swap it for a runtime env var;
+# the rendered aerospace.toml is a static file with no further substitution.
 w = ['exec-and-forget /bin/bash -c "@DOTFILES_DIR@/scripts/scripts/bd-apply.sh dawn"', 'mode main']
 d = ['exec-and-forget /bin/bash -c "@DOTFILES_DIR@/scripts/scripts/bd-apply.sh day"', 'mode main']
 a = ['exec-and-forget /bin/bash -c "@DOTFILES_DIR@/scripts/scripts/bd-apply.sh afternoon"', 'mode main']

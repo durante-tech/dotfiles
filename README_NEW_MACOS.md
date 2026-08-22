@@ -159,7 +159,7 @@ Mason will automatically install LSP servers on first launch. Wait for installat
 - **Shell**: zsh-autosuggestions, zsh-syntax-highlighting, starship
 
 ### GUI Applications (via Homebrew Cask)
-- **Terminal**: WezTerm
+- **Terminal**: Ghostty (primary — `cask "ghostty"` in the Brewfile, installed by `install.sh`). Kitty is also cask'd; WezTerm is config-only and is never installed by this repo.
 - **Productivity**: Raycast, AeroSpace (window manager)
 - **Utilities**: KeyCastr, BetterDisplay, LinearMouse
 - **Fonts**: Hack Nerd Font, JetBrains Mono Nerd Font, SF Pro
@@ -201,7 +201,7 @@ alias vault="cd ~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/YourVau
 
 ### WezTerm Custom Workspace (Optional)
 
-Edit `~/dotfiles/wezterm/wezterm.lua` and uncomment the example workspace keybinding, then customize the path.
+WezTerm is config-only here (see `docs/wezterm/README.md` — legacy, replaced by Ghostty). If you do install it, add a workspace keybinding to `config.keys` in `~/dotfiles/wezterm/.config/wezterm/wezterm.lua`. There is no commented-out example in that file to uncomment.
 
 ---
 
