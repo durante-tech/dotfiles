@@ -91,7 +91,6 @@ brew "navi"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
 # Open-source, cross-platform JavaScript runtime environment
-brew "node"
 # Command-line Git information tool
 brew "onefetch"
 # Google's OSV-database vulnerability scanner (audit installed packages + lockfiles)
@@ -107,7 +106,6 @@ brew "pngpaste"
 # PDF rendering library (based on the xpdf-3.0 code base)
 brew "poppler"
 # Code formatter for JavaScript, CSS, JSON, GraphQL, Markdown, YAML
-brew "prettier"
 # Modern replacement for ps written in Rust
 brew "procs"
 # Command-line interface for Render
