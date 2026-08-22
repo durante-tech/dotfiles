@@ -188,8 +188,6 @@ cask "maccy"
 #   Casks cannot be `brew pin`ned, so install via:
 #       scripts/scripts/install-linearmouse.sh
 # cask "linearmouse"
-# System monitor for the menu bar
-cask "stats"
 # Inter sans-serif typeface (used by sketchybar / design tokens)
 cask "font-inter"
 # Manrope sans-serif typeface (used by design tokens / site)
