@@ -98,7 +98,8 @@ nvim/
 | **LaunchAgents** | `launchagents/Library/LaunchAgents/*.plist.template` | launchd jobs (`__USER__` templates rendered by `setup.sh --configure`) |
 | **Raycast** | `raycast/script-commands/` | Script commands that exec-delegate to `scripts/scripts/` |
 | **Übersicht** | `ubersicht/Library/Application Support/Übersicht/widgets/` | Desktop widgets |
-| **Fastfetch / mpd / rmpc / mactop / zed / atuin / mise** | `<pkg>/.config/<pkg>/` | Smaller stowed configs |
+| **Fastfetch / mpd / rmpc / zed / atuin / mise / linearmouse** | `<pkg>/.config/<pkg>/` | Smaller stowed configs |
+| **mactop** | `mactop/config.json` | **NOT stowed** — bare config, absent from `stow-packages.txt`, and not shaped as `.config/mactop/`. The tool is not in the Brewfile either. Wire it up or drop it. |
 | **macOS** | `macos/` | System defaults scripts |
 | **Wallpapers** | `wallpapers/` | Rotation assets + Plash shaders |
 | **Site** | `site/` | Astro/React docs site (not stowed) |
@@ -699,9 +700,11 @@ window-detection health — a long-running AeroSpace can stop seeing newly
 launched apps, which kills every `on-window-detected` rule silently while the
 config still validates clean. The fix for that one is restarting AeroSpace.
 
-Uses `config-version = 2` with an explicit `persistent-workspaces` list — all 10
-workspaces stay alive when empty (E and N have no alt bindings; without the list
-they vanished from listings).
+Uses `config-version = 2` with an explicit `persistent-workspaces` list of **9**
+workspaces — `['1','2','A','B','D','E','M','N','T']` — all of which stay alive
+when empty; without the list they vanished from listings. E and N are reached via
+`Alt+W` / `Alt+O` because `alt-e` and `alt-n` are pt-BR dead keys, not because
+they have no alt binding at all.
 
 ### Workspace-to-Monitor Mapping
 
@@ -947,7 +950,14 @@ Hot-reloads on config change. Receives `aerospace_workspace_change` events.
 | `dos-stream-sidecar` | Serve real build activity to the terminal-frame overlay |
 | `streamdeck-build` | Build the Stream Deck profile from a source `.streamDeckProfile` |
 
-**Adding New Scripts**: Create in `scripts/scripts/`, `chmod +x`, available immediately (no re-stow needed). Shebang must be on **line 1** — CI's ShellCheck job gates on `error` severity and a comment above the shebang is one (`SC1128`).
+**Adding New Scripts**: Create in `scripts/scripts/`, `chmod +x`, then
+`stow -R -t ~ scripts`. A re-stow **is** required: `~/scripts` is a real
+directory (it holds untracked local files), so stow links per-file rather than
+folding the whole directory, and a new file is not on `PATH` until it is linked.
+Two scripts are in this state today — `bd-hdr-toggle.sh` and
+`install-linearmouse.sh` exist in the repo but not in `~/scripts`.
+Shebang must be on **line 1** — a comment above it is `SC1128`, which is an
+`error` and so fails CI regardless of the gate's `warning` threshold.
 
 ---
 

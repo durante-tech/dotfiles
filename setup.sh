@@ -170,13 +170,19 @@ configure_environment() {
             echo -e "\nConnected monitors:"
             echo "$monitors"
 
+            # Do NOT tell people to edit ~/.config/aerospace/aerospace.toml. It is
+            # the gitignored OUTPUT of render-aerospace.sh, which truncates it with
+            # `> "$OUTPUT"` on every render (install.sh, personalize.sh, or a manual
+            # run). A hand-edit there survives until the next render and then
+            # vanishes with no message and no diff, because the file is gitignored.
             echo -e "\n${YELLOW}Action needed:${NC}"
-            echo "Edit ~/.config/aerospace/aerospace.toml"
-            echo "Update [workspace-to-monitor-force-assignment] with your monitor names"
+            echo "Record your monitor names, then re-render:"
+            echo "  ./personalize.sh                              # writes ~/.config/dotfiles/personal.env"
+            echo "  scripts/scripts/render-aerospace.sh && aerospace reload-config"
             echo ""
-            echo "Example:"
-            echo "  1 = 'Built-in Retina Display'"
-            echo "  2 = 'Your-External-Monitor'"
+            echo "The rendered ~/.config/aerospace/aerospace.toml is GENERATED — edit"
+            echo "aerospace/templates/aerospace.toml.template instead; a hand-edit"
+            echo "to the rendered file is discarded by the next render."
         else
             print_warning "No monitors detected or aerospace not running"
         fi

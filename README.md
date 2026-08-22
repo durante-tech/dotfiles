@@ -3,7 +3,7 @@ name: dotfiles
 pack-id: durante-tech-dotfiles-v2.0.0
 version: 2.0.0
 author: durante-tech (Lucas Gertel)
-description: macOS terminal-first, keyboard-driven development environment. 22 stowable packages, 79 brew formulas + 22 casks, mise polyglot version manager, hourly Durante-themed wallpaper rotation, sketchybar Claude Code billing-block indicator, espanso :llm trigger to local Ollama. USE WHEN install dotfiles, set up new mac, clone dotfiles, install lucas dotfiles, configure new development machine, restore dotfiles, update dotfiles, repair dotfiles, fresh mac setup, dotfile installation, durante dotfiles, dotfiles new machine, terminal-first setup, install brewfile, mise migration, durante setup.
+description: macOS terminal-first, keyboard-driven development environment. 23 stowable packages, 79 brew formulas + 22 casks, mise polyglot version manager, hourly Durante-themed wallpaper rotation, sketchybar Claude Code billing-block indicator, espanso :llm trigger to local Ollama. USE WHEN install dotfiles, set up new mac, clone dotfiles, install lucas dotfiles, configure new development machine, restore dotfiles, update dotfiles, repair dotfiles, fresh mac setup, dotfile installation, durante dotfiles, dotfiles new machine, terminal-first setup, install brewfile, mise migration, durante setup.
 type: dotfiles
 role: environment
 visibility: public
@@ -51,7 +51,7 @@ keywords: [dotfiles, install dotfiles, set up new mac, clone dotfiles, install l
 "Set up a fresh Mac with these dotfiles"   → Read INSTALL.md → choose Fresh install
 ```
 
-The full 12-step install runs `install.sh` which internally drives: Xcode CLT → Homebrew → 79 formulas → 22 casks → Bun + ccusage + Fabric → stow 22 packages → `mise install` → `setup.sh --configure` (renders 10 LaunchAgent templates with `__USER__` substitution + links Raycast script-commands) → Espanso service register → TPM tmux plugins → Neovim Lazy sync → `./macos/.macos` (44 defaults entries) → verification.
+The full 12-step install runs `install.sh` which internally drives: Xcode CLT → Homebrew → 79 formulas → 22 casks → Bun + ccusage + Fabric → stow 23 packages → `mise install` → `setup.sh --configure` (renders 11 LaunchAgent templates with `__USER__` substitution + links Raycast script-commands) → Espanso service register → TPM tmux plugins → Neovim Lazy sync → `./macos/.macos` (44 defaults entries) → verification.
 
 > **For human readers:** the rest of this README is the standard overview. AI agents can skip to `INSTALL.md`.
 
@@ -73,7 +73,7 @@ The full 12-step install runs `install.sh` which internally drives: Xcode CLT �
 
 ## What's Included
 
-22 stowable packages — install everything or pick what you need.
+23 stowable packages — install everything or pick what you need.
 
 ### Core
 
@@ -304,10 +304,14 @@ Dual-monitor with AeroSpace workspace pinning:
 
 | Monitor | Type | Workspaces |
 |---------|------|-----------|
-| **DEV-MAIN** | Built-in Retina XDR (3456×2234) | 1, B(rowser), D(ev), M(essaging), N(otes), E(mail) |
-| **PORTRAIT** | External 90° (2880×5120) | 2, T(erminal) |
+| **DEV-MAIN** | Built-in Retina XDR (3456×2234) | 1, A(I), B(rowser), D(ev), N(otes), E(mail) |
+| **PORTRAIT** | External 90° (2880×5120) | 2, T(erminal), M(essaging) |
 
-Edit `~/.config/aerospace/aerospace.toml` with your monitor names after install.
+Set your monitor names with `./personalize.sh`, then
+`scripts/scripts/render-aerospace.sh && aerospace reload-config`.
+`~/.config/aerospace/aerospace.toml` is generated output — editing it by hand
+works until the next render truncates it, and because it is gitignored the loss
+leaves no trace. Edit `aerospace/templates/aerospace.toml.template` instead.
 
 ---
 
