@@ -2,6 +2,15 @@
 # Pair with hyperfine for wall-clock baseline: `hyperfine --warmup 3 'zsh -i -c exit'`
 [[ -n "$ZSH_PROFILE" ]] && zmodload zsh/zprof
 
+# Keep PATH duplicate-free. This file runs for EVERY interactive shell,
+# including nested non-login ones that never re-run .zprofile, and the lmstudio
+# and antigravity blocks near the bottom append/prepend unconditionally -- so a
+# `zsh` inside a shell, or the documented `source ~/.zprofile && source ~/.zshrc`
+# reload, stacked another copy of each (both were already doubled in the live
+# PATH). -U drops later duplicates on assignment and keeps the leftmost, so a
+# prepend still wins its position.
+typeset -U path PATH
+
 # Kitty-in-tmux: propagate KITTY env vars so kitty graphics protocol works
 if [[ -n "$TMUX" && -z "$KITTY_PID" ]]; then
     local _kitty_pid
@@ -26,6 +35,14 @@ if [[ ":$FPATH:" != *":$HOME/.zsh/completions:"* ]]; then export FPATH="$HOME/.z
 # Note: .zprofile is automatically sourced by login shells
 # Removed explicit source to avoid duplicate initialization (fnm, brew, etc.)
 
+# Personal overrides -- the same guarded source bd-apply.sh:49 and
+# render-aerospace.sh:37 use. It belongs here, not in .zprofile, because
+# personal.env holds plain (unexported) assignments: a nested non-login zsh
+# never re-runs .zprofile and would not inherit them, so `wps` and the
+# `bd-apply` alias further down would rebuild their paths from $HOME/dotfiles
+# and miss a clone that DOTFILES_DIR relocates (docs/PERSONALIZE.md, Layer 6).
+[ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
+
 command -v gdircolors &>/dev/null && eval "$(gdircolors)"
 
 # Note: Oh-My-Zsh removed for faster startup (~200ms savings)
@@ -37,7 +54,12 @@ bindkey -r "^G"
 # Vi mode + Starship (vi mode must be set BEFORE starship init so Starship
 # can register its zle-keymap-select handler for vi-mode indicators)
 set -o vi
-eval "$(starship init zsh)"
+# Guarded like every other tool init in this file (gdircolors, zoxide, direnv,
+# mise, fzf, atuin). Unguarded, a machine without starship yet -- a fresh
+# bootstrap before `brew bundle`, or a shell with a trimmed PATH -- printed
+# `command not found: starship` to stderr on every interactive shell and fell
+# back to zsh's bare default prompt with no hint of why.
+command -v starship &>/dev/null && eval "$(starship init zsh)"
 
 # Completion system — MUST init before any tool that calls `compdef` (zoxide
 # and fzf below both register completions). Running it after them caused
@@ -272,7 +294,12 @@ if [[ -d "$FABRIC_PATTERNS_DIR" ]]; then
         mkdir -p "$(dirname "$FABRIC_ALIAS_CACHE")"
         {
             echo "# Auto-generated Fabric pattern aliases - $(date)"
-            for pattern_file in "$FABRIC_PATTERNS_DIR"/*; do
+            # (/N): directories only, and no error when there are none. Fabric
+            # drops non-pattern files into this dir (pattern_explanations.md,
+            # loaded) and a bare * aliased each one, so every interactive shell
+            # sourced junk like `alias pattern_explanations.md='fabric ...'`.
+            # N also stops an empty patterns dir from erroring during startup.
+            for pattern_file in "$FABRIC_PATTERNS_DIR"/*(/N); do
                 pattern_name="$(basename "$pattern_file")"
                 echo "alias ${pattern_name}='fabric --pattern ${pattern_name}'"
             done
@@ -425,5 +452,7 @@ fi
 # Installer-appended blocks land here at EOF — re-home them (PATH → .zprofile
 # "All PATHS" section, completion fpath → above the compinit call), guarded.
 
-# bun completions
-[ -s "/Users/lgertel/.bun/_bun" ] && source "/Users/lgertel/.bun/_bun"
+# bun completions: deliberately NOT repeated here -- .zprofile:63 sources them
+# $HOME-relative for every login shell. The installer's copy that lived here
+# hardcoded an absolute home path, so it double-sourced for the maintainer and matched
+# nothing on any other machine, while .zshrc:372 already claimed it was gone.
