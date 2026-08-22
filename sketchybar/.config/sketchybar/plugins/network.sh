@@ -11,12 +11,27 @@ NETSTAT_OUTPUT=$(netstat -ib | grep -E "^$INTERFACE" | head -1)
 BYTES_IN=$(echo "$NETSTAT_OUTPUT" | awk '{print $7}')
 BYTES_OUT=$(echo "$NETSTAT_OUTPUT" | awk '{print $10}')
 
-# Cache file for previous values
-CACHE_FILE="/tmp/sketchybar_network_cache"
+# Cache file for previous values. Kept under TMPDIR (per-user, private under
+# launchd) rather than world-writable /tmp: the cached values are fed straight
+# into $(( )) below, and bash arithmetic evaluates its operands recursively —
+# a line like `a[$(...)]` planted in a fixed, predictable /tmp path by any other
+# local account would execute as this user on the next 15s tick.
+CACHE_FILE="${TMPDIR:-/tmp}/sketchybar_network_cache"
 
+PREV_IF=""
 if [ -f "$CACHE_FILE" ]; then
-    read -r PREV_IN PREV_OUT < "$CACHE_FILE"
+    read -r PREV_IF PREV_IN PREV_OUT < "$CACHE_FILE"
 
+    # Only trust an all-digits pair recorded against the SAME interface.
+    # netstat counters are per-interface, so a Wi-Fi -> Ethernet switch would
+    # otherwise subtract two unrelated counters and draw a phantom GB/s spike;
+    # the digit check keeps anything non-numeric out of the arithmetic above.
+    case "$PREV_IN$PREV_OUT" in
+        '' | *[!0-9]*) PREV_IF="" ;;
+    esac
+fi
+
+if [ "$PREV_IF" = "$INTERFACE" ]; then
     # Calculate speed in bytes/second — divisor must match the item's
     # update_freq (15s in items/network.sh); /5 inflated speeds 3x
     DIFF_IN=$(( (BYTES_IN - PREV_IN) / 15 ))
@@ -48,5 +63,6 @@ else
     sketchybar --set "$NAME" icon="󰛳" label="..." icon.color="$GREY"
 fi
 
-# Save current values (single line, space-separated - faster read)
-echo "$BYTES_IN $BYTES_OUT" > "$CACHE_FILE"
+# Save current values (single line, space-separated - faster read). Interface
+# first, so the next tick can tell whether the counters are even comparable.
+echo "$INTERFACE $BYTES_IN $BYTES_OUT" > "$CACHE_FILE"

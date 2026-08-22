@@ -12,6 +12,21 @@ LOG="$HOME/Library/Logs/dos-voice-server.log"
 
 ACTION="$1"
 
+# VoiceServer lives outside this repo ($HOME/.claude/VoiceServer, DOS-private)
+# and is simply absent on a machine that never installed it. Without this guard
+# start/stop/restart exec a path that does not exist, `>/dev/null 2>&1 &` eats
+# the "No such file or directory", the popup closes, and the click looks exactly
+# like one that worked. Report it in the popup header and leave the popup open.
+case "$ACTION" in
+    start | stop | restart | folder)
+        if [ ! -d "$VOICE_DIR" ]; then
+            sketchybar --set voice_server.status \
+                       label="VoiceServer not installed" label.color="$GREY"
+            exit 0
+        fi
+        ;;
+esac
+
 case "$ACTION" in
     start)   "$VOICE_DIR/start.sh"   >/dev/null 2>&1 & ;;
     stop)    "$VOICE_DIR/stop.sh"    >/dev/null 2>&1 & ;;

@@ -105,9 +105,14 @@ sketchybar --hotload on
 # placeholder for up to update_freq seconds.
 sketchybar --update
 
-# Bootstrap the volume item — it has update_freq=30, so without this trigger
-# it would show as a blank box for the first 30s after boot. Fire volume_change
-# with the current OS volume so the icon + label populate immediately.
+# Bootstrap the volume item — its script only refreshes on the volume_change
+# event or on its own poll tick, so without this trigger it renders as a blank
+# box until the first tick after boot. Fire volume_change with the current OS
+# volume so the icon + label populate immediately.
+#
+# Deliberately does NOT restate the poll interval: this comment claimed 30s
+# while items/volume.sh actually said 5, and a constant duplicated into prose in
+# another file is precisely what drifts. The number lives in items/volume.sh.
 sketchybar --trigger volume_change INFO="$(osascript -e 'output volume of (get volume settings)' 2>/dev/null || echo 50)"
 
 echo "sketchybar configuation loaded.."
