@@ -167,13 +167,25 @@ format = ' [($all_status$ahead_behind )]($style)'
 symbol = "󰎙"
 format = '[ $symbol( $version) ]($style)'
 
+# bun and package are enabled by right_format = "$all" but were never re-symbolled
+# here, so they shipped upstream's emoji defaults (📦 U+1F4E6 / 🥟 U+1F95F) beside
+# this file's Nerd Font glyphs — visible in site/ (bun + Astro) and any Cargo tree.
+# Symbols taken verbatim from `starship preset nerd-font-symbols` on 1.26.0.
+[bun]
+symbol = " "
+
+[package]
+symbol = "󰏗 "
+
 [c]
 symbol = "󰙱 "
 format = '[ $symbol($version) ]($style)'
 
 [rust]
 symbol = "󱘗"
-format = '[ $symbol($version) ]($style)'
+# ( $version), matching [nodejs]/[golang]: this symbol has no trailing space (unlike
+# [c]/[java]), so the space-less group rendered 󱘗v1.98.0 with the glyph on the v.
+format = '[ $symbol( $version) ]($style)'
 
 [golang]
 symbol = "󰟓"
@@ -182,7 +194,7 @@ detect_files = ["go.mod"]
 
 [php]
 symbol = "󰌟"
-format = '[ $symbol($version) ]($style)'
+format = '[ $symbol( $version) ]($style)'
 
 [java]
 symbol = "󰬷 "
@@ -191,17 +203,17 @@ format = '[ $symbol($version) ]($style)'
 [kotlin]
 symbol = "󱈙"
 
-format = '[ $symbol($version) ]($style)'
+format = '[ $symbol( $version) ]($style)'
 
 [haskell]
 symbol = "󰲒"
 
-format = '[ $symbol($version) ]($style)'
+format = '[ $symbol( $version) ]($style)'
 
 [python]
 symbol = "󰌠"
 
-format = '[ $symbol($version) ]($style)'
+format = '[ $symbol( $version) ]($style)'
 
 
 [docker_context]

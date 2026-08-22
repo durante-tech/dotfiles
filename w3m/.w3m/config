@@ -23,11 +23,26 @@ basic_color terminal
 anchor_color cyan
 image_color green
 form_color red
-mark_color bright yellow
+# w3m has no "bright" colour names: str_to_color() switches on the FIRST letter
+# only, so "bright cyan"/"bright yellow" both take the 'b' -> not "blu" -> black
+# branch. Verified in a pty on brew w3m 0.5.6: -o anchor_color='bright cyan'
+# emits ESC[30m, byte-identical to =black, against ESC[36m for =cyan. Unknown
+# colour VALUES are accepted silently, so this never warned — it just drew the
+# cursor-highlighted link in ANSI 0 on a #000000 terminal (rose-pine palette
+# 0 = #26233a, ~1.2:1 contrast), i.e. invisible.
+mark_color yellow
 bg_color terminal
 active_style 1
-active_color bright cyan
-active_bg_color terminal
+# white (ESC[37m), not cyan — anchor_color above is already cyan, so reusing it
+# would make the active link indistinguishable from every other link. w3m's only
+# bright mechanism is the global `high-intensity 1`, which would brighten
+# anchor/form/image too and collapse that distinction again.
+active_color white
+# (active_bg_color lived here. It is not a w3m option in any version: `w3m -o
+# active_bg_color=terminal` exits with "bad option", and rc.c has only
+# active_style and active_color. Unknown option NAMES are ignored silently in
+# the config file, so it read as live config while doing nothing. bg_color
+# above is the only background control w3m has.)
 
 # Display image — NOTE: brew w3m 0.5.6 is built WITHOUT inline-image support;
 # these lines (and pixel_per_*/max_load_image) are inert until an image-enabled
@@ -43,6 +58,13 @@ keymap_file ~/.w3m/keymap
 
 # Editor
 editor nvim
+
+# External browser (the M / ESC-M keys). w3m's compiled-in default is the Linux
+# path /usr/bin/firefox, so on macOS pressing M shell-execs it and prints
+# "sh: /usr/bin/firefox: No such file or directory" — no prompt, because
+# invoke_browser() only asks "Browse command:" when ExtBrowser is EMPTY.
+# w3m appends the shell-quoted URL, so this runs `open '<url>'`.
+extbrowser open
 
 # Security
 ssl_verify_server 1

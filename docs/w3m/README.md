@@ -18,9 +18,8 @@ w3m is a text-mode web browser integrated into the tmux workflow. Access it via 
 
 | Key | Action |
 |-----|--------|
-| `H` | Go back |
-| `L` | Go forward |
-| `Ctrl+O` | Go back (alternative) |
+| `H` / `B` / `Ctrl+O` | Go back — w3m's BACK *closes* the buffer it leaves |
+| `L` | Next buffer (NEXT). Not "forward": the page `H` left no longer exists |
 | `r` | Reload page |
 | `0` / `$` | Line start/end |
 
