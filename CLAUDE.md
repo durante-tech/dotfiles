@@ -273,7 +273,6 @@ nvim/
 | `nvim-scratch` | Launch nvim with separate NVIM_APPNAME config |
 | `air` | Go live-reload server |
 | `mpds` | Start mpd music daemon |
-| `pai` | PAI tool (bun ~/.claude/skills/PAI/Tools/pai.ts) |
 
 ---
 
@@ -568,9 +567,6 @@ Spell checking enabled, textwidth 80 for markdown files.
 | `<leader>af` | Focus Claude Code |
 | `<leader>as` | Send selection to Claude (visual) |
 | `<leader>aa` / `<leader>ad` | Accept / reject diff |
-| `<leader>al` | Local mode |
-| `<leader>am` / `<leader>aM` | Full MCPs / full + resume |
-| `<leader>aw` / `<leader>aW` | Dev-work MCPs / dev-work + resume |
 | `<leader>ar` | Resume session |
 
 ### Plugin Architecture
@@ -1118,9 +1114,9 @@ chmod +x ~/scripts/*
 ## Sentinel Conventions
 <!-- Auto-generated body lives in docs/Sentinel/SNAPSHOT.md. Next sentinel scan writes there, not back into this section. -->
 
-- **Stack:** macOS-only dotfiles deployed via GNU Stow across ~22 packages; polyglot — Zsh/Bash (config + automation), Lua (Neovim/lazy.nvim), TOML (AeroSpace/Starship), plus Bun-run TypeScript scripts and an Astro/React docs site under `site/`.
-- **Test:** `# no automated suite — verify manually` (see `VERIFY.md`). **Lint:** `# CI: .github/workflows/lint.yml` — 4 jobs: ShellCheck (gates at **`severity: error`**), Lua (advisory, `|| true`), TOML, stow dry run (reads `stow-packages.txt`).
-- **Health:** 100% (21 healthy / 21 conventions, 3 debt indicators) — last **static** scan 2026-06-24. That score is convention-matching only and does not read CI: on 2026-07-29 the CI gate was found red on every run since 2026-05-27. Treat the score as a style measure, not a health measure; the live signal is `gh run list`. Current debt: `docs/Sentinel/TECH-DEBT.md` (manual addendum 2026-07-29).
+- **Stack:** macOS-only dotfiles deployed via GNU Stow across 23 packages; polyglot — Zsh/Bash (config + automation), Lua (Neovim/lazy.nvim), TOML (AeroSpace/Starship), plus Bun-run TypeScript scripts and an Astro/React docs site under `site/`.
+- **Test:** `# no automated suite — verify manually` (see `VERIFY.md`). **Lint:** `# CI: .github/workflows/lint.yml` — 4 jobs: ShellCheck (gates at **`severity: warning`**), Lua (advisory, `|| true`), TOML, stow dry run (reads `stow-packages.txt`).
+- **Health:** 100% (21 healthy / 21 conventions, 3 debt indicators) — last **static** scan 2026-06-24. That score is convention-matching only and does not read CI, so treat it as a style measure, not a health measure; the live signal is `gh run list`. CI history: the gate was red on every run from 2026-05-27, was repaired on 2026-07-29, and has been **green for 20 consecutive runs since** (last failure 2026-07-29T15:50:55Z, latest run 2026-08-11). Current debt: `docs/Sentinel/TECH-DEBT.md`.
 - **Enforced patterns:** kebab-case script names; `snake_case()` shell functions; `DOTFILES_`-prefixed override vars; `set -e`/`set -u` after shebang; `#!/usr/bin/env bash` (`#!/bin/bash` for launchd/bash-3.2 scripts); `#!/usr/bin/env bun` for TS scripts; `command -v <tool> && eval` guards in `.zshrc`; one-file-per-plugin `return { ... }` Neovim specs; `personal.env` existence-guarded sourcing; LaunchAgents as `.plist.template` (`__USER__` + `__DOTFILES_DIR__` placeholders, rendered by setup.sh; repo-owned `com.lucas.*` supersedes brew-services); Raycast script-commands `exec`-delegate to canonical scripts; compiled native helpers (Swift, e.g. `unlock-watch.swift`) built to `~/.local/bin` by setup.sh `build_native_helpers()` (`swiftc`-guarded) for triggers launchd can't express (distributed notifications).
 - **Full snapshot** (Tech Stack, Architecture, Conventions, Key Decisions, Setup, Health, open debt): [`docs/Sentinel/SNAPSHOT.md`](docs/Sentinel/SNAPSHOT.md).
 - **Architecture artifacts:** `docs/Sentinel/MODULE-MAP.md`, `C4-CONTEXT.md`, `C4-CONTAINER.md`, `ADRS.md`, `TECH-DEBT.md`, `DURANTE-NATIVE.md`.
