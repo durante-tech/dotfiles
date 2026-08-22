@@ -98,48 +98,49 @@ stow_packages() {
 
     cd "$DOTFILES_DIR" || exit 1
 
-    # List of packages to stow — keep in sync with install.sh PACKAGES.
-    local packages=(
-        aerospace
-        atuin
-        espanso
-        fastfetch
-        ghostty
-        karabiner
-        kitty
-        mise
-        mpd
-        nvim
-        rmpc
-        scripts
-        sketchybar
-        starship
-        tmux
-        ubersicht
-        w3m
-        wallpapers
-        wezterm
-        yazi
-        zed
-        zsh
-    )
+    # Package list comes from stow-packages.txt, the single source of truth
+    # shared with install.sh, check_stow_drift and the CI stow dry run.
+    #
+    # This used to be a fourth hand-maintained copy, and it had already drifted:
+    # da836f2 ("bring mouse config under stow management") added `linearmouse` to
+    # the manifest but not to this list, so `--stow` and `--all` silently skipped
+    # the very package that commit existed to deploy.
+    local manifest="$DOTFILES_DIR/stow-packages.txt"
+    if [[ ! -r "$manifest" ]]; then
+        print_error "Missing $manifest — cannot stow"
+        return 1
+    fi
+    # `|| true` guards `set -e`: an empty manifest filters to zero lines and grep
+    # exits 1, which would abort the run with no diagnostic.
+    local packages
+    packages="$(sed -e 's/#.*//' -e 's/[[:space:]]//g' "$manifest" | grep -v '^$' || true)"
+    if [[ -z "$packages" ]]; then
+        print_error "$manifest lists no packages — cannot stow"
+        return 1
+    fi
 
     # Ensure .config exists
     mkdir -p "$HOME/.config"
     # Ensure deep parent dirs exist for non-XDG stow packages
     mkdir -p "$HOME/Library/Application Support/Übersicht"
 
-    for pkg in "${packages[@]}"; do
+    # here-string, not a pipe: a `while read` on the right of a pipe runs in a
+    # subshell, so any counter set inside would not survive into this scope.
+    local pkg stow_err
+    while IFS= read -r pkg; do
+        [[ -n "$pkg" ]] || continue
         if [[ -d "$DOTFILES_DIR/$pkg" ]]; then
-            if stow -t ~ -R "$pkg" 2>/dev/null; then
+            # Keep stderr so a genuine error is distinguishable from a conflict.
+            if stow_err="$(stow -t ~ -R "$pkg" 2>&1)"; then
                 print_success "Stowed $pkg"
             else
-                print_warning "Failed to stow $pkg (may have conflicts)"
+                print_warning "Failed to stow $pkg:"
+                sed 's/^/    /' <<< "$stow_err"
             fi
         else
             print_info "Skipping $pkg (directory not found)"
         fi
-    done
+    done <<< "$packages"
 
     # Übersicht caveat: its internal server.js doesn't follow relative
     # symlinks. Stow produces ../../../dotfiles/... which crashes the app.

@@ -60,6 +60,13 @@ print_step() {
     echo -e "${GREEN}▶${NC} $1"
 }
 
+# Called at the personalization prompt. It was never defined, so under `set -e`
+# answering anything but y/Y/Enter aborted the whole install with exit 127 —
+# before mise, setup.sh --configure, espanso, TPM, nvim plugins or macOS defaults.
+print_info() {
+    echo -e "${BLUE}ℹ${NC} $1"
+}
+
 print_skip() {
     echo -e "${YELLOW}⏭${NC} $1 (skipped - already installed)"
 }
@@ -587,11 +594,19 @@ fi
 # Stow packages
 print_step "Stowing dotfiles packages..."
 
-STOW_OPTS="-t ~"
+# Array, not a string. A `~` that reaches a command via word-splitting of a
+# variable is NOT tilde-expanded — only a literal `~` token in the script text
+# is. So `STOW_OPTS="-t ~"` handed stow the literal character `~`, and stow
+# rejected it ("--target value '~' is not a valid directory") for every package
+# on every run from 2026-02-04 onward. The `2>/dev/null` below then hid the
+# error and the loop still printed success, so install.sh has never actually
+# deployed a single package. Use "$HOME" and an array: no splitting involved.
+STOW_OPTS=(-t "$HOME")
 if [ "$FORCE_STOW" = true ]; then
-    STOW_OPTS="$STOW_OPTS --adopt"
+    STOW_OPTS+=(--adopt)
     print_warn "Using --adopt flag (existing files will be adopted)"
 fi
+STOW_FAILED=0
 
 # Render aerospace.toml from template + personal.env BEFORE stowing so the
 # symlink target exists. AeroSpace TOML can't read env vars, so monitor names
@@ -627,16 +642,26 @@ fi
 for pkg in $PACKAGES; do
     if [ -d "$DOTFILES_DIR/$pkg" ]; then
         if [ "$DRY_RUN" = true ]; then
-            print_dry "stow -R $STOW_OPTS $pkg"
+            print_dry "stow -R ${STOW_OPTS[*]} $pkg"
         else
-            stow -R $STOW_OPTS "$pkg" 2>/dev/null || {
-                print_warn "Conflict stowing $pkg - try running with --force-stow"
-            }
+            # Keep stderr. A bad target or a permission error is not a conflict,
+            # and reporting every failure as one is precisely what sent people
+            # chasing --force-stow for six months instead of the real bug.
+            # The `if !` wrapper keeps `set -e` from aborting on the assignment.
+            if ! stow_err="$(stow -R "${STOW_OPTS[@]}" "$pkg" 2>&1)"; then
+                print_warn "Failed to stow $pkg:"
+                sed 's/^/    /' <<< "$stow_err"
+                STOW_FAILED=$((STOW_FAILED + 1))
+            fi
         fi
     fi
 done
 
-print_success "Dotfiles stowed"
+if [ "$STOW_FAILED" -eq 0 ]; then
+    print_success "Dotfiles stowed"
+else
+    print_warn "$STOW_FAILED package(s) failed to stow — those configs are NOT deployed"
+fi
 
 # -----------------------------------------------------------------------------
 # 6-hooks. Activate the tracked post-merge hook on the dotfiles repo
