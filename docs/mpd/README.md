@@ -20,7 +20,7 @@ rmpc
 | `bind_to_address` | `127.0.0.1` | Local access only |
 | `port` | `6600` | Default MPD port |
 | `restore_paused` | `yes` | Resume state on restart |
-| `auto_update` | `yes` | Auto-detect new files |
+| `auto_update` | n/a on macOS | inotify is Linux-only — rescan from rmpc (`u` update, `U` rescan) |
 
 ## Audio Output
 

@@ -22,7 +22,13 @@ matches:
 
   # Email signature — :sig. Name/email come from ~/.config/dotfiles/personal.env
   # (DOTFILES_SIG_NAME / DOTFILES_SIG_EMAIL), falling back to git config.
-  # Absolute git path because espanso's shell context has minimal $PATH.
+  # Absolute git path, plus macos_override_path: false on both vars. espanso
+  # 2.4.0 defaults that param to TRUE and re-runs the override on every single
+  # invocation (espanso-render/src/extension/shell.rs, no caching), which spawns
+  # `zsh --login -c 'source ~/.zshrc; echo $PATH'` just to rebuild $PATH —
+  # measured at 0.23s a piece here, so :sig was paying ~0.5s to boot mise, atuin
+  # and the Fabric alias cache twice for a PATH it never reads. Every binary
+  # below is already absolute.
   - trigger: ":sig"
     replace: |
       {{sig_name}}
@@ -31,15 +37,18 @@ matches:
       - name: sig_name
         type: shell
         params:
+          macos_override_path: false
           cmd: '. "$HOME/.config/dotfiles/personal.env" 2>/dev/null; printf "%s" "${DOTFILES_SIG_NAME:-$(/usr/bin/git config --get user.name 2>/dev/null)}"'
       - name: sig_email
         type: shell
         params:
+          macos_override_path: false
           cmd: '. "$HOME/.config/dotfiles/personal.env" 2>/dev/null; printf "%s" "${DOTFILES_SIG_EMAIL:-$(/usr/bin/git config --get user.email 2>/dev/null)}"'
 
   # ─── Local LLM via Ollama (qwen3-coder:30b) ──────────────────────────────
   # Requires: `ollama-up` running + qwen3-coder:30b pulled.
-  # Absolute paths used because espanso's shell context has minimal $PATH.
+  # Absolute paths, plus macos_override_path: false — see the :sig note above:
+  # espanso's default PATH override spawns a full login zsh per shell var.
 
   # :llm — pipes clipboard to qwen3-coder, reply replaces the trigger
   # Workflow: copy any text → type ":llm" → wait → reply appears inline
@@ -49,19 +58,40 @@ matches:
       - name: output
         type: shell
         params:
+          macos_override_path: false
           cmd: "/usr/bin/pbpaste | /opt/homebrew/bin/ollama run qwen3-coder:30b 2>/dev/null"
 
   # :llmf — form popup, type prompt directly (no clipboard needed)
+  #
+  # Do NOT put `form:`/`form_fields:` next to `replace:`. espanso 2.4.0 picks a
+  # match's effect with `if replace|markdown|html {...} else if form {...}`
+  # (espanso-config/src/matches/group/loader/yaml/mod.rs), so `replace:` wins and
+  # the form is dropped with no parse error and no warning — `espanso match list`
+  # showed `:llmf - {{output}}`, no form1 var ever existed, and the trigger did
+  # nothing at all. Declaring the form as an explicit `type: form` var is the
+  # documented way to feed a form into another extension; local vars are all
+  # treated as body dependencies and run in declaration order, so form1 resolves
+  # before output (espanso-render/src/renderer/resolve.rs).
+  #
+  # The prompt is passed via the environment, never interpolated into the command
+  # string: espanso does no shell escaping, so the old `'{{form1.prompt}}'` broke
+  # on any apostrophe ("what's the regex for X" — the documented use case) and
+  # made pasted text arbitrary command execution. espanso exports every form
+  # sub-field as ESPANSO_<VAR>_<FIELD> (espanso-render/src/extension/util.rs).
   - trigger: ":llmf"
-    form: |
-      Prompt:
-      [[prompt]]
-    form_fields:
-      prompt:
-        multiline: true
     replace: "{{output}}"
     vars:
+      - name: form1
+        type: form
+        params:
+          layout: |
+            Prompt:
+            [[prompt]]
+          fields:
+            prompt:
+              multiline: true
       - name: output
         type: shell
         params:
-          cmd: "/opt/homebrew/bin/ollama run qwen3-coder:30b '{{form1.prompt}}' 2>/dev/null"
+          macos_override_path: false
+          cmd: 'printf "%s" "$ESPANSO_FORM1_PROMPT" | /opt/homebrew/bin/ollama run qwen3-coder:30b 2>/dev/null'
