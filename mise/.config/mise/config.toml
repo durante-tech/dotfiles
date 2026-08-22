@@ -3,7 +3,13 @@
 # (mise reads all four formats natively, so existing project files keep working)
 
 [tools]
-node   = "25.5.0"      # matches former fnm default
+# Node 24 is the Active LTS line (LTS since 2025-10-28, maintenance through
+# 2028-04-30). This previously pinned 25.5.0 "to match the former fnm default",
+# but the v25 line was never LTS and reached maintenance-end on 2026-06-01 — it
+# has received no security patches since. Verified against nodejs/Release
+# schedule.json. Node 26 becomes Active LTS on 2026-10-28 if you prefer to move
+# again then.
+node   = "24"
 python = "3.12.12"     # matches former pyenv global
 
 [settings]

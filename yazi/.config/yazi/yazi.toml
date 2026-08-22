@@ -1,7 +1,7 @@
 # Yazi configuration
 # https://yazi-rs.github.io/docs/configuration/yazi
 
-[manager]
+[mgr]
 ratio = [1, 3, 4]
 sort_by = "natural"
 sort_sensitive = false
