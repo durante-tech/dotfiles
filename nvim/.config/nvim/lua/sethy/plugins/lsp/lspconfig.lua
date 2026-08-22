@@ -180,5 +180,13 @@ return {
         })
         vim.lsp.enable("gopls")
 
+        -- Servers Mason installs that need no per-server settings. mason.lua
+        -- sets automatic_enable = false, and mason-lspconfig honours that
+        -- literally (init.lua: `if settings.current.automatic_enable ~= false`),
+        -- so nothing else hands these to vim.lsp.enable -- they were installed
+        -- and then never started. angularls is left out on purpose: it attaches
+        -- to ts/html and would double up with ts_ls outside Angular projects.
+        vim.lsp.enable({ "html", "cssls", "tailwindcss", "marksman", "clangd" })
+
     end,
 }
