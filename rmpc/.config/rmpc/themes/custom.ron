@@ -9,7 +9,10 @@
     symbols: (song: "󰎈 ",dir: "󰉋 ",marker: " ",ellipsis: "..."),
     text_color: "#e0def4",
     tab_bar: (
-        enabled: true,
+        // `enabled` dropped: rmpc 0.11.0 marks it deprecated in TabBarFile and
+        // its runtime TabBar struct holds only active_style/inactive_style, so
+        // the key was parsed and thrown away. The tab bar renders because the
+        // layout below places Pane(Tabs).
         active_style: (bg:"#1E1E2E" ,fg: "#FAB387", modifiers: "Bold"),
         inactive_style: (fg: "#908caa", modifiers: ""),
     ),

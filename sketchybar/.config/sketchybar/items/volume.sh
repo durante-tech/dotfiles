@@ -22,7 +22,6 @@ volume=(
   update_freq=60
   padding_left=5
   padding_right=5
-  icon.align=center
   icon.padding_left=8
   icon.padding_right=4
   background.color="$PURE_BLACK"

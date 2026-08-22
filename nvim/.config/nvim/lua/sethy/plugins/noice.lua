@@ -64,21 +64,12 @@ return {
                         auto_open = { enabled = false }, -- disable auto signature help on insert mode
                     },
 				},
-                routes = {
-                    {
-                        filter = {
-                            event = 'msg_show',
-                            any = {
-                                { find = '%d+L, %d+B' },
-                                { find = '; after #%d+' },
-                                { find = '; before #%d+' },
-                                { find = '%d fewer lines' },
-                                { find = '%d more lines' },
-                            },
-                        },
-                        opts = { skip = true },
-                    }
-                },
+                -- NOTE: no `routes` block here. A route filtering `event = "msg_show"` can
+                -- never fire while `messages.enabled = false` (below): noice attaches
+                -- ext_messages only when that flag is on (noice/ui/init.lua M.setup), and
+                -- msg_show is emitted solely by noice/ui/msg.lua. The removed block skipped
+                -- write/undo chatter ('%d+L, %d+B', '; after #%d+', '; before #%d+',
+                -- '%d fewer lines', '%d more lines') -- restore it if messages is enabled.
 				messages = {
 					enabled = false,
 				},

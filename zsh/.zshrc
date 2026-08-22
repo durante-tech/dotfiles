@@ -476,4 +476,3 @@ fi
 # $HOME-relative for every login shell. The installer's copy that lived here
 # hardcoded an absolute home path, so it double-sourced for the maintainer and matched
 # nothing on any other machine, while .zshrc:372 already claimed it was gone.
-alias hos="python3 $HOME/Durante/Tools/HarnessOS_Portable_Package/scripts/harnessos.py"
