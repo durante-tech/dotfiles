@@ -13,11 +13,12 @@
 #
 # Usage: render-aerospace.sh [--dry-run | --doctor]
 #   --dry-run  show what would be rendered, write nothing
-#   --doctor   check-only, four checks (exit 1 if any warns):
+#   --doctor   check-only, five checks (exit 1 if any warns):
 #              monitor patterns vs connected displays, AeroSpace version
 #              >= 0.20.0 (config-version=2 keys), persistent-workspaces drift,
-#              and window-detection health (rules are dead if AeroSpace has
-#              stopped seeing newly-launched apps — see doctor_detection)
+#              window-detection health (rules are dead if AeroSpace has
+#              stopped seeing newly-launched apps — see doctor_detection), and
+#              a stale render (template pulled or edited but never re-rendered)
 
 set -eu
 
@@ -26,6 +27,15 @@ DOCTOR_ONLY=false
 case "${1:-}" in
     --dry-run) DRY_RUN=true ;;
     --doctor)  DOCTOR_ONLY=true ;;
+    "") ;;
+    # Without a default arm an unrecognised flag fell through to a full render:
+    # a mistyped `--doctr`, or bd-apply.sh's bare-subcommand habit (`doctor`),
+    # silently OVERWROTE aerospace.toml when the operator asked only to check
+    # it — and because the post-render doctors run under `|| true`, the script
+    # still exited 0, so a scripted check reported pass having verified nothing.
+    *) echo "render-aerospace: unknown argument '$1'" >&2
+       echo "Usage: render-aerospace.sh [--dry-run | --doctor]" >&2
+       exit 2 ;;
 esac
 
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
@@ -44,15 +54,24 @@ EXTERNAL="${DOTFILES_MONITOR_EXTERNAL:-PORTRAIT-MONITOR}"
 # render — the template's fallback chains ('secondary'/'main') keep the config
 # functional — but a dead pattern usually means ./personalize.sh hasn't run.
 MONITOR_NAMES=""
-check_monitor_pattern() {  # $1 = label, $2 = pattern (AeroSpace substring regex)
+# $1 = label, $2 = the raw personal.env value, $3 = the pattern the RENDERED
+# config actually matches with. Those differ for EXTERNAL: the template wraps it
+# as '^…$' in workspace-to-monitor-force-assignment while BUILTIN goes in bare.
+# Grepping the raw value therefore blessed patterns the config cannot match —
+# EXTERNAL='PORTRAIT-MONITOR' (the shipped personal.env.example default) reports
+# OK against a panel AeroSpace names 'PORTRAIT-MONITOR (1)' once a duplicate name
+# appears, while the rendered '^PORTRAIT-MONITOR$' matches nothing and 2/M/T
+# silently fall back to 'secondary'. $2 is still what the '^NONE$' single-display
+# sentinel is tested against.
+check_monitor_pattern() {
     if [ "$2" = '^NONE$' ]; then
         echo "doctor: OK   $1 '^NONE$' — single-display config, external pinning intentionally disabled"
         return 0
     fi
-    if printf '%s\n' "$MONITOR_NAMES" | grep -qiE -- "$2"; then
-        echo "doctor: OK   $1 pattern '$2' matches a connected monitor"
+    if printf '%s\n' "$MONITOR_NAMES" | grep -qiE -- "$3"; then
+        echo "doctor: OK   $1 pattern '$3' matches a connected monitor"
     else
-        echo "doctor: WARN $1 pattern '$2' matches NO connected monitor;"
+        echo "doctor: WARN $1 pattern '$3' matches NO connected monitor;"
         echo "             workspaces pinned to it fall back to secondary/main."
         echo "             Run ./personalize.sh to set your monitor names."
         return 1
@@ -69,8 +88,8 @@ doctor_monitors() {
         return 0
     fi
     local bad=0
-    check_monitor_pattern BUILTIN "$BUILTIN" || bad=1
-    check_monitor_pattern EXTERNAL "$EXTERNAL" || bad=1
+    check_monitor_pattern BUILTIN "$BUILTIN" "$BUILTIN" || bad=1
+    check_monitor_pattern EXTERNAL "$EXTERNAL" "^$EXTERNAL\$" || bad=1
     return $bad
 }
 
@@ -176,12 +195,42 @@ doctor_detection() {
     echo "doctor: OK   AeroSpace sees all $checked running rule-covered app(s)"
 }
 
+# --- stale-render doctor -------------------------------------------------------
+# aerospace.toml is gitignored render OUTPUT, so a `git pull` — or an agent that
+# edits the template and stops there — moves the source of truth and leaves the
+# deployed config untouched. Every other doctor reads $TEMPLATE or live AeroSpace
+# state, so all four report OK while `alt-r` reloads yesterday's bindings; the
+# only symptom is "the change I just pulled did nothing".
+#
+# Compares mtimes rather than re-running the substitution: a second copy of the
+# sed would drift from the real one, and both triggers that matter — a checkout
+# rewriting the template, an editor saving it — bump mtime. A content-free
+# `touch` is the only false positive, and re-rendering is idempotent.
+doctor_stale() {
+    if [ ! -f "$OUTPUT" ]; then
+        echo "doctor: WARN no rendered config at $OUTPUT — AeroSpace is running its"
+        echo "             bundled defaults; run render-aerospace.sh"
+        return 1
+    fi
+    if [ "$TEMPLATE" -nt "$OUTPUT" ] ||
+       { [ -f "$HOME/.config/dotfiles/personal.env" ] &&
+         [ "$HOME/.config/dotfiles/personal.env" -nt "$OUTPUT" ]; }; then
+        echo "doctor: WARN rendered aerospace.toml is STALE — the template or"
+        echo "             personal.env changed after the last render, so AeroSpace"
+        echo "             still runs the OLD bindings and alt-r only reloads them."
+        echo "             Fix: render-aerospace.sh && aerospace reload-config"
+        return 1
+    fi
+    echo "doctor: OK   rendered aerospace.toml is newer than its inputs"
+}
+
 run_doctors() {
     local bad=0
     doctor_monitors   || bad=1
     doctor_version    || bad=1
     doctor_workspaces || bad=1
     doctor_detection  || bad=1
+    doctor_stale      || bad=1
     return $bad
 }
 
@@ -197,13 +246,24 @@ if [ "$DRY_RUN" = true ]; then
     exit 0
 fi
 
-# Escape sed replacement metacharacters (&, \, delimiter) so a repo path
-# containing them can't corrupt the rendered bindings.
-DOTFILES_DIR_ESC=$(printf '%s' "$DOTFILES_DIR" | sed -e 's/[&\\|]/\\&/g')
+# Escape sed replacement metacharacters (&, \, delimiter) in EVERY substituted
+# value, not just the repo path. personalize.sh writes monitor names as escaped
+# regexes — "^DELL U2718Q \(1\)$" for the duplicate-name case its own prompt uses
+# as the example — and an unescaped replacement string strips those backslashes
+# straight back out: sed emits "^DELL U2718Q (1)$", whose bare parens are a
+# capture group, so the workspace pin matches nothing and 2/M/T fall back to
+# 'secondary'. A name containing '|' is worse: it closes the s||| command, sed
+# exits non-zero under `set -e`, and the shell has already truncated $OUTPUT —
+# leaving an EMPTY aerospace.toml and AeroSpace on its bundled defaults.
+sed_escape() { printf '%s' "$1" | sed -e 's/[&\\|]/\\&/g'; }
+
+BUILTIN_ESC=$(sed_escape "$BUILTIN")
+EXTERNAL_ESC=$(sed_escape "$EXTERNAL")
+DOTFILES_DIR_ESC=$(sed_escape "$DOTFILES_DIR")
 
 sed \
-    -e "s|@DOTFILES_MONITOR_BUILTIN@|${BUILTIN}|g" \
-    -e "s|@DOTFILES_MONITOR_EXTERNAL@|${EXTERNAL}|g" \
+    -e "s|@DOTFILES_MONITOR_BUILTIN@|${BUILTIN_ESC}|g" \
+    -e "s|@DOTFILES_MONITOR_EXTERNAL@|${EXTERNAL_ESC}|g" \
     -e "s|@DOTFILES_DIR@|${DOTFILES_DIR_ESC}|g" \
     "$TEMPLATE" > "$OUTPUT"
 

@@ -2,6 +2,14 @@
 
 This configuration provides an i3-like tiling window manager experience on macOS with integrations for Sketchybar (status bar) and JankyBorders (window borders).
 
+> **Source of truth:** `aerospace/templates/aerospace.toml.template` in the
+> dotfiles repo — *not* the `aerospace.toml` beside this file, which is
+> gitignored output from `scripts/scripts/render-aerospace.sh`. Stow deploys
+> this README into `~/.config/aerospace/`, where it sits next to the config and
+> reads as authoritative, so it drifts silently whenever the template changes.
+> When the two disagree the template wins; CLAUDE.md's AeroSpace section is the
+> maintained prose summary.
+
 ## Quick Reference
 
 ### Modifier Key
@@ -59,21 +67,44 @@ DFS (Depth-First Search) navigation cycles through **all windows across all work
 ## Workspaces
 
 ### Switch Workspace
-| Keybinding | Workspace | Monitor Assignment |
-|------------|-----------|-------------------|
-| `alt-d` | D (Development) | DEV-MAIN |
-| `alt-t` | T (Terminal) | PORTRAIT-MONITOR |
-| `alt-b` | B (Browser) | DEV-SECOND |
-| `alt-m` | M (Messaging) | DEV-SECOND |
-| `alt-f` | F (Finder) | DEV-SECOND |
-| `alt-1/2/3/4/8/9` | Numbered | Any monitor |
+
+Monitor names are per-machine, so the template holds
+`@DOTFILES_MONITOR_BUILTIN@` / `@DOTFILES_MONITOR_EXTERNAL@` sentinels that
+`render-aerospace.sh` substitutes from `~/.config/dotfiles/personal.env`. The
+column below therefore names the *role*, not a panel — nothing is called
+DEV-MAIN or DEV-SECOND.
+
+| Keybinding | Workspace | Monitor |
+|------------|-----------|---------|
+| `alt-1` | 1 (Main) | built-in |
+| `alt-2` | 2 (Secondary) | external (portrait) |
+| `alt-a` | A (AI — Claude, ChatGPT, Perplexity) | built-in |
+| `alt-b` | B (Browser) | built-in |
+| `alt-d` | D (Development) | built-in |
+| `alt-m` | M (Messaging) | external (portrait) |
+| `alt-t` | T (Terminal) | external (portrait) |
+| `alt-w` | E (Email) | built-in |
+| `alt-o` | N (Notes) | built-in |
+
+`alt-e` and `alt-n` are pt-BR dead keys (acute / tilde), so E and N live on
+`alt-w` and `alt-o`; Karabiner's Hyper+E / Hyper+N still reach them unchanged.
+`alt-3` … `alt-9` are commented out in the template, and `alt-f` is deliberately
+left FREE: workspace F was retired 2026-07-28 because Finder floats on the
+current screen and F could never hold a window.
+
+D sits on the built-in *opposite* T on purpose — editors and agents are watched
+while the work happens in tmux on the portrait panel, so the two must not share
+a monitor.
 
 ### Move Window to Workspace
-Use `alt-shift-<key>` to move the focused window:
-- `alt-shift-d` → Move to Development
-- `alt-shift-t` → Move to Terminal
-- `alt-shift-b` → Move to Browser
-- etc.
+`alt-shift-<same key>` moves the focused window instead of switching to it:
+
+| Keybinding | Moves window to |
+|------------|-----------------|
+| `alt-shift-1` / `alt-shift-2` | 1 / 2 |
+| `alt-shift-a` / `alt-shift-b` / `alt-shift-d` | A / B / D |
+| `alt-shift-m` / `alt-shift-t` | M / T |
+| `alt-shift-w` / `alt-shift-o` | E / N (the same dead-key substitutes) |
 
 ### Cross-Monitor
 | Keybinding | Action |
@@ -84,7 +115,7 @@ Use `alt-shift-<key>` to move the focused window:
 
 ## Modes
 
-AeroSpace supports modal keybindings (like vim). Press the mode key to enter, `esc` or `enter` to exit.
+AeroSpace supports modal keybindings (like vim). Press the mode key to enter, `esc` or `enter` to exit. Three modes are bound: `alt-shift-r` resize, `alt-shift-s` service, and `alt-shift-x` bd-mode — the BetterDisplay chord, one key per display mode, driving `scripts/scripts/bd-apply.sh`.
 
 ### Resize Mode (`alt-shift-r`)
 | Key | Action |
@@ -96,8 +127,11 @@ AeroSpace supports modal keybindings (like vim). Press the mode key to enter, `e
 | `b` | Balance all sizes |
 | `esc/enter` | Exit resize mode |
 
-### Service Mode (`alt-shift-;`)
-*Note: Currently commented out for Brazilian accent compatibility*
+### Service Mode (`alt-shift-s`)
+*Upstream's chord is `alt-shift-;`, which stays commented out in the template:
+pt-BR accents come from Option dead keys, so Option+Shift+letter is safe and
+`s` = service is mnemonic. The mode itself is LIVE — only the `;` binding is
+commented out, not the mode.*
 
 | Key | Action |
 |-----|--------|
@@ -186,14 +220,21 @@ Windows are automatically moved to workspaces based on app:
 
 | App Type | Workspace | Layout |
 |----------|-----------|--------|
-| Browsers (Chrome, Safari, Firefox, Zen, Arc) | B | Tiling |
-| IDEs (VSCode, Cursor, Xcode, JetBrains) | D | Tiling |
-| Terminals (iTerm2, Alacritty, Wezterm) | T | Tiling |
-| Notes (Notion, Obsidian, Claude, ChatGPT) | N | Tiling |
-| Messaging (Slack, Discord, WhatsApp, Teams) | M | Tiling |
+| Browsers (Chrome, Safari, Firefox, Zen, Arc, Dia) | B | Tiling |
+| IDEs (VSCode, Cursor, Xcode, Zed, Android Studio, JetBrains, Godot, Frame0) | D | Tiling |
+| Terminals (Ghostty, kitty, iTerm2, Alacritty, WezTerm) | T | Tiling |
+| AI apps (Claude, ChatGPT, Perplexity, LM Studio, Wispr Flow) | A | Tiling |
+| Notes (Notion, Obsidian, Apple Notes) | N | Tiling |
+| Messaging (Slack, Discord, Telegram, Teams, WhatsApp, Signal) | M | Tiling |
 | Email (Spark, Apple Mail) | E | Tiling |
-| Finder | F | **Floating** |
-| Utilities (1Password, BetterDisplay, etc.) | Current | **Floating** |
+| Finder | *current* | **Floating** |
+| Screenshot tools (CleanShot X, Shottr) | *current* | **Floating** |
+| Playwright Chromium | *current* | **Floating** |
+| Utilities (1Password, BetterDisplay, Stream Deck, Logi, Docker) | *current* | **Floating** |
+
+Claude and ChatGPT are on **A**, not N — A is the AI-surface workspace, N is
+Notion/Obsidian/Notes. Finder has no workspace: it floats wherever you are,
+which is why `alt-f` and workspace F were retired.
 
 ---
 
@@ -226,12 +267,17 @@ aerospace reload-config
 ```
 
 ### Brazilian Accent Conflicts
-Some keybindings are disabled because `alt-<key>` produces accented characters:
-- `alt-e` → ´ (acute accent)
-- `alt-n` → ˜ (tilde)
-- `alt-;` → … (ellipsis on some layouts)
+`alt-<key>` produces accented characters on a pt-BR layout. The affected
+bindings were *moved*, not disabled — reaching for the documented key and
+getting nothing is the failure this section exists to prevent:
 
-Workaround: Use alternative keys or Karabiner to remap.
+| Dead key | Produces | Live binding |
+|----------|----------|--------------|
+| `alt-e` | ´ (acute) | `alt-w` → workspace E, `alt-shift-w` to move |
+| `alt-n` | ˜ (tilde) | `alt-o` → workspace N, `alt-shift-o` to move |
+| `alt-shift-;` | upstream service chord | `alt-shift-s` |
+
+Karabiner's Hyper+E / Hyper+N still reach E and N unchanged.
 
 ---
 

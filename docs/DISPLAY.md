@@ -59,11 +59,17 @@ stream toggle demoted the rig off `--portrait-hires` for good, wake included.
 ## Brightness / color — `bd-apply.sh <mode>`
 
 Modes: `dawn day afternoon evening night` (time) + `meeting read stream cinema` (task).
-Built-in uses XDR P3-1600 with EDR software-brightness upscale; the Dell is a
-**color-reference** display — only brightness follows the mode, white point + contrast
-are pinned neutral on every mode. Direct readback-verified DDC writes (NOT favoriteMode
-— see below). `bd-apply.sh verify` diffs live state vs intent and prints an EDR-headroom
-diagnostic.
+Built-in uses XDR P3-1600 with EDR software-brightness upscale; on the Dell only
+brightness follows the mode — the white point stays pinned neutral and contrast stays
+at the panel's native 75 (the "color-reference" pin was retired 2026-07-29: raising
+contrast above the factory default clips whites). Writes are direct, not `favoriteMode`
+(see below), and how far each is *verified* differs by control: built-in
+softwareBrightness and the Dell's software controls (temperature, gamma) are read back
+and re-asserted on drift; the Dell's brightness and contrast go out as raw DDC VCP
+writes with NO readback, because over DisplayPort this panel accepts writes but answers
+no reads. `bd-apply.sh` logs those as `dispatched` — "the CLI accepted it", not "the
+panel obeyed" — and `bd-apply.sh verify` reports them as UNVERIFIABLE rather than
+inventing agreement, alongside an EDR-headroom diagnostic.
 
 **Automation:**
 - 5 launchd timers (`com.lucas.bd-{dawn,day,afternoon,evening,night}`) fire at fixed hours.
