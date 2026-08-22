@@ -47,8 +47,18 @@ config.window_padding = {
 -- Font configuration
 config.font = wezterm.font("JetBrainsMono Nerd Font")
 config.font_size = 16.0
-config.cell_width = 0.95 -- Slightly tighter spacing like Ghostty's -5%
-config.harfbuzz_features = { "calt=1", "liga=1", "dlig=1" } -- Ligatures
+-- Character spacing left at the default 1.0. cell_width = 0.95 is the same -5%
+-- tweak ghostty disabled at ghostty/.config/ghostty/config:14 because it breaks
+-- TUI column math in Claude Code; wezterm.org/config/lua/config/cell_width.html
+-- adds that below 1.0 glyphs "render over the top of each other", are not
+-- re-centred, and "some ligatured sequences are misaligned" — which is exactly
+-- what the next line turns on. Upstream says prefer a font `stretch` instead.
+-- config.cell_width = 0.95
+-- Ligatures. Unlike ghostty's additive `font-feature = +calt` lines, wezterm's
+-- harfbuzz_features REPLACES its default vector wholesale (config/src/config.rs:
+-- default_harfbuzz_features() = ["kern", "liga", "clig"]), so kern and clig have
+-- to be restated or contextual ligatures silently stop forming.
+config.harfbuzz_features = { "kern=1", "clig=1", "calt=1", "liga=1", "dlig=1" }
 
 -- Cursor
 config.default_cursor_style = "SteadyBlock"
@@ -106,7 +116,9 @@ config.keys = {
 	{ key = "k", mods = "LEADER", action = wezterm.action.ActivatePaneDirection("Up") },
 	{ key = "l", mods = "LEADER", action = wezterm.action.ActivatePaneDirection("Right") },
 
-	-- Equalize panes
+	-- Pane selector overlay, then swap the active pane with the one you pick.
+	-- NOT an equalize: wezterm has no equalize/balance KeyAssignment at all, so
+	-- ghostty's `super+b>e=equalize_splits` has no wezterm equivalent to mirror.
 	{ key = "e", mods = "LEADER", action = wezterm.action.PaneSelect({ mode = "SwapWithActive" }) },
 
 	-- Quick terminal toggle (comma like Ghostty)

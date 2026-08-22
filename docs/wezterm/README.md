@@ -12,7 +12,7 @@ WezTerm was the Lua-configurable terminal used before Ghostty. The config establ
 | Font | JetBrainsMono Nerd Font, 16pt |
 | Opacity | 0.75 |
 | Background blur | 23px |
-| Cell width | 95% |
+| Cell width | 100% (default — the -5% tweak is commented out: it breaks TUI column math and misaligns ligatures) |
 
 ## Keybindings (Cmd+B leader)
 
@@ -26,7 +26,7 @@ WezTerm was the Lua-configurable terminal used before Ghostty. The config establ
 | `Cmd+B > \` | Split horizontal |
 | `Cmd+B > -` | Split vertical |
 | `Cmd+B > h/j/k/l` | Navigate panes |
-| `Cmd+B > e` | Equalize panes |
+| `Cmd+B > e` | Pane selector — swap with active (wezterm has no equalize action) |
 | `Cmd+B > ,` | Toggle zoom |
 
 ## File Location
