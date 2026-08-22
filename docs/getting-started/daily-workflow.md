@@ -477,7 +477,6 @@ AeroSpace is your tiling window manager. All keybindings use **Alt (⌥)** as th
 | `B` | Workspace B (Browser)  |
 | `D` | Workspace D (Dev/IDEs) |
 | `M` | Workspace M (Messaging)|
-| `F` | Workspace F (Finder)   |
 | `1` | Workspace 1 (General)  |
 | `2` | Workspace 2 (Portrait) |
 
@@ -577,11 +576,7 @@ Think of it like a **piano chord** - hold the modifier keys, tap the action key.
 |-----|--------|
 | `s` | Search files |
 | `f` | Search folders |
-
-**`Hyper+M` → File Manager:**
-| Key | Action |
-|-----|--------|
-| `f` | Open file manager |
+| `m` | Open file manager |
 
 ---
 
@@ -718,7 +713,6 @@ lg                             # Lazygit alias
 - `Hyper+B` → Workspace B (Browser)
 - `Hyper+D` → Workspace D (Dev)
 - `Hyper+M` → Workspace M (Messaging)
-- `Hyper+F` → Workspace F (Finder)
 - `Hyper+1/2` → Workspace 1/2
 
 ---

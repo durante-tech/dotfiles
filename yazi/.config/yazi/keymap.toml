@@ -85,7 +85,7 @@ desc = "Move cursor to the bottom"
 # Selection
 [[mgr.prepend_keymap]]
 on = ["<Space>"]
-run = ["select --state=none", "arrow 1"]
+run = ["toggle", "arrow 1"]
 desc = "Toggle selection and move down"
 
 [[mgr.prepend_keymap]]
@@ -100,12 +100,12 @@ desc = "Enter visual mode (unset mode)"
 
 [[mgr.prepend_keymap]]
 on = ["<C-a>"]
-run = "select_all --state=true"
+run = "toggle_all --state=on"
 desc = "Select all files"
 
 [[mgr.prepend_keymap]]
 on = ["<C-r>"]
-run = "select_all --state=none"
+run = "toggle_all"
 desc = "Inverse selection of all files"
 
 # File operations
@@ -176,12 +176,12 @@ desc = "Rename file"
 
 [[mgr.prepend_keymap]]
 on = [";"]
-run = "shell"
+run = "shell --interactive"
 desc = "Run a shell command"
 
 [[mgr.prepend_keymap]]
 on = [":"]
-run = "shell --block"
+run = "shell --block --interactive"
 desc = "Run a shell command (block)"
 
 [[mgr.prepend_keymap]]
@@ -191,17 +191,17 @@ desc = "Toggle visibility of hidden files"
 
 [[mgr.prepend_keymap]]
 on = ["s"]
-run = "search fd"
+run = "search --via=fd"
 desc = "Search files by name using fd"
 
 [[mgr.prepend_keymap]]
 on = ["S"]
-run = "search rg"
+run = "search --via=rg"
 desc = "Search files by content using ripgrep"
 
 [[mgr.prepend_keymap]]
 on = ["<C-s>"]
-run = "search none"
+run = "escape --search"
 desc = "Cancel the ongoing search"
 
 [[mgr.prepend_keymap]]
@@ -222,7 +222,7 @@ desc = "Copy absolute path"
 
 [[mgr.prepend_keymap]]
 on = ["c", "d"]
-run = "copy dirname"
+run = "copy dirpath"
 desc = "Copy parent directory path"
 
 [[mgr.prepend_keymap]]
@@ -243,22 +243,22 @@ desc = "Filter files"
 
 [[mgr.prepend_keymap]]
 on = [",", "m"]
-run = "sort modified --reverse=no"
+run = "sort mtime --reverse=no"
 desc = "Sort by modified time"
 
 [[mgr.prepend_keymap]]
 on = [",", "M"]
-run = "sort modified --reverse"
+run = "sort mtime --reverse"
 desc = "Sort by modified time (reverse)"
 
 [[mgr.prepend_keymap]]
 on = [",", "c"]
-run = "sort created --reverse=no"
+run = "sort btime --reverse=no"
 desc = "Sort by created time"
 
 [[mgr.prepend_keymap]]
 on = [",", "C"]
-run = "sort created --reverse"
+run = "sort btime --reverse"
 desc = "Sort by created time (reverse)"
 
 [[mgr.prepend_keymap]]
@@ -376,7 +376,7 @@ desc = "Swap with next tab"
 # Tasks
 [[mgr.prepend_keymap]]
 on = ["w"]
-run = "tasks_show"
+run = "tasks:show"
 desc = "Show task manager"
 
 # Help
