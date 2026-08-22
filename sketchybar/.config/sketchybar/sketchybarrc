@@ -63,13 +63,12 @@ source "$ITEM_DIR/front_app.sh"
 source "$ITEM_DIR/docker.sh"
 source "$ITEM_DIR/macupdater.sh"
 source "$ITEM_DIR/clearvpn.sh"
-source "$ITEM_DIR/voice_server.sh"
 source "$ITEM_DIR/calendar.sh"
 
 ##### Right Items #####
 # Source order = right→left visually (first sourced sits rightmost).
 # Layout (right→left):
-#   battery | clock | bd_mode | weather | cpu | memory | network | github | mic | volume | obs | spotify
+#   battery | clock | bd_mode | weather | cpu | memory | network | github | mic | volume | spotify
 source "$ITEM_DIR/battery.sh"
 source "$ITEM_DIR/clock.sh"
 source "$ITEM_DIR/bd_mode.sh"
@@ -84,9 +83,9 @@ sketchybar --add bracket system_health cpu memory network \
 source "$ITEM_DIR/github.sh"
 source "$ITEM_DIR/mic.sh"
 source "$ITEM_DIR/volume.sh"
-source "$ITEM_DIR/obs.sh"
-# comms bracket — mic + volume + obs as the audio + capture cluster
-sketchybar --add bracket comms mic volume obs \
+# comms bracket — mic + volume as the audio cluster. obs was removed with the
+# build-in-public streaming rig; it had been polling a dead OBS websocket.
+sketchybar --add bracket comms mic volume \
            --set comms background.color="$PURE_BLACK"
 
 source "$ITEM_DIR/spotify.sh"

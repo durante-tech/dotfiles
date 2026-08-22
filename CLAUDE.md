@@ -992,17 +992,6 @@ Hot-reloads on config change. Receives `aerospace_workspace_change` events;
 | `wallpaper-rotate.sh` | Durante-themed wallpaper per monitor |
 | `wallpaper-workspace.sh` | Wallpaper follows the AeroSpace workspace name |
 
-**Streaming / build-in-public** (Bun TypeScript — `<name>` is the executable, `<name>.ts` the source)
-
-| Script | Description |
-|--------|-------------|
-| `obs` | Minimal OBS WebSocket v5 CLI (scene switching, recording) |
-| `obs-scene-build` | Idempotently (re)build the 5 DuranteOS scenes over OBS WebSocket v5 |
-| `obs-popup.sh` | tmux popup for OBS scene/recording control via fzf |
-| `dos-stream` | Runtime control plane for the build-in-public pipeline (`phase <observe\|think\|…>`) |
-| `dos-stream-sidecar` | Serve real build activity to the terminal-frame overlay |
-| `streamdeck-build` | Build the Stream Deck profile from a source `.streamDeckProfile` |
-
 **Install helpers**
 
 | Script | Description |

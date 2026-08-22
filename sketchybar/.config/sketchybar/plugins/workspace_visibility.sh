@@ -28,8 +28,7 @@ fi
 # Workspaces not listed → drawing=off.
 #
 # Items NOT in this table stay always-eligible-to-draw. Two of them genuinely
-# self-hide, so listing them here would double-control them: obs
-# (plugins/obs.sh sets drawing=off unless recording) and spotify
+# self-hide, so listing them here would double-control them: spotify
 # (plugins/spotify.sh sets drawing=off when nothing is playing).
 #
 # mic and docker do NOT self-hide — neither plugin ever touches `drawing`, they
@@ -51,7 +50,6 @@ declare -A VIS=(
 
     # context-sensitive dev tools
     [github]="1 2 A B D T E"       # dev + AI + browser (PR review) + email
-    [voice_server]="D T"           # DOS voice — only on development + terminal
 )
 
 for item in "${!VIS[@]}"; do

@@ -212,7 +212,7 @@ configure_environment() {
     # the repo, and chmod FOLLOWS a symlink operand (only -h touches the link
     # itself). The glob therefore rewrote the mode of the repo files behind
     # those links, flipping git-tracked 100644 entries (fzf-git.sh,
-    # dos-stream-sidecar.ts, unlock-watch.swift) to 100755 and leaving
+    # unlock-watch.swift) to 100755 and leaving
     # ~/dotfiles dirty after every setup run. find without -L reports a symlink
     # as -type l, so this now touches only the real files that live in
     # ~/scripts; stow already reproduces the tracked mode through the links.

@@ -193,14 +193,9 @@ read but don't fail.
 
 | Where | What it reads |
 |-------|--------------|
-| `ubersicht/.../dailybrief.widget/data.sh` | `~/Durante/MEMORY/WORK/dailybrief-YYYY-MM-DD.md` |
-| `ubersicht/.../today-focus.widget/data.sh` | same as above |
-| `scripts/scripts/dos-stream.ts` | `~/Durante/Overlays/*.html` |
-| `scripts/scripts/dos-stream-sidecar.ts` | maintainer display UUID + localhost OBS bridge |
-| `scripts/scripts/obs-scene-build.ts` | `~/Durante/Overlays/` |
-| `scripts/scripts/streamdeck-build.ts:27` | `~/Downloads/Durante Studio/theme.css` (maintainer-private) |
-
-**If you don't run DOS:** these widgets show blank / scripts fail silently.
+(The DOS-private widgets and the build-in-public streaming scripts that used to
+be listed here were removed once `~/Durante/Packs`, `~/Durante/Tools` and
+`~/Durante/Overlays` were retired — they could no longer read anything.)
 That's the intended degradation. Don't try to "fix" them — they're not
 meant to ship beyond the maintainer.
 
