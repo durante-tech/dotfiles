@@ -1,6 +1,10 @@
 # Upstream bug report draft — LinearMouse
 
-Ready to post at https://github.com/linearmouse/linearmouse/issues/new
+Do NOT file this as a new issue — upstream https://github.com/linearmouse/linearmouse/issues/1368
+(opened 2026-08-19, still open, tested 3-file patch offered but not merged) already covers it.
+Post the measurements below as a comment on #1368 instead: the 0.11.2 / 0.11.4 / 0.12.0-beta.4
+comparison, the lsof watched-set diff and the sample backtrace are stronger evidence than what
+that issue currently carries, and they help the patch land rather than splitting the discussion.
 Drafted 2026-08-11. Nothing here is inferred; every number is from a run on this machine.
 
 ---
