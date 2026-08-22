@@ -172,6 +172,12 @@ cask "betterdisplay"
 cask "claude-code"
 cask "font-hack-nerd-font"
 cask "font-jetbrains-mono-nerd-font"
+# Apple ships SF Pro as a system-wide .pkg, not user-installable font files like
+# every other font cask here — so this one alone needs an INTERACTIVE sudo and
+# will fail in any non-TTY context (CI, a `brew bundle` run from a script, an
+# agent session). If it blocks you, the fonts can be installed per-user with no
+# root at all: mount the cached dmg, `pkgutil --expand-full` the pkg, and copy
+# the 47 .otf/.ttf files from Payload/Library/Fonts into ~/Library/Fonts.
 cask "font-sf-pro"
 # GPU-accelerated terminal emulator (primary terminal)
 cask "ghostty"
