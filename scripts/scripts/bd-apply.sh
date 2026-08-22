@@ -53,6 +53,12 @@ PORT_TAG="${DOTFILES_BD_PORT_TAG:-60}"       # PORTRAIT-MONITOR (default: Dell U
 STATE_FILE="$HOME/.cache/bd-state"
 LOCK_DIR="$HOME/.cache/bd-apply.lock"
 LOG_FILE="/tmp/bd-apply.log"
+
+# launchd gives these agents PATH=/usr/bin:/bin:/usr/sbin:/sbin, and sketchybar
+# lives in /opt/homebrew/bin — so a bare `command -v sketchybar` failed and every
+# guarded sketchybar block was skipped in production while working fine from a
+# terminal. Resolve it the way bd-wake.sh already resolves displayplacer.
+SB="$(command -v sketchybar || echo /opt/homebrew/bin/sketchybar)"
 CLI="/opt/homebrew/bin/betterdisplaycli"
 
 # The Dell was designated a COLOR-REFERENCE display on 2026-06-13, which pinned
@@ -142,6 +148,20 @@ log() {
 bd() {
     [[ -x "$CLI" ]] || return 127
     "$CLI" "$@" 2>>"$LOG_FILE"
+}
+
+# bd_raw — same guard, but WITHOUT the internal stderr redirect, so a caller can
+# capture what the CLI wrote to stderr.
+#
+# betterdisplaycli reports a rejected DDC write as "Failed." on stderr and still
+# exits 0. bd()'s `2>>"$LOG_FILE"` is applied to the CLI invocation itself, so it
+# wins over a call-site `2>&1` — `out="$(bd set ... 2>&1)"` captured an empty
+# string and `grep -qi failed` could never match. Every rejected write was
+# therefore logged as "(dispatched)" and returned success, and the
+# reinitialize+retry branch below was unreachable.
+bd_raw() {
+    [[ -x "$CLI" ]] || return 127
+    "$CLI" "$@"
 }
 
 # resolve_port_tag — self-heal a stale DOTFILES_BD_PORT_TAG.
@@ -365,13 +385,13 @@ set_port_vcp() {
     local vcp="$1" val="$2"
     local out attempt rc_set
     for (( attempt=1; attempt<=3; attempt++ )); do
-        out="$(bd set --tagID="$PORT_TAG" --ddc --vcp="$vcp" --value="$val" 2>&1)"; rc_set=$?
+        out="$(bd_raw set --tagID="$PORT_TAG" --ddc --vcp="$vcp" --value="$val" 2>&1)"; rc_set=$?
         if (( rc_set == 127 )); then
             log "FATAL PORT vcp:$vcp=$val — betterdisplaycli missing or not executable at $CLI"
             return 1
         fi
         if grep -qi 'failed' <<< "$out"; then
-            log "PORT vcp:$vcp=$val rejected (attempt=$attempt) — reinitialize + retry"
+            log "PORT vcp:$vcp=$val rejected (attempt=$attempt) — reinitialize + retry [cli: ${out//$'\n'/ }]"
             bd perform --tagID="$PORT_TAG" --reinitialize >/dev/null 2>&1 || true
             sleep 1.0
             continue
@@ -460,8 +480,8 @@ apply_mode() {
     # State schema: mode|applied_ts|source|glyph|label
     printf '%s|%s|%s|%s|%s\n' "$mode" "$ts" "$source" "$glyph" "$label" > "$STATE_FILE"
 
-    if command -v sketchybar >/dev/null 2>&1; then
-        sketchybar --trigger bd_mode_changed MODE="$mode" GLYPH="$glyph" LABEL="$label" 2>/dev/null || true
+    if [[ -x "$SB" ]]; then
+        "$SB" --trigger bd_mode_changed MODE="$mode" GLYPH="$glyph" LABEL="$label" 2>/dev/null || true
     fi
 }
 

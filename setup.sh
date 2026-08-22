@@ -485,7 +485,7 @@ check_stow_drift() {
 
     # here-string, not a pipe — `drifted` must accumulate in THIS shell. Same
     # subshell trap the comment below documents for the grep pipeline.
-    local pkg drifted=0 out
+    local pkg drifted=0 out raw rc
     while IFS= read -r pkg; do
         [[ -n "$pkg" ]] || continue
         [[ -d "$DOTFILES_DIR/$pkg" ]] || continue
@@ -498,7 +498,27 @@ check_stow_drift() {
         # on the first healthy package, so `--check` printed this header and then
         # died before reporting anything or running any later verification. The
         # healthy path was the failing one.
-        out="$(stow -n -v -R -t ~ "$pkg" 2>&1 | grep '^LINK:' | grep -v 'reverts previous action' || true)"
+        # Capture BOTH stow's output and whether it refused to run at all. The
+        # previous version counted only LINK: lines, so a package where stow
+        # aborted before emitting any — a genuine conflict — produced an empty
+        # result and was counted CLEAN. That is how ~/.config/linearmouse being a
+        # real app-written file instead of a symlink stayed invisible while this
+        # check printed "All packages fully stowed".
+        #
+        # `|| rc=$?` rather than a following `rc=$?`: a bare assignment from a
+        # command substitution propagates the command's exit status, which under
+        # this file's `set -e` aborts the function before rc is ever read.
+        rc=0
+        raw="$(stow -n -v -R -t ~ "$pkg" 2>&1)" || rc=$?
+        if (( rc != 0 )); then
+            print_warning "$pkg — stow refused to run (conflict or error):"
+            sed 's/^/    /' <<< "$raw"
+            drifted=$((drifted + 1))
+            continue
+        fi
+        # "(reverts previous action)" lines are stow's re-stow bookkeeping for
+        # links that already exist — only the remainder are genuinely missing.
+        out="$(printf '%s\n' "$raw" | grep '^LINK:' | grep -v 'reverts previous action' || true)"
         if [[ -n "$out" ]]; then
             print_warning "$pkg has unstowed file(s):"
             sed 's/^/    /' <<< "$out"

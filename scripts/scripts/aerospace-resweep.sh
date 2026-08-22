@@ -51,8 +51,15 @@ command -v aerospace >/dev/null 2>&1 || { echo "aerospace not found" >&2; exit 1
 # Emitted as "<kind>\t<key>\t<workspace>", kind being `id` or `re`.
 MAP="$(awk '
   /^\[\[on-window-detected\]\]/ { key=""; kind=""; next }
-  /^if\.app-id/                 { gsub(/.*= *.|.$/, "", $0); key=$0; kind="id"; next }
-  /^if\.app-name-regex-substring/ { gsub(/.*= *.|.$/, "", $0); key=$0; kind="re"; next }
+  # Extract what is INSIDE the quotes. The previous form stripped a fixed
+  # leading chunk plus the final character, which assumed the closing quote was
+  # the last character on the line. It is not when the rule carries a trailing
+  # comment: `if.app-id = \047com.openai.codex\047  # ChatGPT.app` yielded the key
+  # `com.openai.codex\047  # ChatGPT.ap`, which can never equal a real bundle id,
+  # so ChatGPT was skipped on every sweep with no match, no move and no warning.
+  # \047 is a single quote (the awk program itself is single-quoted by the shell).
+  /^if\.app-id/                 { if (match($0, /\047[^\047]+\047/)) { key=substr($0, RSTART+1, RLENGTH-2); kind="id" } next }
+  /^if\.app-name-regex-substring/ { if (match($0, /\047[^\047]+\047/)) { key=substr($0, RSTART+1, RLENGTH-2); kind="re" } next }
   /move-node-to-workspace/ {
       if (key != "") {
           match($0, /move-node-to-workspace [A-Za-z0-9]+/)
