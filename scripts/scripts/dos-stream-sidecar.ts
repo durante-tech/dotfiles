@@ -23,7 +23,12 @@ const HOME = process.env.HOME || homedir();
 const args = process.argv.slice(2);
 const flag = (n: string, d: string) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : d; };
 const PORT = parseInt(flag("--port", "7842"), 10);
-const REPO = flag("--repo", `${process.env.HOME}/Durante`).replace("~", process.env.HOME || "");
+// Anchor the tilde to the front and reuse the HOME constant above: a bare
+// .replace("~", …) deletes a tilde ANYWHERE, so `--repo /Volumes/scratch/my~project`
+// became /Volumes/scratch/myproject and every git call below then ran with a cwd
+// that does not exist — sh() swallows that ENOENT and the overlay silently shows
+// an empty repo. `${process.env.HOME}` also skipped the homedir() fallback on line 21.
+const REPO = flag("--repo", `${HOME}/Durante`).replace(/^~(?=\/|$)/, HOME);
 const startMs = Date.now();
 
 function sh(cmd: string): string {
@@ -111,13 +116,26 @@ function verifyStreamProfile() {
   };
 }
 
+// Poll shield. `fetch` below is synchronous and collect() spawns up to five
+// subprocesses (three git, two `obs`). With OBS's WebSocket off each `obs` call
+// burns its full 2.5s execSync timeout, so one /events request blocks this
+// single-threaded server for ~5s — and the overlay keeps polling every few
+// seconds, so the queue never drains and the sidecar spawns `obs` back-to-back
+// for as long as OBS stays down. Memoizing caps the subprocess rate however deep
+// the queue gets; a rolling activity ticker never needs data fresher than 5s.
+let cached: { at: number; value: ReturnType<typeof collect> } | null = null;
+function collectCached() {
+  if (!cached || Date.now() - cached.at > 5000) cached = { at: Date.now(), value: collect() };
+  return cached.value;
+}
+
 const CORS = { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" };
 Bun.serve({
   port: PORT,
   hostname: "127.0.0.1", // localhost only — never expose git/OBS activity to the LAN
   fetch(req) {
     const url = new URL(req.url);
-    if (url.pathname === "/events") return new Response(JSON.stringify(collect()), { headers: CORS });
+    if (url.pathname === "/events") return new Response(JSON.stringify(collectCached()), { headers: CORS });
     if (url.pathname === "/verify-stream-profile") return new Response(JSON.stringify(verifyStreamProfile()), { headers: CORS });
     if (url.pathname === "/health") return new Response(JSON.stringify({ ok: true, repo: REPO }), { headers: CORS });
     return new Response("dos-stream-sidecar · GET /events", { status: 404, headers: { "Access-Control-Allow-Origin": "*" } });

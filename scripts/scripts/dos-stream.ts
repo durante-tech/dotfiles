@@ -33,7 +33,7 @@
 import { createHash } from "node:crypto";
 import { readFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { execSync } from "node:child_process";
+import { execSync, execFileSync } from "node:child_process";
 
 const URL_ = process.env.OBS_WEBSOCKET_URL ?? "ws://localhost:4455";
 const HOME = homedir();
@@ -149,7 +149,10 @@ async function cmdPreshow(nArg?: string, agendaArg?: string) {
   state.sessionStartMs = Date.now();
   saveState(state);
 
-  const agenda = agendaArg ?? "Today's build · DuranteOS v0.0.11";
+  // `||`, not `??`: raycast/script-commands/preshow.sh always sends "$2", so a blank
+  // agenda field arrives as "" and `??` kept it — the intro overlay rendered with no
+  // agenda at all instead of falling back to this default.
+  const agenda = agendaArg || "Today's build · DuranteOS v0.0.11";
   const url = `file://${HOME}/Durante/Overlays/intro.html?n=${n}&in=5&agenda=${encodeURIComponent(agenda)}`;
 
   // Get current Intro Overlay settings, merge
@@ -179,8 +182,12 @@ async function cmdEndshow(nArg?: string, shippedArg?: string, runtimeArg?: strin
   }
   if (!runtime) runtime = "0:00:00";
 
-  // Default shipped list: today's commits across known DOS project dirs
-  const shipped = shippedArg ?? defaultShipped();
+  // Default shipped list: today's commits across known DOS project dirs.
+  // `||`, not `??`: raycast/script-commands/endshow.sh always passes the optional
+  // field through as "$1", so a blank field arrives as "" — which is not nullish.
+  // With `??` the documented "blank = git log" default never fired and the outro
+  // overlay went out on stream with an empty ship list.
+  const shipped = shippedArg || defaultShipped();
 
   const params = new URLSearchParams({ n: String(n), shipped, runtime });
   const url = `file://${HOME}/Durante/Overlays/outro.html?${params}`;
@@ -243,7 +250,13 @@ async function cmdStatus() {
     const scene = await obs("GetCurrentProgramScene");
     const rec   = await obs("GetRecordStatus");
     const summary = `${scene.currentProgramSceneName} · ${rec.outputActive ? "REC" : "idle"} · phase ${state.phase} · session #${state.lastN}`;
-    try { execSync(`osascript -e 'display notification "${summary}" with title "DuranteOS · Status"'`); } catch {}
+    // Pass the summary as an argv item instead of splicing it into a single-quoted
+    // shell string: an OBS scene named `Lucas's Desk` terminated the quote, osascript
+    // exited nonzero, and the `catch {}` below swallowed it — the status notification
+    // just silently never appeared. The scene name is the one free-form value here.
+    try {
+      execFileSync("osascript", ["-e", "on run {t}", "-e", 'display notification t with title "DuranteOS · Status"', "-e", "end run", summary]);
+    } catch {}
     // Print compact one-liner — keeps notification UI tidy when Raycast shows the last stdout line
     console.log(summary);
   } catch (e: any) {

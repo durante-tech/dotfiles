@@ -1,7 +1,11 @@
 // clock.widget — large desktop time + uppercase date
 // Catppuccin Mocha · JetBrainsMono Nerd Font
 
-export const command = "date '+%H:%M|%a · %b %-d'"
+// No `command`: the clock renders from JS instead of shelling out. `date` was
+// forked through bash once a second — 86,400 process spawns a day — to produce a
+// string that only changes once a minute. worldclock.widget already computes its
+// times in render with no command at all; same pattern here, and the 1s tick is
+// kept so the minute still flips on time.
 export const refreshFrequency = 1000
 
 export const className = `
@@ -32,9 +36,13 @@ export const className = `
   }
 `
 
-export const render = ({ output }) => {
-  if (!output) return null
-  const [time, date] = output.trim().split('|')
+export const render = () => {
+  const now = new Date()
+  const p = (n) => String(n).padStart(2, '0')
+  const time = `${p(now.getHours())}:${p(now.getMinutes())}`
+  // Byte-identical to the old `date '+%a · %b %-d'`, with the locale pinned to
+  // en-US like worldclock.widget — Übersicht's env locale would otherwise decide.
+  const date = `${now.toLocaleDateString('en-US', { weekday: 'short' })} · ${now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
   return (
     <div>
       <div className="time">{time}</div>
