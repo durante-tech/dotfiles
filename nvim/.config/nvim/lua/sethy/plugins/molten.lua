@@ -5,6 +5,17 @@ return {
     build = ":UpdateRemotePlugins",
     ft = { "python", "jupyter" },
     init = function()
+        -- cairosvg (Molten's SVG output path) loads libcairo through ctypes, which
+        -- searches dyld's default paths only -- Homebrew's /opt/homebrew/lib is not
+        -- among them, so `import cairosvg` died with "cannot load library
+        -- 'libcairo.2.dylib'" even though brew's cairo was installed all along.
+        -- Setting it here rather than in .zprofile because nvim launched from the
+        -- Dock never sources a login shell.
+        if vim.fn.has("mac") == 1 and vim.fn.isdirectory("/opt/homebrew/lib") == 1 then
+            local pre = vim.env.DYLD_FALLBACK_LIBRARY_PATH
+            vim.env.DYLD_FALLBACK_LIBRARY_PATH = pre and ("/opt/homebrew/lib:" .. pre) or "/opt/homebrew/lib"
+        end
+
         -- Molten Configuration
         vim.g.molten_image_provider = "image.nvim"
         vim.g.molten_output_win_max_height = 20

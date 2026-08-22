@@ -1,3 +1,4 @@
+tap "anthropics/tap"
 tap "felixkratz/formulae"
 tap "libsql/sqld"
 tap "nikitabobko/tap"
@@ -11,7 +12,6 @@ tap "tursodatabase/tap"
 # Run your GitHub Actions locally
 brew "act"
 # Apache Ant build tool (Java legacy build chain)
-brew "ant"
 # Command-line interface for SQLite
 brew "sqlite"
 # AI pair programming in your terminal
@@ -181,7 +181,6 @@ cask "font-sf-pro"
 # GPU-accelerated terminal emulator (primary terminal)
 cask "ghostty"
 # Open-source keystroke visualiser
-cask "keycastr"
 # System-wide text expander (Rust)
 cask "espanso"
 # Clipboard history manager (Cmd+Shift+C to open)
@@ -334,8 +333,6 @@ go "github.com/projectdiscovery/naabu/v2/cmd/naabu"
 go "honnef.co/go/tools/cmd/staticcheck"
 
 # Wallpaper / desktop integration
-tap "theboredteam/boring-notch"
 brew "wallpaper"                                # CLI for desktop wallpaper (Sindre Sorhus)
 cask "ubersicht"                                # Webview widgets above wallpaper
-cask "boring-notch"                             # Notch utility (Dynamic-Island clone, OSS)
 # Note: Plash is Mac App Store only — install from https://sindresorhus.com/plash
