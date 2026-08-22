@@ -206,9 +206,18 @@ configure_environment() {
     mkdir -p "$HOME/.local/state/mpd"   # mpd.conf runtime paths; mpd won't create parents
     print_success "Directories created"
 
-    # Make scripts executable
+    # Make scripts executable.
+    #
+    # find -type f, not a glob: ~/scripts is almost entirely stow symlinks into
+    # the repo, and chmod FOLLOWS a symlink operand (only -h touches the link
+    # itself). The glob therefore rewrote the mode of the repo files behind
+    # those links, flipping git-tracked 100644 entries (fzf-git.sh,
+    # dos-stream-sidecar.ts, unlock-watch.swift) to 100755 and leaving
+    # ~/dotfiles dirty after every setup run. find without -L reports a symlink
+    # as -type l, so this now touches only the real files that live in
+    # ~/scripts; stow already reproduces the tracked mode through the links.
     if [[ -d "$HOME/scripts" ]]; then
-        chmod +x "$HOME/scripts"/* 2>/dev/null || true
+        find "$HOME/scripts" -maxdepth 1 -type f -exec chmod +x {} + 2>/dev/null || true
         print_success "Scripts made executable"
     fi
 
@@ -322,6 +331,7 @@ render_launchagents() {
     mkdir -p "$HOME/Library/Logs"
 
     local rendered=0
+    local loaded=0
     for tpl in "$TPL_DIR"/*.plist.template; do
         [[ -f "$tpl" ]] || continue
         local base
@@ -337,8 +347,14 @@ render_launchagents() {
         launchctl bootout "gui/$(id -u)" "$dest" 2>/dev/null || true
         if launchctl bootstrap "gui/$(id -u)" "$dest" 2>/dev/null; then
             print_success "Loaded $base"
+            loaded=$((loaded + 1))
         else
-            print_warning "Could not bootstrap $base (may already be loaded)"
+            # NOT "may already be loaded" — the bootout on the line above just
+            # unloaded it, so a double-load is the one cause this cannot be.
+            # The real ones are: no gui/<uid> domain (any SSH or non-console
+            # run has none), a malformed plist, or a Program path that does not
+            # exist. The old text sent people hunting a phantom.
+            print_warning "Could not bootstrap $base (no gui domain, bad plist, or missing program path)"
         fi
         rendered=$((rendered + 1))
     done
@@ -346,7 +362,13 @@ render_launchagents() {
     if [[ $rendered -eq 0 ]]; then
         print_info "No .plist.template files found"
     else
-        print_success "Rendered $rendered LaunchAgent plist(s)"
+        # Report loads, not just renders. Writing a plist is not running it:
+        # over SSH every bootstrap fails, yet the run still ended on a green
+        # "Rendered 11 LaunchAgent plist(s)" that reads as "all agents are up".
+        print_success "Rendered $rendered LaunchAgent plist(s), loaded $loaded"
+        if [[ $loaded -lt $rendered ]]; then
+            print_warning "$((rendered - loaded)) agent(s) did NOT load — re-run from a console login session (launchctl needs the gui/$(id -u) domain)"
+        fi
     fi
 }
 
@@ -369,6 +391,19 @@ link_raycast_commands() {
 
     if [[ ! -d "$SRC_DIR" ]]; then
         print_info "No raycast/script-commands/ directory — skipping"
+        return 0
+    fi
+
+    # ~/Durante is the maintainer's DOS-private tree and is NOT part of this
+    # public repo. mkdir -p on the default target therefore MATERIALIZED a
+    # phantom ~/Durante/scripts/raycast on any clone that doesn't have it, on
+    # every install.sh run (install.sh calls setup.sh --configure) — a directory
+    # the user cannot account for, holding links Raycast is not indexing. The
+    # repo rule is that ~/Durante references existence-guard and no-op; honour
+    # it here and create the target only when the operator opted in, either by
+    # having ~/Durante or by setting DOTFILES_RAYCAST_DIR.
+    if [[ -z "${DOTFILES_RAYCAST_DIR:-}" && ! -d "$HOME/Durante" ]]; then
+        print_info "No ~/Durante and no DOTFILES_RAYCAST_DIR — skipping Raycast links"
         return 0
     fi
 
@@ -683,7 +718,15 @@ main() {
 
     case "${1:-}" in
         --check)
-            check_dependencies
+            # `|| true` is load-bearing under this file's `set -e`: a bare
+            # function call that returns non-zero aborts the script. One missing
+            # tool (eza, atuin, lazygit, ...) made check_dependencies return 1
+            # and killed --check right there, so verify_config — stow drift,
+            # symlink audit, aerospace doctor, the entire point of --check —
+            # never ran on exactly the machines that needed diagnosing.
+            # check_dependencies prints its own "Run ./install.sh first"
+            # remediation, so continuing costs nothing.
+            check_dependencies || true
             verify_config
             ;;
         --stow)

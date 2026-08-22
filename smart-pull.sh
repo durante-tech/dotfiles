@@ -56,10 +56,17 @@ if [ "$NO_PULL" = false ]; then
     fi
 
     say "Pulling latest from origin..."
-    git pull --ff-only 2>&1 | tail -5 || {
+    # A pipeline's exit status is its LAST command's, so this reported `tail`'s
+    # success no matter what git did: the `|| exit 1` handler could never fire,
+    # a rejected non-fast-forward pull fell through to the BEFORE == AFTER test
+    # below, and the script cheerfully printed "Already up to date" and exited 0
+    # on a pull that did not happen. PIPESTATUS[0] carries git's own status and
+    # must be read on the line immediately after the pipeline.
+    git pull --ff-only 2>&1 | tail -5
+    if [ "${PIPESTATUS[0]}" -ne 0 ]; then
         err "Pull failed (probably non-fast-forward). Resolve manually and re-run."
         exit 1
-    }
+    fi
 fi
 
 AFTER=$(git rev-parse HEAD)

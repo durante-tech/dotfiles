@@ -297,6 +297,28 @@ else
 fi
 
 # -----------------------------------------------------------------------------
+# 2.5 DOTFILES CLONE (must precede every phase that reads a file from the repo)
+# -----------------------------------------------------------------------------
+# The documented Quick Start (README_NEW_MACOS.md) is a curl one-liner, so this
+# script routinely runs with NO clone on disk. The clone used to live in §6,
+# but §3.5 gates the Brewfile on `[ -f "$DOTFILES_DIR/Brewfile" ]` with no else
+# branch and §4 execs install-linearmouse.sh out of the repo. On the one-liner
+# path both were therefore no-ops: the 28 formulae that exist only in the
+# Brewfile (sleepwatcher, gh, rtk, shellcheck, wget, osx-cpu-temp, ...) plus
+# every Brewfile-only cask were skipped in complete silence, and LinearMouse
+# degraded to a warning. Clone here instead — git ships with the Xcode CLT from
+# §1, so it is already available — and §6 then takes its "already cloned" branch.
+
+if [ ! -d "$DOTFILES_DIR" ]; then
+    if [ "$DRY_RUN" = true ]; then
+        print_dry "git clone $DOTFILES_REPO $DOTFILES_DIR"
+    else
+        print_step "Cloning dotfiles repository to $DOTFILES_DIR..."
+        git clone "$DOTFILES_REPO" "$DOTFILES_DIR"
+    fi
+fi
+
+# -----------------------------------------------------------------------------
 # 3. HOMEBREW FORMULAE
 # -----------------------------------------------------------------------------
 
@@ -566,15 +588,10 @@ fi
 
 print_header "6. Dotfiles"
 
-# Clone if not exists
-if [ ! -d "$DOTFILES_DIR" ]; then
-    if [ "$DRY_RUN" = true ]; then
-        print_dry "git clone $DOTFILES_REPO $DOTFILES_DIR"
-    else
-        print_step "Cloning dotfiles repository..."
-        git clone "$DOTFILES_REPO" "$DOTFILES_DIR"
-    fi
-else
+# The clone itself now happens in §2.5 — §3.5 (Brewfile) and §4 (LinearMouse)
+# read files out of the repo, so it cannot wait until here. What is left for
+# this phase is the update-mode pull.
+if [ -d "$DOTFILES_DIR" ]; then
     print_success "Dotfiles already cloned"
     if [ "$UPDATE_ONLY" = true ]; then
         if [ "$DRY_RUN" = true ]; then
@@ -639,6 +656,21 @@ if [ -z "${PACKAGES// /}" ]; then
     exit 1
 fi
 
+# Parent dirs stow must not be allowed to invent. With a target parent missing,
+# stow "tree-folds": it makes the PARENT itself one symlink into the package
+# instead of a real directory holding per-file links. For ~/Library/Application
+# Support/Übersicht — which the cask creates only on first LAUNCH, never at
+# install time — that turns the app's whole support directory into a repo
+# symlink, and the absolute-link repair below can then no longer even see it.
+# setup.sh's stow_packages() has always done this; install.sh's copy of the
+# loop never did, so a fresh machine got a folded Übersicht every time.
+if [ "$DRY_RUN" = true ]; then
+    print_dry "mkdir -p $HOME/.config \"$HOME/Library/Application Support/Übersicht\""
+else
+    mkdir -p "$HOME/.config"
+    mkdir -p "$HOME/Library/Application Support/Übersicht"
+fi
+
 for pkg in $PACKAGES; do
     if [ -d "$DOTFILES_DIR/$pkg" ]; then
         if [ "$DRY_RUN" = true ]; then
@@ -661,6 +693,22 @@ if [ "$STOW_FAILED" -eq 0 ]; then
     print_success "Dotfiles stowed"
 else
     print_warn "$STOW_FAILED package(s) failed to stow — those configs are NOT deployed"
+fi
+
+# Übersicht caveat, mirrored from setup.sh's stow_packages(). Übersicht's
+# internal server.js does not follow RELATIVE symlinks and stow only ever
+# writes relative ones (../../../dotfiles/...), so left as stow made it the app
+# starts with zero widgets and no error anywhere. install.sh never applied this
+# repair, and the `setup.sh --configure` it runs later does not either — the
+# fixup lives in stow_packages(), which --configure does not call — so every
+# install.sh-provisioned machine came up with a dead Übersicht dashboard.
+UBER_LINK="$HOME/Library/Application Support/Übersicht/widgets"
+UBER_TARGET="$DOTFILES_DIR/ubersicht/Library/Application Support/Übersicht/widgets"
+if [ "$DRY_RUN" = true ]; then
+    print_dry "ln -sfn \"$UBER_TARGET\" \"$UBER_LINK\""
+elif [ -L "$UBER_LINK" ] && [ -d "$UBER_TARGET" ]; then
+    ln -sfn "$UBER_TARGET" "$UBER_LINK"
+    print_success "Übersicht widgets symlink rewritten to absolute"
 fi
 
 # -----------------------------------------------------------------------------

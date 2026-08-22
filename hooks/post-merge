@@ -7,7 +7,12 @@
 # (which mode, which agents, which context) handles the prompt.
 #
 # Activated by: `git config core.hooksPath hooks` on this repo. install.sh
-# does this for fresh clones; existing devs can run `setup.sh --configure`.
+# does this on EVERY run, fresh install and `--update` alike, so an existing
+# dev activates it with `./install.sh --update`. setup.sh never touches
+# core.hooksPath — this comment used to point there, sending people to a
+# command that leaves the hook inert with no error and no output, so the
+# post-pull prompt just kept not firing. One-shot equivalent:
+#   git -C ~/dotfiles config core.hooksPath ~/dotfiles/hooks
 #
 # Skips silently when the pull was a no-op (BEFORE == AFTER).
 # Bypass: `git -c core.hooksPath=/dev/null pull` (when you really don't want it).
