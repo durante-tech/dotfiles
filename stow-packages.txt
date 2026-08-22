@@ -37,7 +37,5 @@ tmux
 ubersicht
 w3m
 wallpapers
-wezterm
 yazi
-zed
 zsh

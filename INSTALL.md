@@ -31,7 +31,7 @@ Before starting, greet the user:
   • Hourly Durante-themed wallpaper rotation (10-piece gallery)
   • Sketchybar Claude Code 5-hour billing block indicator (via ccusage)
 
-This pack installs 79 Homebrew formulas, 22 GUI casks, and 23 stowable dotfile directories. Plus 11 LaunchAgents — BetterDisplay time-of-day chord (5 modes), ambient-light watcher, sleep/display-wake watcher, Sketchybar firstboot, Übersicht, and hourly wallpaper rotation — all rendered from templates with your $USER.
+This pack installs 79 Homebrew formulas, 22 GUI casks, and 21 stowable dotfile directories. Plus 11 LaunchAgents — BetterDisplay time-of-day chord (5 modes), ambient-light watcher, sleep/display-wake watcher, Sketchybar firstboot, Übersicht, and hourly wallpaper rotation — all rendered from templates with your $USER.
 
 Let me analyze your system and guide you through installation."
 ```
@@ -258,7 +258,7 @@ cd "$HOME/dotfiles"
 | 3.5 | Brewfile reconciliation | `brew bundle install --file=Brewfile` — installs anything in the Brewfile the explicit list missed. Never uninstalls; retired-tool cleanup is opt-in via docs/UPGRADE.md |
 | 4 | Brew casks | 22 GUI apps (Ghostty, Espanso, Maccy, Übersicht, boring.notch, etc.) |
 | 5 | Bun + ccusage + Fabric | Non-Homebrew tools |
-| 6 | Stow dotfiles | Symlinks 23 packages into `~/.config/`, `~/Library/`, and `~/` |
+| 6 | Stow dotfiles | Symlinks 21 packages into `~/.config/`, `~/Library/`, and `~/` |
 | 6a | Personalization prompt | Fresh installs only. **Blocks on an interactive `Run ./personalize.sh now? [Y/n]` read** when `~/.config/dotfiles/personal.env` is missing and stdin is a TTY — answer it, or an unattended driver looks hung |
 | 6b | `mise install` | Pulls Node + Python versions pinned in `mise/.config/mise/config.toml` |
 | 6c | `setup.sh --configure` | Renders LaunchAgent plists from templates (substitutes `$USER`), creates dirs, installs TPM |
@@ -421,7 +421,7 @@ brew bundle cleanup --force   # actually remove (destructive)
 - `CLAUDE.md` — full reference for AI assistants
 - `macos/.macos` — 44 macOS defaults entries
 
-### Stowable packages (23)
+### Stowable packages (21)
 - `aerospace/` → `~/.config/aerospace/` — i3-like tiling window manager
 - `atuin/` → `~/.config/atuin/` — encrypted shell history sync
 - `espanso/` → `~/Library/Application Support/espanso/` — text expander config
@@ -441,9 +441,7 @@ brew bundle cleanup --force   # actually remove (destructive)
 - `ubersicht/` → `~/Library/Application Support/Übersicht/` — desktop widgets
 - `w3m/` → `~/.w3m/` — terminal browser
 - `wallpapers/` → stowed (Plash shaders + gallery README live in-repo; the 10-piece JPG gallery itself is NOT in the repo — regenerate via Media skill or copy from another machine)
-- `wezterm/` → `~/.config/wezterm/` — alternate terminal
 - `yazi/` → `~/.config/yazi/` — terminal file manager
-- `zed/` → `~/.config/zed/` — editor config
 - `zsh/` → `~/.zshrc`, `~/.zprofile` — shell init
 
 ### Templates rendered at install time

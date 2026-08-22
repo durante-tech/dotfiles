@@ -277,14 +277,6 @@ alias gmp='glow -p'                          # glow with paged output (large doc
 # gh-dash — terminal PR/issue dashboard
 alias ghd='gh dash'                          # interactive PR/issue browser
 
-# Local LLM (Ollama daemon)
-# `brew services run` = current session only (no boot registration).
-# Use this when you want manual control. `brew services start` would persist
-# across reboots via LaunchAgent — avoid unless you want always-on ollama.
-alias ollama-up='brew services run ollama'
-alias ollama-down='brew services stop ollama'
-alias ollama-ls='ollama list'
-
 # Wallpaper management — Durante hourly rotation + Plash shaders + manual control
 alias wp='wallpaper'                                              # wp [path] - get/set
 alias wpn='~/scripts/wallpaper-rotate.sh'                         # rotate now (time-banded)

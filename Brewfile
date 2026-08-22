@@ -25,8 +25,6 @@ brew "biome"
 brew "gum"
 # Terminal markdown renderer (Charmbracelet)
 brew "glow"
-# Local LLM runtime (run via `brew services start ollama`)
-brew "ollama"
 # Yet another cross-platform graphical process/system monitor
 brew "bottom"
 # New way to see and navigate directory trees

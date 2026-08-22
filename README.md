@@ -3,14 +3,14 @@ name: dotfiles
 pack-id: durante-tech-dotfiles-v2.0.0
 version: 2.0.0
 author: durante-tech (Lucas Gertel)
-description: macOS terminal-first, keyboard-driven development environment. 23 stowable packages, 79 brew formulas + 22 casks, mise polyglot version manager, hourly Durante-themed wallpaper rotation, sketchybar Claude Code billing-block indicator, espanso :llm trigger to local Ollama. USE WHEN install dotfiles, set up new mac, clone dotfiles, install lucas dotfiles, configure new development machine, restore dotfiles, update dotfiles, repair dotfiles, fresh mac setup, dotfile installation, durante dotfiles, dotfiles new machine, terminal-first setup, install brewfile, mise migration, durante setup.
+description: macOS terminal-first, keyboard-driven development environment. 21 stowable packages, 79 brew formulas + 22 casks, mise polyglot version manager, hourly Durante-themed wallpaper rotation, sketchybar Claude Code billing-block indicator, espanso text expansion. USE WHEN install dotfiles, set up new mac, clone dotfiles, install lucas dotfiles, configure new development machine, restore dotfiles, update dotfiles, repair dotfiles, fresh mac setup, dotfile installation, durante dotfiles, dotfiles new machine, terminal-first setup, install brewfile, mise migration, durante setup.
 type: dotfiles
 role: environment
 visibility: public
 category: DevEnvironment
 platform: macOS-AppleSilicon
 dependencies: [Homebrew, GNU Stow]
-keywords: [dotfiles, install dotfiles, set up new mac, clone dotfiles, install lucas dotfiles, configure new development machine, restore dotfiles, update dotfiles, repair dotfiles, fresh mac setup, durante dotfiles, mise, ollama, sketchybar, aerospace, espanso, neovim, tmux, ghostty]
+keywords: [dotfiles, install dotfiles, set up new mac, clone dotfiles, install lucas dotfiles, configure new development machine, restore dotfiles, update dotfiles, repair dotfiles, fresh mac setup, durante dotfiles, mise, sketchybar, aerospace, espanso, neovim, tmux, ghostty]
 ---
 
 <div align="center">
@@ -40,7 +40,7 @@ keywords: [dotfiles, install dotfiles, set up new mac, clone dotfiles, install l
 1. **Read [`INSTALL.md`](INSTALL.md)** — wizard-style 5-phase guide (System Analysis → User Questions → Backup → Install → Verify) using `AskUserQuestion` + `TodoWrite`.
 2. **Drive [`install.sh`](install.sh)** with the right flags based on user's answers — don't re-implement install logic. The script is canonical and idempotent.
 3. **Walk [`VERIFY.md`](VERIFY.md)** end-to-end after install — 11 sections of bash one-liners that emit `OK` / `FAIL` / `WARN`. Each `FAIL` has a paired "If this fails" repair note.
-4. **Surface manual steps** the user must do (5 things that can't be automated): Accessibility grants for Espanso/Maccy/Übersicht/boring.notch/AeroSpace, `atuin register` (interactive password), `ollama pull qwen3-coder:30b`, install Plash from the Mac App Store, and 1Password account setup.
+4. **Surface manual steps** the user must do (5 things that can't be automated): Accessibility grants for Espanso/Maccy/Übersicht/boring.notch/AeroSpace, `atuin register` (interactive password), install Plash from the Mac App Store, and 1Password account setup.
 
 ### Quick agent-driven install
 
@@ -51,7 +51,7 @@ keywords: [dotfiles, install dotfiles, set up new mac, clone dotfiles, install l
 "Set up a fresh Mac with these dotfiles"   → Read INSTALL.md → choose Fresh install
 ```
 
-The full 12-step install runs `install.sh` which internally drives: Xcode CLT → Homebrew → 79 formulas → 22 casks → Bun + ccusage + Fabric → stow 23 packages → `mise install` → `setup.sh --configure` (renders 11 LaunchAgent templates with `__USER__` substitution + links Raycast script-commands) → Espanso service register → TPM tmux plugins → Neovim Lazy sync → `./macos/.macos` (44 defaults entries) → verification.
+The full 12-step install runs `install.sh` which internally drives: Xcode CLT → Homebrew → 79 formulas → 22 casks → Bun + ccusage + Fabric → stow 21 packages → `mise install` → `setup.sh --configure` (renders 11 LaunchAgent templates with `__USER__` substitution + links Raycast script-commands) → Espanso service register → TPM tmux plugins → Neovim Lazy sync → `./macos/.macos` (44 defaults entries) → verification.
 
 > **For human readers:** the rest of this README is the standard overview. AI agents can skip to `INSTALL.md`.
 
@@ -73,7 +73,7 @@ neovim.png, tmux.png and yazi.png, then uncomment this whole block.
 
 ## What's Included
 
-23 stowable packages — install everything or pick what you need.
+21 stowable packages — install everything or pick what you need.
 
 ### Core
 
@@ -110,14 +110,12 @@ neovim.png, tmux.png and yazi.png, then uncomment this whole block.
 |------|--------|
 | **Alacritty** | Configured, secondary |
 | **Kitty** | Configured, secondary |
-| **WezTerm** | Configured, secondary |
 
 ### Media & Extras
 
 | Tool | Description |
 |------|-------------|
 | **MPD + rmpc** | Music daemon + TUI player |
-| **Zed** | Editor config (lightweight alternative) |
 | **Scripts** | tmux-sessionizer, FZF helpers, git integrations |
 
 ### AI / Productivity
@@ -127,8 +125,7 @@ neovim.png, tmux.png and yazi.png, then uncomment this whole block.
 | **mise** | Polyglot version manager — replaces fnm + pyenv |
 | **gum** | Glamorous shell-script TUI components (Charmbracelet) |
 | **glow** | Terminal markdown renderer (`gm` alias, Charmbracelet) |
-| **ollama** | Local LLMs — `ollama-up` to start daemon |
-| **[espanso](espanso/README.md)** | System-wide text expander (`:dt`, `:ts`, `:sig`, `:llm`) |
+| **[espanso](espanso/README.md)** | System-wide text expander (`:dt`, `:ts`, `:sig`) |
 | **maccy** | Clipboard history manager (Cmd+Shift+C / Cmd+Shift+V) |
 | **gh-dash** | Terminal PR/issue dashboard (`ghd` alias) |
 | **atuin** | Encrypted shell-history sync ([setup](docs/tier5-setup.md)) |
@@ -264,9 +261,7 @@ dotfiles/
 ├── w3m/              → ~/.w3m/
 ├── wallpapers/       → GLSL shader pages for Plash + Durante gallery README
 ├── launchagents/     → ~/Library/LaunchAgents/ (com.lucas.wallpaper-rotate)
-├── wezterm/          → ~/.config/wezterm/
 ├── yazi/             → ~/.config/yazi/
-├── zed/              → ~/.config/zed/
 ├── zsh/              → ~/.zshrc, ~/.zprofile
 ├── Brewfile          # All Homebrew packages
 ├── install.sh        # Automated installer
@@ -293,7 +288,7 @@ stow -D -t ~ nvim
 
 # Stow everything
 stow -t ~ aerospace atuin ghostty karabiner mpd nvim rmpc \
-         scripts sketchybar starship tmux w3m yazi zed zsh
+         scripts sketchybar starship tmux w3m yazi zsh
 ```
 
 ---

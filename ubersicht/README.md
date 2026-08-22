@@ -43,12 +43,7 @@ crash or a silently-wrong number. Homebrew binaries are invoked by absolute
 path (`/opt/homebrew/bin/gh`) because Übersicht's LaunchAgent environment has
 only the system PATH.
 
-- **pipeline.widget** — the SDLC spine: real active PRDs (junk-filtered from
-  `~/.claude/MEMORY/STATE/work.json`, with a visible `hidden` count) → open
-  PRs + CI rollup across durante-tech/{dos, cc-durante-studio, dos-studio} →
-  sync/deploy state (`~/Durante/MEMORY/STATE/pull-hold.json` + the fleet-board
-  DEPLOY LINE row, minimal MANNED/UNMANNED + timestamp parse only) → release
-  train (`~/.claude/version.json`).
+
 - **attention.widget** — the prioritized action queue: failing CI checks,
   pending fleet decisions (`fleet-decisions.jsonl` requested-without-resolved),
   stuck PRDs (verify >24h, build 0-progress >12h, stale >7d), DLQ backlog
@@ -59,14 +54,16 @@ only the system PATH.
   the canonical `~/Durante/Tools/.dos-projects.json` registry (deprecated
   entries skipped) instead of a hardcoded list.
 
-Retired (absorbed by pipeline/attention): `mempalace.widget` (session counts),
+Retired (absorbed by attention): `mempalace.widget` (session counts),
 `aging-watch.widget` (stuck-work rows), `decisions.widget` (recent decisions).
 
 Removed 2026-08-22 when DuranteOS was retired — all four read data directories
 that no longer exist, so each rendered a permanent empty or error tile:
 `dailybrief.widget` and `today-focus.widget` (read `~/Durante/MEMORY/WORK/`),
 `brief-trigger.widget` (clicked a launchd service that is gone), and
-`q3-thread.widget` (read the removed reflections journal).
+`q3-thread.widget` (read the removed reflections journal). `pipeline.widget`
+followed for the same reason — it read `~/.claude/MEMORY/STATE/work.json`, which
+went with the DOS removal, so it rendered its error branch permanently.
 
 ## Layout lanes (2026-07 UX pass, 2560×1440 logical)
 
@@ -75,7 +72,6 @@ so they can never grow into a neighbor:
 
 | Lane | Widget | Anchor |
 |---|---|---|
-| Left 1 | pipeline | `top:70 left:60 w:540` |
 | Left 2 | memory-tide (sparkline) | `top:560 left:60` |
 | Left 3 | attention (max 4 rows, detail on top 2) | `top:720 left:60 w:540` |
 | Center-right-bottom | deck | `bottom:60 left:1160 w:540` |
@@ -120,5 +116,5 @@ why the hourly rotation was invisible. `wallpaper-rotate.sh` also folds the
 daily piece into its band pools for the no-fresh-daily fallback path.
 
 Widget-own state/cache files live in `~/.claude/MEMORY/STATE/`
-(`pipeline-widget-cache.json`, `attention-widget-cache.json`,
+(`attention-widget-cache.json`,
 `drift-warden-state.json`) — widgets write nothing else.

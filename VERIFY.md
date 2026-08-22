@@ -15,7 +15,7 @@ These are load-bearing — if any fail, basic shell features break.
 # `ripgrep`, whose binary is `rg`, so the block could never reach its stated
 # pass condition on a correctly installed machine — and the documented repair
 # was a full reinstall, which can never fix it either.
-for tool in zsh stow starship atuin zoxide fzf bat fd rg eza nvim tmux git lazygit mise node python bun wallpaper espanso ollama gum glow gh; do
+for tool in zsh stow starship atuin zoxide fzf bat fd rg eza nvim tmux git lazygit mise node python bun wallpaper espanso gum glow gh; do
   if command -v "$tool" &>/dev/null; then
     echo "OK $tool"
   else
@@ -272,30 +272,6 @@ GALLERY_COUNT=$(ls "$HOME/Pictures/Wallpapers/"[0-9][0-9]-*.jpg 2>/dev/null | wc
 
 ---
 
-## Ollama
-
-```bash
-[ -x "$(command -v ollama)" ] && \
-  echo "OK ollama binary installed" || echo "FAIL ollama missing"
-
-# Daemon (OK either way — it's session-only by design)
-pgrep -x ollama &>/dev/null && \
-  echo "OK ollama daemon running" || echo "INFO daemon not running — start with: ollama-up"
-
-# At least one model pulled
-MODEL_COUNT=$(ollama list 2>/dev/null | tail -n +2 | wc -l | tr -d ' ')
-[ "$MODEL_COUNT" -gt 0 ] && \
-  echo "OK $MODEL_COUNT model(s) installed: $(ollama list | tail -n +2 | awk '{print $1}' | tr '\n' ' ')" || \
-  echo "WARN no models yet — for :llm trigger run: ollama-up && ollama pull qwen3-coder:30b"
-```
-
-**If Ollama fails:**
-- `brew install ollama` — re-install
-- `ollama-up` — start daemon (session-only, no boot persistence)
-- `ollama pull qwen3-coder:30b` — fetch model for `:llm` espanso trigger
-
----
-
 ## Atuin Sync
 
 ```bash
@@ -345,7 +321,6 @@ After running all checks, report to user:
   • Espanso: <C>/3 OK
   • Sketchybar: <D>/4 OK
   • Wallpaper: <E>/4 OK
-  • Ollama: <F>/3 OK
   • Atuin: <G>/1 OK
   • Shell startup: <Nms>
 
