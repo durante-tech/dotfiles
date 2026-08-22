@@ -78,6 +78,12 @@ export PATH="$HOME/fvm/default/bin:$HOME/.pub-cache/bin:$PATH"
 # Fabric AI
 export FABRIC_ROOT="$HOME/.config/fabric"
 
+# GitHub MCP server (Claude Code `github` plugin) — reads the token from the gh
+# keyring at login so no secret is stored on disk. Needs an authenticated gh.
+if command -v gh >/dev/null 2>&1; then
+  export GITHUB_PERSONAL_ACCESS_TOKEN="$(gh auth token 2>/dev/null)"
+fi
+
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
