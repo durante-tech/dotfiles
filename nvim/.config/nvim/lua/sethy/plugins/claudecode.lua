@@ -4,23 +4,19 @@ return {
 	config = true,
 	keys = {
 		-- Basic toggle/focus
-		{ "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "Toggle PAI" },
-		{ "<leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus PAI" },
-		-- PAI with options
-		{ "<leader>al", "<cmd>ClaudeCode -l<cr>", desc = "PAI (local)" },
-		{ "<leader>am", "<cmd>ClaudeCode -l -m full<cr>", desc = "PAI (full MCPs)" },
-		{ "<leader>aw", "<cmd>ClaudeCode -l -m dev-work<cr>", desc = "PAI (dev-work)" },
-		{ "<leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "PAI (resume)" },
-		{ "<leader>aM", "<cmd>ClaudeCode -l -m full --resume<cr>", desc = "PAI (full + resume)" },
-		{ "<leader>aW", "<cmd>ClaudeCode -l -m dev-work --resume<cr>", desc = "PAI (dev-work + resume)" },
+		{ "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude Code" },
+		{ "<leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus Claude Code" },
+		{ "<leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "Claude Code (resume)" },
 		-- Selection/diff
-		{ "<leader>as", "<cmd>ClaudeCodeSend<cr>", desc = "Send to PAI", mode = "v" },
+		{ "<leader>as", "<cmd>ClaudeCodeSend<cr>", desc = "Send to Claude Code", mode = "v" },
 		{ "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
 		{ "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Reject diff" },
 	},
 	opts = {
-		-- Use PAI instead of claude (full paths since alias/PATH not available in nvim terminal)
-		terminal_cmd = vim.fn.expand("~") .. "/.bun/bin/bun " .. vim.fn.expand("~") .. "/.claude/skills/CORE/Tools/pai.ts",
+		-- Absolute path: the `claude` alias and ~/.local/bin are not on PATH inside
+		-- the nvim terminal. This pointed at ~/.claude/skills/CORE/Tools/pai.ts,
+		-- which does not exist, so every mapping here failed with exit 127.
+		terminal_cmd = vim.fn.expand("~") .. "/.local/bin/claude",
 		-- Terminal settings
 		terminal = {
 			split_side = "left", -- Will be overridden by snacks_win_opts

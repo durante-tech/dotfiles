@@ -326,7 +326,6 @@ yt https://... | summarize                   # Quick summary
 | `air` | Go live-reload server (`$(go env GOPATH)/bin/air`) |
 | `nvim-scratch` | Launch Neovim with separate config (`NVIM_APPNAME=nvim-scratch`) |
 | `mpds` | Start MPD music daemon |
-| `pai` | PAI tool (bun-based) |
 
 ## Adding Your Own
 
