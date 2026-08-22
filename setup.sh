@@ -517,9 +517,35 @@ check_stow_drift() {
         rc=0
         raw="$(stow -n -v -R -t ~ "$pkg" 2>&1)" || rc=$?
         if (( rc != 0 )); then
-            print_warning "$pkg — stow refused to run (conflict or error):"
-            sed 's/^/    /' <<< "$raw"
-            drifted=$((drifted + 1))
+            # One conflict is INTENTIONAL and must not be reported, or this check
+            # cries wolf on every single run — the same way a permanently-red CI
+            # gate trained everyone here to ignore it.
+            #
+            # stow_packages() rewrites the Übersicht widgets link to an ABSOLUTE
+            # symlink because Übersicht's server.js cannot follow the relative one
+            # stow creates. stow then disowns it ("existing target is not owned by
+            # stow") even though the link is correctly pointing into this repo.
+            # So: a conflict counts as REAL only if some conflicting target is not
+            # already an absolute symlink into $DOTFILES_DIR.
+            local bad tgt real_conflict=0 had_conflict=0
+            while IFS= read -r bad; do
+                [[ -n "$bad" ]] || continue
+                had_conflict=1
+                bad="${bad##*not owned by stow: }"
+                tgt="$HOME/$bad"
+                if [[ -L "$tgt" && "$(readlink "$tgt")" == "$DOTFILES_DIR"/* ]]; then
+                    continue
+                fi
+                real_conflict=1
+            done <<< "$(grep 'not owned by stow:' <<< "$raw" || true)"
+
+            if (( had_conflict == 1 && real_conflict == 0 )); then
+                : # every conflict explained by an intentional absolute link
+            else
+                print_warning "$pkg — stow refused to run (conflict or error):"
+                sed 's/^/    /' <<< "$raw"
+                drifted=$((drifted + 1))
+            fi
             continue
         fi
         # "(reverts previous action)" lines are stow's re-stow bookkeeping for

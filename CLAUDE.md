@@ -99,7 +99,6 @@ nvim/
 | **Raycast** | `raycast/script-commands/` | Script commands that exec-delegate to `scripts/scripts/` |
 | **Übersicht** | `ubersicht/Library/Application Support/Übersicht/widgets/` | Desktop widgets |
 | **Fastfetch / mpd / rmpc / zed / atuin / mise / linearmouse** | `<pkg>/.config/<pkg>/` | Smaller stowed configs |
-| **mactop** | `mactop/config.json` | **NOT stowed** — bare config, absent from `stow-packages.txt`, and not shaped as `.config/mactop/`. The tool is not in the Brewfile either. Wire it up or drop it. |
 | **macOS** | `macos/` | System defaults scripts |
 | **Wallpapers** | `wallpapers/` | Rotation assets + Plash shaders |
 | **Site** | `site/` | Astro/React docs site (not stowed) |
@@ -951,11 +950,16 @@ Hot-reloads on config change. Receives `aerospace_workspace_change` events.
 | `streamdeck-build` | Build the Stream Deck profile from a source `.streamDeckProfile` |
 
 **Adding New Scripts**: Create in `scripts/scripts/`, `chmod +x`, then
-`stow -R -t ~ scripts`. A re-stow **is** required: `~/scripts` is a real
-directory (it holds untracked local files), so stow links per-file rather than
-folding the whole directory, and a new file is not on `PATH` until it is linked.
-Two scripts are in this state today — `bd-hdr-toggle.sh` and
-`install-linearmouse.sh` exist in the repo but not in `~/scripts`.
+`stow -t ~ scripts`. A stow **is** required: `~/scripts` is a real directory (it
+holds untracked local files), so stow links per-file rather than folding the
+whole directory, and a new file is not on `PATH` until it is linked.
+
+Use plain `stow` here, not `stow -R`. Measured on this repo: plain `stow` emits
+exactly the LINK operations for the new files, while `-R` unlinks all 33 existing
+symlinks and recreates them — 68 operations of pure churn for the same result.
+Reach for `-R` only when a file was **renamed or removed** upstream, since that
+is what clears the now-dangling symlink; plain `stow` never removes anything.
+
 Shebang must be on **line 1** — a comment above it is `SC1128`, which is an
 `error` and so fails CI regardless of the gate's `warning` threshold.
 
