@@ -7,7 +7,7 @@
 # silently hid the whole dashboard (the selected id no longer matched any screen).
 # This re-resolves the current external screen number and rewrites WidgetSettings.json,
 # then relaunches Übersicht ONLY when the number actually changed (cheap no-op
-# otherwise). The 4 built-in widgets use showOnMainScreen, which is stable (index 0),
+# otherwise). The 3 built-in widgets use showOnMainScreen, which is stable (index 0),
 # so they're left alone.
 #
 # Wired into the display-change flow (display-restore.sh runs it best-effort after an
@@ -26,7 +26,7 @@ log() {
 [ -r "$SETTINGS" ] || { log "no WidgetSettings.json — skip"; exit 0; }
 
 # Widgets that stay on the built-in (main) display. Everything else is dashboard.
-BUILTIN_WIDGETS="focus-widget-index-jsx drift-warden-widget-index-jsx today-focus-widget-index-jsx clock-widget-index-jsx"
+BUILTIN_WIDGETS="focus-widget-index-jsx drift-warden-widget-index-jsx clock-widget-index-jsx"
 
 # Current external (non-builtin) NSScreenNumber — the value Übersicht keys on.
 EXT="$(swift - <<'SW' 2>/dev/null
