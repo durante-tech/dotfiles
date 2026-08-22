@@ -15,7 +15,14 @@
   fires, so nothing re-asserted the external monitor after a lock. screenIsUnlocked
   is the reliable unlock signal. sleepwatcher still owns real system wake (-w);
   this agent does not replace it. If swiftc is absent at install time the binary
-  is never built and this agent simply fails to start (harmless no-op).
+  is never built, and because KeepAlive is true launchd keeps retrying the spawn
+  on its default 10 second ThrottleInterval — one spawn failure logged every ten
+  seconds for the life of the login session, not the harmless no-op this comment
+  used to claim. Do NOT "fix" that by raising ThrottleInterval: it would only
+  slow the retries while also delaying recovery when the helper crashes for real,
+  and this helper is the only thing that re-asserts the external monitor after an
+  unlock. Re-run setup.sh's configure pass once swiftc exists — it builds the
+  binary and re-bootstraps this agent, which is what actually stops the retries.
 -->
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
