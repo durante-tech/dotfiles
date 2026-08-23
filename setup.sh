@@ -761,8 +761,63 @@ verify_config() {
         fi
     fi
 
-    if [[ $issues -eq 0 ]]; then
+    # Verify what --configure actually PROVISIONED. Until now this function
+    # checked stow drift, symlinks, the login shell, nvim and AeroSpace — none of
+    # which --configure creates. So every failure it is meant to catch (an agent
+    # that would not bootstrap, a venv that could not be built, a wake hook that
+    # was never linked) passed verification silently.
+    echo -e "\nConfigured state..."
+    local cfg_warn=0
+
+    local agent_count
+    agent_count=$(find "$HOME/Library/LaunchAgents" -name 'com.lucas.*.plist' 2>/dev/null | wc -l | tr -d ' ')
+    local tpl_count
+    tpl_count=$(find "$DOTFILES_DIR/launchagents/Library/LaunchAgents" -name '*.plist.template' 2>/dev/null | wc -l | tr -d ' ')
+    if [[ "$agent_count" -eq 0 ]]; then
+        print_warning "No com.lucas.* LaunchAgents rendered - run ./setup.sh --configure"
+        cfg_warn=$((cfg_warn + 1))
+    elif [[ "$agent_count" -lt "$tpl_count" ]]; then
+        print_warning "$agent_count of $tpl_count LaunchAgents rendered (some templates did not land)"
+        cfg_warn=$((cfg_warn + 1))
+    else
+        print_success "$agent_count/$tpl_count LaunchAgents rendered"
+    fi
+
+    # Molten needs all three, plus a registered kernelspec. pynvim alone is the
+    # state this repo shipped for a long time and it is not enough.
+    if [[ -x "$HOME/.venvs/nvim/bin/python" ]]; then
+        if "$HOME/.venvs/nvim/bin/python" -c 'import pynvim, jupyter_client, ipykernel' 2>/dev/null; then
+            print_success "nvim python provider venv complete (pynvim + jupyter_client + ipykernel)"
+        else
+            print_warning "nvim venv is missing packages - re-run ./setup.sh --configure"
+        cfg_warn=$((cfg_warn + 1))
+        fi
+    else
+        print_warning "No nvim python venv (~/.venvs/nvim) - Molten/Jupyter disabled"
+        cfg_warn=$((cfg_warn + 1))
+    fi
+
+    # Both wake-recovery agents exec this path; nothing used to create it.
+    if [[ -e "$HOME/.wakeup" ]]; then
+        print_success "Wake hook ~/.wakeup present"
+    else
+        print_warning "Wake hook missing at ~/.wakeup - display recovery after sleep/unlock will not run"
+        cfg_warn=$((cfg_warn + 1))
+    fi
+
+    if [[ -r "$HOME/.config/dotfiles/personal.env" ]]; then
+        print_success "personal.env present"
+    else
+        print_info "No ~/.config/dotfiles/personal.env - run ./personalize.sh for machine-specific values"
+    fi
+
+    # "All checks passed!" used to print even with warnings on screen, because
+    # only hard errors increment $issues. Saying it passed while a warning is
+    # visible is the same false-success pattern this triage has been removing.
+    if [[ $issues -eq 0 && $cfg_warn -eq 0 ]]; then
         print_success "All checks passed!"
+    elif [[ $issues -eq 0 ]]; then
+        print_warning "No errors, but $cfg_warn configuration warning(s) above"
     else
         print_warning "$issues issues found"
     fi
