@@ -168,6 +168,58 @@ jobs:
           done <<< "$packages"
           exit "$failed"
 
+  stow-linux-dry-run:
+    name: Stow Dry Run (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install stow
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq stow
+
+      # The Linux manifest gets its own job, on a real Linux runner, for the
+      # reason the Linux installer is a separate script at all: an unexercised
+      # path rots. stow-packages.linux.txt names a SUBSET of the macOS manifest,
+      # so this also catches a package renamed or removed on the macOS side
+      # without the Linux list being updated.
+      - name: Verify Linux stow packages (dry run)
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/fakehome/.config
+          # `|| true`: an empty manifest filters to zero lines and grep exits 1,
+          # which would abort the step with no diagnostic.
+          packages="$(sed -e 's/#.*//' -e 's/[[:space:]]//g' stow-packages.linux.txt | grep -v '^$' || true)"
+          if [ -z "$packages" ]; then
+            echo "stow-packages.linux.txt lists no packages"
+            exit 1
+          fi
+          echo "manifest lists $(echo "$packages" | wc -l | tr -d ' ') packages"
+          failed=0
+          # here-string, not a pipe: `while read` on the right of a pipe runs in a
+          # subshell and the `failed` assignment would never reach this scope.
+          while IFS= read -r pkg; do
+            [ -n "$pkg" ] || continue
+            if [ ! -d "$pkg" ]; then
+              echo "✗ $pkg — listed in stow-packages.linux.txt but no such directory"
+              failed=1
+              continue
+            fi
+            # Must also be a real macOS package: the Linux list is a subset, never
+            # a source of packages the macOS manifest does not know about.
+            if ! sed -e 's/#.*//' -e 's/[[:space:]]//g' stow-packages.txt | grep -qx "$pkg"; then
+              echo "✗ $pkg — in the Linux manifest but not in stow-packages.txt"
+              failed=1
+              continue
+            fi
+            if stow -n -t /tmp/fakehome "$pkg" 2>&1; then
+              echo "✓ $pkg"
+            else
+              echo "✗ $pkg"
+              failed=1
+            fi
+          done <<< "$packages"
+          exit "$failed"
+
   convention-check:
     name: Convention Check
     runs-on: ubuntu-latest

@@ -38,6 +38,56 @@ stow -D -t ~ zsh
 
 **Important**: Before stowing, ensure parent directories exist in `$HOME` (especially `~/.config/`). Stow will fail if these don't exist.
 
+### Linux (Debian/Ubuntu, terminal core)
+
+```bash
+./install-linux.sh              # full install
+./install-linux.sh --dry-run    # print, change nothing
+./install-linux.sh --skip-apt   # already provisioned
+```
+
+Deliberately a **separate script**, not platform branches inside `install.sh` — an
+unexercised branch is the shape that rots. It deploys the 10 portable packages in
+`stow-packages.linux.txt`; that file documents why each of the other 11 is excluded
+(AeroSpace, sketchybar, Karabiner, Übersicht, LinearMouse have no Linux build at all).
+
+**apt cannot supply this stack**, verified against Debian 12:
+
+| tool | apt | why mise instead |
+|------|-----|------------------|
+| neovim | 0.7.2 | config uses `vim.lsp.config`, added in **0.11** |
+| fzf | 0.38 | `fzf --zsh` (used by `.zshrc`) exists only from **0.48** |
+| zoxide | 0.4.3 | current is 0.9+ |
+| eza, starship, atuin, yazi, lazygit, delta, fastfetch | absent | not packaged |
+
+So apt supplies only the base (git, curl, stow, tmux, zsh, ripgrep, w3m, xclip…) and
+**mise supplies the toolchain**. Two Debian quirks are shimmed into `~/.local/bin`:
+`fd-find` installs as `fdfind` and `bat` as `batcat`, but every alias here calls
+`fd`/`bat`.
+
+**Known limit — glibc.** mise ships glibc-linked builds. On Debian 12 (glibc 2.36)
+current `atuin` and `yazi` need `GLIBC_2.39`: they install cleanly and then refuse to
+execute. `install-linux.sh` probes each tool by RUNNING it, reports those two as
+failed, and prints the local glibc version. Debian 13 / Ubuntu 24.04+ are new enough.
+Everything else in the stack is unaffected.
+
+That probe matters more than it sounds: `.zshrc` evals `atuin init zsh` on every shell
+start, so a broken binary meant a loader error on **every prompt**. The tool inits in
+`.zshrc` now drop stderr from those evals — `command -v` proves a file exists, never
+that it runs.
+
+Verified end-to-end in a `debian:bookworm-slim` container, not by inspection.
+CI dry-runs the Linux manifest on `ubuntu-latest` (`Stow Dry Run (Linux)`), which also
+fails if a Linux package is missing from `stow-packages.txt`.
+
+Two cross-platform gotchas this turned up, both fixed in the shared configs:
+- `tmux.conf` pipes six copy bindings to `pbcopy`. tmux does **not** report a failed
+  `copy-pipe`, so on Linux yanking silently did nothing. `tmux/.config/tmux/linux.conf`
+  re-binds them to wl-copy/xclip/xsel and is sourced only when `uname != Darwin`.
+- `mise` tools reach an interactive zsh via `mise activate`, but **not** a script's own
+  bash. `install-linux.sh` puts `~/.local/share/mise/shims` on PATH for exactly that
+  reason — without it the installer could not see what it had just installed.
+
 ### Development Workflow
 
 ```bash
@@ -1056,11 +1106,19 @@ Install via Mason (`:Mason`) or manually before enabling.
 
 **Node.js & Python** (via **mise** — polyglot manager, replaces fnm/pyenv/nvm; auto-switches per `.mise.toml`/`.tool-versions`/`.nvmrc`/`.python-version`):
 ```bash
-mise use -g node@lts     # or a pinned version, e.g. node@24
-mise use -g python@3.12
 mise install             # install everything a project's config pins
 mise current             # show active versions
+mise use -g node@24      # ⚠ WRITES ~/.config/mise/config.toml — see below
 ```
+
+⚠ **`mise use -g` edits the repo.** `~/.config/mise/config.toml` is a stow symlink to
+`mise/.config/mise/config.toml`, and mise writes *through* it: measured in a container,
+the tracked file's md5 changed and stow's folded directory link was replaced by a real
+file. Same failure mode SDKMAN had. It is not destructive — the edit is a normal diff
+you can inspect and commit — but it is a **repo change**, so `git status` after any
+`mise use -g`, and prefer editing `mise/.config/mise/config.toml` directly then running
+`mise install`. (`install-linux.sh` sidesteps this by copying the config instead of
+stowing it.)
 Python packaging uses **uv** — installed by `install.sh`/Brewfile, on PATH via
 `.zprofile`. It is the default for every Python operation in this repo; reach for
 `pip` only as a fallback when uv is genuinely unavailable.
