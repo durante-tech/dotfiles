@@ -628,10 +628,19 @@ else
         # version-controlled. ~/.bash_profile still receives the upstream
         # snippet — that file is not stowed (the zsh package is .zshrc +
         # .zprofile only), so it does no harm.
+        #
+        # `set -o pipefail` is NOT optional here. Without it a failed curl —
+        # offline, 404, TLS error — feeds an empty stdin to the downstream bash,
+        # which exits 0, so the whole pipeline succeeds and `|| print_warn` never
+        # fires. Measured: a 404 exits 0 without pipefail and 22 with it. The
+        # post-install check below then catches every other partial-failure mode.
         sdkman_zdot="$(mktemp -d)"
-        ZDOTDIR="$sdkman_zdot" bash -c 'curl -fsSL https://get.sdkman.io | bash' \
+        ZDOTDIR="$sdkman_zdot" bash -c 'set -o pipefail; curl -fsSL https://get.sdkman.io | bash' \
             || print_warn "SDKMAN install failed"
         rm -rf "$sdkman_zdot"
+        if [ ! -s "$HOME/.sdkman/bin/sdkman-init.sh" ]; then
+            print_warn "SDKMAN did not land - skipping Java, install by hand later"
+        fi
     fi
 fi
 

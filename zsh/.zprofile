@@ -87,22 +87,6 @@ fi
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
-# Source machine-specific local overrides (not tracked in git)
-[[ -f ~/.zprofile.local ]] && source ~/.zprofile.local
-
-
-
-# Added by OrbStack: command-line tools and integration
-# This won't be added again if you remove it.
-source ~/.orbstack/shell/init.zsh 2>/dev/null || :
-
-# >>> localcan >>>
-export PATH="$HOME/.localcan/bin:$PATH"
-# <<< localcan <<<
-
-# Added by Obsidian
-export PATH="$PATH:/Applications/Obsidian.app/Contents/MacOS"
-
 # SDKMAN — JVM toolchain manager (java, kotlin, gradle, maven, scala, sbt).
 # Complements mise, which owns Node + Python only; there is no overlap today.
 #
@@ -118,5 +102,27 @@ export PATH="$PATH:/Applications/Obsidian.app/Contents/MacOS"
 # was later restored. install.sh §5 redirects ZDOTDIR to a throwaway dir to
 # stop that; if you ever run the installer by hand, do the same:
 #     ZDOTDIR="$(mktemp -d)" bash -c 'curl -fsSL https://get.sdkman.io | bash'
+#
+# Placed BEFORE the ~/.zprofile.local hook below, deliberately against SDKMAN's
+# own "must be at the end of the file" instruction. That instruction exists so
+# SDKMAN's PATH wins over anything later; here the whole point of .zprofile.local
+# is that a machine CAN pin a different JDK, and it cannot do that if this block
+# re-exports JAVA_HOME afterwards.
 export SDKMAN_DIR="$HOME/.sdkman"
 [ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+
+# Source machine-specific local overrides (not tracked in git)
+[[ -f ~/.zprofile.local ]] && source ~/.zprofile.local
+
+
+
+# Added by OrbStack: command-line tools and integration
+# This won't be added again if you remove it.
+source ~/.orbstack/shell/init.zsh 2>/dev/null || :
+
+# >>> localcan >>>
+export PATH="$HOME/.localcan/bin:$PATH"
+# <<< localcan <<<
+
+# Added by Obsidian
+export PATH="$PATH:/Applications/Obsidian.app/Contents/MacOS"

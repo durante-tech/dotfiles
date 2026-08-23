@@ -1076,7 +1076,8 @@ sdk install java         # current LTS
 sdk use java 21.0.8-tem  # this shell only
 sdk selfupdate force     # upgrade SDKMAN itself
 ```
-The canonical init is at the end of `zsh/.zprofile` — **not** `.zshrc`, where the
+The canonical init sits in `zsh/.zprofile` just above the `~/.zprofile.local` hook
+(so a machine can still pin its own JDK) — **not** `.zshrc`, where the
 upstream installer wants to put it. `~/.zshrc` is a symlink into this repo, so the
 installer's unconditional append writes *through* it and dirties git; that is how a
 previous install silently lost its init when the tree was later restored. `install.sh`
