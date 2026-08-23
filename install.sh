@@ -44,6 +44,10 @@ UPDATE_ONLY=false
 FORCE_STOW=false
 VERBOSE=false
 DRY_RUN=false
+# Accumulated package failures. brew_install/cask_install append here instead of
+# aborting, so a single unavailable formula cannot stop the run before stow.
+BREW_FAILED=""
+CASK_FAILED=""
 
 # =============================================================================
 # HELPER FUNCTIONS
@@ -118,7 +122,12 @@ brew_install() {
         return 0
     fi
     print_step "Installing $1..."
-    brew install "$1"
+    # NOT fatal. This used to be a bare `brew install`, which under `set -e`
+    # meant one unavailable formula — a rename, a bad bottle mirror, a tap that
+    # failed to clone — aborted the entire install. Since stow is phase 6, any
+    # phase-3 casualty left the machine with packages but ZERO dotfiles
+    # deployed, which is the worst possible failure shape for this script.
+    brew install "$1" || { print_warn "$1 failed to install"; BREW_FAILED="$BREW_FAILED $1"; }
 }
 
 # Install brew cask if not already installed
@@ -133,7 +142,11 @@ cask_install() {
         return 0
     fi
     print_step "Installing $1 (cask)..."
-    brew install --cask "$1"
+    # Non-fatal for the same reason as brew_install, and one more: pkg-based
+    # casks (karabiner-elements, font-sf-pro, basictex) shell out to
+    # `sudo installer`, which cannot prompt in a non-TTY run — exactly how
+    # INSTALL.md tells an agent to drive this script.
+    brew install --cask "$1" || { print_warn "$1 (cask) failed to install"; CASK_FAILED="$CASK_FAILED $1"; }
 }
 
 # Execute command (or show in dry-run mode)
@@ -408,13 +421,15 @@ if [ "$SKIP_BREW" = false ]; then
     # AI & Productivity
     print_step "Installing AI/productivity tools..."
     brew_install aider
-    brew_install ollama          # local LLM runtime
     brew_install gum             # glamorous shell scripts
     brew_install glow            # terminal markdown renderer
     brew_install wallpaper       # macOS wallpaper CLI (used by hourly rotation)
 
-    # Misc
-    brew_install qmk
+    # NOTE: qmk is NOT installed here. It lives only in the qmk/qmk tap
+    # (formulae.brew.sh returns 404 for a bare `qmk`), and this phase runs
+    # BEFORE §3.5 adds that tap via the Brewfile — so `brew_install qmk` aborted
+    # a fresh install at this exact line, under set -e, before stow ever ran.
+    # Brewfile:7 taps qmk/qmk and Brewfile:155 installs qmk/qmk/qmk correctly.
 
     print_success "Homebrew formulae complete"
 else
@@ -923,6 +938,18 @@ if [ "$ALL_OK" = true ]; then
     print_success "All critical tools installed!"
 else
     print_warn "Some tools missing - check errors above"
+fi
+
+# Report anything brew could not install. These were warnings at the time so the
+# run could reach stow; surface them here rather than letting them scroll past.
+if [ -n "${BREW_FAILED// /}" ] || [ -n "${CASK_FAILED// /}" ]; then
+    echo ""
+    print_warn "Some packages did not install:"
+    [ -n "${BREW_FAILED// /}" ] && echo "    formulae:$BREW_FAILED"
+    [ -n "${CASK_FAILED// /}" ] && echo "    casks:$CASK_FAILED"
+    echo "    Re-run ./install.sh, or install them individually with brew."
+    echo "    pkg-based casks (karabiner-elements, font-sf-pro, basictex) need an"
+    echo "    interactive terminal for sudo and cannot install from a script."
 fi
 
 # =============================================================================

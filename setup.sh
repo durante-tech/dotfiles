@@ -239,6 +239,32 @@ configure_environment() {
     build_native_helpers
 
     # Render LaunchAgent plists from templates and bootstrap them.
+    # ~/.wakeup — the hook BOTH wake-recovery agents execute.
+    #
+    # com.lucas.sleepwatcher passes it to sleepwatcher's -w/-W, and
+    # unlock-watch.swift runs it on com.apple.screenIsUnlocked. Nothing in this
+    # repo ever created it, so on a fresh machine both agents fired against a
+    # missing path and display recovery after sleep/unlock silently never
+    # happened — invisible precisely because a missing hook is a no-op.
+    #
+    # Deliberately NOT `ln -sfn`: sleepwatcher's own brew caveat tells users to
+    # WRITE ~/.sleep and ~/.wakeup as scripts, so an unconditional force-link
+    # would silently destroy a hand-written hook. Only create it when the path
+    # is free, and only re-point it when it is already a symlink into this repo.
+    local wake_hook="$HOME/.wakeup"
+    local wake_src="$DOTFILES_DIR/scripts/scripts/bd-wake.sh"
+    if [[ -x "$wake_src" ]]; then
+        if [[ ! -e "$wake_hook" && ! -L "$wake_hook" ]]; then
+            ln -s "$wake_src" "$wake_hook"
+            print_success "Created ~/.wakeup -> bd-wake.sh (display recovery on wake/unlock)"
+        elif [[ -L "$wake_hook" && "$(readlink "$wake_hook")" == "$DOTFILES_DIR"/* ]]; then
+            ln -sfn "$wake_src" "$wake_hook"
+            print_info "Hook ~/.wakeup re-pointed at bd-wake.sh"
+        else
+            print_info "Hook ~/.wakeup exists and is not ours — left untouched"
+        fi
+    fi
+
     render_launchagents
 
     # Symlink dotfiles-tracked Raycast script-commands into the indexed dir.
