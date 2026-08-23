@@ -43,6 +43,15 @@ brew "dust"
 brew "eza"
 # Simple, fast and user-friendly alternative to find
 brew "fd"
+# System info tool. There is a whole `fastfetch` STOW PACKAGE in this repo, so a
+# fresh Mac got ~/.config/fastfetch/config.jsonc deployed and no binary to read it.
+brew "fastfetch"
+# Monitor layout control (resolution, rotation, origin). Required by
+# scripts/scripts/display-restore.sh — 7 documented profiles, wrapped by four
+# Raycast script-commands and fired from Stream Deck keys. The script guards on it
+# and exits 127 with a log line, so without this every one of those paths was a
+# silent no-op on a fresh machine.
+brew "displayplacer"
 # mise — polyglot version manager (replaces fnm + pyenv)
 brew "mise"
 # uv — the Python package manager for this repo (CLAUDE.md: "Python packaging

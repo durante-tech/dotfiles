@@ -552,20 +552,10 @@ else
     fi
 fi
 
-# ccusage — Claude Code session/billing usage parser (used by SketchyBar
-# claude indicator). Requires bun (installed above).
-if cmd_exists bun; then
-    if cmd_exists ccusage; then
-        print_success "ccusage already installed"
-    else
-        if [ "$DRY_RUN" = true ]; then
-            print_dry "bun install -g ccusage"
-        else
-            print_step "Installing ccusage globally via bun..."
-            bun install -g ccusage 2>/dev/null || print_warn "ccusage install failed"
-        fi
-    fi
-fi
+# ccusage is deliberately NOT installed. It was here to feed a SketchyBar
+# "Claude Code billing indicator" that does not exist: there is no claude.sh or
+# ccusage plugin anywhere under sketchybar/, and sketchybarrc never referenced
+# one. It is also absent from this machine, confirming nothing consumed it.
 
 # gh-dash — terminal PR/issue dashboard (used by `ghd` alias in .zshrc).
 # Installed as a `gh` extension (not a brew formula). Requires `gh` from §3.
