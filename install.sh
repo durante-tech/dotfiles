@@ -797,8 +797,12 @@ backup_stow_conflicts() {
     while IFS= read -r target; do
         [ -n "$target" ] || continue
         full="$HOME/$target"
-        # Only plain files/dirs. A symlink here is stow's own and -R handles it.
-        if [ -e "$full" ] && [ ! -L "$full" ]; then
+        # Plain FILES only. A symlink here is stow's own and -R handles it; a
+        # real directory is deliberately left alone — stow folds into
+        # directories rather than conflicting on them, and silently relocating
+        # one (say ~/.config) would move far more than the package's own files.
+        # A directory conflict therefore still surfaces as a stow warning.
+        if [ -f "$full" ] && [ ! -L "$full" ]; then
             mkdir -p "$STOW_BACKUP_DIR/$(dirname "$target")"
             mv "$full" "$STOW_BACKUP_DIR/$target"
             print_warn "Moved pre-existing $target -> $STOW_BACKUP_DIR/$target"
