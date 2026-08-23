@@ -2,7 +2,7 @@
 
 **This guide is designed for AI agents installing/updating these dotfiles on a user's Mac.**
 
-The repo is the personal dev environment for Lucas Gertel: terminal-first, keyboard-driven macOS setup with Neovim, Tmux, AeroSpace, Sketchybar, and a Catppuccin/Rose-pine theme stack. Includes a Claude Code session indicator on the bar, hourly Durante-themed wallpaper rotation, espanso `:llm` triggers piped to local Ollama, and 101 brew packages (79 formulas + 22 casks).
+The repo is the personal dev environment for Lucas Gertel: terminal-first, keyboard-driven macOS setup with Neovim, Tmux, AeroSpace, Sketchybar, and a Catppuccin/Rose-pine theme stack. Includes hourly Durante-themed wallpaper rotation and 96 brew packages (77 formulae + 19 casks).
 
 ---
 
@@ -27,7 +27,7 @@ Before starting, greet the user:
   • Tmux with TPM, AeroSpace tiling WM, Sketchybar
   • Ghostty primary terminal, Catppuccin Mocha
   • mise polyglot version manager (Node + Python)
-  • Espanso text expander with :llm trigger to local Ollama (qwen3-coder:30b)
+  • Espanso text expander (:dt, :ts, :sig triggers)
   • Hourly Durante-themed wallpaper rotation (10-piece gallery)
   • Sketchybar Claude Code 5-hour billing block indicator (via ccusage)
 
@@ -88,10 +88,10 @@ for path in ~/.zshrc ~/.zprofile ~/.config/nvim ~/.config/tmux ~/.config/aerospa
   fi
 done
 
-# Disk space (need ~5GB for brew + plugins + ollama models)
+# Disk space (need ~5GB for brew + plugins)
 AVAIL_GB=$(df -g ~ | awk 'NR==2 {print $4}')
 if [ "$AVAIL_GB" -lt 10 ]; then
-  echo "WARNING Only ${AVAIL_GB}GB free. Recommended: 20GB+ (Brew packages + Ollama models)."
+  echo "WARNING Only ${AVAIL_GB}GB free. Recommended: 20GB+ (Brew packages + Neovim/Rust builds)."
 else
   echo "OK ${AVAIL_GB}GB free disk space"
 fi
@@ -157,7 +157,7 @@ Tell the user what you found. Highlight any WARNING or ERROR lines specifically.
 ```json
 {
   "header": "GUI Apps (Casks)",
-  "question": "Install all GUI app casks? Includes: Ghostty terminal, Espanso, Maccy clipboard, Übersicht widgets, boring.notch, Raycast, Karabiner-Elements, Stats, KeyCastr, BetterDisplay.",
+  "question": "Install all GUI app casks? Includes: Ghostty terminal, Espanso, Maccy clipboard, Übersicht widgets, Raycast, Karabiner-Elements, BetterDisplay.",
   "multiSelect": false,
   "options": [
     {"label": "Yes, install all (Recommended)", "description": "Full setup. Most casks are free; some need first-launch Accessibility grants."},
@@ -254,9 +254,9 @@ cd "$HOME/dotfiles"
 |---|-------|------|
 | 1 | Xcode CLT | Installs if missing |
 | 2 | Homebrew | Installs if missing |
-| 3 | Brew formulae | 79 CLI tools (mise, neovim, tmux, fzf, atuin, ollama, gum, glow, wallpaper, sleepwatcher, etc.) |
+| 3 | Brew formulae | 77 CLI tools (mise, neovim, tmux, fzf, atuin, rust, gum, glow, wallpaper, sleepwatcher, etc.) |
 | 3.5 | Brewfile reconciliation | `brew bundle install --file=Brewfile` — installs anything in the Brewfile the explicit list missed. Never uninstalls; retired-tool cleanup is opt-in via docs/UPGRADE.md |
-| 4 | Brew casks | 22 GUI apps (Ghostty, Espanso, Maccy, Übersicht, boring.notch, etc.) |
+| 4 | Brew casks | 19 GUI apps (Ghostty, Espanso, Maccy, Übersicht, BetterDisplay, etc.) |
 | 5 | Bun + ccusage + Fabric | Non-Homebrew tools |
 | 6 | Stow dotfiles | Symlinks 21 packages into `~/.config/`, `~/Library/`, and `~/` |
 | 6a | Personalization prompt | Fresh installs only. **Blocks on an interactive `Run ./personalize.sh now? [Y/n]` read** when `~/.config/dotfiles/personal.env` is missing and stdin is a TTY — answer it, or an unattended driver looks hung |
@@ -275,10 +275,9 @@ cd "$HOME/dotfiles"
 These cannot be automated — surface them clearly:
 
 **Accessibility permissions** (System Settings → Privacy & Security → Accessibility):
-- Espanso (for `:dt`, `:ts`, `:llm` triggers)
+- Espanso (for `:dt`, `:ts`, `:sig` triggers)
 - Maccy (for clipboard history Cmd+Shift+C)
 - Übersicht (for desktop widgets)
-- boring.notch (for notch utility)
 - AeroSpace (for window management)
 - Karabiner-Elements (for key remapping)
 
@@ -288,13 +287,6 @@ These cannot be automated — surface them clearly:
 atuin register -u <username> -e <email>   # prompts for password
 atuin sync
 atuin key                                  # SAVE in 1Password — needed on a 2nd machine
-```
-
-**Ollama model pull** (optional, ~18GB):
-
-```bash
-ollama-up                          # start daemon (session-only, no boot persistence)
-ollama pull qwen3-coder:30b        # for the espanso :llm trigger
 ```
 
 **Plash from Mac App Store** (no Homebrew cask exists):
@@ -352,11 +344,10 @@ What's now active:
 
 Manual steps remaining (5 min total):
   1. System Settings → Privacy & Security → Accessibility → toggle on:
-     Espanso, Maccy, Übersicht, boring.notch, AeroSpace
+     Espanso, Maccy, Übersicht, AeroSpace
   2. atuin register -u YOU -e you@email.com (then atuin key — save in 1Password)
-  3. ollama-up && ollama pull qwen3-coder:30b (for :llm trigger)
-  4. Install Plash from Mac App Store (for shader wallpapers)
-  5. Restart your terminal (or: source ~/.zprofile && source ~/.zshrc)
+  3. Install Plash from Mac App Store (for shader wallpapers)
+  4. Restart your terminal (or: source ~/.zprofile && source ~/.zshrc)
 
 Customization: edit ~/.zshrc.local (gitignored) for machine-specific overrides.
 Update later with: cd ~/dotfiles && ./install.sh --update"
@@ -435,7 +426,7 @@ brew bundle cleanup --force   # actually remove (destructive)
 - `nvim/` → `~/.config/nvim/` — Neovim 0.12 config (36 plugins)
 - `rmpc/` → `~/.config/rmpc/` — TUI music player
 - `scripts/` → `~/scripts/` — tmux-sessionizer, fzf helpers, wallpaper-rotate, wallpaper-cycle, wallpaper-workspace
-- `sketchybar/` → `~/.config/sketchybar/` — custom status bar (incl. claude.sh plugin for billing-block indicator)
+- `sketchybar/` → `~/.config/sketchybar/` — custom status bar
 - `starship/` → `~/.config/starship/` — shell prompt
 - `tmux/` → `~/.config/tmux/` — multiplexer config + TPM plugins
 - `ubersicht/` → `~/Library/Application Support/Übersicht/` — desktop widgets
@@ -480,6 +471,5 @@ and `launchctl bootstrap`s each agent so they fire on next login.
 
 ### What's NOT included (manual install required)
 - **Plash** — Mac App Store only (free): https://apps.apple.com/app/plash/id1494023538
-- **Ollama models** — chosen by user based on RAM budget. Recommended: `qwen3-coder:30b` (18GB, requires 64GB RAM) for the `:llm` espanso trigger.
 - **Atuin sync account** — user runs `atuin register` interactively (password)
 - **1Password account** — for SSH agent + secrets management

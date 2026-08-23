@@ -159,9 +159,9 @@ Mason will automatically install LSP servers on first launch. Wait for installat
 - **Shell**: zsh-autosuggestions, zsh-syntax-highlighting, starship
 
 ### GUI Applications (via Homebrew Cask)
-- **Terminal**: Ghostty (primary — `cask "ghostty"` in the Brewfile, installed by `install.sh`). Kitty is also cask'd; WezTerm is config-only and is never installed by this repo.
+- **Terminal**: Ghostty (primary — `cask "ghostty"` in the Brewfile, installed by `install.sh`). Kitty is also cask'd. WezTerm has been removed entirely — no package, no config, no docs.
 - **Productivity**: Raycast, AeroSpace (window manager)
-- **Utilities**: KeyCastr, BetterDisplay, LinearMouse
+- **Utilities**: BetterDisplay, LinearMouse (LinearMouse is pinned to v0.11.2 by `scripts/scripts/install-linearmouse.sh`, not the cask)
 - **Fonts**: Hack Nerd Font, JetBrains Mono Nerd Font, SF Pro
 
 ### Language/Version Managers
