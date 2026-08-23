@@ -45,6 +45,11 @@ brew "eza"
 brew "fd"
 # mise — polyglot version manager (replaces fnm + pyenv)
 brew "mise"
+# uv — the Python package manager for this repo (CLAUDE.md: "Python packaging
+# uses uv"). .zprofile has always put ~/.local/bin on PATH "for uv", but nothing
+# here ever installed it: on the maintainer's machine it arrived via the
+# standalone installer, so a fresh Mac had the PATH entry and no binary.
+brew "uv"
 # Terminal JSON viewer
 brew "fx"
 # Command-line fuzzy finder written in Go

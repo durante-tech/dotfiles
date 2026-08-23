@@ -397,6 +397,7 @@ if [ "$SKIP_BREW" = false ]; then
     # node here is just the bootstrap binary; per-project versions managed by mise.
     print_step "Installing languages & version managers..."
     brew_install mise
+    brew_install uv              # Python packaging (see Brewfile note)
     brew_install node
     brew_install go
     brew_install deno
