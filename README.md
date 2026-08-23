@@ -173,6 +173,23 @@ cd ~/dotfiles
 ./personalize.sh             # Interactive: write ~/.config/dotfiles/personal.env (monitor names, BD tagIDs, keyboard layout)
 ```
 
+### Linux (Debian/Ubuntu)
+
+```bash
+./install-linux.sh           # terminal core: zsh, tmux, nvim, starship, yazi, w3m, atuin, mise + CLI tools
+./install-linux.sh --dry-run # preview
+```
+
+A **separate script** on purpose — a platform branch nobody runs is the shape that
+rots. It deploys the 9 portable packages listed in `stow-packages.linux.txt`; the
+other 12 are macOS-only (AeroSpace, sketchybar, Karabiner, Übersicht, LinearMouse have
+no Linux build) and that file records why for each.
+
+apt cannot supply this stack — Debian 12 ships neovim **0.7.2** where this config needs
+**0.11+**, and fzf 0.38 where `.zshrc` needs 0.48+ — so apt provides the base and
+**mise** provides the toolchain. Verified end-to-end in a `debian:bookworm-slim`
+container, and CI dry-runs the Linux manifest on a real Ubuntu runner.
+
 See `docs/UPGRADE.md` for the post-pull checklist (which tools auto-reload,
 which need a manual nudge, how to clean up tools retired between versions).
 

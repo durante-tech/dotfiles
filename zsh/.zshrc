@@ -59,12 +59,19 @@ bindkey -r "^G"
 # Vi mode + Starship (vi mode must be set BEFORE starship init so Starship
 # can register its zle-keymap-select handler for vi-mode indicators)
 set -o vi
+# Every `eval "$(tool init zsh)"` below also swallows the tool's STDERR. The
+# `command -v` guard proves the file EXISTS, not that it RUNS — a mise shim for a
+# binary the local glibc cannot load passes that guard and then prints its loader
+# error on every single prompt. Measured on Debian 12 (glibc 2.36), where mise's
+# atuin and yazi want GLIBC_2.39. With stderr dropped the tool simply does not
+# activate, which is the right outcome for an optional shell integration; the
+# installers report it loudly instead, and `setup.sh --check` verifies it runs.
 # Guarded like every other tool init in this file (gdircolors, zoxide, direnv,
 # mise, fzf, atuin). Unguarded, a machine without starship yet -- a fresh
 # bootstrap before `brew bundle`, or a shell with a trimmed PATH -- printed
 # `command not found: starship` to stderr on every interactive shell and fell
 # back to zsh's bare default prompt with no hint of why.
-command -v starship &>/dev/null && eval "$(starship init zsh)"
+command -v starship &>/dev/null && eval "$(starship init zsh 2>/dev/null)"
 
 # Completion system — MUST init before any tool that calls `compdef` (zoxide
 # and fzf below both register completions). Running it after them caused
@@ -88,17 +95,33 @@ else
 fi
 
 # Zoxide
-command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
+command -v zoxide &>/dev/null && eval "$(zoxide init zsh 2>/dev/null)"
 
 # Direnv — auto-load .envrc per directory
-command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
+command -v direnv &>/dev/null && eval "$(direnv hook zsh 2>/dev/null)"
 
 # mise — polyglot version manager (replaces fnm + pyenv + nvm)
 # Reads .mise.toml | .tool-versions | .nvmrc | .python-version per project
-command -v mise &>/dev/null && eval "$(mise activate zsh)"
+command -v mise &>/dev/null && eval "$(mise activate zsh 2>/dev/null)"
 
-# FZF
-command -v fzf &>/dev/null && eval "$(fzf --zsh)"
+# FZF. `fzf --zsh` only exists from fzf 0.48; Debian 12 ships 0.38 and Ubuntu
+# LTS is not much newer, so the bare eval printed "unknown option: --zsh" on
+# every shell start and Ctrl+T / Alt+C / Ctrl+R were never bound. The guard
+# `command -v fzf` passes there — fzf exists, the OPTION does not. Older
+# packages ship the same bindings as files instead.
+if command -v fzf &>/dev/null; then
+    if fzf --zsh &>/dev/null; then
+        eval "$(fzf --zsh)"
+    else
+        for _fzf_f in /usr/share/doc/fzf/examples/key-bindings.zsh \
+                      /usr/share/doc/fzf/examples/completion.zsh \
+                      /usr/share/fzf/key-bindings.zsh \
+                      /usr/share/fzf/completion.zsh; do
+            [[ -f "$_fzf_f" ]] && source "$_fzf_f"
+        done
+        unset _fzf_f
+    fi
+fi
 
 # FZF with Git right in the shell by Junegunn : check out his github below
 # Keymaps for this is available at https://github.com/junegunn/fzf-git.sh
@@ -106,7 +129,7 @@ command -v fzf &>/dev/null && eval "$(fzf --zsh)"
 
 # Atuin Configs
 export ATUIN_NOBIND="true"
-command -v atuin &>/dev/null && eval "$(atuin init zsh)"
+command -v atuin &>/dev/null && eval "$(atuin init zsh 2>/dev/null)"
 # bindkey '^r' _atuin_search_widget
 # atuin-search-viins, NOT atuin-up-search-viins. The up-* widget is the ARROW-KEY
 # widget: atuin init zsh defines _atuin_up_search with a single-line guard that
@@ -428,8 +451,15 @@ fi
 # End of LM Studio CLI section
 
 
-# pnpm
-export PNPM_HOME="$HOME/Library/pnpm"
+# pnpm — the default store differs per platform: macOS puts it under
+# ~/Library/pnpm, Linux under ~/.local/share/pnpm (XDG). Hardcoding the macOS
+# path put a nonexistent directory on PATH on Linux and, worse, made `pnpm
+# setup` and the shell disagree about where global binaries live.
+if [[ "$OSTYPE" == darwin* ]]; then
+    export PNPM_HOME="$HOME/Library/pnpm"
+else
+    export PNPM_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/pnpm"
+fi
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;

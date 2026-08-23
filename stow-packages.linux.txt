@@ -1,0 +1,54 @@
+# Stow package manifest — LINUX (terminal core).
+#
+# Read by install-linux.sh. The macOS manifest is stow-packages.txt; the two are
+# deliberately SEPARATE FILES rather than one file with platform markers, because
+# a single list with conditionals is the shape that rots: nobody notices a stale
+# branch they never execute.
+#
+# One name per line. Blank lines and #-comments are ignored — same parser as the
+# macOS manifest:
+#   sed -e 's/#.*//' -e 's/[[:space:]]//g' <file> | grep -v '^$'
+#
+# NOT listed here, and why — every one of these configures software that either
+# does not exist on Linux or has no Linux build:
+#
+#   aerospace    macOS-only tiling WM. Linux equivalent is i3/sway/Hyprland, whose
+#                config language is unrelated — a rewrite, not a port.
+#   sketchybar   macOS-only status bar (waybar/polybar on Linux).
+#   karabiner    macOS-only key remapper (keyd/xremap on Linux).
+#   ubersicht    macOS-only desktop widget host (eww/conky on Linux).
+#   linearmouse  macOS-only pointer tuning (libinput on Linux).
+#   espanso      builds on Linux, but this package's paths are the macOS
+#                "Library/Application Support" layout; Linux wants
+#                ~/.config/espanso. Needs a second package, not a second manifest
+#                entry.
+#   mise         NOT stowed here, unlike macOS. install-linux.sh provisions the
+#                toolchain with `mise use -g`, which REWRITES
+#                ~/.config/mise/config.toml. Measured in a container: with the
+#                package stowed, that write goes straight through the symlink and
+#                modifies the tracked repo file (md5 changed, and stow's folded
+#                directory link was replaced by a real file). Same failure mode
+#                SDKMAN caused on the macOS side. The installer instead COPIES the
+#                repo config into place if none exists, so the node/python pins
+#                still apply and mise owns a file it is free to write.
+#   wallpapers   desktop art + Plash shaders; nothing here on a terminal box.
+#   ghostty      GUI terminal emulator — out of scope for terminal core.
+#   kitty        same.
+#   mpd, rmpc    mpd.conf declares a CoreAudio output device. Works on Linux with
+#                a PulseAudio/PipeWire output block, which this package does not
+#                have — deliberately left out rather than shipped broken.
+#
+# `scripts` IS listed, but install-linux.sh removes the macOS-only entry points
+# after stowing (bd-*, display-restore, aerospace-*, wallpaper-*, ubersicht-*,
+# kitty-font-per-workspace, install-linearmouse, unlock-watch.swift). Those drive
+# BetterDisplay, displayplacer, AeroSpace and sketchybar, none of which exist here.
+
+atuin
+fastfetch
+nvim
+scripts
+starship
+tmux
+w3m
+yazi
+zsh
