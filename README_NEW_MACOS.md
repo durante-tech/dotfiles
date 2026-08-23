@@ -107,35 +107,40 @@ mise use --global node@latest python@3.12
 
 ### 3. Install Tmux Plugin Manager
 
+TPM lives at a **non-default** path. `tmux.conf` sets
+`TMUX_PLUGIN_MANAGER_PATH` to `~/.config/tmux/.tmux/plugins` and runs tpm from
+there, so a clone into the usual `~/.tmux/plugins/tpm` is never read and tmux
+comes up with zero plugins.
+
 ```bash
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/.tmux/plugins/tpm
 ```
 
 Then in tmux: `prefix + I` (capital i) to install plugins.
 
-### 4. Install FZF Git Integration
+`install.sh` already does this — the manual clone is only for a hand-built setup.
 
-```bash
-git clone https://github.com/junegunn/fzf-git.sh.git ~/scripts/fzf-git
-ln -s ~/scripts/fzf-git/fzf-git.sh ~/scripts/fzf-git.sh
-```
+### 4. FZF Git Integration — nothing to do
 
-### 5. Setup Scripts Directory
+`fzf-git.sh` is **vendored** at `scripts/scripts/fzf-git.sh` and arrives as a
+symlink at `~/scripts/fzf-git.sh` when the `scripts` package is stowed;
+`.zshrc` sources it from there. Do **not** clone it separately — the old
+instructions here created `~/scripts/fzf-git/` and then tried to symlink over
+the stowed file, which either fails or replaces a tracked symlink with an
+untracked clone.
 
-Create the scripts directory if it doesn't exist:
-```bash
-mkdir -p ~/scripts
-```
+### 5. Scripts Directory — handled by stow
 
-The dotfiles include these scripts in `scripts/scripts/`:
-- `tmux-sessionizer` - Fuzzy find and switch tmux sessions
-- `fzf_listoldfiles.sh` - Open recent files in Neovim
-- `zoxide_openfiles_nvim.sh` - Zoxide integration with Neovim
+`stow -t ~ scripts` creates `~/scripts` and links every script into it, already
+executable (git tracks the mode). There is nothing to `mkdir` or `chmod`.
 
-Make sure they're executable:
-```bash
-chmod +x ~/scripts/*
-```
+Running `chmod +x ~/scripts/*` is worse than redundant: those are symlinks into
+the repo, so it changes the mode of the **tracked** files and shows up as a diff.
+
+Highlights of what lands there:
+- `tmux-sessionizer` — FZF project picker, creates/switches tmux sessions
+- `fzf_listoldfiles.sh` — open recent Neovim files
+- `zoxide_openfiles_nvim.sh` — zoxide + fd + FZF file opener
 
 ### 6. Restart Terminal
 
@@ -299,7 +304,7 @@ Install missing servers manually or run `:MasonInstallAll`
 ### Issue: Tmux plugins not loading
 
 **Solution**:
-1. Make sure TPM is installed: `ls ~/.tmux/plugins/tpm`
+1. Make sure TPM is installed: `ls ~/.config/tmux/.tmux/plugins/tpm`
 2. In tmux, press `prefix + I` (Ctrl+a, then Shift+i)
 
 ### Issue: Stow conflicts

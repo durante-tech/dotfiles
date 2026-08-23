@@ -153,7 +153,7 @@ launchctl list | grep -q "com.lucas.sketchybar-firstboot" && \
 [ -d "$HOME/.config/tmux/.tmux/plugins/tpm" ] && \
   echo "OK TPM installed" || echo "FAIL TPM missing"
 
-[ -d "$HOME/.tmux/plugins/vim-tmux-navigator" ] && \
+[ -d "$HOME/.config/tmux/.tmux/plugins/vim-tmux-navigator" ] && \
   echo "OK tmux plugins installed" || echo "WARN no plugins yet — run prefix+I inside tmux"
 ```
 

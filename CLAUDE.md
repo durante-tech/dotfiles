@@ -1185,7 +1185,9 @@ nvim +Lazy sync +qa
 ### Tmux Plugins Not Loading
 
 ```bash
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+# TPM lives at a NON-DEFAULT path: tmux.conf sets TMUX_PLUGIN_MANAGER_PATH to
+# ~/.config/tmux/.tmux/plugins, so a clone into ~/.tmux/plugins/tpm is never read.
+git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/.tmux/plugins/tpm
 # Inside tmux: prefix + I (Ctrl+b, then Shift+i)
 ```
 

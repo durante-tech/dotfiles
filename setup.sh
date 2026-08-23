@@ -114,6 +114,23 @@ stow_packages() {
 
     cd "$DOTFILES_DIR" || exit 1
 
+    # aerospace.toml is the GITIGNORED render output of render-aerospace.sh, so a
+    # fresh clone does not have it. install.sh renders it before its own stow
+    # loop, but stow_packages() never did — meaning `setup.sh --stow` and
+    # `--all`, the documented repair paths, stowed the aerospace package around a
+    # file that does not exist and left the window manager unconfigured.
+    if [[ -x "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" ]]; then
+        # shellcheck disable=SC2097,SC2098  # false positive, same as install.sh:
+        # the prefix assignment exports DOTFILES_DIR into the child's environment
+        # and the path expansion reads the OUTER variable — the same string. This
+        # is not the `FOO=bar echo $FOO` bug those checks look for.
+        if DOTFILES_DIR="$DOTFILES_DIR" "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" >/dev/null 2>&1; then
+            print_success "Rendered aerospace.toml from template"
+        else
+            print_warning "render-aerospace.sh failed - aerospace.toml may be missing or stale"
+        fi
+    fi
+
     # Package list comes from stow-packages.txt, the single source of truth
     # shared with install.sh, check_stow_drift and the CI stow dry run.
     #
@@ -312,13 +329,31 @@ setup_nvim_python() {
     fi
 
     local VENV="$HOME/.venvs/nvim"
-    if [[ -x "$VENV/bin/python" ]] && "$VENV/bin/python" -c 'import pynvim' 2>/dev/null; then
+    # Check ALL three imports, not just pynvim. The old guard tested pynvim only,
+    # so a venv that had pynvim but nothing else returned early forever and could
+    # never repair itself — which is exactly the state this machine was in.
+    if [[ -x "$VENV/bin/python" ]] \
+        && "$VENV/bin/python" -c 'import pynvim, jupyter_client, ipykernel' 2>/dev/null \
+        && "$VENV/bin/python" -m jupyter kernelspec list 2>/dev/null | grep -q '^  python3 '; then
         print_info "nvim python venv already provisioned ($VENV)"
         return 0
     fi
 
-    if python3 -m venv "$VENV" 2>/dev/null && "$VENV/bin/pip" install -q pynvim 2>/dev/null; then
-        print_success "nvim python provider venv ready -> $VENV"
+    # pynvim alone is not enough for Molten. jupyter_client lets nvim TALK to a
+    # kernel but ships none, and ipykernel must additionally be REGISTERED as a
+    # kernelspec — without that, `:MoltenInit python3` fails and every documented
+    # <leader>m* binding is dead. Installing pynvim only is why Jupyter support
+    # has never worked from a clean provision.
+    [[ -d "$VENV" ]] || python3 -m venv "$VENV" 2>/dev/null || true
+    if [[ -x "$VENV/bin/pip" ]] \
+        && "$VENV/bin/pip" install -q pynvim jupyter_client ipykernel 2>/dev/null; then
+        # Name it python3 because that is the kernel `:MoltenInit python3` asks for.
+        if "$VENV/bin/python" -m ipykernel install --user --name python3 \
+               --display-name "Python 3 (nvim)" >/dev/null 2>&1; then
+            print_success "nvim python provider venv ready -> $VENV (python3 kernel registered)"
+        else
+            print_warning "Provisioned $VENV but could not register the python3 Jupyter kernel"
+        fi
     else
         print_warning "Failed to provision $VENV (Molten/Jupyter provider disabled)"
     fi
