@@ -94,7 +94,9 @@ Each package directory mirrors `$HOME` structure. Stow creates symlinks so confi
 ### Step 7: Tmux Plugin Manager (TPM)
 
 ```bash
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+# TPM lives at a NON-DEFAULT path: tmux.conf sets TMUX_PLUGIN_MANAGER_PATH to
+# ~/.config/tmux/.tmux/plugins, so a clone into ~/.tmux/plugins/tpm is never read.
+git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/.tmux/plugins/tpm
 ```
 
 ### Step 8: Neovim Plugins (Lazy.nvim)
