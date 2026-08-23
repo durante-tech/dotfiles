@@ -171,7 +171,9 @@ Options:
     --skip-brew         Skip all Homebrew formula installations
     --skip-casks        Skip all Homebrew cask installations
     --skip-macos        Skip macOS defaults configuration
-    --force-stow        Force stow to adopt existing files (--adopt flag)
+    --force-stow        Pass stow --adopt. RARELY NEEDED: conflicts are backed
+                        up automatically. --adopt moves the machine's files INTO
+                        the repo, overwriting tracked config.
     --verbose, -v       Show verbose output (including skipped packages)
 
 Examples:
@@ -291,6 +293,18 @@ else
             eval "$(/opt/homebrew/bin/brew shellenv)"
         elif [[ -f /usr/local/bin/brew ]]; then
             eval "$(/usr/local/bin/brew shellenv)"
+        fi
+
+        # The bootstrap above is `/bin/bash -c "$(curl ...)"` — COMMAND
+        # SUBSTITUTION, not a pipe. A failed curl yields an empty string, and
+        # `/bin/bash -c ""` exits 0, so `set -e` never fires. Execution used to
+        # continue to `brew analytics off` below, which died with a bare
+        # `brew: command not found` (exit 127) — an error that points at
+        # analytics and says nothing about the download that actually failed.
+        if ! cmd_exists brew; then
+            print_error "Homebrew bootstrap did not produce a working brew."
+            print_error "Usually a network failure fetching install.sh — check connectivity and re-run."
+            exit 1
         fi
     fi
 fi
@@ -524,9 +538,16 @@ else
         print_dry "curl -fsSL https://bun.sh/install | bash"
     else
         print_step "Installing Bun..."
-        curl -fsSL https://bun.sh/install | bash
-        export BUN_INSTALL="$HOME/.bun"
-        export PATH="$BUN_INSTALL/bin:$PATH"
+        # Non-fatal, and `set -o pipefail` so a failed curl is actually seen:
+        # without it the empty stdin makes the downstream bash exit 0 and the
+        # failure is silent. §5 runs BEFORE §6 stow, so an abort here would cost
+        # the machine every dotfile — the same shape as the qmk bug in 0683da3.
+        if bash -c 'set -o pipefail; curl -fsSL https://bun.sh/install | bash'; then
+            export BUN_INSTALL="$HOME/.bun"
+            export PATH="$BUN_INSTALL/bin:$PATH"
+        else
+            print_warn "Bun install failed - ccusage and opencode will be skipped"
+        fi
     fi
 fi
 
@@ -590,7 +611,11 @@ else
             print_dry "go install github.com/danielmiessler/fabric/cmd/fabric@latest"
         else
             print_step "Installing Fabric AI..."
-            go install github.com/danielmiessler/fabric/cmd/fabric@latest
+            # `|| print_warn`, matching the --update path at :584 which has
+            # always had `|| true`. The fresh path was the fatal one, and it is
+            # the path that runs before stow.
+            go install github.com/danielmiessler/fabric/cmd/fabric@latest \
+                || print_warn "Fabric install failed - the fb* aliases will be inert"
         fi
     else
         print_warn "Go not found - skipping Fabric installation"
@@ -751,11 +776,43 @@ else
     mkdir -p "$HOME/Library/Application Support/Übersicht"
 fi
 
+# One conflicting plain file makes stow refuse the ENTIRE package — it prints
+# "All operations aborted" and deploys nothing. Verified: a stray ~/.zshrc takes
+# ~/.zprofile down with it, so the machine loses every alias, the prompt, mise,
+# fzf/atuin/zoxide, the ~/scripts PATH entry and SSH_AUTH_SOCK in one go.
+#
+# So move the offending file aside instead of losing the package. This replaces
+# --adopt as the remedy, because --adopt does the opposite of what the old help
+# text promised: it moves the MACHINE's file into the REPO. Verified against a
+# throwaway copy — a 1-line zsh-newuser-install stub replaced the repo's
+# 478-line .zshrc, and ~/.zshrc then pointed at the stub, so every later check
+# passed while the real config was gone.
+STOW_BACKUP_DIR="$HOME/dotfiles-backup-$(date +%Y%m%d-%H%M%S)"
+STOW_BACKED_UP=0
+
+backup_stow_conflicts() {
+    local pkg="$1" out target full
+    out="$(stow -n -v -R -t "$HOME" "$pkg" 2>&1)" || true
+    # stow: "cannot stow <src> over existing target <path> since <reason>"
+    while IFS= read -r target; do
+        [ -n "$target" ] || continue
+        full="$HOME/$target"
+        # Only plain files/dirs. A symlink here is stow's own and -R handles it.
+        if [ -e "$full" ] && [ ! -L "$full" ]; then
+            mkdir -p "$STOW_BACKUP_DIR/$(dirname "$target")"
+            mv "$full" "$STOW_BACKUP_DIR/$target"
+            print_warn "Moved pre-existing $target -> $STOW_BACKUP_DIR/$target"
+            STOW_BACKED_UP=$((STOW_BACKED_UP + 1))
+        fi
+    done <<< "$(printf '%s\n' "$out" | sed -n 's/.*over existing target \(.*\) since.*/\1/p')"
+}
+
 for pkg in $PACKAGES; do
     if [ -d "$DOTFILES_DIR/$pkg" ]; then
         if [ "$DRY_RUN" = true ]; then
             print_dry "stow -R ${STOW_OPTS[*]} $pkg"
         else
+            backup_stow_conflicts "$pkg"
             # Keep stderr. A bad target or a permission error is not a conflict,
             # and reporting every failure as one is precisely what sent people
             # chasing --force-stow for six months instead of the real bug.
@@ -773,6 +830,22 @@ if [ "$STOW_FAILED" -eq 0 ]; then
     print_success "Dotfiles stowed"
 else
     print_warn "$STOW_FAILED package(s) failed to stow — those configs are NOT deployed"
+fi
+
+if [ "$STOW_BACKED_UP" -gt 0 ]; then
+    print_info "$STOW_BACKED_UP pre-existing file(s) moved to $STOW_BACKUP_DIR"
+    print_info "Nothing was deleted — merge anything you want to keep back by hand."
+fi
+
+# --adopt pulls the machine's files INTO the repo. Conflicts are backed up above
+# so it should now have nothing to adopt, but if the user forced it anyway, say
+# plainly that tracked files changed rather than letting it pass silently.
+if [ "$FORCE_STOW" = true ] && [ -d "$DOTFILES_DIR/.git" ]; then
+    if ! git -C "$DOTFILES_DIR" diff --quiet 2>/dev/null; then
+        print_warn "--force-stow (--adopt) modified TRACKED files in $DOTFILES_DIR"
+        print_warn "  inspect: git -C \"$DOTFILES_DIR\" diff"
+        print_warn "  restore: git -C \"$DOTFILES_DIR\" checkout -- ."
+    fi
 fi
 
 # Übersicht caveat, mirrored from setup.sh's stow_packages(). Übersicht's
