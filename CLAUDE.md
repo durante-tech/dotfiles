@@ -1061,7 +1061,19 @@ mise use -g python@3.12
 mise install             # install everything a project's config pins
 mise current             # show active versions
 ```
-Python packaging uses **uv** (already in PATH via `.zprofile`).
+Python packaging uses **uv** — installed by `install.sh`/Brewfile, on PATH via
+`.zprofile`. It is the default for every Python operation in this repo; reach for
+`pip` only as a fallback when uv is genuinely unavailable.
+
+```bash
+uv venv --python "$(command -v python3)" .venv   # pin to mise's interpreter,
+                                                 # else uv downloads its own CPython
+uv pip install -q --python .venv/bin/python <pkgs>
+uv pip install --python ~/.venvs/nvim/bin/python <pkgs>   # repair the nvim provider
+```
+
+`setup.sh` provisions the nvim python provider venv this way. Measured for that venv
+plus `pynvim jupyter_client ipykernel`: **uv 1.4s vs pip 28.3s**.
 
 **Go**: GOPATH at `$HOME/go`, bin in PATH.
 
