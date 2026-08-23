@@ -1071,10 +1071,12 @@ Python packaging uses **uv** (already in PATH via `.zprofile`).
 overlap with mise, which owns Node + Python only. Installed by `install.sh` §5;
 `sdk` is a shell **function**, not a binary, so `command -v sdk` never finds it.
 ```bash
-sdk list java            # available candidates
-sdk install java         # current LTS
-sdk use java 21.0.8-tem  # this shell only
-sdk selfupdate force     # upgrade SDKMAN itself
+sdk list java             # available candidates ('>' in use, '*' installed)
+sdk install java          # current LTS — SDKMAN's own default
+sdk current java          # what is active now
+sdk use java 25.0.4-tem   # this shell only
+sdk default java <id>     # change the default
+sdk selfupdate force      # upgrade SDKMAN itself
 ```
 The canonical init sits in `zsh/.zprofile` just above the `~/.zprofile.local` hook
 (so a machine can still pin its own JDK) — **not** `.zshrc`, where the
