@@ -199,9 +199,10 @@ Uncomment and customize in `~/.zshrc`:
 alias vault="cd ~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/YourVaultName/"
 ```
 
-### WezTerm Custom Workspace (Optional)
+### Terminal Emulators
 
-WezTerm is config-only here (see `docs/wezterm/README.md` — legacy, replaced by Ghostty). If you do install it, add a workspace keybinding to `config.keys` in `~/dotfiles/wezterm/.config/wezterm/wezterm.lua`. There is no commented-out example in that file to uncomment.
+Ghostty is the primary terminal; kitty is the alternate. The WezTerm package and
+its `docs/wezterm/README.md` were removed — nothing here stows or configures it.
 
 ---
 
@@ -310,7 +311,7 @@ mv ~/.config/nvim ~/dotfiles_backup/
 mv ~/.zshrc ~/dotfiles_backup/
 # Then re-run stow
 cd ~/dotfiles
-stow -t ~ zsh nvim tmux starship wezterm aerospace
+stow -t ~ zsh nvim tmux starship aerospace
 ```
 
 ### Issue: Scripts not executable
@@ -356,7 +357,7 @@ cd ~/dotfiles && git pull
 
 # Re-stow after changes
 cd ~/dotfiles
-stow -R -t ~ zsh nvim tmux starship wezterm aerospace
+stow -R -t ~ zsh nvim tmux starship aerospace
 
 # Edit configs quickly (using aliases)
 vim ~/.zshrc        # Shell config
