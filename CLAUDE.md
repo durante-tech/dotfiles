@@ -47,8 +47,8 @@ stow -D -t ~ zsh
 ```
 
 Deliberately a **separate script**, not platform branches inside `install.sh` — an
-unexercised branch is the shape that rots. It deploys the 10 portable packages in
-`stow-packages.linux.txt`; that file documents why each of the other 11 is excluded
+unexercised branch is the shape that rots. It deploys the 9 portable packages in
+`stow-packages.linux.txt`; that file documents why each of the other 12 is excluded
 (AeroSpace, sketchybar, Karabiner, Übersicht, LinearMouse have no Linux build at all).
 
 **apt cannot supply this stack**, verified against Debian 12:

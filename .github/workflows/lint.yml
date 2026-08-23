@@ -1,5 +1,11 @@
 name: Dotfiles CI
 
+# Least privilege for every job below: they only check out the repo and run
+# linters — none comment on PRs, push, or touch releases. Declared at workflow
+# level rather than per-job so a future job cannot silently inherit write scope.
+permissions:
+  contents: read
+
 on:
   push:
     branches: [main]

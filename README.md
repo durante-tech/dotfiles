@@ -181,8 +181,8 @@ cd ~/dotfiles
 ```
 
 A **separate script** on purpose — a platform branch nobody runs is the shape that
-rots. It deploys the 10 portable packages listed in `stow-packages.linux.txt`; the
-other 11 are macOS-only (AeroSpace, sketchybar, Karabiner, Übersicht, LinearMouse have
+rots. It deploys the 9 portable packages listed in `stow-packages.linux.txt`; the
+other 12 are macOS-only (AeroSpace, sketchybar, Karabiner, Übersicht, LinearMouse have
 no Linux build) and that file records why for each.
 
 apt cannot supply this stack — Debian 12 ships neovim **0.7.2** where this config needs
