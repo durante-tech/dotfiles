@@ -40,7 +40,7 @@ keywords: [dotfiles, install dotfiles, set up new mac, clone dotfiles, install l
 1. **Read [`INSTALL.md`](INSTALL.md)** — wizard-style 5-phase guide (System Analysis → User Questions → Backup → Install → Verify) using `AskUserQuestion` + `TodoWrite`.
 2. **Drive [`install.sh`](install.sh)** with the right flags based on user's answers — don't re-implement install logic. The script is canonical and idempotent.
 3. **Walk [`VERIFY.md`](VERIFY.md)** end-to-end after install — 11 sections of bash one-liners that emit `OK` / `FAIL` / `WARN`. Each `FAIL` has a paired "If this fails" repair note.
-4. **Surface manual steps** the user must do (5 things that can't be automated): Accessibility grants for Espanso/Maccy/Übersicht/boring.notch/AeroSpace, `atuin register` (interactive password), install Plash from the Mac App Store, and 1Password account setup.
+4. **Surface manual steps** the user must do (they cannot be automated): Accessibility grants for Espanso/Maccy/Übersicht/AeroSpace, `atuin register` (interactive password), install Plash from the Mac App Store, and 1Password account setup.
 
 ### Quick agent-driven install
 
@@ -91,9 +91,8 @@ neovim.png, tmux.png and yazi.png, then uncomment this whole block.
 | **[AeroSpace](docs/aerospace/README.md)** | i3-like tiling WM with workspace-to-monitor pinning |
 | **[Sketchybar](docs/sketchybar/README.md)** | Custom status bar — workspaces, weather, CPU, media, git |
 | **[Karabiner](docs/karabiner/README.md)** | Key remapping |
-| **[Wallpapers](wallpapers/README.md)** | 10-piece Durante gallery, hourly time-banded rotation (LaunchAgent), GLSL shaders for Plash |
+| **[Wallpapers](wallpapers/README.md)** | Hourly time-banded rotation (LaunchAgent) + GLSL shaders for Plash. The image gallery itself is personal and **not tracked here** — set `DOTFILES_WALLPAPER_DIR` in `personal.env` to point at your own; rotation no-ops cleanly without it |
 | **Übersicht** | Webview widgets above wallpaper, below windows |
-| **boring.notch** | Notch → Dynamic-Island-style music/calendar/camera (OSS) |
 
 ### CLI Tools
 
@@ -192,7 +191,7 @@ on its own. See [`docs/UPGRADE.md`](docs/UPGRADE.md) for paths A/B/C.
 
 ## Key Bindings
 
-### Tmux (`Ctrl+Space` prefix)
+### Tmux (`Ctrl+b` prefix)
 
 | Key | Action |
 |-----|--------|
@@ -286,9 +285,12 @@ stow -R -t ~ nvim
 # Unstow
 stow -D -t ~ nvim
 
-# Stow everything
-stow -t ~ aerospace atuin ghostty karabiner mpd nvim rmpc \
-         scripts sketchybar starship tmux w3m yazi zsh
+# Stow everything. Read the package list from stow-packages.txt — the same
+# file install.sh uses — so this cannot drift out of date again. The old
+# hand-written list named 14 of 21 packages, silently skipping espanso,
+# fastfetch, kitty, linearmouse, mise, ubersicht and wallpapers.
+sed -e 's/#.*//' -e 's/[[:space:]]//g' stow-packages.txt | grep -v '^$' \
+  | xargs stow -R -t ~
 ```
 
 ---
@@ -352,7 +354,7 @@ nvim +Lazy sync +qa
 <summary><b>Tmux plugins not loading</b></summary>
 
 ```bash
-# Inside tmux: prefix + I (Ctrl+Space, Shift+I)
+# Inside tmux: prefix + I (Ctrl+b, Shift+I)
 ```
 
 </details>

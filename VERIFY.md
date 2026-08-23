@@ -150,7 +150,7 @@ launchctl list | grep -q "com.lucas.sketchybar-firstboot" && \
 ## Tmux Plugin Manager
 
 ```bash
-[ -d "$HOME/.tmux/plugins/tpm" ] && \
+[ -d "$HOME/.config/tmux/.tmux/plugins/tpm" ] && \
   echo "OK TPM installed" || echo "FAIL TPM missing"
 
 [ -d "$HOME/.tmux/plugins/vim-tmux-navigator" ] && \
@@ -158,7 +158,10 @@ launchctl list | grep -q "com.lucas.sketchybar-firstboot" && \
 ```
 
 **If TPM fails:**
-- `git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm`
+- `git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/.tmux/plugins/tpm`
+  (NOT `~/.tmux/plugins/tpm` — tmux.conf sets `TMUX_PLUGIN_MANAGER_PATH` to
+  `~/.config/tmux/.tmux/plugins` and runs tpm from there, so the default path is
+  never read. A machine with only the default path shows zero plugins.)
 - Inside tmux: press `Ctrl+b` then `Shift+I` (capital i)
 
 ---
@@ -199,7 +202,7 @@ readlink "$HOME/Library/Application Support/espanso/match/base.yml" 2>/dev/null 
   grep -q "dotfiles" && echo "OK base.yml symlinked from dotfiles" || \
   echo "FAIL base.yml not symlinked"
 
-# All 5 triggers loaded (:dt :ts :sig :llm :llmf)
+# All 3 triggers loaded (:dt :ts :sig)
 TRIGGER_COUNT=$(espanso match list 2>/dev/null | grep -c "^:")
 [ "$TRIGGER_COUNT" -ge 5 ] && \
   echo "OK $TRIGGER_COUNT espanso triggers loaded" || \

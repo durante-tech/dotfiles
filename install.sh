@@ -484,7 +484,6 @@ if [ "$SKIP_CASKS" = false ]; then
     cask_install ghostty
     cask_install kitty
     cask_install aerospace
-    cask_install keycastr
     cask_install betterdisplay
     # LinearMouse is NOT installed via cask — it is pinned to v0.11.2.
     # >=0.11.3 carries upstream PR #1209, which FSEvents-watches $HOME and its
@@ -499,11 +498,12 @@ if [ "$SKIP_CASKS" = false ]; then
     cask_install espanso         # system-wide text expander
     cask_install maccy           # clipboard history manager
     cask_install claude-code     # AI coding assistant (Anthropic)
-    # boring.notch — Dynamic-Island-style notch utility (custom tap)
-    if ! brew tap | grep -q "theboredteam/boring-notch"; then
-        run_cmd brew tap theboredteam/boring-notch
-    fi
-    cask_install boring-notch
+    # keycastr and boring-notch are deliberately NOT installed, and the
+    # theboredteam/boring-notch tap is deliberately NOT added. All three were
+    # retired from the Brewfile and uninstalled from the maintainer's machine,
+    # but the cask_install lines and the tap were missed — so a fresh Mac
+    # re-tapped a third-party repo and reinstalled two apps that had been
+    # explicitly removed.
 
     # Fonts
     print_step "Installing fonts..."
