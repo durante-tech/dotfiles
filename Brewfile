@@ -111,6 +111,12 @@ brew "ripgrep"
 brew "rmpc"
 # CLI proxy to minimize LLM token consumption (agentic-coding token killer)
 brew "rtk"
+# Rust toolchain — REQUIRED by avante.nvim, whose lazy.nvim spec is `build = "make"`
+# and whose Makefile runs `cargo build --release` (no prebuilt-binary path). Without
+# cargo the first `:Lazy sync` fails that build and avante is dead, while every other
+# plugin installs fine — so the breakage is easy to miss. It was installed by hand on
+# the maintainer's machine and never declared here, which is why it worked there.
+brew "rust"
 # Static analysis and lint tool, for (ba)sh scripts
 brew "shellcheck"
 # Daemon to run a script on sleep/wake AND display-sleep/wake (com.lucas.sleepwatcher agent)

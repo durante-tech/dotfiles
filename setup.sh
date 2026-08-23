@@ -6,6 +6,22 @@
 
 set -e
 
+# Machine-specific overrides live OUTSIDE the repo, in
+# ~/.config/dotfiles/personal.env (written by personalize.sh). This script reads
+# DOTFILES_RAYCAST_DIR and DOTFILES_CLAUDE_SETTINGS but never sourced the file
+# that is supposed to define them, so the documented override home was inert for
+# every non-interactive run — and launchd, sketchybar and Raycast contexts never
+# see interactive-shell exports, which is the whole reason personal.env exists.
+#
+# Sourced BEFORE DOTFILES_DIR is defaulted so personal.env can override that too.
+# An `if` rather than `[ -r ... ] && . ...`: under `set -e` the && form exits
+# non-zero when the file is absent, which would abort the script on a machine
+# that has simply never run personalize.sh.
+if [ -r "$HOME/.config/dotfiles/personal.env" ]; then
+    # shellcheck disable=SC1091  # user-generated, not in the repo
+    . "$HOME/.config/dotfiles/personal.env"
+fi
+
 # Repo root = this script's directory; DOTFILES_DIR env var overrides.
 DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
 RED='\033[0;31m'
@@ -368,6 +384,21 @@ render_launchagents() {
         local dotdir_esc
         dotdir_esc=$(printf '%s' "$DOTFILES_DIR" | sed -e 's/[&\\|]/\\&/g')
         sed -e "s|__USER__|$USER|g" -e "s|__DOTFILES_DIR__|$dotdir_esc|g" "$tpl" > "$dest"
+
+        # Do NOT bootstrap an agent whose program does not exist. launchd
+        # re-executes a failing agent, so a missing binary becomes a respawn
+        # loop that burns CPU and fills the log with nothing useful — this repo
+        # has already had two such loops at ~20k spawns each. The clearest case
+        # is com.lucas.unlock-watch: build_native_helpers() is swiftc-guarded, so
+        # on a Mac without the Swift toolchain the binary is never built, yet the
+        # agent was still loaded and reported as a green "Loaded".
+        local prog
+        prog="$(sed -n 's|.*<string>\(/[^<]*\)</string>.*|\1|p' "$dest" | head -1)"
+        if [ -n "$prog" ] && [ ! -x "$prog" ] && [ "${prog#/bin/}" = "$prog" ] && [ "${prog#/usr/bin/}" = "$prog" ]; then
+            print_warning "Skipped $base - its program is missing: $prog"
+            rendered=$((rendered + 1))
+            continue
+        fi
 
         # Bootstrap (or re-bootstrap) the agent so changes take effect now.
         launchctl bootout "gui/$(id -u)" "$dest" 2>/dev/null || true

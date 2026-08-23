@@ -923,7 +923,12 @@ if cmd_exists mise; then
         print_dry "mise install"
     else
         print_step "Installing pinned tool versions via mise..."
-        mise install 2>&1 | tail -5 || print_warn "mise install had issues"
+        # `| tail -5 || print_warn` could never warn: `||` sees TAIL's exit
+        # status, which is 0 even when mise fails. pipefail in a subshell so the
+        # real status survives the pipe without changing the rest of the script.
+        if ! ( set -o pipefail; mise install 2>&1 | tail -5 ); then
+            print_warn "mise install had issues - run 'mise install' by hand"
+        fi
         print_success "mise versions installed"
     fi
 else
@@ -944,7 +949,13 @@ if [ -f "$DOTFILES_DIR/setup.sh" ]; then
         print_step "Configuring environment (LaunchAgents, dirs, TPM)..."
         # --configure runs configure_environment (which calls render_launchagents)
         # + verify_config + post_update. It does NOT re-stow (we did that above).
-        bash "$DOTFILES_DIR/setup.sh" --configure 2>&1 | grep -vE "^$" | tail -30 || true
+        # NOT piped through `tail -30` any more. --configure's warnings are
+        # emitted early (missing tools, skipped Raycast links, agents that could
+        # not bootstrap) and the tail discarded exactly those, while `|| true`
+        # hid a non-zero exit. Show all of it and report failure honestly.
+        if ! bash "$DOTFILES_DIR/setup.sh" --configure 2>&1; then
+            print_warn "setup.sh --configure reported problems - see output above"
+        fi
     fi
 fi
 
@@ -1013,11 +1024,15 @@ if cmd_exists nvim; then
         print_dry "nvim --headless '+Lazy! sync' +qa"
     else
         print_step "Syncing Neovim plugins (Lazy.nvim)..."
-        nvim --headless "+Lazy! sync" +qa 2>/dev/null || {
+        # print_success used to run unconditionally, so a failed sync printed
+        # BOTH "Could not sync" and "Neovim plugins synced". stderr was also sent
+        # to /dev/null, leaving nothing to diagnose with.
+        if nvim --headless "+Lazy! sync" +qa; then
+            print_success "Neovim plugins synced"
+        else
             print_warn "Could not sync Neovim plugins automatically"
             echo "    Run ':Lazy sync' inside Neovim"
-        }
-        print_success "Neovim plugins synced"
+        fi
     fi
 else
     print_warn "Neovim not found - skipping plugin sync"

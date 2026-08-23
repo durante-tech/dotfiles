@@ -17,10 +17,30 @@
 
 set -u
 
-DIR="$HOME/Pictures/Wallpapers"
+# Machine-specific overrides live outside the repo. launchd never sees
+# interactive-shell exports, and this script is driven by com.lucas.wallpaper-rotate,
+# so personal.env is the only way DOTFILES_WALLPAPER_DIR can reach it.
+if [ -r "$HOME/.config/dotfiles/personal.env" ]; then
+  # shellcheck disable=SC1091  # user-generated, not in the repo
+  . "$HOME/.config/dotfiles/personal.env"
+fi
+
+# The gallery is deliberately NOT in the repo (personal image assets, zero
+# tracked), so on any machine but the maintainer's this directory does not
+# exist. It used to be a bare "$HOME/Pictures/Wallpapers" with no override.
+DIR="${DOTFILES_WALLPAPER_DIR:-$HOME/Pictures/Wallpapers}"
 WALLPAPER="/opt/homebrew/bin/wallpaper"
 [ -x "$WALLPAPER" ] || { echo "wallpaper-cli not found at $WALLPAPER" >&2; exit 1; }
-[ -d "$DIR" ] || { echo "no wallpapers dir: $DIR" >&2; exit 1; }
+
+# exit 0, not 1. This agent fires HOURLY. An unconfigured gallery is a machine
+# that never opted into wallpaper rotation, not a failure — exiting 1 marked the
+# agent failed every hour forever and buried real errors in the noise. The
+# message still reaches the log either way.
+if [ ! -d "$DIR" ]; then
+  echo "wallpaper rotation not configured: no gallery at $DIR" >&2
+  echo "  set DOTFILES_WALLPAPER_DIR in ~/.config/dotfiles/personal.env to use another path" >&2
+  exit 0
+fi
 
 MODE="${1:-band}"
 
