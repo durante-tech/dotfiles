@@ -124,7 +124,8 @@ if [ "$SKIP_APT" = false ]; then
     fi
 fi
 
-mkdir -p "$LOCAL_BIN"
+# --dry-run promises "change nothing", so even this must be gated.
+[ "$DRY_RUN" = true ] || mkdir -p "$LOCAL_BIN"
 
 # -----------------------------------------------------------------------------
 # 2. APT BASE PACKAGES
@@ -278,7 +279,9 @@ elif [ "$DRY_RUN" = true ]; then
     print_dry "mise use -g node@lts ; mise use -g python@latest"
 else
     for t in $MISE_TOOLS; do
-        if "$MISE" which "$t" >/dev/null 2>&1; then
+        # `mise which` takes the BIN name, not the tool name — so `mise which
+        # neovim` never matched and this reinstalled a working neovim every run.
+        if "$MISE" which "$(tool_binary "$t")" >/dev/null 2>&1; then
             print_success "$t already managed by mise"
             continue
         fi
@@ -362,7 +365,7 @@ if [ -z "${PACKAGES// /}" ]; then
 fi
 print_info "Packages: $PACKAGES"
 
-mkdir -p "$HOME/.config"
+[ "$DRY_RUN" = true ] || mkdir -p "$HOME/.config"
 
 STOW_BACKUP_DIR="$HOME/dotfiles-backup-$(date +%Y%m%d-%H%M%S)"
 STOW_BACKED_UP=0
@@ -403,7 +406,16 @@ for pkg in $PACKAGES; do
         continue
     fi
     backup_stow_conflicts "$pkg"
-    if ! stow_err="$(stow -R -t "$HOME" "$pkg" 2>&1)"; then
+    # `scripts` is stowed WITHOUT folding. On a fresh home stow would otherwise
+    # tree-fold ~/scripts into a single directory symlink pointing INTO the repo —
+    # and then the macOS-only prune below would `rm` straight through it and
+    # delete the repo's own scripts. Verified: folded, ~/scripts/bd-apply.sh is a
+    # regular file resolving to <repo>/scripts/scripts/bd-apply.sh. --no-folding
+    # gives a real directory of per-file symlinks, which is also the shape macOS
+    # already has (~/scripts exists there because it holds untracked local files).
+    stow_opts=(-R -t "$HOME")
+    [ "$pkg" = "scripts" ] && stow_opts+=(--no-folding)
+    if ! stow_err="$(stow "${stow_opts[@]}" "$pkg" 2>&1)"; then
         print_warn "Failed to stow $pkg:"
         sed 's/^/    /' <<< "$stow_err"
         STOW_FAILED=$((STOW_FAILED + 1))
@@ -447,9 +459,18 @@ if [ "$DRY_RUN" = true ]; then
     print_dry "unlink $(echo "$MACOS_ONLY_SCRIPTS" | tr '\n' ' ') from ~/scripts"
 else
     pruned=0
-    for s in $MACOS_ONLY_SCRIPTS; do
-        if [ -L "$HOME/scripts/$s" ]; then rm -f "$HOME/scripts/$s"; pruned=$((pruned + 1)); fi
-    done
+    if [ -L "$HOME/scripts" ]; then
+        # Refuse outright: every path inside resolves into the repo, so removing
+        # anything here deletes tracked files. --no-folding above should make this
+        # unreachable; it exists so a future change cannot make it destructive.
+        print_warn "Home scripts dir (~/scripts) is a symlink - skipping prune to avoid deleting repo files"
+    else
+        for s in $MACOS_ONLY_SCRIPTS; do
+            # -L only: never remove a regular file, which would be a repo file
+            # reached through a folded directory.
+            if [ -L "$HOME/scripts/$s" ]; then rm -f "$HOME/scripts/$s"; pruned=$((pruned + 1)); fi
+        done
+    fi
     [ "$pruned" -gt 0 ] && print_info "Unlinked $pruned macOS-only script(s) from ~/scripts"
 fi
 
@@ -504,7 +525,10 @@ elif [ "$DRY_RUN" = true ]; then
     print_dry "nvim --headless '+Lazy! sync' +qa"
 else
     print_step "Syncing Neovim plugins..."
-    if nvim --headless "+Lazy! sync" +qa 2>&1 | tail -5; then
+    # pipefail in a subshell: without it `| tail -5` returns 0 even when nvim
+    # fails, so a broken sync printed "Neovim plugins synced". Exactly the bug
+    # fixed in install.sh's mise phase earlier today.
+    if ( set -o pipefail; nvim --headless "+Lazy! sync" +qa 2>&1 | tail -5 ); then
         print_success "Neovim plugins synced"
     else
         print_warn "Could not sync Neovim plugins - run ':Lazy sync' inside nvim"
