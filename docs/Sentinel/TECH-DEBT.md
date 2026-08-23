@@ -79,25 +79,16 @@ matching only. It did not look at CI, which was red the whole time.
     outer value, same string — and now carry a targeted disable with that
     reasoning inline.
 
-### Open — HIGH
+### Resolved 2026-08-22
 
-- **ci: GitHub Actions is disabled at the ORGANIZATION level, so nothing runs at
-  all.** This is the deeper cause behind the red-gate finding above: the last run
-  of any kind was 2026-06-10, and **57 commits** have landed on `main` since
-  without triggering anything. The red runs predate the shutoff.
-  `PUT /repos/durante-tech/dotfiles/actions/permissions` returns
-  `409 Conflict: "GitHub Actions is disabled on this repository by the
-  organization"`. Until this is lifted, every CI fix in this repo is dormant and
-  the four jobs are decorative.
-  **Fix (needs org-admin scope, not just org-admin role):**
-  ```
-  gh auth refresh -h github.com -s admin:org
-  gh api -X PUT orgs/durante-tech/actions/permissions -f enabled_repositories=all
-  gh api -X PUT repos/durante-tech/dotfiles/actions/permissions -F enabled=true
-  ```
-  or toggle it at <https://github.com/organizations/durante-tech/settings/actions>.
-  Verify with `gh workflow run "Dotfiles CI" --ref main` (the `workflow_dispatch`
-  trigger exists for exactly this) then `gh run list`.
+- **ci: GitHub Actions org-level shutoff is lifted and the gate is live again.**
+  This was the last open HIGH: Actions had been disabled at the organization
+  level, so none of the four jobs ran and every CI fix in the repo was dormant.
+  It is fixed. `gh run list` now shows **20 consecutive successful runs**, the
+  last failure being 2026-07-29T15:50:55Z and the most recent run 2026-08-11.
+  Both `push` and `pull_request` triggers are firing (runs exist on `main` and on
+  `fox/*` PR branches), so the gate is genuinely exercised rather than merely
+  enabled.
 
 ### Open — MEDIUM
 

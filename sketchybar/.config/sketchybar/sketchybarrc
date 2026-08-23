@@ -63,13 +63,12 @@ source "$ITEM_DIR/front_app.sh"
 source "$ITEM_DIR/docker.sh"
 source "$ITEM_DIR/macupdater.sh"
 source "$ITEM_DIR/clearvpn.sh"
-source "$ITEM_DIR/voice_server.sh"
 source "$ITEM_DIR/calendar.sh"
 
 ##### Right Items #####
 # Source order = right→left visually (first sourced sits rightmost).
 # Layout (right→left):
-#   battery | clock | bd_mode | weather | cpu | memory | network | github | mic | volume | obs | spotify
+#   battery | clock | bd_mode | weather | cpu | memory | network | github | mic | volume | spotify
 source "$ITEM_DIR/battery.sh"
 source "$ITEM_DIR/clock.sh"
 source "$ITEM_DIR/bd_mode.sh"
@@ -84,9 +83,9 @@ sketchybar --add bracket system_health cpu memory network \
 source "$ITEM_DIR/github.sh"
 source "$ITEM_DIR/mic.sh"
 source "$ITEM_DIR/volume.sh"
-source "$ITEM_DIR/obs.sh"
-# comms bracket — mic + volume + obs as the audio + capture cluster
-sketchybar --add bracket comms mic volume obs \
+# comms bracket — mic + volume as the audio cluster. obs was removed with the
+# build-in-public streaming rig; it had been polling a dead OBS websocket.
+sketchybar --add bracket comms mic volume \
            --set comms background.color="$PURE_BLACK"
 
 source "$ITEM_DIR/spotify.sh"
@@ -99,15 +98,18 @@ sketchybar --hotload on
 
 ##### Force all scripts to run the first time (never do this in a script) #####
 # Note: items use label="" placeholders (not "...") so they render invisibly
-# until their plugin's first run populates them. This avoids the well-known
-# sketchybar issue where --update from inside the rc doesn't fully re-fire
-# plugins that have already been registered, leaving them stuck on the
-# placeholder for up to update_freq seconds.
+# until their plugin's first run populates them.
+#
+# --update on its own is enough to bootstrap every item, including volume. In
+# v2.24.0 src/message.c, DOMAIN_UPDATE calls bar_manager_update(forced=true),
+# which re-posts the real hardware events (forced_volume_event,
+# forced_power_event, forced_front_app_event, ...) and then runs
+# bar_item_update(item, NULL, forced=true, NULL) for every registered item --
+# the forced flag short-circuits BOTH the `updates` and the `update_frequency`
+# gates, so already-registered plugins do re-fire. An extra
+# `--trigger volume_change INFO=$(osascript ...)` used to sit here to work
+# around the opposite claim; it was a third redundant bootstrap of the same
+# item and is gone.
 sketchybar --update
-
-# Bootstrap the volume item — it has update_freq=30, so without this trigger
-# it would show as a blank box for the first 30s after boot. Fire volume_change
-# with the current OS volume so the icon + label populate immediately.
-sketchybar --trigger volume_change INFO="$(osascript -e 'output volume of (get volume settings)' 2>/dev/null || echo 50)"
 
 echo "sketchybar configuation loaded.."

@@ -72,7 +72,7 @@ not (and why):
 | **AeroSpace** | ❌ | `aerospace reload-config` |
 | **Neovim plugins** | ❌ (Lazy.nvim is lazy by design) | Inside nvim: `:Lazy sync` to install/update plugins; some (e.g. avante.nvim) compile native code on first sync |
 | **Tmux** | ❌ Per-session | Inside tmux: `<prefix>r` to reload config; restart tmux for plugin changes |
-| **Stream Deck profile** | ❌ | Re-run `bun ~/dotfiles/scripts/scripts/streamdeck-build.ts <src> <dst>` and `open <dst>` to re-import |
+| **Stream Deck profile** | ❌ | Edit the profile in the Stream Deck app. The `streamdeck-build.ts` generator was removed with the streaming rig. |
 | **launchd plists** | ❌ Per-plist | `launchctl unload ~/Library/LaunchAgents/com.lucas.X.plist; launchctl load ~/Library/LaunchAgents/com.lucas.X.plist` |
 
 ## Watch-list per recent commit
@@ -86,7 +86,6 @@ When you pull and the changelog mentions one of these, do the matching step:
 - **Karabiner Hyper rule added** → no action; Karabiner Elements watches the file and reloads on save.
 - **Sketchybar plugin added or VIS map changed** → `sketchybar --reload`.
 - **`bd-apply.sh` or BetterDisplay plist changed** → `launchctl unload && launchctl load` the affected plist. The wake handler (sleepwatcher) picks up changes automatically.
-- **Stream Deck profile generator (`streamdeck-build.ts`) changed** → rebuild + re-import the profile (see table above).
 
 ## Removing tools retired in recent commits
 

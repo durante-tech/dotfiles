@@ -31,7 +31,7 @@ Before starting, greet the user:
   • Hourly Durante-themed wallpaper rotation (10-piece gallery)
   • Sketchybar Claude Code 5-hour billing block indicator (via ccusage)
 
-This pack installs 79 Homebrew formulas, 22 GUI casks, and 22 stowable dotfile directories. Plus 10 LaunchAgents — BetterDisplay time-of-day chord (5 modes), ambient-light watcher, sleep/display-wake watcher, Sketchybar firstboot, Übersicht, and hourly wallpaper rotation — all rendered from templates with your $USER.
+This pack installs 79 Homebrew formulas, 22 GUI casks, and 21 stowable dotfile directories. Plus 11 LaunchAgents — BetterDisplay time-of-day chord (5 modes), ambient-light watcher, sleep/display-wake watcher, Sketchybar firstboot, Übersicht, and hourly wallpaper rotation — all rendered from templates with your $USER.
 
 Let me analyze your system and guide you through installation."
 ```
@@ -255,13 +255,15 @@ cd "$HOME/dotfiles"
 | 1 | Xcode CLT | Installs if missing |
 | 2 | Homebrew | Installs if missing |
 | 3 | Brew formulae | 79 CLI tools (mise, neovim, tmux, fzf, atuin, ollama, gum, glow, wallpaper, sleepwatcher, etc.) |
+| 3.5 | Brewfile reconciliation | `brew bundle install --file=Brewfile` — installs anything in the Brewfile the explicit list missed. Never uninstalls; retired-tool cleanup is opt-in via docs/UPGRADE.md |
 | 4 | Brew casks | 22 GUI apps (Ghostty, Espanso, Maccy, Übersicht, boring.notch, etc.) |
 | 5 | Bun + ccusage + Fabric | Non-Homebrew tools |
-| 6 | Stow dotfiles | Symlinks 22 packages into `~/.config/`, `~/Library/`, and `~/` |
+| 6 | Stow dotfiles | Symlinks 21 packages into `~/.config/`, `~/Library/`, and `~/` |
+| 6a | Personalization prompt | Fresh installs only. **Blocks on an interactive `Run ./personalize.sh now? [Y/n]` read** when `~/.config/dotfiles/personal.env` is missing and stdin is a TTY — answer it, or an unattended driver looks hung |
 | 6b | `mise install` | Pulls Node + Python versions pinned in `mise/.config/mise/config.toml` |
 | 6c | `setup.sh --configure` | Renders LaunchAgent plists from templates (substitutes `$USER`), creates dirs, installs TPM |
 | 6d | Espanso service | `espanso service register && espanso start` |
-| 7 | TPM tmux plugins | Auto-installs via `~/.tmux/plugins/tpm/bin/install_plugins` |
+| 7 | TPM tmux plugins | Auto-installs via `~/.config/tmux/.tmux/plugins/tpm/bin/install_plugins` — TPM lives at that NON-default path because tmux.conf relocates it with `TMUX_PLUGIN_MANAGER_PATH`. A clone at `~/.tmux/plugins/tpm` is never read: the machine comes up with zero plugins while install.sh reports success (0464e10) |
 | 8 | Neovim plugins | `nvim --headless +Lazy! sync +qa` |
 | 9 | macOS defaults | Runs `./macos/.macos` (44 entries) — needs sudo |
 | 10 | Verification | Checks critical CLI tools resolve |
@@ -320,10 +322,10 @@ Per-tool one-time setup (opt-in):
 
 1. Install the Stream Deck app from Elgato.
 2. Install the **Mac Automation** plugin (free): https://marketplace.elgato.com/product/mac-automation-8468fc12-644b-427a-84cb-127c82c5bb30 — required because Stream Deck 7.x broke custom URL schemes like `raycast://` in the built-in Website action.
-3. Build the profile: `bun ~/dotfiles/scripts/scripts/streamdeck-build.ts <source.streamDeckProfile> <output.streamDeckProfile>` then `open <output>` to import.
+3. Build the profile by hand in the Stream Deck app. (The `streamdeck-build.ts` generator was removed with the build-in-public streaming rig — it depended on `~/Durante/Overlays`, which no longer exists.)
 4. The SCREENS folder fires Raycast script-commands — `bd-*` brightness modes plus `display-*` layout profiles (daily/hires/native/portrait/portrait-hires/solo). `setup.sh` symlinks the dotfiles-tracked `display-*` wrappers (`raycast/script-commands/`) into the Raycast dir; enable them under Raycast → Extensions → Script Commands.
 
-   The keypad is 15/15 full, so only four layout profiles get deck keys: **DAILY, HI-RES, SOLO, PORT HI**. `--native` and `--portrait` are Raycast-search-only (each lost its slot to a more-used profile — see the displacement log in `streamdeck-build.ts`). A deck key that opens the Raycast search bar instead of acting means the script-command symlink is missing or not enabled.
+   The keypad is 15/15 full, so only four layout profiles get deck keys: **DAILY, HI-RES, SOLO, PORT HI**. `--native` and `--portrait` are Raycast-search-only, each having lost its slot to a more-used profile. A deck key that opens the Raycast search bar instead of acting means the script-command symlink is missing or not enabled.
 
 ---
 
@@ -419,13 +421,15 @@ brew bundle cleanup --force   # actually remove (destructive)
 - `CLAUDE.md` — full reference for AI assistants
 - `macos/.macos` — 44 macOS defaults entries
 
-### Stowable packages (18)
+### Stowable packages (21)
 - `aerospace/` → `~/.config/aerospace/` — i3-like tiling window manager
 - `atuin/` → `~/.config/atuin/` — encrypted shell history sync
 - `espanso/` → `~/Library/Application Support/espanso/` — text expander config
+- `fastfetch/` → `~/.config/fastfetch/` — system info banner
 - `ghostty/` → `~/.config/ghostty/` — primary terminal config
 - `karabiner/` → `~/.config/karabiner/` — key remapping
 - `kitty/` → `~/.config/kitty/` — secondary terminal
+- `linearmouse/` → `~/.config/linearmouse/` — pointer/scroll config (app pinned to v0.11.2)
 - `mise/` → `~/.config/mise/` — polyglot version manager (replaces fnm + pyenv)
 - `mpd/` → `~/.config/mpd/` — music daemon
 - `nvim/` → `~/.config/nvim/` — Neovim 0.12 config (36 plugins)
@@ -434,15 +438,15 @@ brew bundle cleanup --force   # actually remove (destructive)
 - `sketchybar/` → `~/.config/sketchybar/` — custom status bar (incl. claude.sh plugin for billing-block indicator)
 - `starship/` → `~/.config/starship/` — shell prompt
 - `tmux/` → `~/.config/tmux/` — multiplexer config + TPM plugins
+- `ubersicht/` → `~/Library/Application Support/Übersicht/` — desktop widgets
 - `w3m/` → `~/.w3m/` — terminal browser
 - `wallpapers/` → stowed (Plash shaders + gallery README live in-repo; the 10-piece JPG gallery itself is NOT in the repo — regenerate via Media skill or copy from another machine)
 - `yazi/` → `~/.config/yazi/` — terminal file manager
-- `zed/` → `~/.config/zed/` — editor config
 - `zsh/` → `~/.zshrc`, `~/.zprofile` — shell init
 
 ### Templates rendered at install time
 
-All nine `.plist.template` files in `launchagents/Library/LaunchAgents/` are
+All 11 `.plist.template` files in `launchagents/Library/LaunchAgents/` are
 rendered into `~/Library/LaunchAgents/` with `__USER__` substituted for the
 current `$USER` (macOS launchd doesn't expand env vars in plist contents —
 templating is the only way). `setup.sh::render_launchagents()` handles this
@@ -459,6 +463,7 @@ and `launchctl bootstrap`s each agent so they fire on next login.
 | `com.lucas.sleepwatcher.plist.template` | Runs `~/.wakeup` (bd-wake.sh) on system wake **and** display wake/unlock; supersedes Homebrew's sleepwatcher service |
 | `com.lucas.sketchybar-firstboot.plist.template` | Sketchybar warm-up at first login |
 | `com.lucas.ubersicht.plist.template` | Übersicht autostart |
+| `com.lucas.unlock-watch.plist.template` | Runs `~/.wakeup` on screen unlock (`com.apple.screenIsUnlocked`) via the compiled Swift helper — a trigger launchd cannot express |
 | `com.lucas.wallpaper-rotate.plist.template` | Hourly wallpaper rotation |
 
 > Note: filenames carry the `com.lucas.` prefix. Renaming to `com.${USER}.`

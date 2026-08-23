@@ -21,6 +21,15 @@
         horizontal_align: Center,
     ),
     keybinds: (
+        // rmpc 0.11.0 breaking change: keybinds now MERGE with the shipped
+        // defaults unless `clear` is set. Without it the defaults leak back in
+        // and fight this map: `5` binds SwitchToTab("Albums"), a tab this config
+        // does not define, so pressing it raises "Tab with name 'Albums' does
+        // not exist"; the default `gg`/`gt`/`gT` turn our single-key `g` into a
+        // mere prefix, so `g` stalls for normal_timeout_ms (1s) before jumping
+        // to the top; and `R`/`X` (AddRandom/Shuffle) mutate the queue from keys
+        // we never bound.
+        clear: true,
         global: {
             "u":       Update, // update music database
             "U":       Rescan,
@@ -82,15 +91,21 @@
             "J":         MoveDown, // move song up in playlist
             "K":         MoveUp, // move song down in playlist
             "D":         Delete,  // delete a song from playlist
+            // Successors to the queue-scope AddToPlaylist/ShowInfo/Save binds
+            // deleted above: rmpc 0.11.0 converts those three to
+            // QueueActions::Unused, which the queue pane matches with an empty
+            // arm, so they were silent no-ops. These navigation-scope
+            // CommonActions ARE implemented by the queue pane; ContextMenu is
+            // where playlist operations on a queue entry moved.
+            "oi":        ShowInfo,
+            "<C-s>":     Save(kind: Modal(all: false, duplicates_strategy: Ask)),
+            "<C-z>":     ContextMenu(),
         },
         queue: { // queue pane
             "D":       DeleteAll,
             "<CR>":    Play,
-            "a":       AddToPlaylist, // add song to playlist from queue pane
             "d":       Delete, // delete song from queue
-            "i":       ShowInfo,
             "C":       JumpToCurrent,
-            "<C-s>":   Save, // save current playng queue to new playlist
         },
     ),
     // Customize Search Tab
@@ -111,10 +126,6 @@
         album_display_mode: SplitByDate,
         album_sort_by: Date,
     ),
-    current_song: (
-        format: "{title}\n{artist}\n{album}",
-        align: Center,
-    ),
     // Customize tabs here
     tabs: [
         (
@@ -122,7 +133,18 @@
             pane: Split(
                 direction: Horizontal,
                 panes: [
-                    (size: "75%", pane: Pane(Queue)),
+                    // rmpc 0.11.0 removed the theme key `show_song_table_header`
+                    // (CHANGELOG: "The queue header is now in a separate
+                    // `QueueHeader` pane"), so the Title/Artist/Duration labels
+                    // from song_table_format render only if this pane exists.
+                    // It also carries 0.11.0's click-to-sort affordance.
+                    (size: "75%", pane: Split(
+                        direction: Vertical,
+                        panes: [
+                            (size: "1", pane: Pane(QueueHeader())),
+                            (size: "100%", pane: Pane(Queue)),
+                        ],
+                    )),
                     (size: "25%",  
                             pane: Split(
                                 direction: Vertical,

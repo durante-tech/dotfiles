@@ -34,9 +34,17 @@ function M.setup()
             group = jupyter_group,
             pattern = "jupyter",
             callback = function()
-                -- Enable folding
-                vim.wo.foldmethod = "expr"
-                vim.wo.foldexpr = "nvim_treesitter#foldexpr()"
+                -- Folding is left to nvim-ufo, which attaches to every buffer
+                -- with provider_selector -> { "treesitter", "indent" }. What
+                -- stood here set foldexpr = "nvim_treesitter#foldexpr()", a
+                -- Vimscript autoload function that only existed on
+                -- nvim-treesitter's `master` branch; treesitter.lua pins
+                -- branch = "main", whose clone has no autoload/ directory at
+                -- all, so every fold evaluation in a .ipynb buffer raised E117.
+                -- v:lua.vim.treesitter.foldexpr() would silence the error but
+                -- not help: there is no "jupyter" parser, so it returns "0" for
+                -- every line and foldmethod=expr would then beat ufo's indent
+                -- fallback. Dropping both lines gives ufo its indent folds back.
                 vim.wo.foldlevel = 99  -- Start with all folds open
 
                 -- Add cell markers for navigation

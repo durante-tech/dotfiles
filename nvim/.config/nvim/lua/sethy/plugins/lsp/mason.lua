@@ -1,8 +1,11 @@
 return {
-    "williamboman/mason.nvim",
+    -- NOTE: mason moved from williamboman/* to the mason-org/* organization.
+    -- GitHub still redirects the old URLs, but lazy.nvim compares the spec URL
+    -- against each clone's origin and re-clones on mismatch: run `:Lazy sync`.
+    "mason-org/mason.nvim",
     lazy = false,
     dependencies = {
-        "williamboman/mason-lspconfig.nvim",
+        "mason-org/mason-lspconfig.nvim",
         "WhoIsSethDaniel/mason-tool-installer.nvim",
         "neovim/nvim-lspconfig",
     },

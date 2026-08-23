@@ -92,13 +92,13 @@ nvim/
 | **W3m** | `w3m/.w3m/config` + `keymap` | Terminal web browser with vi-keys |
 | **Sketchybar** | `sketchybar/.config/sketchybar/` | macOS top bar with 20+ status plugins |
 | **Scripts** | `scripts/scripts/` | Custom utilities (tmux-sessionizer, fzf helpers) |
-| **Kitty / WezTerm** | `kitty/.config/kitty/`, `wezterm/.config/wezterm/` | Alternate terminal emulators |
+| **Kitty** | `kitty/.config/kitty/` | Alternate terminal emulator |
 | **Karabiner** | `karabiner/.config/karabiner/karabiner.json` | Keyboard remapping |
 | **Espanso** | `espanso/Library/Application Support/espanso/` | Text expander snippets |
 | **LaunchAgents** | `launchagents/Library/LaunchAgents/*.plist.template` | launchd jobs (`__USER__` templates rendered by `setup.sh --configure`) |
 | **Raycast** | `raycast/script-commands/` | Script commands that exec-delegate to `scripts/scripts/` |
 | **Übersicht** | `ubersicht/Library/Application Support/Übersicht/widgets/` | Desktop widgets |
-| **Fastfetch / mpd / rmpc / mactop / zed / atuin / mise** | `<pkg>/.config/<pkg>/` | Smaller stowed configs |
+| **Fastfetch / mpd / rmpc / atuin / mise / linearmouse** | `<pkg>/.config/<pkg>/` | Smaller stowed configs |
 | **macOS** | `macos/` | System defaults scripts |
 | **Wallpapers** | `wallpapers/` | Rotation assets + Plash shaders |
 | **Site** | `site/` | Astro/React docs site (not stowed) |
@@ -160,6 +160,7 @@ nvim/
 | `github` | `github "search term"` | Open GitHub search in browser |
 | `ya` | `ya` | Yazi file manager with cd-on-exit |
 | `yt` | `yt <url>` or `yt -t <url>` | Download YouTube transcript via Fabric |
+| `wps` | `wps [matrix\|aurora\|flowfield]` | Open a `wallpapers/shaders/*.html` shader in Plash |
 
 ### Complete Alias Reference
 
@@ -253,7 +254,10 @@ nvim/
 | `clds` | `claude --model sonnet` |
 | `cldy` | `claude --dangerously-skip-permissions --model sonnet` |
 | `cldyo` / `lfg` | `claude --dangerously-skip-permissions --model opus` |
+| `cldpy` | `claude -p --dangerously-skip-permissions` |
+| `cldpyo` | `claude -p --dangerously-skip-permissions --model opus` |
 | `cldr` | `claude --resume` |
+| `dosa` | `dos -l -m full --dangerously-skip-permissions` — DuranteOS launcher; only resolves when the private `~/Durante` toolchain is installed |
 
 **Fabric AI:**
 
@@ -266,6 +270,48 @@ nvim/
 | `fbsp` | `fabric --stream --pattern` |
 | `{pattern}` | Auto-generated per-pattern aliases (cached in `~/.cache/fabric-aliases.zsh`) |
 
+**Markdown & GitHub:**
+
+| Alias | Command |
+|-------|---------|
+| `gm` | `glow` — render markdown in the terminal |
+| `gmp` | `glow -p` — paged, for long docs |
+| `ghd` | `gh dash` — interactive PR/issue browser |
+
+**Local LLM (Ollama):**
+
+| Alias | Command |
+|-------|---------|
+| `ollama-up` | `brew services run ollama` — this session only. `start` would register a boot LaunchAgent; avoid unless you want always-on ollama |
+| `ollama-down` | `brew services stop ollama` |
+| `ollama-ls` | `ollama list` |
+
+**Wallpaper:**
+
+| Alias | Description |
+|-------|-------------|
+| `wp` | `wallpaper` — get/set the current wallpaper |
+| `wpn` | Rotate now, time-banded (`wallpaper-rotate.sh`) |
+| `wpa` | Rotate from the FULL gallery, ignoring the time band |
+| `wpr` | Random image from `~/Pictures/Wallpapers` (`wallpaper-cycle.sh`) |
+| `wpw` | Manual per-workspace trigger (`wallpaper-workspace.sh`) |
+| `wpl` | Tail `~/Library/Logs/wallpaper-rotate.log` |
+
+**BetterDisplay** — defined only when `betterdisplaycli` is on PATH. Everything
+here routes through `scripts/scripts/bd-apply.sh`; reach for these before the
+full script path, and never for `--favoriteMode` (broken on 4.3.0 pre-release):
+
+| Alias | Action |
+|-------|--------|
+| `bd-apply` | The script itself — `bd-apply <mode>\|status\|verify\|doctor` |
+| `bd-dawn` / `bd-day` / `bd-afternoon` / `bd-evening` / `bd-night` | Time-of-day modes |
+| `bd-meeting` / `bd-read` / `bd-cinema` | Task modes |
+| `bd-status` | Print the current mode |
+| `bd-stream` / `bd-stream-stop` | (functions) Connect/disconnect the STREAM-CAPTURE virtual screen for OBS |
+| `bd-up` / `bd-down` | (functions) Brightness ±10% across the synced display group |
+| `bd-snap` | (function) Dump display state to `~/Documents/betterdisplay-<ts>.json` |
+| `bd-srgb` / `bd-xdr` | (functions) DEV-MAIN colorspace toggles (sRGB caps at 100%, XDR reaches 160%) |
+
 **Other:**
 
 | Alias | Description |
@@ -273,7 +319,6 @@ nvim/
 | `nvim-scratch` | Launch nvim with separate NVIM_APPNAME config |
 | `air` | Go live-reload server |
 | `mpds` | Start mpd music daemon |
-| `pai` | PAI tool (bun ~/.claude/skills/PAI/Tools/pai.ts) |
 
 ---
 
@@ -476,7 +521,7 @@ Sessions are git-branch-specific, auto-save on exit, auto-restore on open.
 
 | Binding | Action |
 |---------|--------|
-| `<leader>mp` | Format file/range (async, 3s timeout) |
+| `<leader>mp` | Format file/range (sync, 2s timeout) |
 | `<leader>mf` | Format injected code |
 
 **Nvim-Lint**: biomejs (JS/TS), pylint (Python). Auto-lints on save/enter/leave-insert. `<leader>l` for manual lint.
@@ -550,7 +595,7 @@ Spell checking enabled, textwidth 80 for markdown files.
 
 **Image Support**: `<leader>pi` paste image from clipboard (requires `brew install pngpaste`)
 
-**PDF Reader**: `<leader>pb` bookmarks, `<leader>pt` TOC, `<leader>pd` dark mode
+**PDF Reader** (whole group on capital `<leader>P` — `<leader>p` is the snacks picker prefix): `<leader>Pb` bookmarks, `<leader>Pr` recent PDFs, `<leader>Pt` TOC, `<leader>Pd` / `<leader>Ps` / `<leader>Px` dark / standard / text view mode
 
 **Debugging (DAP)**: `<leader>db` toggle breakpoint, `<leader>dc` continue. Go debugging via dap-go.
 
@@ -568,9 +613,6 @@ Spell checking enabled, textwidth 80 for markdown files.
 | `<leader>af` | Focus Claude Code |
 | `<leader>as` | Send selection to Claude (visual) |
 | `<leader>aa` / `<leader>ad` | Accept / reject diff |
-| `<leader>al` | Local mode |
-| `<leader>am` / `<leader>aM` | Full MCPs / full + resume |
-| `<leader>aw` / `<leader>aW` | Dev-work MCPs / dev-work + resume |
 | `<leader>ar` | Resume session |
 
 ### Plugin Architecture
@@ -698,14 +740,18 @@ vim.lsp.enable("server_name")
 `aerospace/.config/aerospace/aerospace.toml` is gitignored render output. Edit the
 template, then `scripts/scripts/render-aerospace.sh && aerospace reload-config`.
 `render-aerospace.sh --doctor` checks monitor patterns, AeroSpace version
-(config-version=2 keys need >= 0.20.0), persistent-workspaces drift, and
+(config-version=2 keys need >= 0.20.0), persistent-workspaces drift, a stale
+render (template pulled or edited but never re-rendered — the deployed
+aerospace.toml is gitignored, so nothing else notices), and
 window-detection health — a long-running AeroSpace can stop seeing newly
 launched apps, which kills every `on-window-detected` rule silently while the
 config still validates clean. The fix for that one is restarting AeroSpace.
 
-Uses `config-version = 2` with an explicit `persistent-workspaces` list — all 10
-workspaces stay alive when empty (E and N have no alt bindings; without the list
-they vanished from listings).
+Uses `config-version = 2` with an explicit `persistent-workspaces` list of **9**
+workspaces — `['1','2','A','B','D','E','M','N','T']` — all of which stay alive
+when empty; without the list they vanished from listings. E and N are reached via
+`Alt+W` / `Alt+O` because `alt-e` and `alt-n` are pt-BR dead keys, not because
+they have no alt binding at all.
 
 ### Workspace-to-Monitor Mapping
 
@@ -734,7 +780,7 @@ they vanished from listings).
 | `Alt+Shift+1/2/A/B/D/T/M` | Move window to workspace |
 | `Alt+Shift+W` / `Alt+Shift+O` | Move window to E / N (new — these had no move binding at all) |
 | `Alt+Tab` or `Alt+0` | Workspace back-and-forth |
-| `Alt+Shift+Tab` | Move workspace to other monitor |
+| `Alt+Shift+Tab` | Focus the other monitor (wraps) |
 | `Alt+Enter` | Open Ghostty |
 | `Alt+Shift+Space` | Fullscreen toggle |
 | `Alt+/` | Toggle layout (tiles/horiz/vert) |
@@ -767,10 +813,9 @@ Per-monitor: Built-in 10px (15 bottom), Portrait 15px (50 top). Accordion paddin
 | Binding | Action |
 |---------|--------|
 | `Cmd+B > r` | Reload config |
-| `Cmd+B > x` | Close tab |
-| `Cmd+B > c` | New tab |
+| `Cmd+B > x` | Close surface (the split, or the window if it is the last one) |
+| `Cmd+B > c` | New window — `macos-titlebar-style = hidden` disallows native tabs, so `new_tab` opens a window |
 | `Cmd+B > n` | New window |
-| `Cmd+B > 1-9` | Go to tab N |
 | `Cmd+B > \` | Split right |
 | `Cmd+B > -` | Split down |
 | `Cmd+B > e` | Equalize splits |
@@ -778,7 +823,7 @@ Per-monitor: Built-in 10px (15 bottom), Portrait 15px (50 top). Accordion paddin
 | `Cmd+B > ,` | Quick terminal |
 | `Cmd+I` | Inspector toggle |
 
-**Visual**: Rose-pine theme, 75% opacity, 23px blur, JetBrainsMono Nerd Font (16pt), inverted block cursor (no blink).
+**Visual**: Rose-pine theme, 75% opacity, 23px blur, JetBrainsMono Nerd Font (16pt), inverted block cursor (no blink), hidden titlebar (which is why there are no tab bindings — tmux windows are the tabbing layer).
 
 ---
 
@@ -854,7 +899,8 @@ Vi-style keybindings. Catppuccin Mocha colors. (Inline images configured but ine
 | `Ctrl+h/l` | Previous / next tab |
 | `d` | Close tab |
 | `/` / `?` | Search forward / back |
-| `H` / `L` | History back / forward |
+| `H` / `B` / `Ctrl+O` | Go back — w3m's BACK *closes* the buffer it leaves |
+| `L` | Next buffer (NEXT). Not "forward": the page `H` left no longer exists |
 | `o` / `O` | Go to URL / tab go to URL |
 | `v` | View source |
 | `a` / `b` | Add / view bookmarks |
@@ -865,7 +911,9 @@ Vi-style keybindings. Catppuccin Mocha colors. (Inline images configured but ine
 
 ## Starship Prompt
 
-**Theme**: Catppuccin Mocha. Shows directory (with icon substitutions), git branch (with remote provider icon), git status, programming language versions.
+**Theme**: Catppuccin Mocha. Two-sided prompt: `format` (left) carries the directory (with icon substitutions), the git remote-provider glyph, branch, git state and status, and the vi-mode character; `right_format = "$all"` (right) carries everything else — language versions, package/bun version, command duration, jobs, cloud context.
+
+> `$all` contains only the modules **not** named in `format`. Adding a module to `format` to "show it" silently removes it from the right prompt instead of duplicating it — verified: adding `$package` to `format` moved `is 󰏗 v0.0.1` from the right prompt to the left.
 
 ### Vi-Mode Character Indicators
 
@@ -878,11 +926,13 @@ Vi-style keybindings. Catppuccin Mocha colors. (Inline images configured but ine
 
 ### Directory Substitutions
 
-Documents -> icon, Downloads -> icon, Music -> icon, Pictures -> icon, Github -> icon, Developer -> icon, Durante -> icon, Study -> icon.
+Documents -> icon, Downloads -> icon, Music -> icon, Pictures -> icon, Github -> icon, Developer -> icon, Experiments -> icon, Durante -> icon, Study -> icon.
 
 ### Language Detection
 
 Auto-detects and shows versions for: Node.js, C, Rust, Go, PHP, Java, Kotlin, Haskell, Python, Docker context.
+
+Those ten are only the modules **re-symbolled** with Nerd Font glyphs — not the enabled set. `right_format = "$all"` enables Starship's full default module set, so other detected toolchains (bun, package, deno, cloud contexts, …) also appear, at upstream defaults.
 
 ---
 
@@ -892,11 +942,16 @@ Modular plugin architecture with Catppuccin colors and Hack Nerd Font.
 
 ### Sections
 
-**Left**: Workspace indicators (AeroSpace integration), front app, Docker status
-**Left-Middle**: MacUpdater, ClearVPN, voice server, calendar
-**Right**: Clock, weather, CPU, memory, microphone, network, GitHub notifications, media player (Spotify/Music), battery
+sketchybar has exactly three positions: `left`, `center`, `right`. There is no
+"left-middle" — an item added there is rejected and never appears, with the
+failure buried in `/opt/homebrew/var/log/sketchybar/sketchybar.err.log`.
 
-Hot-reloads on config change. Receives `aerospace_workspace_change` events.
+**Left** (left→right): workspace indicators (AeroSpace, derived live by `items/space.sh`), aerospace mode, front app, Docker, MacUpdater, ClearVPN, voice server, calendar
+**Center**: `workspace_visibility` — an invisible dispatcher (`drawing=off`), not a status item
+**Right**: battery, clock, bd_mode, weather, CPU, memory, network, GitHub notifications, microphone, volume, OBS, Spotify — source order in `sketchybarrc` is right→left visually, so battery sits rightmost
+
+Hot-reloads on config change. Receives `aerospace_workspace_change` events;
+`plugins/workspace_visibility.sh` holds the per-workspace show/hide table.
 
 ---
 
@@ -925,6 +980,7 @@ Hot-reloads on config change. Receives `aerospace_workspace_change` events.
 | `bd-lmu-watch.sh` | Ambient-light bridge — auto-switches mode from the light sensor |
 | `bd-wake.sh` | Re-apply the current mode after wake (sleepwatcher `~/.wakeup`) |
 | `bd-build-slots.sh` | Build BetterDisplay favorite-mode slots from the live bd-apply.sh modes |
+| `bd-hdr-toggle.sh` | Flip HDR on the external panel — `on` / `off` / `status`, every write confirmed by readback (`betterdisplaycli set` exits 0 even when it silently no-ops). Deliberately NOT a bd-apply mode: HDR is orthogonal to the time-of-day axis, and held on it lifts blacks on SDR desktop work |
 | `display-restore.sh` | Re-assert the canonical monitor layout (resolution, rotation, origin). `--portrait-hires` is canonical; 7 profiles total |
 | `unlock-watch.swift` | Compiled Swift helper — runs `~/.wakeup` on screen unlock (launchd cannot express this trigger) |
 
@@ -932,7 +988,7 @@ Hot-reloads on config change. Receives `aerospace_workspace_change` events.
 
 | Script | Description |
 |--------|-------------|
-| `render-aerospace.sh` | Render `aerospace.toml` from the template. `--doctor` checks monitor patterns, AeroSpace version, persistent-workspaces drift, window-detection health |
+| `render-aerospace.sh` | Render `aerospace.toml` from the template. `--doctor` checks monitor patterns, AeroSpace version, persistent-workspaces drift, window-detection health, stale render |
 | `aerospace-resweep.sh` | Re-apply `on-window-detected` routing to windows already open (startup reconciliation) |
 | `kitty-font-per-workspace.sh` | Resize kitty font live based on focused AeroSpace workspace |
 | `ubersicht-screen-sync.sh` | Keep the Übersicht dashboard pinned to the external display |
@@ -940,18 +996,25 @@ Hot-reloads on config change. Receives `aerospace_workspace_change` events.
 | `wallpaper-rotate.sh` | Durante-themed wallpaper per monitor |
 | `wallpaper-workspace.sh` | Wallpaper follows the AeroSpace workspace name |
 
-**Streaming / build-in-public** (Bun TypeScript — `<name>` is the executable, `<name>.ts` the source)
+**Install helpers**
 
 | Script | Description |
 |--------|-------------|
-| `obs` | Minimal OBS WebSocket v5 CLI (scene switching, recording) |
-| `obs-scene-build` | Idempotently (re)build the 5 DuranteOS scenes over OBS WebSocket v5 |
-| `obs-popup.sh` | tmux popup for OBS scene/recording control via fzf |
-| `dos-stream` | Runtime control plane for the build-in-public pipeline (`phase <observe\|think\|…>`) |
-| `dos-stream-sidecar` | Serve real build activity to the terminal-frame overlay |
-| `streamdeck-build` | Build the Stream Deck profile from a source `.streamDeckProfile` |
+| `install-linearmouse.sh` | Install LinearMouse **pinned to v0.11.2** (`--force` to reinstall). Called by install.sh during phase 4, which is why the cask is commented out in the Brewfile: 0.11.3+ carries upstream PR #1209, whose FSEvents watcher watches all of `$HOME` and pegs a core (measured 1% vs 92% peak under identical load). `brew bundle` or `brew install --cask linearmouse` silently brings the regression back — d6f222a |
 
-**Adding New Scripts**: Create in `scripts/scripts/`, `chmod +x`, available immediately (no re-stow needed). Shebang must be on **line 1** — CI's ShellCheck job gates on `error` severity and a comment above the shebang is one (`SC1128`).
+**Adding New Scripts**: Create in `scripts/scripts/`, `chmod +x`, then
+`stow -t ~ scripts`. A stow **is** required: `~/scripts` is a real directory (it
+holds untracked local files), so stow links per-file rather than folding the
+whole directory, and a new file is not on `PATH` until it is linked.
+
+Use plain `stow` here, not `stow -R`. Measured on this repo: plain `stow` emits
+exactly the LINK operations for the new files, while `-R` unlinks all 33 existing
+symlinks and recreates them — 68 operations of pure churn for the same result.
+Reach for `-R` only when a file was **renamed or removed** upstream, since that
+is what clears the now-dangling symlink; plain `stow` never removes anything.
+
+Shebang must be on **line 1** — a comment above it is `SC1128`, which is an
+`error` and so fails CI regardless of the gate's `warning` threshold.
 
 ---
 
@@ -1065,6 +1128,7 @@ AeroSpace, Ghostty macOS options, Sketchybar are macOS-only. For Linux: replace 
 
 - AeroSpace (accessibility)
 - Raycast (accessibility)
+- Karabiner-Elements (Input Monitoring **and** Accessibility — Karabiner-Core-Service links `AXIsProcessTrustedWithOptions`/`kAXTrustedCheckOptionPrompt`, so without the Accessibility grant the whole Hyper layer stops remapping while `karabiner_cli --lint-complex-modifications` still reports `ok`; see docs/getting-started/installation.md)
 
 Grant in System Settings > Privacy & Security after first launch.
 
@@ -1118,9 +1182,9 @@ chmod +x ~/scripts/*
 ## Sentinel Conventions
 <!-- Auto-generated body lives in docs/Sentinel/SNAPSHOT.md. Next sentinel scan writes there, not back into this section. -->
 
-- **Stack:** macOS-only dotfiles deployed via GNU Stow across ~22 packages; polyglot — Zsh/Bash (config + automation), Lua (Neovim/lazy.nvim), TOML (AeroSpace/Starship), plus Bun-run TypeScript scripts and an Astro/React docs site under `site/`.
-- **Test:** `# no automated suite — verify manually` (see `VERIFY.md`). **Lint:** `# CI: .github/workflows/lint.yml` — 4 jobs: ShellCheck (gates at **`severity: error`**), Lua (advisory, `|| true`), TOML, stow dry run (reads `stow-packages.txt`).
-- **Health:** 100% (21 healthy / 21 conventions, 3 debt indicators) — last **static** scan 2026-06-24. That score is convention-matching only and does not read CI: on 2026-07-29 the CI gate was found red on every run since 2026-05-27. Treat the score as a style measure, not a health measure; the live signal is `gh run list`. Current debt: `docs/Sentinel/TECH-DEBT.md` (manual addendum 2026-07-29).
+- **Stack:** macOS-only dotfiles deployed via GNU Stow across 21 packages; polyglot — Zsh/Bash (config + automation), Lua (Neovim/lazy.nvim), TOML (AeroSpace/Starship), plus Bun-run TypeScript scripts and an Astro/React docs site under `site/`.
+- **Test:** `# no automated suite — verify manually` (see `VERIFY.md`). **Lint:** `# CI: .github/workflows/lint.yml` — 4 jobs: ShellCheck (gates at **`severity: warning`**), Lua (advisory, `|| true`), TOML, stow dry run (reads `stow-packages.txt`).
+- **Health:** 100% (21 healthy / 21 conventions, 3 debt indicators) — last **static** scan 2026-06-24. That score is convention-matching only and does not read CI, so treat it as a style measure, not a health measure; the live signal is `gh run list`. CI history: the gate was red on every run from 2026-05-27, was repaired on 2026-07-29, and has been **green for 20 consecutive runs since** (last failure 2026-07-29T15:50:55Z, latest run 2026-08-11). Current debt: `docs/Sentinel/TECH-DEBT.md`.
 - **Enforced patterns:** kebab-case script names; `snake_case()` shell functions; `DOTFILES_`-prefixed override vars; `set -e`/`set -u` after shebang; `#!/usr/bin/env bash` (`#!/bin/bash` for launchd/bash-3.2 scripts); `#!/usr/bin/env bun` for TS scripts; `command -v <tool> && eval` guards in `.zshrc`; one-file-per-plugin `return { ... }` Neovim specs; `personal.env` existence-guarded sourcing; LaunchAgents as `.plist.template` (`__USER__` + `__DOTFILES_DIR__` placeholders, rendered by setup.sh; repo-owned `com.lucas.*` supersedes brew-services); Raycast script-commands `exec`-delegate to canonical scripts; compiled native helpers (Swift, e.g. `unlock-watch.swift`) built to `~/.local/bin` by setup.sh `build_native_helpers()` (`swiftc`-guarded) for triggers launchd can't express (distributed notifications).
 - **Full snapshot** (Tech Stack, Architecture, Conventions, Key Decisions, Setup, Health, open debt): [`docs/Sentinel/SNAPSHOT.md`](docs/Sentinel/SNAPSHOT.md).
 - **Architecture artifacts:** `docs/Sentinel/MODULE-MAP.md`, `C4-CONTEXT.md`, `C4-CONTAINER.md`, `ADRS.md`, `TECH-DEBT.md`, `DURANTE-NATIVE.md`.

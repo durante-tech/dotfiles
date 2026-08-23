@@ -30,6 +30,12 @@ APPLY="$DOTFILES_DIR/scripts/scripts/bd-apply.sh"
 WAKE="$DOTFILES_DIR/scripts/scripts/bd-wake.sh"
 BUCKET_FILE="/tmp/bd-lmu-bucket"
 LOG_FILE="/tmp/bd-lmu-watch.log"
+
+# launchd gives these agents PATH=/usr/bin:/bin:/usr/sbin:/sbin, and sketchybar
+# lives in /opt/homebrew/bin — so a bare `command -v sketchybar` failed and every
+# guarded sketchybar block was skipped in production while working fine from a
+# terminal. Resolve it the way bd-wake.sh already resolves displayplacer.
+SB="$(command -v sketchybar || echo /opt/homebrew/bin/sketchybar)"
 CLI="/opt/homebrew/bin/betterdisplaycli"
 PORT_TAG="${DOTFILES_BD_PORT_TAG:-60}"
 POLL_S=60
@@ -165,8 +171,8 @@ while true; do
         # The dead sensor went unnoticed from 2026-06-19 because the failure was
         # log-only. Surface it on the bd_mode sketchybar item after ~5min so it
         # can't silently rot again. Fires once at the threshold, not every poll.
-        if (( sensor_missing_count == SENSOR_ALERT_AFTER )) && command -v sketchybar >/dev/null 2>&1; then
-            sketchybar --set bd_mode label="ambient sensor down" label.color=0xfff38ba8 2>/dev/null || true
+        if (( sensor_missing_count == SENSOR_ALERT_AFTER )) && [[ -x "$SB" ]]; then
+            "$SB" --set bd_mode label="ambient sensor down" label.color=0xfff38ba8 2>/dev/null || true
         fi
         printf 'unavailable|-1|%s\n' "$(date -u +%FT%TZ)" > "$BUCKET_FILE"
         sleep "$POLL_S"
@@ -176,7 +182,7 @@ while true; do
         log "ambient sensor came back: lux=$lux"
         sensor_missing_warned=0
         # Clear the alert — re-render bd_mode from the live state file.
-        command -v sketchybar >/dev/null 2>&1 && sketchybar --trigger bd_mode_changed 2>/dev/null || true
+        [[ -x "$SB" ]] && "$SB" --trigger bd_mode_changed 2>/dev/null || true
     fi
     sensor_missing_count=0
     bucket="$(raw_to_bucket "$lux" "$last_bucket")"

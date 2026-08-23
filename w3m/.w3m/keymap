@@ -39,6 +39,11 @@ keymap N SEARCH_PREV
 keymap H BACK
 keymap L NEXT
 keymap C-o BACK
+# C-h is rebound to PREV_TAB above, which took away w3m's default HISTORY key.
+# `save_hist 1` keeps writing ~/.w3m/history every session, so without this the
+# history panel is collected and reachable from no key at all. ESC-h is unbound
+# in w3m's defaults and in this file.
+keymap ESC-h HISTORY
 
 # Other
 keymap r RELOAD
@@ -49,7 +54,13 @@ keymap u GOTO
 keymap U TAB_GOTO
 keymap v VIEW
 keymap ` MARK
-keymap ' MARK_MID
+# `keymap ' MARK_MID` was here and did not parse: w3m treats a bare ' as a quote
+# character, so the line yielded "line 52: invalid command ''" on the status bar
+# at EVERY startup, before the page was drawn (removing it clears the message;
+# `keymap "'" MARK_MID` also parses). It was not worth keeping quoted either —
+# MARK_MID is w3m's Message-ID linkifier, not a vi mark jump. The MARK binding
+# above is itself inert while `mark 0` is set in config: main.c's _mark() returns
+# with no message when use_mark is 0.
 keymap ESC-m MOUSE_TOGGLE
 keymap : COMMAND
 keymap q QUIT

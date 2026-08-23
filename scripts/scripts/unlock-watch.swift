@@ -32,13 +32,37 @@ func note(_ msg: String) {
 
 // Best-effort: a failed hook must never crash the listener (KeepAlive would
 // just respawn it, but we want to keep observing across transient failures).
+//
+// `try p.run()` throws only when /bin/bash itself cannot be spawned, which never
+// happens — so the success line used to be printed the instant the child forked,
+// and the log said "-> ran ~/.wakeup" even when the hook was missing and bash
+// exited 127. That made this log lie in the one situation it is ever read in:
+// the external monitor did not come back after an unlock. Check the hook up
+// front, then report the child's REAL exit status.
+//
+// The status is reported from terminationHandler rather than waitUntilExit()
+// because this runs on the main queue that delivers the unlock notifications —
+// blocking it for the length of bd-wake.sh (seconds of displayplacer + DDC work)
+// would stall every notification behind it.
 func fireHook(_ reason: String) {
+    // /bin/bash READS the hook as a script, so readable is the correct test —
+    // ~/.wakeup is a symlink to bd-wake.sh and needs no exec bit of its own.
+    guard FileManager.default.isReadableFile(atPath: hook) else {
+        note("\(reason) -> SKIPPED, hook missing or unreadable: \(hook)")
+        return
+    }
     let p = Process()
     p.executableURL = URL(fileURLWithPath: "/bin/bash")
     p.arguments = [hook]
+    p.terminationHandler = { proc in
+        if proc.terminationStatus == 0 {
+            note("\(reason) -> ran \(hook)")
+        } else {
+            note("\(reason) -> \(hook) exited \(proc.terminationStatus)")
+        }
+    }
     do {
         try p.run()
-        note("\(reason) -> ran \(hook)")
     } catch {
         note("\(reason) -> FAILED to run \(hook): \(error)")
     }

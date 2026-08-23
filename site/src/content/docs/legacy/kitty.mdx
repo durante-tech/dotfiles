@@ -14,8 +14,8 @@ Kitty was configured to match Ghostty feature-for-feature, providing a backup GP
 | Font | JetBrainsMono Nerd Font, 14pt |
 | Opacity | 0.75 |
 | Background blur | 23px |
-| Cell width | 95% |
-| `macos_option_as_alt` | yes |
+| Cell width | 100% (kitty default — `modify_font cell_width` is deliberately disabled, same as Ghostty's `adjust-cell-width`) |
+| `macos_option_as_alt` | `left` (right Option is reserved as the pt-BR accent/compose key) |
 
 ## Keybindings (Cmd+B prefix)
 
@@ -27,11 +27,10 @@ Mirrors Ghostty's tmux-style keybindings:
 | `Cmd+B > c` | New tab |
 | `Cmd+B > n` | New window |
 | `Cmd+B > 1-9` | Jump to tab |
-| `Cmd+B > \` | Split right |
+| `Cmd+B > \|` | Split right |
 | `Cmd+B > -` | Split down |
 | `Cmd+B > h/j/k/l` | Navigate splits |
 | `Cmd+B > e` | Equalize splits |
-| `Cmd+B > ,` | Quick terminal overlay |
 
 ## File Locations
 

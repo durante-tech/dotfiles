@@ -11,8 +11,11 @@
 # curve and greys lift — the desktop looks flat. One key flips it per content.
 #
 # `betterdisplaycli set` exits 0 even when the write silently no-ops (same trap
-# bd-apply.sh:184 documents for DDC), so the exit code is worthless here too.
-# Every write in this script is confirmed by reading the value back.
+# bd-apply.sh documents for DDC), so the exit code is worthless here too. The HDR
+# flip itself IS confirmed by readback — `--hdr` is a software-side value that
+# BetterDisplay owns and answers honestly. The BACKLIGHT is not: it leaves as a
+# raw DDC VCP write with no readback, because on this panel `--hardwareBrightness`
+# reads back BetterDisplay's own cache rather than the display. See set_brightness.
 #
 # Usage:
 #   bd-hdr-toggle.sh            # flip current state
@@ -94,26 +97,32 @@ set_hdr() {
     return 1
 }
 
-# set_brightness <pct> — mirrors bd-apply.sh set_port_feature: DDC writes lie,
-# so compare the readback against the expected 0..1 float within BD's 2dp
-# rounding jitter. Non-fatal — a brightness miss should not fail the HDR flip.
+# set_brightness <pct> — hand the backlight write to bd-apply.sh's set_port_vcp,
+# the ONE writer on this rig that actually reaches this panel.
+#
+# What this replaces and why: the previous body wrote `--hardwareBrightness` and
+# then "verified" the readback. This panel's DDC capabilities report is
+# unacquirable over DisplayPort, so BetterDisplay declines to route that
+# abstraction to the display while still accepting the value into its cache and
+# echoing it back on `get` (measured 2026-07-29 — the panel held 85 across a
+# 30%/100% round trip). The loop therefore verified BD's cache against itself and
+# logged a confident "verified" every single time, while the backlight never
+# moved: pressing HDR-on at night left the panel at the night preset's 35%
+# instead of the full backlight this script exists to give graded content.
+#
+# Reused rather than re-inlined: duplicating bd-apply's writer here is exactly how
+# this function got left behind when bd-apply moved to raw VCP on 2026-07-29.
+# Subshell for the same reason target_brightness uses one — bd-apply.sh is
+# source-safe (main() is guarded on BASH_SOURCE) but defines its own log()/bd()
+# and tags, so none of it leaks back. Non-fatal: a brightness miss must not fail
+# the HDR flip, so every call site keeps its `|| true`.
 set_brightness() {
-    local pct="$1" exp cur attempt
-    exp="$(awk -v p="$pct" 'BEGIN{printf "%.2f", p/100}')"
-    for (( attempt=1; attempt<=3; attempt++ )); do
-        bd set --tagID="$PORT_TAG" --hardwareBrightness="${pct}%" >/dev/null
-        sleep 0.7
-        cur="$(bd get --tagID="$PORT_TAG" --hardwareBrightness 2>/dev/null)"
-        if [[ "$cur" =~ ^-?[0-9]*\.?[0-9]+$ ]] && \
-           awk -v a="$exp" -v b="$cur" 'BEGIN{d=a-b;if(d<0)d=-d;exit(d<=0.02)?0:1}'; then
-            log "PORT hardwareBrightness=${pct}% (verified=$cur attempt=$attempt)"
-            return 0
-        fi
-        bd perform --tagID="$PORT_TAG" --reinitialize >/dev/null 2>&1 || true
-        sleep 1.0
-    done
-    log "WARN hardwareBrightness=${pct}% not confirmed"
-    return 1
+    local pct="$1"
+    if [[ ! -r "$SCRIPT_DIR/bd-apply.sh" ]]; then
+        log "WARN brightness unset — $SCRIPT_DIR/bd-apply.sh not readable"
+        return 1
+    fi
+    ( source "$SCRIPT_DIR/bd-apply.sh" >/dev/null 2>&1; set_port_vcp luminance "$pct" )
 }
 
 # target_brightness <on|off> — HDR on takes the full backlight; HDR off hands

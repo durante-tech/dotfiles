@@ -11,7 +11,11 @@ Designed for AI agents to walk top-to-bottom. Every check is a single bash comma
 These are load-bearing — if any fail, basic shell features break.
 
 ```bash
-for tool in zsh stow starship atuin zoxide fzf bat fd ripgrep eza nvim tmux git lazygit mise node python bun ghostty wallpaper espanso ollama gum glow ccusage gh; do
+# NOTE: check EXECUTABLE names, not package names. This list used to say
+# `ripgrep`, whose binary is `rg`, so the block could never reach its stated
+# pass condition on a correctly installed machine — and the documented repair
+# was a full reinstall, which can never fix it either.
+for tool in zsh stow starship atuin zoxide fzf bat fd rg eza nvim tmux git lazygit mise node python bun wallpaper espanso gum glow gh; do
   if command -v "$tool" &>/dev/null; then
     echo "OK $tool"
   else
@@ -21,6 +25,14 @@ done
 ```
 
 **Pass condition:** every line starts with `OK`.
+
+Ghostty and ccusage are checked separately — Ghostty is a GUI app whose CLI is
+not on `PATH`, and ccusage is optional. Neither belongs in a must-all-pass loop:
+
+```bash
+[ -d /Applications/Ghostty.app ] && echo "OK Ghostty.app" || echo "WARN Ghostty.app not installed"
+bun pm ls -g 2>/dev/null | grep -q ccusage && echo "OK ccusage" || echo "WARN ccusage not installed (optional)"
+```
 
 **If this fails:**
 - `cd ~/dotfiles && ./install.sh` — re-runs full install (idempotent)
@@ -45,7 +57,9 @@ zsh -i -c 'node --version && python --version' 2>&1 | grep -q "v" && echo "OK No
 zsh -i -c 'type _direnv_hook' 2>&1 | grep -q "function" && echo "OK direnv hooked" || echo "FAIL direnv not hooked"
 
 # Atuin is initialized
-zsh -i -c 'type _atuin_search_widget' 2>&1 | grep -q "function" && echo "OK Atuin loaded" || echo "FAIL Atuin not loaded"
+# _atuin_search is the shell FUNCTION; _atuin_search_widget is a ZLE widget and
+# `type` cannot see ZLE widgets, so that spelling always printed FAIL.
+zsh -i -c 'type _atuin_search' 2>&1 | grep -q "function" && echo "OK Atuin loaded" || echo "FAIL Atuin not loaded"
 ```
 
 **If shell setup fails:**
@@ -58,25 +72,41 @@ zsh -i -c 'type _atuin_search_widget' 2>&1 | grep -q "function" && echo "OK Atui
 ## Symlinks (Stow Verification)
 
 ```bash
-declare -A EXPECTED_LINKS=(
-  ["$HOME/.zshrc"]="zsh/.zshrc"
-  ["$HOME/.zprofile"]="zsh/.zprofile"
-  ["$HOME/.config/nvim"]="nvim/.config/nvim"
-  ["$HOME/.config/tmux"]="tmux/.config/tmux"
-  ["$HOME/.config/aerospace"]="aerospace/.config/aerospace"
-  ["$HOME/.config/sketchybar"]="sketchybar/.config/sketchybar"
-  ["$HOME/.config/starship"]="starship/.config/starship"
-  ["$HOME/.config/mise"]="mise/.config/mise"
-  ["$HOME/.config/ghostty"]="ghostty/.config/ghostty"
-)
-
-for target in "${!EXPECTED_LINKS[@]}"; do
+# Colon-delimited pairs, not `declare -A`. macOS /bin/bash is 3.2, which has no
+# associative arrays (bash gained them in 4.0), and zsh spells them differently.
+# The old version failed on the declare, expanded `${!EXPECTED_LINKS[@]}` to
+# nothing, and printed ZERO lines — so an agent scanning for "FAIL" found none
+# and reported every symlink verified on a machine where none were.
+for pair in \
+  "$HOME/.zshrc:zsh/.zshrc" \
+  "$HOME/.zprofile:zsh/.zprofile" \
+  "$HOME/.config/nvim:nvim/.config/nvim" \
+  "$HOME/.config/tmux:tmux/.config/tmux" \
+  "$HOME/.config/aerospace:aerospace/.config/aerospace" \
+  "$HOME/.config/sketchybar:sketchybar/.config/sketchybar" \
+  "$HOME/.config/starship:starship/.config/starship" \
+  "$HOME/.config/mise:mise/.config/mise" \
+  "$HOME/.config/ghostty:ghostty/.config/ghostty" \
+  "$HOME/.config/linearmouse:linearmouse/.config/linearmouse"
+do
+  target="${pair%%:*}"
+  expected="${pair#*:}"
   if [ -L "$target" ]; then
     echo "OK $target → $(readlink "$target")"
+  elif [ -d "$target" ]; then
+    # stow "folds" into an existing directory: the directory stays real and the
+    # files inside it are the symlinks. That is a correct deployment too, so
+    # accept it rather than reporting a false FAIL (this is the shape ~/.config/mise
+    # has, because the directory predated the package).
+    if find "$target" -maxdepth 1 -type l 2>/dev/null | grep -q .; then
+      echo "OK $target (folded — contents symlinked)"
+    else
+      echo "FAIL $target is a real dir with no symlinked contents (expected → $expected)"
+    fi
   elif [ -e "$target" ]; then
-    echo "FAIL $target exists but is NOT a symlink"
+    echo "FAIL $target exists but is NOT a symlink (expected → $expected)"
   else
-    echo "FAIL $target missing"
+    echo "FAIL $target missing (expected → $expected)"
   fi
 done
 ```
@@ -242,30 +272,6 @@ GALLERY_COUNT=$(ls "$HOME/Pictures/Wallpapers/"[0-9][0-9]-*.jpg 2>/dev/null | wc
 
 ---
 
-## Ollama
-
-```bash
-[ -x "$(command -v ollama)" ] && \
-  echo "OK ollama binary installed" || echo "FAIL ollama missing"
-
-# Daemon (OK either way — it's session-only by design)
-pgrep -x ollama &>/dev/null && \
-  echo "OK ollama daemon running" || echo "INFO daemon not running — start with: ollama-up"
-
-# At least one model pulled
-MODEL_COUNT=$(ollama list 2>/dev/null | tail -n +2 | wc -l | tr -d ' ')
-[ "$MODEL_COUNT" -gt 0 ] && \
-  echo "OK $MODEL_COUNT model(s) installed: $(ollama list | tail -n +2 | awk '{print $1}' | tr '\n' ' ')" || \
-  echo "WARN no models yet — for :llm trigger run: ollama-up && ollama pull qwen3-coder:30b"
-```
-
-**If Ollama fails:**
-- `brew install ollama` — re-install
-- `ollama-up` — start daemon (session-only, no boot persistence)
-- `ollama pull qwen3-coder:30b` — fetch model for `:llm` espanso trigger
-
----
-
 ## Atuin Sync
 
 ```bash
@@ -315,7 +321,6 @@ After running all checks, report to user:
   • Espanso: <C>/3 OK
   • Sketchybar: <D>/4 OK
   • Wallpaper: <E>/4 OK
-  • Ollama: <F>/3 OK
   • Atuin: <G>/1 OK
   • Shell startup: <Nms>
 

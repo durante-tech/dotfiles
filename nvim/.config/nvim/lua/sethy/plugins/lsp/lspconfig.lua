@@ -143,9 +143,13 @@ return {
         -- NOTE: emmet_ls removed — emmet_language_server above is the newer replacement
 
         -- denols (for Deno projects)
-        vim.lsp.config("denols", {
-            root_markers = { "deno.json", "deno.jsonc" },
-        })
+        -- NOTE: no vim.lsp.config() override here. nvim-lspconfig ships lsp/denols.lua
+        -- with a root_dir() function, and core only consults root_markers when root_dir
+        -- is absent (Neovim 0.11+, runtime/lua/vim/lsp.lua:
+        -- `if not config.root_dir and opts._root_markers`), so the old
+        -- root_markers = { "deno.json", "deno.jsonc" } was inert. The shipped root_dir
+        -- does the smarter monorepo walk (nearest deno.json/deno.lock vs nearest
+        -- package-manager lockfile) and attaches only when the Deno root wins.
         vim.lsp.enable("denols")
 
         -- ts_ls (TypeScript/JavaScript)
@@ -156,7 +160,10 @@ return {
                 "typescript",
                 "typescriptreact",
             },
-            single_file_support = true,
+            -- NOTE: single_file_support removed -- a legacy nvim-lspconfig framework key
+            -- that vim.lsp.config (Neovim 0.11+) does not know; it is absent from the
+            -- 0.12.4 runtime entirely. Core attaches to a lone .ts file by default anyway;
+            -- only workspace_required = true would stop it.
             init_options = {
                 preferences = {
                     includeCompletionsForModuleExports = true,
@@ -179,6 +186,14 @@ return {
             },
         })
         vim.lsp.enable("gopls")
+
+        -- Servers Mason installs that need no per-server settings. mason.lua
+        -- sets automatic_enable = false, and mason-lspconfig honours that
+        -- literally (init.lua: `if settings.current.automatic_enable ~= false`),
+        -- so nothing else hands these to vim.lsp.enable -- they were installed
+        -- and then never started. angularls is left out on purpose: it attaches
+        -- to ts/html and would double up with ts_ls outside Angular projects.
+        vim.lsp.enable({ "html", "cssls", "tailwindcss", "marksman", "clangd" })
 
     end,
 }

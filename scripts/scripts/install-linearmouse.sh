@@ -17,8 +17,12 @@
 #
 #   v0.11.2 is the last release before #1209 AND still carries the earlier
 #   CPU fixes (upstream #1168 / #1185, landed in 0.11.2). v0.11.3 is the
-#   first release carrying the regression. There is no open upstream issue
-#   for it, so do not expect a newer version to fix it without checking.
+#   first release carrying the regression. Tracked upstream as issue #1368
+#   ("High CPU usage in LinearMouse 0.11.4 due to broad FSEvents
+#   configuration watches", opened 2026-08-19 by a third party, still open,
+#   no linked PR; v0.11.4 of 2026-08-02 is still the newest stable). Do NOT
+#   open a second issue for this — add this repo's measurements to #1368 —
+#   and re-check #1368 plus the release list before lifting the pin.
 #
 #   Casks cannot be `brew pin`ned, which is why linearmouse is commented out
 #   in the Brewfile and installed here instead. `brew install --cask
@@ -43,8 +47,26 @@ installed_version() {
 
 current="$(installed_version || echo none)"
 
+# Pinning the bundle is not enough on its own: LinearMouse embeds Sparkle
+# (Contents/Frameworks/Sparkle.framework, SUFeedURL =
+# https://linearmouse.app/appcast.xml, SUScheduledCheckInterval = 604800) and
+# this machine was found with SUAutomaticallyUpdate = 1 and
+# SUEnableAutomaticChecks = 1 — i.e. Sparkle would download and install 0.11.4
+# unattended on its next weekly check, silently reinstating #1209 and undoing
+# the whole point of this script. Disarm it on EVERY run, above the
+# "already pinned" early exit, so a machine already sitting on 0.11.2 still
+# gets the auto-updater turned off.
+defaults write com.lujjjh.LinearMouse SUEnableAutomaticChecks -bool false
+defaults write com.lujjjh.LinearMouse SUAutomaticallyUpdate -bool false
+
 if [ "$current" = "$PINNED_VERSION" ] && [ "$FORCE" = false ]; then
     echo "LinearMouse $PINNED_VERSION already installed (pinned) — nothing to do."
+    # ...except start it if it is not running. The stowed config is inert
+    # while the app is down, and nothing in this repo launches it (there is no
+    # com.lucas.linearmouse LaunchAgent), so the package can look fully
+    # deployed — live stow link, correct pinned bundle, VERIFY.md check green —
+    # while delivering no pointer or scrolling settings at all.
+    pgrep -f "MacOS/LinearMouse" >/dev/null 2>&1 || open -a "$APP"
     exit 0
 fi
 
@@ -83,5 +105,9 @@ if [ "$got" != "$PINNED_VERSION" ]; then
     exit 1
 fi
 
-echo "Installed LinearMouse $got (pinned)."
+# Start it. Without this a fresh install ends with the app on disk but not
+# running, which means the stowed linearmouse.json has no effect at all.
+open -a "$APP"
+
+echo "Installed LinearMouse $got (pinned, Sparkle auto-update disabled)."
 echo "Grant Accessibility permission on first launch if prompted."

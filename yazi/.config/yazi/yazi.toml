@@ -1,7 +1,7 @@
 # Yazi configuration
 # https://yazi-rs.github.io/docs/configuration/yazi
 
-[manager]
+[mgr]
 ratio = [1, 3, 4]
 sort_by = "natural"
 sort_sensitive = false
@@ -18,23 +18,35 @@ max_height = 1000
 cache_dir = ""
 image_filter = "triangle"
 image_quality = 75
-sixel_fraction = 15
 ueberzug_scale = 1
 ueberzug_offset = [0, 0, 0, 0]
 
 [opener]
+# yazi substitutes ONLY its own `%` parameters: `%s` = every selected path,
+# `%s1` = just the first. `$@`/`$n` were deprecated in v25.12.29 (#3232) and no
+# longer expand — yazi runs `sh -c '<run>'` with NO positional arguments, so
+# `nvim "$@"` opened an empty nvim dashboard instead of the hovered file and
+# `open "$@"` handed macOS `open` zero arguments (usage error). `%s` is
+# shell-quoted by yazi, so paths with spaces are safe unquoted.
 edit = [
-  { run = 'nvim "$@"', block = true, desc = "Edit with Neovim" },
+  { run = 'nvim %s', block = true, desc = "Edit with Neovim" },
 ]
 open = [
-  { run = 'open "$@"', desc = "Open" },
+  { run = 'open %s', desc = "Open" },
 ]
 reveal = [
-  { run = 'open -R "$@"', desc = "Reveal in Finder" },
+  # `open -R` reveals a single target, hence %s1 — same as the 26.x preset.
+  { run = 'open -R %s1', desc = "Reveal in Finder" },
 ]
 
 [open]
-rules = [
+# `prepend_rules`, not `rules`: a plain `rules` array REPLACES the preset
+# wholesale (verified — with a plain array, opening a .json matched no rule at
+# all and did nothing). Prepending keeps the preset rules underneath, which is
+# where archives -> `extract`, audio/video -> `play`, empty files -> `edit`,
+# and the `*` fallback live. Only the typescript rule is genuinely ours; the
+# rest mirror the preset and are kept so ordering stays explicit.
+prepend_rules = [
   # Folder
   { url = "*/", use = ["edit", "open", "reveal"] },
 
@@ -43,43 +55,34 @@ rules = [
   { mime = "application/json", use = ["edit", "reveal"] },
   { mime = "application/javascript", use = ["edit", "reveal"] },
   { mime = "application/typescript", use = ["edit", "reveal"] },
-
-  # Fallback
-  { url = "*", use = ["open", "reveal"] },
 ]
 
 [tasks]
-micro_workers = 10
-macro_workers = 25
+# `micro_workers`/`macro_workers` were REMOVED in v26.5.6 (#3661) in favour of
+# per-kind worker counts — as unknown keys the old pair was discarded, so the
+# intended extra concurrency never applied. Preset defaults are 3/5/5/2/5;
+# these are raised deliberately (10/25 does not map 1:1 onto five knobs).
+file_workers = 10     # copy / move / delete parallelism
+plugin_workers = 10
+fetch_workers = 10
+preload_workers = 5   # preview preloading
+process_workers = 10
 bizarre_retry = 5
 image_alloc = 536870912  # 512MB
 image_bound = [0, 0]
 
-[plugin]
-preloaders = [
-  { url = "*", cond = "!mime", run = "mime", multi = true, prio = "high" },
-  { mime = "image/*", run = "image" },
-  { mime = "video/*", run = "video" },
-  { mime = "application/pdf", run = "pdf" },
-]
-previewers = [
-  { url = "*/", run = "folder", sync = true },
-  { mime = "text/*", run = "code" },
-  { mime = "*/xml", run = "code" },
-  { mime = "*/javascript", run = "code" },
-  { mime = "*/x-wine-extension-ini", run = "code" },
-  { mime = "application/json", run = "json" },
-  { mime = "image/*", run = "image" },
-  { mime = "video/*", run = "video" },
-  { mime = "application/pdf", run = "pdf" },
-  { mime = "application/zip", run = "archive" },
-  { mime = "application/gzip", run = "archive" },
-  { mime = "application/x-tar", run = "archive" },
-  { mime = "application/x-bzip2", run = "archive" },
-  { mime = "application/x-7z-compressed", run = "archive" },
-  { mime = "application/x-rar", run = "archive" },
-  { url = "*", run = "file" },
-]
+# There is deliberately NO [plugin] section. Plain `preloaders`/`previewers`
+# arrays REPLACE the preset wholesale (only `prepend_*`/`append_*` merge), so
+# the old block pinned previews to a 2024-era handler set and — worse — kept a
+# `{ run = "mime" }` preloader that no longer exists: MIME detection moved to
+# preset `fetchers` in v25.12.29 (#3222). That dead rule queued one
+# never-finishing "Run preloader 'mime'" task per file, so the status bar sat
+# at "N left" and EVERY quit hit the "There are unfinished tasks" prompt.
+# Everything the old list covered (folder/code/json/image/video/pdf/archive/
+# file) is in the 26.8.15 preset, which also adds svg, magick for avif/heic/
+# jxl, fonts, empty files and many more archive formats. To add anything
+# yazi does not ship, use `prepend_previewers`/`append_preloaders` — never a
+# bare array.
 
 [input]
 # cd
@@ -96,16 +99,6 @@ create_offset = [0, 2, 50, 3]
 rename_title = "Rename:"
 rename_origin = "hovered"
 rename_offset = [0, 1, 50, 3]
-
-# trash
-trash_title = "Move {n} selected file(s) to trash? (y/N)"
-trash_origin = "top-center"
-trash_offset = [0, 2, 50, 3]
-
-# delete
-delete_title = "Delete {n} selected file(s) permanently? (y/N)"
-delete_origin = "top-center"
-delete_offset = [0, 2, 50, 3]
 
 # filter
 filter_title = "Filter:"
@@ -127,20 +120,34 @@ shell_title = ["Shell:", "Shell (block):"]
 shell_origin = "top-center"
 shell_offset = [0, 2, 50, 3]
 
-# overwrite
-overwrite_title = "Overwrite an existing file? (y/N)"
+# Confirmation dialogs. trash/delete/overwrite/quit moved OUT of [input] into
+# their own [confirm] section in v25.12.29 — under [input] they were unknown
+# keys and were dropped (verified: quitting still rendered the upstream
+# "Quit? / There are unfinished tasks" wording, not this file's). 26.8.15 draws
+# its own [Y]es/(N)o buttons, so the "(y/N)" suffix is gone, and it pluralises
+# via {s}. The boxes also need real height — the old 3-row offset could not fit
+# the file list plus the buttons.
+[confirm]
+trash_title = "Move {n} selected file{s} to trash?"
+trash_origin = "top-center"
+trash_offset = [0, 2, 70, 20]
+
+delete_title = "Delete {n} selected file{s} permanently?"
+delete_origin = "top-center"
+delete_offset = [0, 2, 70, 20]
+
+overwrite_title = "Overwrite an existing file?"
 overwrite_origin = "top-center"
-overwrite_offset = [0, 2, 50, 3]
+overwrite_offset = [0, 2, 50, 15]
 
-# quit
-quit_title = "{n} task(s) running, sure to quit? (y/N)"
+quit_title = "{n} task(s) running, sure to quit?"
 quit_origin = "top-center"
-quit_offset = [0, 2, 50, 3]
+quit_offset = [0, 2, 50, 15]
 
-[select]
+# Renamed [select] -> [pick] in yazi 26.x. theme.toml was migrated on
+# 2026-07-15 and this file was not, so the whole section was an unknown key and
+# the "Open with:" picker silently used preset geometry.
+[pick]
 open_title = "Open with:"
 open_origin = "hovered"
 open_offset = [0, 1, 50, 7]
-
-[log]
-enabled = false

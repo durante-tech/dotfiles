@@ -11,15 +11,22 @@ ZSH_PROFILE=1 zsh -i -c exit
 
 | Metric | Value |
 |--------|-------|
-| Wall-clock (hyperfine mean) | _captured below_ |
+| Wall-clock (hyperfine mean) | never captured — run the hyperfine line above |
 | Top zprof culprit | `_mise_hook` (~19ms, 41%) |
 | 2nd culprit | `compinit` (~13ms, 28%) |
 | 3rd culprit | `_zsh_highlight_load_highlighters` (~5ms, 11%) |
 
 ## Wall-clock output
 
-```
-```
+_Not captured. The 2026-05-27 run produced only the zprof table below; paste
+hyperfine's output here the next time you measure._
+
+Do NOT read the zprof total (~37.5ms) as the startup time. `zsh/zprof` profiles
+shell **functions**, so the seven top-level `eval "$(...)"` initialisations in
+.zshrc — gdircolors, starship, zoxide, direnv, mise, fzf, atuin — are invisible
+to it, and each one is a fork+exec whose wall cost lands entirely outside this
+table. Wall-clock is where a regression actually shows up; zprof only tells you
+which *function* to blame once you know there is one.
 
 ## Top zprof entries
 

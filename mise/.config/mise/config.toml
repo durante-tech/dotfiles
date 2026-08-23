@@ -3,13 +3,32 @@
 # (mise reads all four formats natively, so existing project files keep working)
 
 [tools]
-node   = "25.5.0"      # matches former fnm default
-python = "3.12.12"     # matches former pyenv global
+# Node 24 is the Active LTS line (LTS since 2025-10-28, maintenance through
+# 2028-04-30). This previously pinned 25.5.0 "to match the former fnm default",
+# but the v25 line was never LTS and reached maintenance-end on 2026-06-01 — it
+# has received no security patches since. Verified against nodejs/Release
+# schedule.json. Node 26 becomes Active LTS on 2026-10-28 if you prefer to move
+# again then.
+node   = "24"
+# 3.12 left its bugfix phase on 2025-04-02, so every 3.12.x published since is
+# a SECURITY release -- drifting on the patch level is the whole cost here. The
+# line itself is supported to 2028-10-31 (endoflife.date), so stay on 3.12 and
+# keep the patch current. Was "3.12.12", inherited from the old pyenv global.
+python = "3.12.14"
 
 [settings]
-# Auto-install pinned tool versions when entering a project (vs prompting)
+# This is the "command not found" handler, NOT an on-cd hook. Upstream
+# settings.toml: "Set to false to disable the 'command not found' handler to
+# autoinstall missing tool versions" -- it fires when you invoke a binary mise
+# owns, never on directory entry. Entering a project with an uninstalled pin
+# only WARNS ("... is specified in mise.toml, but not installed"); `mise
+# install` is what provisions it. Kept explicit at its default so a future
+# upstream flip to false is visible here rather than silent.
 not_found_auto_install = true
-# Keep installed tool list lean
+# Feature-stability gate, unrelated to how many tools are installed: "Enable
+# experimental mise features which are incomplete or unstable -- breaking
+# changes may occur". Kept explicit at its default so this machine cannot be
+# opted into unstable behaviour by an upstream default change.
 experimental = false
 # Read .nvmrc / .python-version (mise calls these "idiomatic" files; opt-in by design)
 idiomatic_version_file_enable_tools = ["node", "python"]

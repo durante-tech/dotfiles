@@ -46,8 +46,10 @@ return {
 				end
 
 				-- Navigation
-				map("n", "]h", gs.next_hunk, "Next Hunk")
-				map("n", "[h", gs.prev_hunk, "Prev Hunk")
+				-- NOTE: gs.next_hunk/gs.prev_hunk are @deprecated wrappers in gitsigns
+				-- (lua/gitsigns/actions.lua) -- nav_hunk("next"|"prev") is the current form.
+				map("n", "]h", function() gs.nav_hunk("next") end, "Next Hunk")
+				map("n", "[h", function() gs.nav_hunk("prev") end, "Prev Hunk")
 
 				-- Actions
 				map("n", "<leader>gs", gs.stage_hunk, "Stage hunk")

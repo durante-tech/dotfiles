@@ -203,7 +203,7 @@ return {
 		-- Format file or range (visual mode)
 		vim.keymap.set({ "n", "v" }, "<leader>mp", function()
 			conform.format({
-				lsp_fallback = true,
+				lsp_format = "fallback",
 				async = false,
 				timeout_ms = 2000,
 			})
@@ -213,7 +213,7 @@ return {
 		vim.keymap.set({ "n", "v" }, "<leader>mf", function()
 			conform.format({
 				formatters = { "injected" }, -- Format code injected into other formats (e.g., JS in Markdown)
-				lsp_fallback = true,
+				lsp_format = "fallback",
 				async = false,
 				timeout_ms = 2000,
 			})

@@ -21,14 +21,6 @@ volume_change() {
   sketchybar --set "$NAME" icon="$ICON" label="${INFO}%"
 }
 
-mouse_clicked() {
-  if [ -n "$PERCENTAGE" ]; then
-    osascript -e "set volume output volume $PERCENTAGE"
-    ICON=$(update_icon "$PERCENTAGE")
-    sketchybar --set "$NAME" icon="$ICON" label="${PERCENTAGE}%"
-  fi
-}
-
 # update_freq fires with SENDER=routine and no INFO — read OS volume directly
 # so the icon + label populate on first load instead of waiting for the user
 # to nudge the OS volume.
@@ -40,6 +32,5 @@ populate_from_system() {
 
 case "$SENDER" in
   volume_change) volume_change ;;
-  mouse.clicked) mouse_clicked ;;
   *)             populate_from_system ;;
 esac

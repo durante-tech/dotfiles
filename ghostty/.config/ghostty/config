@@ -1,6 +1,8 @@
 # By default Reload config with shft + cmd + , 
 config-file = themes/rosepine 
-background = #000000
+# No `background` here: themes/rosepine sets it (#000000). Ghostty 1.3.1 loads
+# config-file includes AFTER the file that declares them, so a background set
+# here is dead config — the theme always wins. Same trap as cursor-color below.
 background-opacity = 0.75
 background-blur = 23
 # Helps transparency work with tiling WMs
@@ -58,21 +60,15 @@ keybind = super+b>,=toggle_quick_terminal
 # (ctrl b for tmux -> cmb b for ghostty)
 keybind = super+b>r=reload_config
 keybind = super+b>x=close_surface
-# this only works if you have `macos-titlebar-style = tabs or native or transparent`
-# else it behaves like new window
+# macos-titlebar-style = hidden (line 29) does not merely hide the tab bar, it
+# makes native tabs impossible: Ghostty 1.3.1's HiddenTitlebarTerminalWindow
+# sets `tabbingMode = .disallowed` ("Disallow tabbing if the titlebar is
+# hidden, since that will (should) also hide the tab bar"). So new_tab opens a
+# WINDOW and no tab can ever exist. The nine `goto_tab:N` binds that used to
+# sit below were dead for that reason and have been removed -- tmux windows are
+# the tabbing layer here. Set macos-titlebar-style = tabs to get real tabs back.
 keybind = super+b>c=new_tab 
 keybind = super+b>n=new_window
-
-# tab nav
-keybind = super+b>1=goto_tab:1
-keybind = super+b>2=goto_tab:2
-keybind = super+b>3=goto_tab:3
-keybind = super+b>4=goto_tab:4
-keybind = super+b>5=goto_tab:5
-keybind = super+b>6=goto_tab:6
-keybind = super+b>7=goto_tab:7
-keybind = super+b>8=goto_tab:8
-keybind = super+b>9=goto_tab:9
 
 # splitting
 keybind = super+b>\=new_split:right

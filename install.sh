@@ -60,6 +60,13 @@ print_step() {
     echo -e "${GREEN}▶${NC} $1"
 }
 
+# Called at the personalization prompt. It was never defined, so under `set -e`
+# answering anything but y/Y/Enter aborted the whole install with exit 127 —
+# before mise, setup.sh --configure, espanso, TPM, nvim plugins or macOS defaults.
+print_info() {
+    echo -e "${BLUE}ℹ${NC} $1"
+}
+
 print_skip() {
     echo -e "${YELLOW}⏭${NC} $1 (skipped - already installed)"
 }
@@ -287,6 +294,28 @@ if [ "$DRY_RUN" = true ]; then
 else
     brew tap FelixKratz/formulae 2>/dev/null || true
     brew tap nikitabobko/tap 2>/dev/null || true
+fi
+
+# -----------------------------------------------------------------------------
+# 2.5 DOTFILES CLONE (must precede every phase that reads a file from the repo)
+# -----------------------------------------------------------------------------
+# The documented Quick Start (README_NEW_MACOS.md) is a curl one-liner, so this
+# script routinely runs with NO clone on disk. The clone used to live in §6,
+# but §3.5 gates the Brewfile on `[ -f "$DOTFILES_DIR/Brewfile" ]` with no else
+# branch and §4 execs install-linearmouse.sh out of the repo. On the one-liner
+# path both were therefore no-ops: the 28 formulae that exist only in the
+# Brewfile (sleepwatcher, gh, rtk, shellcheck, wget, osx-cpu-temp, ...) plus
+# every Brewfile-only cask were skipped in complete silence, and LinearMouse
+# degraded to a warning. Clone here instead — git ships with the Xcode CLT from
+# §1, so it is already available — and §6 then takes its "already cloned" branch.
+
+if [ ! -d "$DOTFILES_DIR" ]; then
+    if [ "$DRY_RUN" = true ]; then
+        print_dry "git clone $DOTFILES_REPO $DOTFILES_DIR"
+    else
+        print_step "Cloning dotfiles repository to $DOTFILES_DIR..."
+        git clone "$DOTFILES_REPO" "$DOTFILES_DIR"
+    fi
 fi
 
 # -----------------------------------------------------------------------------
@@ -559,15 +588,10 @@ fi
 
 print_header "6. Dotfiles"
 
-# Clone if not exists
-if [ ! -d "$DOTFILES_DIR" ]; then
-    if [ "$DRY_RUN" = true ]; then
-        print_dry "git clone $DOTFILES_REPO $DOTFILES_DIR"
-    else
-        print_step "Cloning dotfiles repository..."
-        git clone "$DOTFILES_REPO" "$DOTFILES_DIR"
-    fi
-else
+# The clone itself now happens in §2.5 — §3.5 (Brewfile) and §4 (LinearMouse)
+# read files out of the repo, so it cannot wait until here. What is left for
+# this phase is the update-mode pull.
+if [ -d "$DOTFILES_DIR" ]; then
     print_success "Dotfiles already cloned"
     if [ "$UPDATE_ONLY" = true ]; then
         if [ "$DRY_RUN" = true ]; then
@@ -587,11 +611,19 @@ fi
 # Stow packages
 print_step "Stowing dotfiles packages..."
 
-STOW_OPTS="-t ~"
+# Array, not a string. A `~` that reaches a command via word-splitting of a
+# variable is NOT tilde-expanded — only a literal `~` token in the script text
+# is. So `STOW_OPTS="-t ~"` handed stow the literal character `~`, and stow
+# rejected it ("--target value '~' is not a valid directory") for every package
+# on every run from 2026-02-04 onward. The `2>/dev/null` below then hid the
+# error and the loop still printed success, so install.sh has never actually
+# deployed a single package. Use "$HOME" and an array: no splitting involved.
+STOW_OPTS=(-t "$HOME")
 if [ "$FORCE_STOW" = true ]; then
-    STOW_OPTS="$STOW_OPTS --adopt"
+    STOW_OPTS+=(--adopt)
     print_warn "Using --adopt flag (existing files will be adopted)"
 fi
+STOW_FAILED=0
 
 # Render aerospace.toml from template + personal.env BEFORE stowing so the
 # symlink target exists. AeroSpace TOML can't read env vars, so monitor names
@@ -624,19 +656,60 @@ if [ -z "${PACKAGES// /}" ]; then
     exit 1
 fi
 
+# Parent dirs stow must not be allowed to invent. With a target parent missing,
+# stow "tree-folds": it makes the PARENT itself one symlink into the package
+# instead of a real directory holding per-file links. For ~/Library/Application
+# Support/Übersicht — which the cask creates only on first LAUNCH, never at
+# install time — that turns the app's whole support directory into a repo
+# symlink, and the absolute-link repair below can then no longer even see it.
+# setup.sh's stow_packages() has always done this; install.sh's copy of the
+# loop never did, so a fresh machine got a folded Übersicht every time.
+if [ "$DRY_RUN" = true ]; then
+    print_dry "mkdir -p $HOME/.config \"$HOME/Library/Application Support/Übersicht\""
+else
+    mkdir -p "$HOME/.config"
+    mkdir -p "$HOME/Library/Application Support/Übersicht"
+fi
+
 for pkg in $PACKAGES; do
     if [ -d "$DOTFILES_DIR/$pkg" ]; then
         if [ "$DRY_RUN" = true ]; then
-            print_dry "stow -R $STOW_OPTS $pkg"
+            print_dry "stow -R ${STOW_OPTS[*]} $pkg"
         else
-            stow -R $STOW_OPTS "$pkg" 2>/dev/null || {
-                print_warn "Conflict stowing $pkg - try running with --force-stow"
-            }
+            # Keep stderr. A bad target or a permission error is not a conflict,
+            # and reporting every failure as one is precisely what sent people
+            # chasing --force-stow for six months instead of the real bug.
+            # The `if !` wrapper keeps `set -e` from aborting on the assignment.
+            if ! stow_err="$(stow -R "${STOW_OPTS[@]}" "$pkg" 2>&1)"; then
+                print_warn "Failed to stow $pkg:"
+                sed 's/^/    /' <<< "$stow_err"
+                STOW_FAILED=$((STOW_FAILED + 1))
+            fi
         fi
     fi
 done
 
-print_success "Dotfiles stowed"
+if [ "$STOW_FAILED" -eq 0 ]; then
+    print_success "Dotfiles stowed"
+else
+    print_warn "$STOW_FAILED package(s) failed to stow — those configs are NOT deployed"
+fi
+
+# Übersicht caveat, mirrored from setup.sh's stow_packages(). Übersicht's
+# internal server.js does not follow RELATIVE symlinks and stow only ever
+# writes relative ones (../../../dotfiles/...), so left as stow made it the app
+# starts with zero widgets and no error anywhere. install.sh never applied this
+# repair, and the `setup.sh --configure` it runs later does not either — the
+# fixup lives in stow_packages(), which --configure does not call — so every
+# install.sh-provisioned machine came up with a dead Übersicht dashboard.
+UBER_LINK="$HOME/Library/Application Support/Übersicht/widgets"
+UBER_TARGET="$DOTFILES_DIR/ubersicht/Library/Application Support/Übersicht/widgets"
+if [ "$DRY_RUN" = true ]; then
+    print_dry "ln -sfn \"$UBER_TARGET\" \"$UBER_LINK\""
+elif [ -L "$UBER_LINK" ] && [ -d "$UBER_TARGET" ]; then
+    ln -sfn "$UBER_TARGET" "$UBER_LINK"
+    print_success "Übersicht widgets symlink rewritten to absolute"
+fi
 
 # -----------------------------------------------------------------------------
 # 6-hooks. Activate the tracked post-merge hook on the dotfiles repo

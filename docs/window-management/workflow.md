@@ -162,7 +162,6 @@ CapsLock becomes the Hyper key (`Ctrl+Alt+Shift+Cmd` simultaneously):
 | `Hyper+B` | Go to workspace B (Browser) |
 | `Hyper+D` | Go to workspace D (Development) |
 | `Hyper+M` | Go to workspace M (Messaging) |
-| `Hyper+F` | Go to workspace F (Finder) |
 | `Hyper+1` | Go to workspace 1 |
 | `Hyper+2` | Go to workspace 2 |
 | `Hyper+X` | Raycast AI Chat |

@@ -53,6 +53,12 @@ PORT_TAG="${DOTFILES_BD_PORT_TAG:-60}"       # PORTRAIT-MONITOR (default: Dell U
 STATE_FILE="$HOME/.cache/bd-state"
 LOCK_DIR="$HOME/.cache/bd-apply.lock"
 LOG_FILE="/tmp/bd-apply.log"
+
+# launchd gives these agents PATH=/usr/bin:/bin:/usr/sbin:/sbin, and sketchybar
+# lives in /opt/homebrew/bin — so a bare `command -v sketchybar` failed and every
+# guarded sketchybar block was skipped in production while working fine from a
+# terminal. Resolve it the way bd-wake.sh already resolves displayplacer.
+SB="$(command -v sketchybar || echo /opt/homebrew/bin/sketchybar)"
 CLI="/opt/homebrew/bin/betterdisplaycli"
 
 # The Dell was designated a COLOR-REFERENCE display on 2026-06-13, which pinned
@@ -117,11 +123,19 @@ stream|120|90|75|0|󰕧|Stream
 cinema|150|80|80|-2|󰎁|Cinema'
 
 # mode_row <mode> — echo the row with the key stripped ("dev|b|c|t|glyph|label"),
-# or empty if the mode is unknown. The trailing `|` anchor stops day/dawn-style
-# prefix collisions. Single source of truth for apply_mode + verify_mode.
+# or empty if the mode is unknown. Single source of truth for apply_mode +
+# verify_mode.
+#
+# awk with an exact first-field compare, NOT `grep "^$1|"`: grep reads the
+# argument as a basic regex, so `bd-apply.sh 'd.*'` (an unexpanded glob, a
+# mistyped Stream Deck/Raycast argument, an unquoted variable in a wrapper)
+# matched the dawn row, applied the dawn table, and apply_mode then persisted the
+# RAW argument to ~/.cache/bd-state — where bd-cycle.sh no longer recognised it
+# and silently restarted the cycle at dawn. An exact compare makes an unknown
+# mode an unknown mode, and keeps bd-state holding a real key.
 mode_row() {
     local line
-    line="$(grep -m1 "^$1|" <<< "$MODES_TABLE")"
+    line="$(awk -F'|' -v m="$1" '$1 == m { print; exit }' <<< "$MODES_TABLE")"
     [[ -n "$line" ]] && printf '%s' "${line#*|}"
 }
 
@@ -142,6 +156,20 @@ log() {
 bd() {
     [[ -x "$CLI" ]] || return 127
     "$CLI" "$@" 2>>"$LOG_FILE"
+}
+
+# bd_raw — same guard, but WITHOUT the internal stderr redirect, so a caller can
+# capture what the CLI wrote to stderr.
+#
+# betterdisplaycli reports a rejected DDC write as "Failed." on stderr and still
+# exits 0. bd()'s `2>>"$LOG_FILE"` is applied to the CLI invocation itself, so it
+# wins over a call-site `2>&1` — `out="$(bd set ... 2>&1)"` captured an empty
+# string and `grep -qi failed` could never match. Every rejected write was
+# therefore logged as "(dispatched)" and returned success, and the
+# reinitialize+retry branch below was unreachable.
+bd_raw() {
+    [[ -x "$CLI" ]] || return 127
+    "$CLI" "$@"
 }
 
 # resolve_port_tag — self-heal a stale DOTFILES_BD_PORT_TAG.
@@ -211,8 +239,17 @@ acquire_lock() {
     while ! mkdir "$LOCK_DIR" 2>/dev/null; do
         pid="$(cat "$LOCK_DIR/pid" 2>/dev/null || true)"
         if [[ -n "$pid" ]] && ! kill -0 "$pid" 2>/dev/null; then
-            log "lock stale (pid=$pid gone) — reclaiming"
-            rm -rf "$LOCK_DIR"; continue
+            # Reclaim by RENAME, not by rm. rename(2) is atomic, so when two
+            # waiters spot the same stale lock exactly one can move it aside.
+            # The plain `rm -rf` this replaces let BOTH delete it: the loser's
+            # rm then deleted the winner's freshly-created lock, both processes
+            # believed they held the mutex, and their DDC + STATE_FILE writes
+            # interleaved — the one thing this lock exists to stop.
+            if mv "$LOCK_DIR" "$LOCK_DIR.stale.$$" 2>/dev/null; then
+                log "lock stale (pid=$pid gone) — reclaimed"
+                rm -rf "$LOCK_DIR.stale.$$"
+            fi
+            continue
         fi
         if (( waited >= 30 )); then
             log "WARN lock held ${waited}s by pid=${pid:-?} — proceeding without it"
@@ -365,13 +402,13 @@ set_port_vcp() {
     local vcp="$1" val="$2"
     local out attempt rc_set
     for (( attempt=1; attempt<=3; attempt++ )); do
-        out="$(bd set --tagID="$PORT_TAG" --ddc --vcp="$vcp" --value="$val" 2>&1)"; rc_set=$?
+        out="$(bd_raw set --tagID="$PORT_TAG" --ddc --vcp="$vcp" --value="$val" 2>&1)"; rc_set=$?
         if (( rc_set == 127 )); then
             log "FATAL PORT vcp:$vcp=$val — betterdisplaycli missing or not executable at $CLI"
             return 1
         fi
         if grep -qi 'failed' <<< "$out"; then
-            log "PORT vcp:$vcp=$val rejected (attempt=$attempt) — reinitialize + retry"
+            log "PORT vcp:$vcp=$val rejected (attempt=$attempt) — reinitialize + retry [cli: ${out//$'\n'/ }]"
             bd perform --tagID="$PORT_TAG" --reinitialize >/dev/null 2>&1 || true
             sleep 1.0
             continue
@@ -417,14 +454,23 @@ set_port_feature() {
 # this panel — see set_port_vcp). Temperature stays on the BD abstraction: it is
 # a SOFTWARE colour-table control, not a DDC one, so BD applies it locally and
 # the readback there is genuine.
+#
+# Status is ACCUMULATED, never short-circuited: every control is still attempted
+# after one fails (a rejected luminance must not cost you the white point), but
+# the caller learns the phase did not fully land. The previous unconditional
+# `return 0` swallowed a total DDC failure, which made bd-wake.sh's 3-attempt
+# retry loop declare success on attempt 1 and bd-lmu-watch.sh's `|| log WARN`
+# unreachable — so "mode lost while the monitor was asleep", the exact failure
+# this whole file exists to prevent, came back silently with a clean log.
 set_port() {
-    set_port_vcp     luminance "$1"
-    set_port_vcp     contrast  "$PORT_REF_CONTRAST"
-    set_port_feature temperature "$PORT_REF_TEMP"
+    local rc=0
+    set_port_vcp     luminance "$1"                 || rc=1
+    set_port_vcp     contrast  "$PORT_REF_CONTRAST" || rc=1
+    set_port_feature temperature "$PORT_REF_TEMP"   || rc=1
     # Software midtone lift. Skipped entirely at 0 so the opt-out leaves no trace
     # in the colour table rather than writing a neutral value over it.
-    [[ "$PORT_GAMMA" != "0" ]] && set_port_feature gamma "$PORT_GAMMA"
-    return 0
+    [[ "$PORT_GAMMA" != "0" ]] && { set_port_feature gamma "$PORT_GAMMA" || rc=1; }
+    return "$rc"
 }
 
 apply_mode() {
@@ -449,20 +495,40 @@ apply_mode() {
     if dev_present; then
         set_dev "$dev_pct" "$DEV_PRESET"
     else
-        log "DEV absent (clamshell) — skipping DEV phase"
+        # dev_present only knows "the tagID did not answer". A closed lid and a
+        # STALE DEV_TAG are indistinguishable from here, and unlike PORT_TAG there
+        # is no resolve_* self-heal for DEV. Naming only clamshell was a causal
+        # claim this code never verified — a renumbered built-in would stop
+        # following modes forever behind a log line that reads perfectly normal.
+        # `doctor` is the command that CAN tell them apart (it decides liveness by
+        # registration, which stays truthful when DDC does not answer), so point
+        # at it rather than guessing here.
+        log "DEV tagID $DEV_TAG did not answer — skipping DEV phase (clamshell, or a stale tag: run 'bd-apply.sh doctor')"
     fi
     set_port "$port_b" "$port_c" "$port_t"
+    local port_rc=$?
+    local port_state=dispatched
+    (( port_rc != 0 )) && port_state=FAILED
 
     local source="${BD_SOURCE:-manual}"
     local ts
     ts="$(date -u +%FT%TZ)"
-    log "applied mode=$mode source=$source"
+    log "applied mode=$mode source=$source port=$port_state"
     # State schema: mode|applied_ts|source|glyph|label
+    # Written even when the PORT phase failed: this records the INTENT, and
+    # bd-wake.sh, bd-cycle.sh and the sketchybar item all read it to know which
+    # mode to re-assert. Dropping it would strand the rig on the previous mode
+    # with nothing left to retry towards.
     printf '%s|%s|%s|%s|%s\n' "$mode" "$ts" "$source" "$glyph" "$label" > "$STATE_FILE"
 
-    if command -v sketchybar >/dev/null 2>&1; then
-        sketchybar --trigger bd_mode_changed MODE="$mode" GLYPH="$glyph" LABEL="$label" 2>/dev/null || true
+    if [[ -x "$SB" ]]; then
+        "$SB" --trigger bd_mode_changed MODE="$mode" GLYPH="$glyph" LABEL="$label" 2>/dev/null || true
     fi
+
+    # Propagate the external-panel result. The sketchybar trigger above ends in
+    # `|| true`, so without this explicit return apply_mode would always exit 0
+    # and every caller's failure branch stays dead code.
+    return "$port_rc"
 }
 
 print_status() {
@@ -697,13 +763,27 @@ verify_mode() {
     local drift=0 st
     printf 'mode: %s\n\n' "$mode"
 
-    st=ok; diff_ok "$exp_dev_sw" "$cur_dev_sw" >/dev/null || { st=DRIFT; drift=1; }
-    printf '  %-22s expect=%-8s actual=%-8s %s\n' "DEV softwareBrightness" \
-        "$exp_dev_sw" "$cur_dev_sw" "$st"
+    # Same dev_present gate apply_mode uses, for the same reason. With the built-in
+    # not there to read (clamshell), `bd get` writes "Failed." to stderr — which
+    # bd() swallows into the log — exits 0, and leaves stdout EMPTY, so the
+    # `|| echo ?` above never fires. awk then coerces that empty string to 0 and
+    # the comparison reports DRIFT: a permanent, unfixable failure verdict, plus
+    # exit 1, for a mode that applied perfectly. Same rule as the PORT rows below —
+    # a value we could not read is UNVERIFIABLE, never DRIFT.
+    if ! dev_present; then
+        printf '  %-22s expect=%-8s actual=%-8s %s\n' "DEV softwareBrightness" \
+            "$exp_dev_sw" "unread" "UNVERIFIABLE (built-in did not answer)"
+        printf '  %-22s expect=%-40s actual=%-40s %s\n' "DEV xdrPreset" \
+            "$dev_preset" "unread" "UNVERIFIABLE (built-in did not answer)"
+    else
+        st=ok; diff_ok "$exp_dev_sw" "$cur_dev_sw" >/dev/null || { st=DRIFT; drift=1; }
+        printf '  %-22s expect=%-8s actual=%-8s %s\n' "DEV softwareBrightness" \
+            "$exp_dev_sw" "$cur_dev_sw" "$st"
 
-    st=ok; [[ "$dev_preset" == "$cur_dev_preset" ]] || { st=DRIFT; drift=1; }
-    printf '  %-22s expect=%-40s actual=%-40s %s\n' "DEV xdrPreset" \
-        "$dev_preset" "$cur_dev_preset" "$st"
+        st=ok; [[ "$dev_preset" == "$cur_dev_preset" ]] || { st=DRIFT; drift=1; }
+        printf '  %-22s expect=%-40s actual=%-40s %s\n' "DEV xdrPreset" \
+            "$dev_preset" "$cur_dev_preset" "$st"
+    fi
 
     # UNVERIFIABLE is not DRIFT. Over DisplayPort this panel accepts DDC writes but
     # answers no reads, so there is nothing to compare — reporting that as drift
@@ -728,9 +808,21 @@ verify_mode() {
             "$exp_port_c" "$cur_port_c" "$st"
     fi
 
-    st=ok; diff_ok "$exp_port_t" "$cur_port_t" >/dev/null || { st=DRIFT; drift=1; }
-    printf '  %-22s expect=%-8s actual=%-8s %s\n' "PORT temperature" \
-        "$exp_port_t" "$cur_port_t" "$st"
+    # Check the readback's SHAPE before comparing. `bd get --temperature` prints
+    # "Failed." to stderr (swallowed into the log by bd()) and still exits 0, so
+    # the `|| echo ?` above never fires and cur_port_t arrives EMPTY — which awk
+    # coerces to 0, exactly equal to the pinned expectation of 0.00. verify was
+    # therefore printing "ok" for a white point it never read, and then claiming
+    # "all READABLE values match intent". Verified by hand: diff_ok 0.00 ""
+    # and diff_ok 0.00 "?" both return success.
+    if [[ ! "$cur_port_t" =~ ^-?[0-9]*\.?[0-9]+$ ]]; then
+        printf '  %-22s expect=%-8s actual=%-8s %s\n' "PORT temperature" \
+            "$exp_port_t" "unread" "UNVERIFIABLE (no readback)"
+    else
+        st=ok; diff_ok "$exp_port_t" "$cur_port_t" >/dev/null || { st=DRIFT; drift=1; }
+        printf '  %-22s expect=%-8s actual=%-8s %s\n' "PORT temperature" \
+            "$exp_port_t" "$cur_port_t" "$st"
+    fi
 
     # EDR headroom diagnostic (read-only, informational — NOT a pass/fail check).
     # When 'Headroom' == 'Max Headroom' the built-in sits at its EDR ceiling, which

@@ -32,7 +32,15 @@ toggle_mics() {
 	sketchybar -m "${args[@]}" >/dev/null
 }
 
-if [ "$BUTTON" = "left" ]; then
+# Right-click or shift-click: input-device picker. This test MUST come BEFORE the
+# left-click branch. sketchybar sets BUTTON and MODIFIER independently
+# (v2.24.0 src/bar_item.c bar_item_on_click), so a shift+left-click arrives as
+# BUTTON=left AND MODIFIER=shift -- testing BUTTON=left first swallowed every
+# shift-click into the mute toggle below and left the picker reachable only by
+# right-click. volume_click.sh already orders it this way.
+if [ "$BUTTON" = "right" ] || [ "$MODIFIER" = "shift" ]; then
+	toggle_mics
+elif [ "$BUTTON" = "left" ]; then
 	# Attempt to get the current input device name
 	MIC_NAME=$(SwitchAudioSource -t input -c)
 	# I just want the first word, in case it's too long
@@ -60,7 +68,4 @@ if [ "$BUTTON" = "left" ]; then
 			sketchybar -m --set mic label="$MIC_NAME 0" icon= icon.color=$RED label.color=$RED
 		fi
 	fi
-# Check for right-click or shift modifier to show the microphone selection popup
-elif [ "$BUTTON" = "right" ] || [ "$MODIFIER" = "shift" ]; then
-	toggle_mics
 fi

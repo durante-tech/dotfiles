@@ -3,13 +3,11 @@
 # Migrated 2026-07-15 to the yazi 26.x theme schema:
 # [manager]->[mgr], tab_*->[tabs], mode_*->[mode], separator_*->sep_left/right,
 # permissions_*->perm_*, [select]->[pick], help.exec->run, name->url globs.
+# Second pass for yazi 26.8.15: mgr.hovered/preview_hovered -> [indicator]
+# current/preview (#3419), and help.on/run/desc/footer -> chord/action (#4074).
 
 [mgr]
 cwd = { fg = "#89b4fa" }
-
-# Hovered
-hovered = { fg = "#1e1e2e", bg = "#89b4fa" }
-preview_hovered = { underline = true }
 
 # Find
 find_keyword = { fg = "#f9e2af", italic = true }
@@ -26,6 +24,15 @@ border_style = { fg = "#7f849c" }
 
 # Highlighting
 syntect_theme = "~/.config/bat/themes/Catppuccin-mocha.tmTheme"
+
+# Hovered row + hovered preview. v26.5.6 reclassified `hovered` and
+# `preview_hovered` out of [mgr] into [indicator] as `current`/`preview`
+# (#3419); left under [mgr] they were unknown keys, so the most visible element
+# in the file list fell back to the preset `{ reversed = true }` instead of
+# this Catppuccin blue.
+[indicator]
+current = { fg = "#1e1e2e", bg = "#89b4fa" }
+preview = { underline = true }
 
 [tabs]
 active = { fg = "#1e1e2e", bg = "#cdd6f4" }
@@ -76,12 +83,16 @@ desc = { fg = "#f5c2e7" }
 separator = "  "
 separator_style = { fg = "#585b70" }
 
+# v26.8.15 turned the help menu into a command palette (#4074) and rewrote its
+# theme keys: `on` -> `chord`, `run` and `desc` merged into one `action`, and
+# `footer` removed with no replacement. As unknown keys the old four were
+# dropped, so only `hovered` ever applied. `border` added to match every other
+# component in this file.
 [help]
-on = { fg = "#f5c2e7" }
-run = { fg = "#94e2d5" }
-desc = { fg = "#9399b2" }
+border = { fg = "#89b4fa" }
+chord = { fg = "#f5c2e7" }
+action = { fg = "#94e2d5" }
 hovered = { bg = "#585b70", bold = true }
-footer = { fg = "#45475a", bg = "#cdd6f4" }
 
 [filetype]
 rules = [

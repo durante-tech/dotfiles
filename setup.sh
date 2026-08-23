@@ -98,48 +98,49 @@ stow_packages() {
 
     cd "$DOTFILES_DIR" || exit 1
 
-    # List of packages to stow — keep in sync with install.sh PACKAGES.
-    local packages=(
-        aerospace
-        atuin
-        espanso
-        fastfetch
-        ghostty
-        karabiner
-        kitty
-        mise
-        mpd
-        nvim
-        rmpc
-        scripts
-        sketchybar
-        starship
-        tmux
-        ubersicht
-        w3m
-        wallpapers
-        wezterm
-        yazi
-        zed
-        zsh
-    )
+    # Package list comes from stow-packages.txt, the single source of truth
+    # shared with install.sh, check_stow_drift and the CI stow dry run.
+    #
+    # This used to be a fourth hand-maintained copy, and it had already drifted:
+    # da836f2 ("bring mouse config under stow management") added `linearmouse` to
+    # the manifest but not to this list, so `--stow` and `--all` silently skipped
+    # the very package that commit existed to deploy.
+    local manifest="$DOTFILES_DIR/stow-packages.txt"
+    if [[ ! -r "$manifest" ]]; then
+        print_error "Missing $manifest — cannot stow"
+        return 1
+    fi
+    # `|| true` guards `set -e`: an empty manifest filters to zero lines and grep
+    # exits 1, which would abort the run with no diagnostic.
+    local packages
+    packages="$(sed -e 's/#.*//' -e 's/[[:space:]]//g' "$manifest" | grep -v '^$' || true)"
+    if [[ -z "$packages" ]]; then
+        print_error "$manifest lists no packages — cannot stow"
+        return 1
+    fi
 
     # Ensure .config exists
     mkdir -p "$HOME/.config"
     # Ensure deep parent dirs exist for non-XDG stow packages
     mkdir -p "$HOME/Library/Application Support/Übersicht"
 
-    for pkg in "${packages[@]}"; do
+    # here-string, not a pipe: a `while read` on the right of a pipe runs in a
+    # subshell, so any counter set inside would not survive into this scope.
+    local pkg stow_err
+    while IFS= read -r pkg; do
+        [[ -n "$pkg" ]] || continue
         if [[ -d "$DOTFILES_DIR/$pkg" ]]; then
-            if stow -t ~ -R "$pkg" 2>/dev/null; then
+            # Keep stderr so a genuine error is distinguishable from a conflict.
+            if stow_err="$(stow -t ~ -R "$pkg" 2>&1)"; then
                 print_success "Stowed $pkg"
             else
-                print_warning "Failed to stow $pkg (may have conflicts)"
+                print_warning "Failed to stow $pkg:"
+                sed 's/^/    /' <<< "$stow_err"
             fi
         else
             print_info "Skipping $pkg (directory not found)"
         fi
-    done
+    done <<< "$packages"
 
     # Übersicht caveat: its internal server.js doesn't follow relative
     # symlinks. Stow produces ../../../dotfiles/... which crashes the app.
@@ -169,13 +170,19 @@ configure_environment() {
             echo -e "\nConnected monitors:"
             echo "$monitors"
 
+            # Do NOT tell people to edit ~/.config/aerospace/aerospace.toml. It is
+            # the gitignored OUTPUT of render-aerospace.sh, which truncates it with
+            # `> "$OUTPUT"` on every render (install.sh, personalize.sh, or a manual
+            # run). A hand-edit there survives until the next render and then
+            # vanishes with no message and no diff, because the file is gitignored.
             echo -e "\n${YELLOW}Action needed:${NC}"
-            echo "Edit ~/.config/aerospace/aerospace.toml"
-            echo "Update [workspace-to-monitor-force-assignment] with your monitor names"
+            echo "Record your monitor names, then re-render:"
+            echo "  ./personalize.sh                              # writes ~/.config/dotfiles/personal.env"
+            echo "  scripts/scripts/render-aerospace.sh && aerospace reload-config"
             echo ""
-            echo "Example:"
-            echo "  1 = 'Built-in Retina Display'"
-            echo "  2 = 'Your-External-Monitor'"
+            echo "The rendered ~/.config/aerospace/aerospace.toml is GENERATED — edit"
+            echo "aerospace/templates/aerospace.toml.template instead; a hand-edit"
+            echo "to the rendered file is discarded by the next render."
         else
             print_warning "No monitors detected or aerospace not running"
         fi
@@ -199,9 +206,18 @@ configure_environment() {
     mkdir -p "$HOME/.local/state/mpd"   # mpd.conf runtime paths; mpd won't create parents
     print_success "Directories created"
 
-    # Make scripts executable
+    # Make scripts executable.
+    #
+    # find -type f, not a glob: ~/scripts is almost entirely stow symlinks into
+    # the repo, and chmod FOLLOWS a symlink operand (only -h touches the link
+    # itself). The glob therefore rewrote the mode of the repo files behind
+    # those links, flipping git-tracked 100644 entries (fzf-git.sh,
+    # unlock-watch.swift) to 100755 and leaving
+    # ~/dotfiles dirty after every setup run. find without -L reports a symlink
+    # as -type l, so this now touches only the real files that live in
+    # ~/scripts; stow already reproduces the tracked mode through the links.
     if [[ -d "$HOME/scripts" ]]; then
-        chmod +x "$HOME/scripts"/* 2>/dev/null || true
+        find "$HOME/scripts" -maxdepth 1 -type f -exec chmod +x {} + 2>/dev/null || true
         print_success "Scripts made executable"
     fi
 
@@ -315,6 +331,7 @@ render_launchagents() {
     mkdir -p "$HOME/Library/Logs"
 
     local rendered=0
+    local loaded=0
     for tpl in "$TPL_DIR"/*.plist.template; do
         [[ -f "$tpl" ]] || continue
         local base
@@ -330,8 +347,14 @@ render_launchagents() {
         launchctl bootout "gui/$(id -u)" "$dest" 2>/dev/null || true
         if launchctl bootstrap "gui/$(id -u)" "$dest" 2>/dev/null; then
             print_success "Loaded $base"
+            loaded=$((loaded + 1))
         else
-            print_warning "Could not bootstrap $base (may already be loaded)"
+            # NOT "may already be loaded" — the bootout on the line above just
+            # unloaded it, so a double-load is the one cause this cannot be.
+            # The real ones are: no gui/<uid> domain (any SSH or non-console
+            # run has none), a malformed plist, or a Program path that does not
+            # exist. The old text sent people hunting a phantom.
+            print_warning "Could not bootstrap $base (no gui domain, bad plist, or missing program path)"
         fi
         rendered=$((rendered + 1))
     done
@@ -339,7 +362,13 @@ render_launchagents() {
     if [[ $rendered -eq 0 ]]; then
         print_info "No .plist.template files found"
     else
-        print_success "Rendered $rendered LaunchAgent plist(s)"
+        # Report loads, not just renders. Writing a plist is not running it:
+        # over SSH every bootstrap fails, yet the run still ended on a green
+        # "Rendered 11 LaunchAgent plist(s)" that reads as "all agents are up".
+        print_success "Rendered $rendered LaunchAgent plist(s), loaded $loaded"
+        if [[ $loaded -lt $rendered ]]; then
+            print_warning "$((rendered - loaded)) agent(s) did NOT load — re-run from a console login session (launchctl needs the gui/$(id -u) domain)"
+        fi
     fi
 }
 
@@ -362,6 +391,19 @@ link_raycast_commands() {
 
     if [[ ! -d "$SRC_DIR" ]]; then
         print_info "No raycast/script-commands/ directory — skipping"
+        return 0
+    fi
+
+    # ~/Durante is the maintainer's DOS-private tree and is NOT part of this
+    # public repo. mkdir -p on the default target therefore MATERIALIZED a
+    # phantom ~/Durante/scripts/raycast on any clone that doesn't have it, on
+    # every install.sh run (install.sh calls setup.sh --configure) — a directory
+    # the user cannot account for, holding links Raycast is not indexing. The
+    # repo rule is that ~/Durante references existence-guard and no-op; honour
+    # it here and create the target only when the operator opted in, either by
+    # having ~/Durante or by setting DOTFILES_RAYCAST_DIR.
+    if [[ -z "${DOTFILES_RAYCAST_DIR:-}" && ! -d "$HOME/Durante" ]]; then
+        print_info "No ~/Durante and no DOTFILES_RAYCAST_DIR — skipping Raycast links"
         return 0
     fi
 
@@ -484,7 +526,7 @@ check_stow_drift() {
 
     # here-string, not a pipe — `drifted` must accumulate in THIS shell. Same
     # subshell trap the comment below documents for the grep pipeline.
-    local pkg drifted=0 out
+    local pkg drifted=0 out raw rc
     while IFS= read -r pkg; do
         [[ -n "$pkg" ]] || continue
         [[ -d "$DOTFILES_DIR/$pkg" ]] || continue
@@ -497,7 +539,53 @@ check_stow_drift() {
         # on the first healthy package, so `--check` printed this header and then
         # died before reporting anything or running any later verification. The
         # healthy path was the failing one.
-        out="$(stow -n -v -R -t ~ "$pkg" 2>&1 | grep '^LINK:' | grep -v 'reverts previous action' || true)"
+        # Capture BOTH stow's output and whether it refused to run at all. The
+        # previous version counted only LINK: lines, so a package where stow
+        # aborted before emitting any — a genuine conflict — produced an empty
+        # result and was counted CLEAN. That is how ~/.config/linearmouse being a
+        # real app-written file instead of a symlink stayed invisible while this
+        # check printed "All packages fully stowed".
+        #
+        # `|| rc=$?` rather than a following `rc=$?`: a bare assignment from a
+        # command substitution propagates the command's exit status, which under
+        # this file's `set -e` aborts the function before rc is ever read.
+        rc=0
+        raw="$(stow -n -v -R -t ~ "$pkg" 2>&1)" || rc=$?
+        if (( rc != 0 )); then
+            # One conflict is INTENTIONAL and must not be reported, or this check
+            # cries wolf on every single run — the same way a permanently-red CI
+            # gate trained everyone here to ignore it.
+            #
+            # stow_packages() rewrites the Übersicht widgets link to an ABSOLUTE
+            # symlink because Übersicht's server.js cannot follow the relative one
+            # stow creates. stow then disowns it ("existing target is not owned by
+            # stow") even though the link is correctly pointing into this repo.
+            # So: a conflict counts as REAL only if some conflicting target is not
+            # already an absolute symlink into $DOTFILES_DIR.
+            local bad tgt real_conflict=0 had_conflict=0
+            while IFS= read -r bad; do
+                [[ -n "$bad" ]] || continue
+                had_conflict=1
+                bad="${bad##*not owned by stow: }"
+                tgt="$HOME/$bad"
+                if [[ -L "$tgt" && "$(readlink "$tgt")" == "$DOTFILES_DIR"/* ]]; then
+                    continue
+                fi
+                real_conflict=1
+            done <<< "$(grep 'not owned by stow:' <<< "$raw" || true)"
+
+            if (( had_conflict == 1 && real_conflict == 0 )); then
+                : # every conflict explained by an intentional absolute link
+            else
+                print_warning "$pkg — stow refused to run (conflict or error):"
+                sed 's/^/    /' <<< "$raw"
+                drifted=$((drifted + 1))
+            fi
+            continue
+        fi
+        # "(reverts previous action)" lines are stow's re-stow bookkeeping for
+        # links that already exist — only the remainder are genuinely missing.
+        out="$(printf '%s\n' "$raw" | grep '^LINK:' | grep -v 'reverts previous action' || true)"
         if [[ -n "$out" ]]; then
             print_warning "$pkg has unstowed file(s):"
             sed 's/^/    /' <<< "$out"
@@ -630,7 +718,15 @@ main() {
 
     case "${1:-}" in
         --check)
-            check_dependencies
+            # `|| true` is load-bearing under this file's `set -e`: a bare
+            # function call that returns non-zero aborts the script. One missing
+            # tool (eza, atuin, lazygit, ...) made check_dependencies return 1
+            # and killed --check right there, so verify_config — stow drift,
+            # symlink audit, aerospace doctor, the entire point of --check —
+            # never ran on exactly the machines that needed diagnosing.
+            # check_dependencies prints its own "Run ./install.sh first"
+            # remediation, so continuing costs nothing.
+            check_dependencies || true
             verify_config
             ;;
         --stow)

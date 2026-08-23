@@ -1,3 +1,4 @@
+tap "anthropics/tap"
 tap "felixkratz/formulae"
 tap "libsql/sqld"
 tap "nikitabobko/tap"
@@ -10,8 +11,6 @@ tap "thezoraiz/ascii-image-converter"
 tap "tursodatabase/tap"
 # Run your GitHub Actions locally
 brew "act"
-# Apache Ant build tool (Java legacy build chain)
-brew "ant"
 # Command-line interface for SQLite
 brew "sqlite"
 # AI pair programming in your terminal
@@ -26,8 +25,6 @@ brew "biome"
 brew "gum"
 # Terminal markdown renderer (Charmbracelet)
 brew "glow"
-# Local LLM runtime (run via `brew services start ollama`)
-brew "ollama"
 # Yet another cross-platform graphical process/system monitor
 brew "bottom"
 # New way to see and navigate directory trees
@@ -90,8 +87,6 @@ brew "mpd"
 brew "navi"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
-# Open-source, cross-platform JavaScript runtime environment
-brew "node"
 # Command-line Git information tool
 brew "onefetch"
 # Google's OSV-database vulnerability scanner (audit installed packages + lockfiles)
@@ -106,8 +101,6 @@ brew "plantuml"
 brew "pngpaste"
 # PDF rendering library (based on the xpdf-3.0 code base)
 brew "poppler"
-# Code formatter for JavaScript, CSS, JSON, GraphQL, Markdown, YAML
-brew "prettier"
 # Modern replacement for ps written in Rust
 brew "procs"
 # Command-line interface for Render
@@ -177,11 +170,15 @@ cask "betterdisplay"
 cask "claude-code"
 cask "font-hack-nerd-font"
 cask "font-jetbrains-mono-nerd-font"
+# Apple ships SF Pro as a system-wide .pkg, not user-installable font files like
+# every other font cask here — so this one alone needs an INTERACTIVE sudo and
+# will fail in any non-TTY context (CI, a `brew bundle` run from a script, an
+# agent session). If it blocks you, the fonts can be installed per-user with no
+# root at all: mount the cached dmg, `pkgutil --expand-full` the pkg, and copy
+# the 47 .otf/.ttf files from Payload/Library/Fonts into ~/Library/Fonts.
 cask "font-sf-pro"
 # GPU-accelerated terminal emulator (primary terminal)
 cask "ghostty"
-# Open-source keystroke visualiser
-cask "keycastr"
 # System-wide text expander (Rust)
 cask "espanso"
 # Clipboard history manager (Cmd+Shift+C to open)
@@ -195,8 +192,6 @@ cask "maccy"
 #   Casks cannot be `brew pin`ned, so install via:
 #       scripts/scripts/install-linearmouse.sh
 # cask "linearmouse"
-# System monitor for the menu bar
-cask "stats"
 # Inter sans-serif typeface (used by sketchybar / design tokens)
 cask "font-inter"
 # Manrope sans-serif typeface (used by design tokens / site)
@@ -211,131 +206,14 @@ cask "ant"
 cask "godot"
 # Reverse proxy / secure tunnels to localhost
 cask "ngrok"
-vscode "aaravb.chrome-extension-developer-tools"
-vscode "aaron-bond.better-comments"
-vscode "anthropic.claude-code"
-vscode "asciidoctor.asciidoctor-vscode"
-vscode "bradlc.vscode-tailwindcss"
-vscode "charliermarsh.ruff"
-vscode "christian-kohler.npm-intellisense"
-vscode "christian-kohler.path-intellisense"
-vscode "davidanson.vscode-markdownlint"
-vscode "dbaeumer.vscode-eslint"
-vscode "deerawan.vscode-dash"
-vscode "dracula-theme.theme-dracula"
-vscode "dsznajder.es7-react-js-snippets"
-vscode "eamodio.gitlens"
-vscode "editorconfig.editorconfig"
-vscode "esbenp.prettier-vscode"
-vscode "exiasr.hadolint"
-vscode "figma.figma-vscode-extension"
-vscode "formulahendry.auto-rename-tag"
-vscode "github.copilot"
-vscode "github.copilot-chat"
-vscode "github.github-vscode-theme"
-vscode "github.vscode-github-actions"
-vscode "github.vscode-pull-request-github"
-vscode "golang.go"
-vscode "grapecity.gc-excelviewer"
-vscode "gruntfuggly.todo-tree"
-vscode "humao.rest-client"
-vscode "idleberg.icon-fonts"
-vscode "ionutvmi.path-autocomplete"
-vscode "jakebecker.elixir-ls"
-vscode "james-yu.latex-workshop"
-vscode "juanblanco.solidity"
-vscode "kamikillerto.vscode-colorize"
-vscode "lokalise.i18n-ally"
-vscode "mathematic.vscode-latex"
-vscode "mathiasfrohlich.kotlin"
-vscode "mermaidchart.vscode-mermaid-chart"
-vscode "mikestead.dotenv"
-vscode "mjmcloug.vscode-elixir"
-vscode "monokai.theme-monokai-pro-vscode"
-vscode "mquandalle.graphql"
-vscode "ms-azuretools.vscode-containers"
-vscode "ms-azuretools.vscode-docker"
-vscode "ms-dotnettools.csharp"
-vscode "ms-dotnettools.vscode-dotnet-runtime"
-vscode "ms-kubernetes-tools.vscode-kubernetes-tools"
-vscode "ms-playwright.playwright"
-vscode "ms-python.autopep8"
-vscode "ms-python.black-formatter"
-vscode "ms-python.debugpy"
-vscode "ms-python.flake8"
-vscode "ms-python.isort"
-vscode "ms-python.pylint"
-vscode "ms-python.python"
-vscode "ms-python.vscode-pylance"
-vscode "ms-python.vscode-python-envs"
-vscode "ms-toolsai.jupyter"
-vscode "ms-toolsai.jupyter-keymap"
-vscode "ms-toolsai.jupyter-renderers"
-vscode "ms-toolsai.vscode-jupyter-cell-tags"
-vscode "ms-toolsai.vscode-jupyter-slideshow"
-vscode "ms-vscode-remote.remote-containers"
-vscode "ms-vscode-remote.remote-ssh"
-vscode "ms-vscode-remote.remote-ssh-edit"
-vscode "ms-vscode.cmake-tools"
-vscode "ms-vscode.cpptools"
-vscode "ms-vscode.cpptools-extension-pack"
-vscode "ms-vscode.cpptools-themes"
-vscode "ms-vscode.makefile-tools"
-vscode "ms-vscode.remote-explorer"
-vscode "ms-vscode.test-adapter-converter"
-vscode "ms-vscode.vscode-typescript-next"
-vscode "ms-vsliveshare.vsliveshare"
-vscode "naumovs.color-highlight"
-vscode "njpwerner.autodocstring"
-vscode "oderwat.indent-rainbow"
-vscode "openai.chatgpt"
-vscode "pkief.material-icon-theme"
-vscode "postman.postman-for-vscode"
-vscode "prisma.prisma"
-vscode "redhat.java"
-vscode "redhat.vscode-xml"
-vscode "redhat.vscode-yaml"
-vscode "ritwickdey.liveserver"
-vscode "runem.lit-plugin"
-vscode "scala-lang.scala"
-vscode "seojunyoo.react-component-preview"
-vscode "shd101wyy.markdown-preview-enhanced"
-vscode "snappify.snappify"
-vscode "steoates.autoimport"
-vscode "streetsidesoftware.code-spell-checker"
-vscode "styled-components.vscode-styled-components"
-vscode "svelte.svelte-vscode"
-vscode "systemticks.c4-dsl-extension"
-vscode "tamasfe.even-better-toml"
-vscode "thomascsd.vscode-readme-pattern"
-vscode "tobiasalthoff.atom-material-theme"
-vscode "tomoki1207.pdf"
-vscode "twxs.cmake"
-vscode "tyriar.lorem-ipsum"
-vscode "unifiedjs.vscode-mdx"
-vscode "usernamehw.errorlens"
-vscode "vitest.explorer"
-vscode "vmware.vscode-boot-dev-pack"
-vscode "vmware.vscode-spring-boot"
-vscode "vscjava.vscode-gradle"
-vscode "vscjava.vscode-java-debug"
-vscode "vscjava.vscode-java-dependency"
-vscode "vscjava.vscode-java-pack"
-vscode "vscjava.vscode-java-test"
-vscode "vscjava.vscode-maven"
-vscode "vscjava.vscode-spring-boot-dashboard"
-vscode "vscjava.vscode-spring-initializr"
-vscode "wayou.vscode-todo-highlight"
-vscode "yzhang.markdown-all-in-one"
-vscode "zeshuaro.vscode-python-poetry"
+# VS Code extensions live in Brewfile.vscode (not loaded by default) —
+# VS Code is not installed here; see that file's header.
 go "github.com/go-delve/delve/cmd/dlv"
 go "github.com/danielmiessler/fabric/cmd/fabric"
 go "github.com/projectdiscovery/naabu/v2/cmd/naabu"
 go "honnef.co/go/tools/cmd/staticcheck"
 
 # Wallpaper / desktop integration
-tap "theboredteam/boring-notch"
 brew "wallpaper"                                # CLI for desktop wallpaper (Sindre Sorhus)
 cask "ubersicht"                                # Webview widgets above wallpaper
-cask "boring-notch"                             # Notch utility (Dynamic-Island clone, OSS)
 # Note: Plash is Mac App Store only — install from https://sindresorhus.com/plash

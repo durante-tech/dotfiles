@@ -43,31 +43,27 @@ crash or a silently-wrong number. Homebrew binaries are invoked by absolute
 path (`/opt/homebrew/bin/gh`) because Übersicht's LaunchAgent environment has
 only the system PATH.
 
-- **pipeline.widget** — the SDLC spine: real active PRDs (junk-filtered from
-  `~/.claude/MEMORY/STATE/work.json`, with a visible `hidden` count) → open
-  PRs + CI rollup across durante-tech/{dos, cc-durante-studio, dos-studio} →
-  sync/deploy state (`~/Durante/MEMORY/STATE/pull-hold.json` + the fleet-board
-  DEPLOY LINE row, minimal MANNED/UNMANNED + timestamp parse only) → release
-  train (`~/.claude/version.json`).
+
 - **attention.widget** — the prioritized action queue: failing CI checks,
   pending fleet decisions (`fleet-decisions.jsonl` requested-without-resolved),
   stuck PRDs (verify >24h, build 0-progress >12h, stale >7d), DLQ backlog
   (`MEMORY/*/.pending` + `.quarantine`), CI-green PRs *queued for the deploy
   line* (informational — merges belong to the deploy-line session, never to a
   widget prompt), corrections queue. Empty state renders an explicit CLEAR.
-- **dailybrief.widget / today-focus.widget** — daily ops narrative + top-3
-  actions (healthy, unchanged).
 - **deck.widget** — working set: hot files + repo status; repo list comes from
   the canonical `~/Durante/Tools/.dos-projects.json` registry (deprecated
   entries skipped) instead of a hardcoded list.
-- **q3-thread.widget** — one reflection lesson, weighted to low-sentiment
-  runs; reads both reflection schemas (doctrine-12 `reflection_q3` and
-  runtime-8 `reflection`).
 
-Retired (absorbed by pipeline/attention): `mempalace.widget` (session counts),
-`aging-watch.widget` (stuck-work rows), `decisions.widget` (recent decisions —
-covered by the daily brief). Future absorption candidates: today-focus (into
-dailybrief), drift-warden (as an attention row).
+Retired (absorbed by attention): `mempalace.widget` (session counts),
+`aging-watch.widget` (stuck-work rows), `decisions.widget` (recent decisions).
+
+Removed 2026-08-22 when DuranteOS was retired — all four read data directories
+that no longer exist, so each rendered a permanent empty or error tile:
+`dailybrief.widget` and `today-focus.widget` (read `~/Durante/MEMORY/WORK/`),
+`brief-trigger.widget` (clicked a launchd service that is gone), and
+`q3-thread.widget` (read the removed reflections journal). `pipeline.widget`
+followed for the same reason — it read `~/.claude/MEMORY/STATE/work.json`, which
+went with the DOS removal, so it rendered its error branch permanently.
 
 ## Layout lanes (2026-07 UX pass, 2560×1440 logical)
 
@@ -76,23 +72,34 @@ so they can never grow into a neighbor:
 
 | Lane | Widget | Anchor |
 |---|---|---|
-| Left 1 | pipeline | `top:70 left:60 w:540` |
 | Left 2 | memory-tide (sparkline) | `top:560 left:60` |
 | Left 3 | attention (max 4 rows, detail on top 2) | `top:720 left:60 w:540` |
-| Left 4 | today-focus | `bottom:60 left:60 w:540` (grows upward) |
-| Top-center-left | focus (intention mantra) | `top:80 left:640` |
-| Center | brief-trigger ring | `top:42% left:50%` (42% keeps it clear of deck) |
-| Center-bottom | dailybrief | `bottom:60 left:640 w:460` |
 | Center-right-bottom | deck | `bottom:60 left:1160 w:540` |
-| Right-bottom | q3-thread (mirror) | `bottom:60 left:1760 w:540` |
 
-The old layout stacked focus + dailybrief + today-focus on the same
-`bottom:60 left:60` anchor (three-way collision) and let attention run into
-today-focus.
+The Left 4, Center, Center-bottom and Right-bottom lanes were freed by the
+2026-08-22 widget removal above; the lanes that remain are unchanged.
+
+### Built-in-display widgets (NOT dashboard lanes)
+
+`scripts/scripts/ubersicht-screen-sync.sh` pins these three to the built-in
+Retina panel with `showOnMainScreen` — its `BUILTIN_WIDGETS` list is the source
+of truth, and the live `WidgetSettings.json` agrees. Their CSS coordinates are
+therefore against the 1728-wide built-in display, **not** the 2560px dashboard
+above. `focus` used to be listed in the lane table, which sent anyone
+re-anchoring it to the wrong screen width:
+
+| Widget | Anchor |
+|---|---|
+| clock | `top:80 left:50%` (centered) |
+| focus (intention mantra) | `top:80 left:640 max-w:380` |
+| drift-warden (10px dot) | `top:76 left:1015` |
 
 ## Daily nano-banana wallpaper
 
-The DailyBrief agent (`~/Durante/Packs/Agents/DailyBrief`) generates one
+> **Retired 2026-08-22.** `~/Durante/Packs/Agents/DailyBrief` no longer exists,
+> so nothing below runs. Kept as a record of what the wallpaper hook did.
+
+The DailyBrief agent (`~/Durante/Packs/Agents/DailyBrief`) generated one
 wallpaper per evening via Nano Banana Pro (Gemini, through the Studio media
 gateway) into `~/Pictures/Wallpapers/daily/dailybrief-YYYY-MM-DD.png` and sets
 it immediately. The prompt is grounded in the brief's **Visual Metaphor**
@@ -109,5 +116,5 @@ why the hourly rotation was invisible. `wallpaper-rotate.sh` also folds the
 daily piece into its band pools for the no-fresh-daily fallback path.
 
 Widget-own state/cache files live in `~/.claude/MEMORY/STATE/`
-(`pipeline-widget-cache.json`, `attention-widget-cache.json`,
+(`attention-widget-cache.json`,
 `drift-warden-state.json`) — widgets write nothing else.

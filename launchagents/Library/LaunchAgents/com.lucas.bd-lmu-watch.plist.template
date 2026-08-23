@@ -4,8 +4,15 @@
   __USER__ is substituted with the current $USER at install time.
   The rendered file lands at ~/Library/LaunchAgents/<filename>.plist.
 
-  Time-of-day BetterDisplay mode scheduler. Mode parameter is the second
-  argument to bd-apply.sh (dawn/day/afternoon/evening/night).
+  Ambient-light bridge — NOT one of the five time-of-day bd-* schedulers. This
+  comment used to be a copy of theirs and was wrong in every particular: there
+  is no StartCalendarInterval here and bd-lmu-watch.sh takes no mode argument.
+
+  What it actually is: a long-running KeepAlive poller. It reads BetterDisplay's
+  ambient sensor every 60s, buckets the reading with hysteresis (±15%), and
+  calls bd-apply.sh only on a bucket TRANSITION. The interval lives inside the
+  script rather than in a StartInterval so one process owns the hysteresis state
+  across reads — a per-fire launchd job would forget the last bucket and flap.
 -->
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">

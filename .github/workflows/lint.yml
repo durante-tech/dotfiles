@@ -24,16 +24,32 @@ jobs:
       # tightened to `warning` here once the 31-warning backlog was actually
       # cleared rather than suppressed.
       #
-      # 52 note-level findings remain (mostly SC2086 in sketchybar plugins where
-      # the word-splitting is deliberate). Do NOT drop to the default severity to
-      # pick those up unless they are fixed first — that is exactly how this gate
-      # died the first time.
+      # 65 note-level findings remain — 44 × SC2086 (27 in sketchybar items and
+      # plugins where the word-splitting is deliberate, 12 in the vendored
+      # fzf-git.sh), the rest SC2059/SC2001/SC2015/SC2016/SC2012. Counted
+      # 2026-08-22 with shellcheck 0.11.0 over the 121 files the action
+      # discovers; the action pulls `stable`, so the figure drifts with the
+      # toolchain — re-measure before budgeting against it instead of trusting
+      # the number here (the 52 it replaced was stale by 13). Do NOT drop to the
+      # default severity to pick these up unless they are fixed first — that is
+      # exactly how this gate died the first time.
       - name: Run ShellCheck on custom scripts
         uses: ludeeus/action-shellcheck@master
         env:
           SHELLCHECK_OPTS: -e SC1090 -e SC1091 -e SC2034 -e SC2155
         with:
           scandir: .
+          # macos/.macos is a tracked, executable `#!/usr/bin/env bash` script
+          # (the one-shot `defaults write` pass for a fresh machine) that the
+          # action's own discovery cannot see: it has no .sh extension, and the
+          # shebang pass only looks at extensionless files — `.macos` reads as
+          # "extension .macos". additional_files entries become `-name '*.<entry>'`,
+          # so `macos` is the spelling that matches. Without it an unbalanced
+          # quote or a missing `fi` in that script ships green and only detonates
+          # during a fresh install — the one moment nothing else works either.
+          # The file is clean at every severity today, so this adds coverage,
+          # not red.
+          additional_files: macos
           severity: warning
           ignore_paths: >-
             tmux/.config/tmux/.tmux/plugins
@@ -92,6 +108,20 @@ jobs:
             ! -path './tmux/.config/tmux/.tmux/plugins/*' \
             -exec taplo check {} +
 
+      # The AeroSpace config never reaches the step above: the rendered
+      # aerospace.toml is gitignored (so it is absent from a fresh checkout) and
+      # the template — 618 lines, the largest TOML here and the declared source
+      # of truth — is named *.toml.template. Adding that suffix to the find does
+      # NOT work: taplo's own include glob is `**/*.toml`, so a path that does
+      # not end in .toml is dropped ("excluded=1 files=[]") and taplo still exits
+      # 0 — coverage that looks real and checks nothing. Copy to a .toml name
+      # and check that. The @DOTFILES_MONITOR_*@ placeholders sit inside quoted
+      # strings and parse fine unrendered.
+      - name: Validate AeroSpace TOML template
+        run: |
+          cp aerospace/templates/aerospace.toml.template "${RUNNER_TEMP}/aerospace-check.toml"
+          taplo check "${RUNNER_TEMP}/aerospace-check.toml"
+
   stow-dry-run:
     name: Stow Dry Run
     runs-on: macos-latest
@@ -137,3 +167,35 @@ jobs:
             fi
           done <<< "$packages"
           exit "$failed"
+
+  convention-check:
+    name: Convention Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # CLAUDE.md declares path agnosticism "enforced" — nothing enforced it.
+      # ShellCheck cannot model the rule and is told to skip zsh/ entirely, which
+      # is exactly where the one live violation sat: zsh/.zshrc hardcoded
+      # /Users/lgertel in bun's completion guard, so on any other machine the
+      # `[ -s ... ]` test silently failed and completions never loaded — while
+      # README.md claimed those paths had already been replaced with $HOME. A
+      # grep is the whole enforcement this rule ever needed.
+      #
+      # Exempt: *.md (CLAUDE.md and README.md quote the rule verbatim); the
+      # LaunchAgent templates, where the __USER__ placeholder is rendered by
+      # setup.sh --configure; and this workflow itself, whose comments and grep
+      # pattern necessarily contain the very string being hunted — without that
+      # exclusion the job fails on its own source, which is how a new gate ends
+      # up disabled on day one.
+      - name: No hardcoded absolute home paths
+        run: |
+          if git grep -n -I -e '/Users/' \
+               -- ':!*.md' \
+                  ':!launchagents/Library/LaunchAgents/*.plist.template' \
+                  ':!.github/workflows/lint.yml'; then
+            echo
+            echo "Hardcoded /Users/ path above. Use \$HOME in shell, ~ in config comments."
+            echo "Machine-specific values belong in ~/.config/dotfiles/personal.env."
+            exit 1
+          fi

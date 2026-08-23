@@ -8,8 +8,14 @@ return {
         behaviours = {
             -- Behaviour for big files (disable expensive features)
             bigfile = {
-                -- File size in bytes above which to trigger (1MB default)
-                filesize = 1000000,
+                -- Threshold in MiB, NOT bytes. bigfile.lua computes
+                -- `stats.size / (1024 * 1024)` and compares `filesize < for_size`;
+                -- the README says "Value is in MB." and ships `filesize = 2`.
+                -- The old `1000000` therefore meant a ~1 TB file, so the whole
+                -- bigfile behaviour could never once fire. 2 sits just above
+                -- snacks.nvim's own bigfile handler (snacks.lua: 1.5 MiB) so the
+                -- two don't both pounce on the same buffer.
+                filesize = 2,
                 -- Features to disable for big files
                 features_disabled = {
                     "illuminate",    -- vim-illuminate
@@ -21,13 +27,17 @@ return {
                     "syntax",        -- Syntax highlighting
                     "filetype",      -- Filetype detection
                 },
-                -- Set these vim options for big files
-                defer = false,
+                -- (no `defer` here: `defer` is a *feature* key, read by
+                -- utils.run_on_features; init.lua only ever reads `on`,
+                -- `features_disabled`, `init` and `stop` off a behaviour.)
             },
             -- Behaviour during macro execution (make macros faster)
             fastmacro = {
-                -- Enable fast macro mode
-                enabled = true,
+                -- Enable fast macro mode. The key is `on`; init.lua does
+                -- `if b.on == nil then b.on = false end` and never reads
+                -- `enabled` (which only worked before because tbl_deep_extend
+                -- merged upstream's own `on = true` back in).
+                on = true,
                 -- Features to disable during macro execution
                 features_disabled = {
                     "lsp",
@@ -40,18 +50,26 @@ return {
         features = {
             -- Treesitter highlighting
             treesitter = {
-                enabled = true,
-                -- Commands to disable/enable treesitter
+                on = true,
+                -- Use the built-in vim.treesitter API, not :TSBufDisable /
+                -- :TSBufEnable. Those were nvim-treesitter `master` commands;
+                -- treesitter.lua pins branch = "main", whose plugin/ registers
+                -- only TSInstall/TSInstallFromGrammar/TSUpdate/TSUninstall/TSLog.
+                -- vim.cmd() on a missing command raises E492, and nothing in
+                -- faster.nvim pcalls it (utils.run_on_features calls func(f)
+                -- bare) -- so every `@` replay aborted in macro.lua before it
+                -- could feed the macro keys, and every long-line file errored
+                -- out of longline.lua's disable pass.
                 disable = function()
-                    vim.cmd("TSBufDisable highlight")
+                    pcall(vim.treesitter.stop, 0)
                 end,
                 enable = function()
-                    vim.cmd("TSBufEnable highlight")
+                    pcall(vim.treesitter.start, 0)
                 end,
             },
             -- Vim illuminate (highlight word under cursor)
             illuminate = {
-                enabled = true,
+                on = true,
                 disable = function()
                     pcall(function()
                         require("illuminate").pause_buf()
@@ -65,7 +83,7 @@ return {
             },
             -- Indent blankline
             indent_blankline = {
-                enabled = true,
+                on = true,
                 disable = function()
                     pcall(function()
                         vim.cmd("IBLDisable")
@@ -79,7 +97,7 @@ return {
             },
             -- Matchparen (highlight matching parentheses)
             matchparen = {
-                enabled = true,
+                on = true,
                 disable = function()
                     vim.cmd("NoMatchParen")
                 end,
@@ -89,7 +107,7 @@ return {
             },
             -- LSP
             lsp = {
-                enabled = true,
+                on = true,
                 disable = function()
                     vim.cmd("LspStop")
                 end,
@@ -97,43 +115,16 @@ return {
                     vim.cmd("LspStart")
                 end,
             },
-            -- Syntax highlighting
-            syntax = {
-                enabled = true,
-                disable = function()
-                    vim.cmd("syntax off")
-                end,
-                enable = function()
-                    vim.cmd("syntax on")
-                end,
-            },
-            -- Filetype detection
-            filetype = {
-                enabled = true,
-                disable = function()
-                    vim.cmd("filetype off")
-                end,
-                enable = function()
-                    vim.cmd("filetype on")
-                end,
-            },
-            -- Vim options for big files
-            vimopts = {
-                enabled = true,
-                disable = function()
-                    vim.opt_local.swapfile = false
-                    vim.opt_local.foldmethod = "manual"
-                    vim.opt_local.undolevels = -1
-                    vim.opt_local.undoreload = 0
-                    vim.opt_local.list = false
-                end,
-                enable = function()
-                    vim.opt_local.swapfile = true
-                    vim.opt_local.undolevels = 1000
-                    vim.opt_local.undoreload = 10000
-                    vim.opt_local.list = true
-                end,
-            },
+            -- syntax / filetype / vimopts are deliberately NOT overridden.
+            -- The overrides that stood here ran `:syntax off` and
+            -- `:filetype off`, which are GLOBAL, and "restored" vimopts to
+            -- hardcoded values instead of the buffer's own (losing foldmethod
+            -- entirely). bigfile and longline only ever re-enable features from
+            -- stop(), never per buffer -- so one minified file would have left
+            -- the whole session with no syntax and no filetype detection.
+            -- faster.nvim's shipped versions (lua/faster/features.lua) set
+            -- vim.opt_local and keep a per-bufnr backup table, so they restore
+            -- exactly what was there; setup() merges them in via tbl_deep_extend.
         },
     },
 }
