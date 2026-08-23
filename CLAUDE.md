@@ -1067,6 +1067,27 @@ Python packaging uses **uv** (already in PATH via `.zprofile`).
 
 **Deno & Bun**: Auto-sourced from `.deno/env` and `.bun` if installed.
 
+**JVM toolchain** (via **SDKMAN** — java, kotlin, gradle, maven, scala, sbt). No
+overlap with mise, which owns Node + Python only. Installed by `install.sh` §5;
+`sdk` is a shell **function**, not a binary, so `command -v sdk` never finds it.
+```bash
+sdk list java            # available candidates
+sdk install java         # current LTS
+sdk use java 21.0.8-tem  # this shell only
+sdk selfupdate force     # upgrade SDKMAN itself
+```
+The canonical init sits in `zsh/.zprofile` just above the `~/.zprofile.local` hook
+(so a machine can still pin its own JDK) — **not** `.zshrc`, where the
+upstream installer wants to put it. `~/.zshrc` is a symlink into this repo, so the
+installer's unconditional append writes *through* it and dirties git; that is how a
+previous install silently lost its init when the tree was later restored. `install.sh`
+redirects `ZDOTDIR` at a throwaway dir to prevent it. Installing by hand:
+```bash
+ZDOTDIR="$(mktemp -d)" bash -c 'curl -fsSL https://get.sdkman.io | bash'
+```
+macOS ships only the `/usr/bin/java` **stub**, which errors `Unable to locate a Java
+Runtime` — SDKMAN's candidate is the only real JDK here.
+
 ---
 
 ## Special Conventions

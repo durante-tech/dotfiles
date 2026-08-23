@@ -87,6 +87,30 @@ fi
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
+# SDKMAN — JVM toolchain manager (java, kotlin, gradle, maven, scala, sbt).
+# Complements mise, which owns Node + Python only; there is no overlap today.
+#
+# This is the CANONICAL init and lives in .zprofile, not .zshrc, because
+# sdkman-init.sh exports JAVA_HOME and prepends PATH — login-shell concerns,
+# same as bun above — and it works in non-interactive shells, which .zshrc
+# never reaches.
+#
+# The upstream installer appends its own copy of this snippet to
+# ${ZDOTDIR:-$HOME}/.zshrc. Here that path is a SYMLINK into this repo, so the
+# append writes straight through into zsh/.zshrc and dirties git — which is
+# exactly how a previous install silently lost its init when the working tree
+# was later restored. install.sh §5 redirects ZDOTDIR to a throwaway dir to
+# stop that; if you ever run the installer by hand, do the same:
+#     ZDOTDIR="$(mktemp -d)" bash -c 'curl -fsSL https://get.sdkman.io | bash'
+#
+# Placed BEFORE the ~/.zprofile.local hook below, deliberately against SDKMAN's
+# own "must be at the end of the file" instruction. That instruction exists so
+# SDKMAN's PATH wins over anything later; here the whole point of .zprofile.local
+# is that a machine CAN pin a different JDK, and it cannot do that if this block
+# re-exports JAVA_HOME afterwards.
+export SDKMAN_DIR="$HOME/.sdkman"
+[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+
 # Source machine-specific local overrides (not tracked in git)
 [[ -f ~/.zprofile.local ]] && source ~/.zprofile.local
 

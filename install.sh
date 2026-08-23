@@ -597,6 +597,71 @@ else
     fi
 fi
 
+# SDKMAN — JVM toolchain manager (java, kotlin, gradle, maven, scala, sbt).
+# `sdk` is a shell FUNCTION defined by sdkman-init.sh, never a binary on PATH,
+# so cmd_exists cannot detect it — probe for the init script instead.
+if [ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]; then
+    print_success "SDKMAN already installed"
+    if [ "$UPDATE_ONLY" = true ]; then
+        if [ "$DRY_RUN" = true ]; then
+            print_dry "sdk selfupdate force"
+        else
+            print_step "Updating SDKMAN..."
+            # shellcheck disable=SC1091
+            ( . "$HOME/.sdkman/bin/sdkman-init.sh" && sdk selfupdate force ) \
+                || print_warn "SDKMAN selfupdate failed"
+        fi
+    fi
+else
+    if [ "$DRY_RUN" = true ]; then
+        print_dry "curl -fsSL https://get.sdkman.io | bash   (with ZDOTDIR redirected)"
+    else
+        print_step "Installing SDKMAN..."
+        # ZDOTDIR is pointed at a throwaway dir ON PURPOSE. The installer
+        # unconditionally appends its init snippet to ${ZDOTDIR:-$HOME}/.zshrc,
+        # and after §6 that path is a SYMLINK into this repo — the append writes
+        # straight through it and leaves zsh/.zshrc dirty in git. Verified both
+        # ways against a fake HOME: without the redirect the repo file is
+        # modified, with it the repo file is untouched.
+        #
+        # The canonical init lives in zsh/.zprofile instead, so it is stowed and
+        # version-controlled. ~/.bash_profile still receives the upstream
+        # snippet — that file is not stowed (the zsh package is .zshrc +
+        # .zprofile only), so it does no harm.
+        #
+        # `set -o pipefail` is NOT optional here. Without it a failed curl —
+        # offline, 404, TLS error — feeds an empty stdin to the downstream bash,
+        # which exits 0, so the whole pipeline succeeds and `|| print_warn` never
+        # fires. Measured: a 404 exits 0 without pipefail and 22 with it. The
+        # post-install check below then catches every other partial-failure mode.
+        sdkman_zdot="$(mktemp -d)"
+        ZDOTDIR="$sdkman_zdot" bash -c 'set -o pipefail; curl -fsSL https://get.sdkman.io | bash' \
+            || print_warn "SDKMAN install failed"
+        rm -rf "$sdkman_zdot"
+        if [ ! -s "$HOME/.sdkman/bin/sdkman-init.sh" ]; then
+            print_warn "SDKMAN did not land - skipping Java, install by hand later"
+        fi
+    fi
+fi
+
+# Java LTS via SDKMAN. Nothing else in this repo provides a JDK, and macOS ships
+# only the /usr/bin/java stub, which errors "Unable to locate a Java Runtime"
+# until a real one exists — so without this, SDKMAN is installed but inert.
+if [ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]; then
+    if [ -d "$HOME/.sdkman/candidates/java/current" ]; then
+        print_success "SDKMAN java already installed"
+    elif [ "$DRY_RUN" = true ]; then
+        print_dry "sdk install java   (current LTS)"
+    else
+        print_step "Installing Java LTS via SDKMAN..."
+        # stdin from /dev/null: `sdk install` prompts "set as default?" when a
+        # candidate is already present, and this must never hang a headless run.
+        # shellcheck disable=SC1091
+        ( . "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install java </dev/null ) \
+            || print_warn "Java install failed - run 'sdk install java' by hand"
+    fi
+fi
+
 # -----------------------------------------------------------------------------
 # 6. DOTFILES CLONE & STOW
 # -----------------------------------------------------------------------------
