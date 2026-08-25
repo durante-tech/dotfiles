@@ -338,7 +338,7 @@ If any verification fails, surface the specific check that failed and suggest th
 
 What's now active:
   • Shell: open a new terminal — startup ~140ms
-  • Wallpaper: rotates hourly via com.lucas.wallpaper-rotate LaunchAgent
+  • Wallpaper: rotate on demand with `wpn` (time-banded) or `wpa` (full gallery)
   • Sketchybar: Claude Code 5-hour billing block indicator (label `$X • XhYm`)
   • Espanso: type :dt anywhere → today's ISO date
 
@@ -437,7 +437,7 @@ brew bundle cleanup --force   # actually remove (destructive)
 
 ### Templates rendered at install time
 
-All 11 `.plist.template` files in `launchagents/Library/LaunchAgents/` are
+All 5 `.plist.template` files in `launchagents/Library/LaunchAgents/` are
 rendered into `~/Library/LaunchAgents/` with `__USER__` substituted for the
 current `$USER` (macOS launchd doesn't expand env vars in plist contents —
 templating is the only way). `setup.sh::render_launchagents()` handles this
@@ -445,21 +445,15 @@ and `launchctl bootstrap`s each agent so they fire on next login.
 
 | Template | What it does |
 |----------|--------------|
-| `com.lucas.bd-dawn.plist.template` | BetterDisplay → dawn mode (early morning) |
-| `com.lucas.bd-day.plist.template` | BetterDisplay → day mode |
-| `com.lucas.bd-afternoon.plist.template` | BetterDisplay → afternoon mode |
-| `com.lucas.bd-evening.plist.template` | BetterDisplay → evening mode |
-| `com.lucas.bd-night.plist.template` | BetterDisplay → night mode |
 | `com.lucas.bd-lmu-watch.plist.template` | Light-metering watcher (sets bd mode on ambient-light change) |
 | `com.lucas.sleepwatcher.plist.template` | Runs `~/.wakeup` (bd-wake.sh) on system wake **and** display wake/unlock; supersedes Homebrew's sleepwatcher service |
 | `com.lucas.sketchybar-firstboot.plist.template` | Sketchybar warm-up at first login |
 | `com.lucas.ubersicht.plist.template` | Übersicht autostart |
 | `com.lucas.unlock-watch.plist.template` | Runs `~/.wakeup` on screen unlock (`com.apple.screenIsUnlocked`) via the compiled Swift helper — a trigger launchd cannot express |
-| `com.lucas.wallpaper-rotate.plist.template` | Hourly wallpaper rotation |
 
 > Note: filenames carry the `com.lucas.` prefix. Renaming to `com.${USER}.`
-> is on the roadmap (would require coordinated changes in setup.sh,
-> VERIFY.md, and the wallpaper README) — not done yet.
+> is on the roadmap (would require coordinated changes in setup.sh and
+> VERIFY.md) — not done yet.
 
 ### Documentation pack
 - `docs/README.md` — docs index

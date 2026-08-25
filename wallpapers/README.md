@@ -24,11 +24,12 @@ on a time-of-day curve.
 | 09 | `09-council.jpg` | Robed silhouettes around a central gold flame | landscape |
 | 10 | `10-dos.jpg` | Vertical OS boot-as-cosmos (the centerpiece) | portrait |
 
-## Hourly time-banded rotation
+## Time-banded rotation
 
-`~/scripts/wallpaper-rotate.sh` fires every 3600 seconds via
-`com.lucas.wallpaper-rotate` LaunchAgent. It picks orientation-matched
-wallpapers per monitor from the band of the current hour:
+`~/scripts/wallpaper-rotate.sh` picks orientation-matched wallpapers per
+monitor from the band of the current hour. It runs **on demand** (`wpn` /
+`wpa`) and from AeroSpace workspace changes; the hourly
+`com.lucas.wallpaper-rotate` LaunchAgent was removed 2026-08-25.
 
 | Hour band | Mood | Pool |
 |-----------|------|------|
@@ -49,22 +50,16 @@ wp                     # show current wallpaper
 wp <path>              # set a specific image
 ```
 
-### LaunchAgent control
+### Logs
 
 ```bash
-# Status
-launchctl list | grep wallpaper-rotate
-
 # Watch the rotation log
-tail -f ~/Library/Logs/wallpaper-rotate.log
-
-# Force one rotation now
-launchctl kickstart -k gui/$(id -u)/com.lucas.wallpaper-rotate
-
-# Stop / start
-launchctl bootout   gui/$(id -u) ~/Library/LaunchAgents/com.lucas.wallpaper-rotate.plist
-launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.lucas.wallpaper-rotate.plist
+tail -f ~/Library/Logs/wallpaper-rotate.log   # alias: wpl
 ```
+
+There is no longer a LaunchAgent for this. To put scheduled rotation back,
+add a `.plist.template` under `launchagents/Library/LaunchAgents/` and run
+`./setup.sh --configure`.
 
 ### Per-workspace overrides (optional)
 

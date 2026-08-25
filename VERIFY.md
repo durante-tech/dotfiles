@@ -117,12 +117,14 @@ done
 
 ---
 
-## LaunchAgents (Wallpaper + Sketchybar)
+## LaunchAgents
 
 ```bash
-# Plists were rendered (no __USER__ placeholders left)
-for plist in ~/Library/LaunchAgents/com.lucas.wallpaper-rotate.plist \
-             ~/Library/LaunchAgents/com.lucas.sketchybar-firstboot.plist; do
+# Plists were rendered (no __USER__ placeholders left).
+# These are the five templates setup.sh renders; the bd-* time-of-day jobs and
+# com.lucas.wallpaper-rotate were removed 2026-08-25 (bd modes now come from
+# bd-lmu-watch + bd-wake; wallpaper rotation is manual via `wpn` / `wpa`).
+for plist in ~/Library/LaunchAgents/com.lucas.{sketchybar-firstboot,bd-lmu-watch,sleepwatcher,ubersicht,unlock-watch}.plist; do
   if [ -f "$plist" ]; then
     if grep -q "__USER__" "$plist"; then
       echo "FAIL $plist still has __USER__ placeholder — setup.sh render failed"
@@ -135,15 +137,13 @@ for plist in ~/Library/LaunchAgents/com.lucas.wallpaper-rotate.plist \
 done
 
 # Agents are loaded into launchd
-launchctl list | grep -q "com.lucas.wallpaper-rotate" && \
-  echo "OK wallpaper-rotate loaded" || echo "FAIL wallpaper-rotate not loaded"
 launchctl list | grep -q "com.lucas.sketchybar-firstboot" && \
   echo "OK sketchybar-firstboot loaded" || echo "FAIL sketchybar-firstboot not loaded"
 ```
 
 **If LaunchAgents fail:**
-- `cd ~/dotfiles && ./setup.sh --configure` — re-renders + re-bootstraps both
-- `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.lucas.wallpaper-rotate.plist`
+- `cd ~/dotfiles && ./setup.sh --configure` — re-renders + re-bootstraps every agent
+- `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.lucas.sketchybar-firstboot.plist`
 
 ---
 

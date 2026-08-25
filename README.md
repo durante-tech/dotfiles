@@ -276,7 +276,7 @@ dotfiles/
 ├── tmux/             → ~/.config/tmux/
 ├── w3m/              → ~/.w3m/
 ├── wallpapers/       → GLSL shader pages for Plash + Durante gallery README
-├── launchagents/     → ~/Library/LaunchAgents/ (com.lucas.wallpaper-rotate)
+├── launchagents/     → ~/Library/LaunchAgents/ (com.lucas.* .plist.template)
 ├── yazi/             → ~/.config/yazi/
 ├── zsh/              → ~/.zshrc, ~/.zprofile
 ├── Brewfile          # All Homebrew packages

@@ -112,7 +112,7 @@ exec-on-workspace-change): its lookup chain now prefers a fresh (<36h) daily
 piece for every workspace except `WALLPAPER_DAILY_EXCLUDE` (default `T`, the
 portrait monitor — daily art is 16:9). Without that step the per-workspace
 files stomped every wallpaper change on the next workspace switch, which is
-why the hourly rotation was invisible. `wallpaper-rotate.sh` also folds the
+why wallpaper rotation was invisible. `wallpaper-rotate.sh` also folds the
 daily piece into its band pools for the no-fresh-daily fallback path.
 
 Widget-own state/cache files live in `~/.claude/MEMORY/STATE/`

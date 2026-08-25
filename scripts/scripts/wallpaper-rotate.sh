@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # wallpaper-rotate.sh — pick a Durante-themed wallpaper per monitor based on
-# time-of-day band, then set it via wallpaper-cli. Designed to be fired
-# hourly by ~/Library/LaunchAgents/com.lucas.wallpaper-rotate.plist.
+# time-of-day band, then set it via wallpaper-cli. Run on demand via the `wpn`
+# / `wpa` aliases, and from AeroSpace's exec-on-workspace-change. The hourly
+# com.lucas.wallpaper-rotate LaunchAgent that used to drive it was removed
+# 2026-08-25.
 #
 # Banding (curates mood across the day):
 #   06–12 morning      → calm: 01-telos, 02-voice, 03-skills
@@ -17,9 +19,9 @@
 
 set -u
 
-# Machine-specific overrides live outside the repo. launchd never sees
-# interactive-shell exports, and this script is driven by com.lucas.wallpaper-rotate,
-# so personal.env is the only way DOTFILES_WALLPAPER_DIR can reach it.
+# Machine-specific overrides live outside the repo. Daemon contexts (AeroSpace's
+# exec-on-workspace-change, and any launchd job) never see interactive-shell
+# exports, so personal.env is the only way DOTFILES_WALLPAPER_DIR can reach it.
 if [ -r "$HOME/.config/dotfiles/personal.env" ]; then
   # shellcheck disable=SC1091  # user-generated, not in the repo
   . "$HOME/.config/dotfiles/personal.env"
