@@ -378,7 +378,6 @@ alias lfg="claude --dangerously-skip-permissions --model opus"
 alias cldpy="claude -p --dangerously-skip-permissions"
 alias cldpyo="claude -p --dangerously-skip-permissions --model opus"
 alias cldr="claude --resume"
-alias dosa="dos -l -m full --dangerously-skip-permissions"
 # ---------------------------------------
 
 # BetterDisplay — time-of-day & task display modes (route through bd-apply.sh
@@ -474,7 +473,13 @@ esac
 # Personal tool aliases — guarded so this file works for other developers
 # who clone the repo but don't have these tools installed.
 [[ -f "$HOME/Durante/npm-package/bin/dos.js" ]] && alias durante="node $HOME/Durante/npm-package/bin/dos.js"
-[[ -f "$HOME/.claude/DOS/Tools/dos.ts" ]] && alias dos="bun $HOME/.claude/DOS/Tools/dos.ts"
+# dosa moved here from the Claude alias block 2026-08-25: it called `dos`
+# unguarded, so once ~/.claude/DOS was removed it was a broken alias shipping
+# in a public repo. Both now live or vanish together.
+if [[ -f "$HOME/.claude/DOS/Tools/dos.ts" ]]; then
+  alias dos="bun $HOME/.claude/DOS/Tools/dos.ts"
+  alias dosa="bun $HOME/.claude/DOS/Tools/dos.ts -l -m full --dangerously-skip-permissions"
+fi
 
 ## [Completion]
 ## Completion scripts setup. Remove the following line to uninstall
