@@ -30,6 +30,12 @@ APPLY="$DOTFILES_DIR/scripts/scripts/bd-apply.sh"
 WAKE="$DOTFILES_DIR/scripts/scripts/bd-wake.sh"
 BUCKET_FILE="/tmp/bd-lmu-bucket"
 LOG_FILE="/tmp/bd-lmu-watch.log"
+# Sensor-alert marker. This file IS the alert state: this script owns
+# create/remove, sketchybar's plugins/bd_mode.sh owns rendering. Passing the
+# alert as a direct `--set label.color=...` instead is what left the item
+# stuck red after the 2026-08-25 outage, because only one of the two paths
+# that re-render bd_mode knew the color had been changed.
+ALERT_FILE="/tmp/bd-lmu-sensor-alert"
 
 # launchd gives these agents PATH=/usr/bin:/bin:/usr/sbin:/sbin, and sketchybar
 # lives in /opt/homebrew/bin — so a bare `command -v sketchybar` failed and every
@@ -136,6 +142,12 @@ last_bucket=-1
 # missing a stale state from before the script started is the deliberate cost.
 last_port_awake=1
 
+# A killed watcher leaves its marker behind; nothing else removes it. Clear
+# it at startup and re-render, then let the normal threshold re-raise the
+# alert within ~5min if the sensor really is still gone.
+rm -f "$ALERT_FILE"
+[[ -x "$SB" ]] && "$SB" --trigger bd_mode_changed 2>/dev/null || true
+
 log "bd-lmu-watch started, poll=${POLL_S}s, last_bucket=$last_bucket"
 sensor_missing_warned=0
 sensor_missing_count=0
@@ -171,8 +183,9 @@ while true; do
         # The dead sensor went unnoticed from 2026-06-19 because the failure was
         # log-only. Surface it on the bd_mode sketchybar item after ~5min so it
         # can't silently rot again. Fires once at the threshold, not every poll.
-        if (( sensor_missing_count == SENSOR_ALERT_AFTER )) && [[ -x "$SB" ]]; then
-            "$SB" --set bd_mode label="ambient sensor down" label.color=0xfff38ba8 2>/dev/null || true
+        if (( sensor_missing_count == SENSOR_ALERT_AFTER )); then
+            : > "$ALERT_FILE"
+            [[ -x "$SB" ]] && "$SB" --trigger bd_mode_changed 2>/dev/null || true
         fi
         printf 'unavailable|-1|%s\n' "$(date -u +%FT%TZ)" > "$BUCKET_FILE"
         sleep "$POLL_S"
@@ -181,7 +194,9 @@ while true; do
     if (( sensor_missing_warned == 1 )); then
         log "ambient sensor came back: lux=$lux"
         sensor_missing_warned=0
-        # Clear the alert — re-render bd_mode from the live state file.
+        # Drop the marker first, then re-render: the plugin reads the marker
+        # and would otherwise redraw the alert it was told to clear.
+        rm -f "$ALERT_FILE"
         [[ -x "$SB" ]] && "$SB" --trigger bd_mode_changed 2>/dev/null || true
     fi
     sensor_missing_count=0
