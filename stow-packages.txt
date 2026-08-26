@@ -13,16 +13,19 @@
 #   raycast/       — script-commands symlinked by setup.sh link_raycast_commands
 #   macos/         — defaults scripts, executed not stowed
 #   site/          — Astro docs site, not deployed to $HOME
-#   ubersicht/     — RETIRED 2026-08-26, no longer used. The 11 widgets stay in
-#                    the repo (git history keeps them either way); they are just
-#                    not deployed. Deployment was also the reason the batch
-#                    `stow -R` aborted: the live target was a hand-made ABSOLUTE
-#                    symlink into the repo, which stow refuses to adopt, and one
-#                    unowned target aborts ALL packages, not just its own. The
-#                    com.lucas.ubersicht agent (auto-opened the app at login) was
-#                    unloaded and its rendered plist removed in the same pass.
-#                    To bring it back: re-add `ubersicht` below, `stow -t ~
-#                    ubersicht`, and re-run setup.sh --configure for the agent.
+#   ubersicht/     — the APP is still in use (and still installed by install.sh,
+#                    still started at login by com.lucas.ubersicht). Only these
+#                    CUSTOM WIDGETS were retired, 2026-08-26: Lucas does not run
+#                    them, so ~/Library/Application Support/Übersicht/widgets is
+#                    now a plain empty directory the app owns. The 11 widgets stay
+#                    in the repo for reference.
+#                    Un-stowing them also cleared a batch-restow blocker: the live
+#                    target was a hand-made ABSOLUTE symlink (setup.sh rewrites
+#                    stow's relative one, which Übersicht's server.js cannot
+#                    follow), stow refuses to adopt an unowned target, and one
+#                    such target aborts ALL packages rather than just its own.
+#                    To redeploy: re-add `ubersicht` below, `stow -t ~ ubersicht`,
+#                    then re-run setup.sh --configure to re-absolutise the link.
 #
 # Entries inside a package that must not be stowed (aerospace/templates,
 # wallpapers shaders, zsh docs) are excluded by that package's own

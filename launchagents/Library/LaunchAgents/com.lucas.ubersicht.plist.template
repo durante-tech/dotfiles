@@ -4,10 +4,13 @@
   __USER__ is substituted with the current $USER at install time.
   The rendered file lands at ~/Library/LaunchAgents/<filename>.plist.
 
-  Starts Übersicht at login so the desktop widgets (clock, calendar,
-  aphorism, mempalace, dailybrief, etc.) survive reboots without manual
-  app launch. Widgets are sourced from ~/Library/Application Support/Übersicht/widgets
-  which is a symlink into ~/dotfiles/ubersicht/widgets.
+  Starts Übersicht at login so the desktop survives reboots without a
+  manual app launch. Widgets are read from
+  ~/Library/Application Support/Übersicht/widgets.
+  That path used to be a symlink into ~/dotfiles/ubersicht/..., but the repo's
+  custom widgets were retired 2026-08-26 and un-stowed; it is now a plain
+  directory the app owns. This agent is unaffected either way — it launches
+  the app, it does not care what is in the widgets folder.
 -->
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">

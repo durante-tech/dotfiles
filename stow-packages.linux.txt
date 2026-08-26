@@ -16,7 +16,8 @@
 #                config language is unrelated — a rewrite, not a port.
 #   sketchybar   macOS-only status bar (waybar/polybar on Linux).
 #   karabiner    macOS-only key remapper (keyd/xremap on Linux).
-#   ubersicht    RETIRED 2026-08-26 — no longer stowed on ANY platform. See the
+#   ubersicht    custom widgets retired 2026-08-26 — no longer stowed on ANY
+#                platform. The macOS app itself is still in use. See the
 #                exclusions block in stow-packages.txt.
 #   linearmouse  macOS-only pointer tuning (libinput on Linux).
 #   espanso      builds on Linux, but this package's paths are the macOS

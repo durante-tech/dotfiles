@@ -147,7 +147,7 @@ nvim/
 | **Espanso** | `espanso/Library/Application Support/espanso/` | Text expander snippets |
 | **LaunchAgents** | `launchagents/Library/LaunchAgents/*.plist.template` | launchd jobs (`__USER__` templates rendered by `setup.sh --configure`) |
 | **Raycast** | `raycast/script-commands/` | Script commands that exec-delegate to `scripts/scripts/` |
-| **Übersicht** | `ubersicht/Library/Application Support/Übersicht/widgets/` | Desktop widgets — RETIRED 2026-08-26, kept in the repo but no longer stowed or deployed |
+| **Übersicht** | `ubersicht/Library/Application Support/Übersicht/widgets/` | Desktop widgets. The app is still in use and still auto-starts via `com.lucas.ubersicht`; these custom widgets were retired 2026-08-26 and are kept in the repo but no longer stowed |
 | **Fastfetch / mpd / rmpc / atuin / mise / linearmouse** | `<pkg>/.config/<pkg>/` | Smaller stowed configs |
 | **macOS** | `macos/` | System defaults scripts |
 | **Wallpapers** | `wallpapers/` | Rotation assets + Plash shaders |
@@ -1041,7 +1041,7 @@ Hot-reloads on config change. Receives `aerospace_workspace_change` events;
 | `render-aerospace.sh` | Render `aerospace.toml` from the template. `--doctor` checks monitor patterns, AeroSpace version, persistent-workspaces drift, window-detection health, stale render |
 | `aerospace-resweep.sh` | Re-apply `on-window-detected` routing to windows already open (startup reconciliation) |
 | `kitty-font-per-workspace.sh` | Resize kitty font live based on focused AeroSpace workspace |
-| `ubersicht-screen-sync.sh` | Keep the Übersicht dashboard pinned to the external display. Still called best-effort by `display-restore.sh`; a harmless no-op since Übersicht was retired 2026-08-26 |
+| `ubersicht-screen-sync.sh` | Keep the Übersicht dashboard pinned to the external display. Still called best-effort by `display-restore.sh`; a no-op while no custom widgets are deployed (retired 2026-08-26) |
 | `wallpaper-cycle.sh` | Random wallpaper from `~/Pictures/Wallpapers` |
 | `wallpaper-rotate.sh` | Durante-themed wallpaper per monitor |
 | `wallpaper-workspace.sh` | Wallpaper follows the AeroSpace workspace name |
