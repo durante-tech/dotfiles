@@ -996,9 +996,9 @@ sketchybar has exactly three positions: `left`, `center`, `right`. There is no
 "left-middle" — an item added there is rejected and never appears, with the
 failure buried in `/opt/homebrew/var/log/sketchybar/sketchybar.err.log`.
 
-**Left** (left→right): workspace indicators (AeroSpace, derived live by `items/space.sh`), aerospace mode, front app, Docker, MacUpdater, ClearVPN, voice server, calendar
+**Left** (left→right): workspace indicators (AeroSpace, derived live by `items/space.sh`), aerospace mode, front app, Docker, MacUpdater, ClearVPN, calendar
 **Center**: `workspace_visibility` — an invisible dispatcher (`drawing=off`), not a status item
-**Right**: battery, clock, bd_mode, weather, CPU, memory, network, GitHub notifications, microphone, volume, OBS, Spotify — source order in `sketchybarrc` is right→left visually, so battery sits rightmost
+**Right**: battery, clock, bd_mode, weather, CPU, memory, network, GitHub notifications, microphone, volume, Spotify — source order in `sketchybarrc` is right→left visually, so battery sits rightmost
 
 Hot-reloads on config change. Receives `aerospace_workspace_change` events;
 `plugins/workspace_visibility.sh` holds the per-workspace show/hide table.
