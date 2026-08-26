@@ -112,10 +112,14 @@ DEV_PRESET='Apple XDR Display (P3-1600 nits)'
 # Pipe-delimited string table (NOT an associative array): launchd runs these via
 # macOS stock /bin/bash 3.2, which has no `declare -A`. Add a mode = add a row.
 # Row: mode|dev_sw%|port_brightness%|port_contrast%|port_temp%|glyph|label
-MODES_TABLE='dawn|100|55|70|-2|󰖚|Dawn
+# Glyph column: one per mode, no repeats. Evening and Night both carried
+# nf-md-weather_night (U+F0594) until 2026-08-26, which made the two modes
+# indistinguishable in the sketchybar item and in `bd-apply.sh status`.
+# The ladder now reads sunrise -> sun -> partly-cloudy -> sunset -> moon.
+MODES_TABLE='dawn|100|55|70|-2|󰖜|Dawn
 day|105|100|70|-1|󰖙|Day
 afternoon|100|85|75|-1|󰖕|Afternoon
-evening|80|55|70|-5|󰖔|Evening
+evening|80|55|70|-5|󰖛|Evening
 night|60|35|60|-10|󰖔|Night
 meeting|130|100|75|0|󰍫|Meeting
 read|100|85|70|-3|󰂺|Read
