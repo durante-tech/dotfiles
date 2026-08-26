@@ -48,7 +48,7 @@ stow -D -t ~ zsh
 
 Deliberately a **separate script**, not platform branches inside `install.sh` — an
 unexercised branch is the shape that rots. It deploys the 9 portable packages in
-`stow-packages.linux.txt`; that file documents why each of the other 12 is excluded
+`stow-packages.linux.txt`; that file documents why each of the other 11 is excluded
 (AeroSpace, sketchybar, Karabiner, Übersicht, LinearMouse have no Linux build at all).
 
 **apt cannot supply this stack**, verified against Debian 12:
@@ -147,7 +147,7 @@ nvim/
 | **Espanso** | `espanso/Library/Application Support/espanso/` | Text expander snippets |
 | **LaunchAgents** | `launchagents/Library/LaunchAgents/*.plist.template` | launchd jobs (`__USER__` templates rendered by `setup.sh --configure`) |
 | **Raycast** | `raycast/script-commands/` | Script commands that exec-delegate to `scripts/scripts/` |
-| **Übersicht** | `ubersicht/Library/Application Support/Übersicht/widgets/` | Desktop widgets |
+| **Übersicht** | `ubersicht/Library/Application Support/Übersicht/widgets/` | Desktop widgets — RETIRED 2026-08-26, kept in the repo but no longer stowed or deployed |
 | **Fastfetch / mpd / rmpc / atuin / mise / linearmouse** | `<pkg>/.config/<pkg>/` | Smaller stowed configs |
 | **macOS** | `macos/` | System defaults scripts |
 | **Wallpapers** | `wallpapers/` | Rotation assets + Plash shaders |
@@ -1041,7 +1041,7 @@ Hot-reloads on config change. Receives `aerospace_workspace_change` events;
 | `render-aerospace.sh` | Render `aerospace.toml` from the template. `--doctor` checks monitor patterns, AeroSpace version, persistent-workspaces drift, window-detection health, stale render |
 | `aerospace-resweep.sh` | Re-apply `on-window-detected` routing to windows already open (startup reconciliation) |
 | `kitty-font-per-workspace.sh` | Resize kitty font live based on focused AeroSpace workspace |
-| `ubersicht-screen-sync.sh` | Keep the Übersicht dashboard pinned to the external display |
+| `ubersicht-screen-sync.sh` | Keep the Übersicht dashboard pinned to the external display. Still called best-effort by `display-restore.sh`; a harmless no-op since Übersicht was retired 2026-08-26 |
 | `wallpaper-cycle.sh` | Random wallpaper from `~/Pictures/Wallpapers` |
 | `wallpaper-rotate.sh` | Durante-themed wallpaper per monitor |
 | `wallpaper-workspace.sh` | Wallpaper follows the AeroSpace workspace name |
@@ -1277,7 +1277,7 @@ chmod +x ~/scripts/*
 ## Sentinel Conventions
 <!-- Auto-generated body lives in docs/Sentinel/SNAPSHOT.md. Next sentinel scan writes there, not back into this section. -->
 
-- **Stack:** macOS-only dotfiles deployed via GNU Stow across 21 packages; polyglot — Zsh/Bash (config + automation), Lua (Neovim/lazy.nvim), TOML (AeroSpace/Starship), plus Bun-run TypeScript scripts and an Astro/React docs site under `site/`.
+- **Stack:** macOS-only dotfiles deployed via GNU Stow across 20 packages; polyglot — Zsh/Bash (config + automation), Lua (Neovim/lazy.nvim), TOML (AeroSpace/Starship), plus Bun-run TypeScript scripts and an Astro/React docs site under `site/`.
 - **Test:** `# no automated suite — verify manually` (see `VERIFY.md`). **Lint:** `# CI: .github/workflows/lint.yml` — 4 jobs: ShellCheck (gates at **`severity: warning`**), Lua (advisory, `|| true`), TOML, stow dry run (reads `stow-packages.txt`).
 - **Health:** 100% (21 healthy / 21 conventions, 3 debt indicators) — last **static** scan 2026-06-24. That score is convention-matching only and does not read CI, so treat it as a style measure, not a health measure; the live signal is `gh run list`. CI history: the gate was red on every run from 2026-05-27, was repaired on 2026-07-29, and has been **green for 20 consecutive runs since** (last failure 2026-07-29T15:50:55Z, latest run 2026-08-11). Current debt: `docs/Sentinel/TECH-DEBT.md`.
 - **Enforced patterns:** kebab-case script names; `snake_case()` shell functions; `DOTFILES_`-prefixed override vars; `set -e`/`set -u` after shebang; `#!/usr/bin/env bash` (`#!/bin/bash` for launchd/bash-3.2 scripts); `#!/usr/bin/env bun` for TS scripts; `command -v <tool> && eval` guards in `.zshrc`; one-file-per-plugin `return { ... }` Neovim specs; `personal.env` existence-guarded sourcing; LaunchAgents as `.plist.template` (`__USER__` + `__DOTFILES_DIR__` placeholders, rendered by setup.sh; repo-owned `com.lucas.*` supersedes brew-services); Raycast script-commands `exec`-delegate to canonical scripts; compiled native helpers (Swift, e.g. `unlock-watch.swift`) built to `~/.local/bin` by setup.sh `build_native_helpers()` (`swiftc`-guarded) for triggers launchd can't express (distributed notifications).

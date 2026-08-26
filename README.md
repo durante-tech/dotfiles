@@ -51,7 +51,7 @@ keywords: [dotfiles, install dotfiles, set up new mac, clone dotfiles, install l
 "Set up a fresh Mac with these dotfiles"   → Read INSTALL.md → choose Fresh install
 ```
 
-The full 12-step install runs `install.sh` which internally drives: Xcode CLT → Homebrew → 77 formulae → 19 casks → Bun + ccusage + Fabric → stow 21 packages → `mise install` → `setup.sh --configure` (renders 11 LaunchAgent templates with `__USER__` substitution; Raycast script-commands are linked only when `~/Durante` or `DOTFILES_RAYCAST_DIR` exists, and skipped with a notice otherwise) → Espanso service register → TPM tmux plugins → Neovim Lazy sync → `./macos/.macos` (44 defaults entries) → verification.
+The full 12-step install runs `install.sh` which internally drives: Xcode CLT → Homebrew → 77 formulae → 19 casks → Bun + ccusage + Fabric → stow 20 packages → `mise install` → `setup.sh --configure` (renders 11 LaunchAgent templates with `__USER__` substitution; Raycast script-commands are linked only when `~/Durante` or `DOTFILES_RAYCAST_DIR` exists, and skipped with a notice otherwise) → Espanso service register → TPM tmux plugins → Neovim Lazy sync → `./macos/.macos` (44 defaults entries) → verification.
 
 > **For human readers:** the rest of this README is the standard overview. AI agents can skip to `INSTALL.md`.
 
@@ -182,7 +182,7 @@ cd ~/dotfiles
 
 A **separate script** on purpose — a platform branch nobody runs is the shape that
 rots. It deploys the 9 portable packages listed in `stow-packages.linux.txt`; the
-other 12 are macOS-only (AeroSpace, sketchybar, Karabiner, Übersicht, LinearMouse have
+other 11 are macOS-only (AeroSpace, sketchybar, Karabiner, LinearMouse have
 no Linux build) and that file records why for each.
 
 apt cannot supply this stack — Debian 12 ships neovim **0.7.2** where this config needs

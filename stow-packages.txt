@@ -13,6 +13,16 @@
 #   raycast/       — script-commands symlinked by setup.sh link_raycast_commands
 #   macos/         — defaults scripts, executed not stowed
 #   site/          — Astro docs site, not deployed to $HOME
+#   ubersicht/     — RETIRED 2026-08-26, no longer used. The 11 widgets stay in
+#                    the repo (git history keeps them either way); they are just
+#                    not deployed. Deployment was also the reason the batch
+#                    `stow -R` aborted: the live target was a hand-made ABSOLUTE
+#                    symlink into the repo, which stow refuses to adopt, and one
+#                    unowned target aborts ALL packages, not just its own. The
+#                    com.lucas.ubersicht agent (auto-opened the app at login) was
+#                    unloaded and its rendered plist removed in the same pass.
+#                    To bring it back: re-add `ubersicht` below, `stow -t ~
+#                    ubersicht`, and re-run setup.sh --configure for the agent.
 #
 # Entries inside a package that must not be stowed (aerospace/templates,
 # wallpapers shaders, zsh docs) are excluded by that package's own
@@ -34,7 +44,6 @@ scripts
 sketchybar
 starship
 tmux
-ubersicht
 w3m
 wallpapers
 yazi
