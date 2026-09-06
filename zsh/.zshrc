@@ -511,3 +511,10 @@ fi
 # $HOME-relative for every login shell. The installer's copy that lived here
 # hardcoded an absolute home path, so it double-sourced for the maintainer and matched
 # nothing on any other machine, while .zshrc:372 already claimed it was gone.
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/lgertel/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/lgertel/Downloads/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/lgertel/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/lgertel/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
+export GOOGLE_WORKSPACE_CLI_KEYRING_BACKEND=file
