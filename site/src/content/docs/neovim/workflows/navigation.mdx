@@ -6,9 +6,11 @@ description: "Move through your code with speed and precision."
 import CompleteLessonButton from '../../../../components/CompleteLessonButton.tsx';
 import LevelGateBanner from '../../../../components/LevelGateBanner.tsx';
 import KeybindingTrainer from '../../../../components/KeybindingTrainer.tsx';
-import neovimNavigation from '../../../../data/keybindings/neovim-navigation.json';
+import drills from '../../../../data/keybindings/neovim-navigation.json';
 
 <LevelGateBanner level={2} client:load />
+
+{/* reference:start */}
 
 Move through your code with speed and precision.
 
@@ -424,10 +426,12 @@ Set in config, but you can override:
 
 **Next:** [File Management Workflows](/neovim/workflows/file-management/)
 
+{/* reference:end */}
+
 ---
 
 ## Practice
 
-<KeybindingTrainer client:idle drillSet={neovimNavigation} maxQuestions={5} />
+<KeybindingTrainer client:idle drillSet={drills} maxQuestions={5} />
 
 <CompleteLessonButton client:idle lessonId="2.1" slug="neovim/workflows/navigation" nextLessonSlug="neovim/workflows/file-management" nextLessonTitle="File Management" />

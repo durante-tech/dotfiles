@@ -6,9 +6,11 @@ description: "Master intelligent code features powered by Language Server Protoc
 import CompleteLessonButton from '../../../../components/CompleteLessonButton.tsx';
 import LevelGateBanner from '../../../../components/LevelGateBanner.tsx';
 import KeybindingTrainer from '../../../../components/KeybindingTrainer.tsx';
-import neovimNavigation from '../../../../data/keybindings/neovim-navigation.json';
+import drills from '../../../../data/keybindings/neovim-navigation.json';
 
 <LevelGateBanner level={4} client:load />
+
+{/* reference:start */}
 
 Master intelligent code features powered by Language Server Protocol.
 
@@ -45,7 +47,7 @@ This config uses `vim.lsp.config` with these servers:
 i                   " Install selected
 ```
 
-Or see [lspconfig.lua](../../nvim/.config/nvim/lua/sethy/plugins/lsp/lspconfig.lua) for manual configuration.
+Or see [lspconfig.lua](https://github.com/durante-tech/dotfiles/blob/main/nvim/.config/nvim/lua/sethy/plugins/lsp/lspconfig.lua) for manual configuration.
 
 ## Core LSP Features
 
@@ -562,10 +564,12 @@ vim.lsp.config.ts_ls = {
 
 **Next:** [Search & Replace Workflows](/neovim/workflows/search-replace/)
 
+{/* reference:end */}
+
 ---
 
 ## Practice
 
-<KeybindingTrainer client:idle drillSet={neovimNavigation} maxQuestions={5} />
+<KeybindingTrainer client:idle drillSet={drills} maxQuestions={5} />
 
 <CompleteLessonButton client:idle lessonId="4.1" slug="neovim/workflows/lsp" nextLessonSlug="neovim/keybindings" nextLessonTitle="Keybinding Reference" />

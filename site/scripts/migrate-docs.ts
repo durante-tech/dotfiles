@@ -8,39 +8,15 @@
  * - Moves legacy terminals to legacy/ directory
  */
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, mkdtempSync, rmSync } from 'fs';
+import { tmpdir } from 'os';
+import { embedLessons } from './embed-lesson-components';
 import { join, dirname, relative, basename, extname } from 'path';
 
 const DOCS_DIR = join(import.meta.dir, '../../docs');
-const OUTPUT_DIR = join(import.meta.dir, '../src/content/docs');
-
-// Files that go to legacy/ directory
-const LEGACY_FILES: Record<string, string> = {
-	'alacritty/README.md': 'legacy/alacritty',
-	'kitty/README.md': 'legacy/kitty',
-	'wezterm/README.md': 'legacy/wezterm',
-	'zed/README.md': 'legacy/zed',
-};
-
-// Files that map to root-level slugs (README.md files become index)
-const README_MAPPINGS: Record<string, string> = {
-	'README.md': 'docs-index',
-	'course/README.md': 'course',
-	'neovim/README.md': 'neovim',
-	'tmux/README.md': 'tmux',
-	'zsh/README.md': 'zsh',
-	'ghostty/README.md': 'ghostty',
-	'aerospace/README.md': 'aerospace',
-	'karabiner/README.md': 'karabiner',
-	'sketchybar/README.md': 'sketchybar',
-	'starship/README.md': 'starship',
-	'yazi/README.md': 'yazi',
-	'atuin/README.md': 'atuin',
-	'w3m/README.md': 'w3m',
-	'mpd/README.md': 'mpd',
-	'rmpc/README.md': 'rmpc',
-	'scripts/README.md': 'scripts',
-};
+const TRACKED_DIR = join(import.meta.dir, '../src/content/docs');
+const checking = process.argv.includes('--check');
+const OUTPUT_DIR = checking ? mkdtempSync(join(tmpdir(), 'dotfiles-reference-')) : TRACKED_DIR;
 
 // Disambiguation: when a bare filename matches multiple sources,
 // prefer the neovim version (these come from getting-started pages that reference neovim docs)
@@ -55,40 +31,8 @@ interface FileMapping {
 	outputSlug: string; // relative to content/docs/
 }
 
-function getAllMdFiles(dir: string, base: string = ''): string[] {
-	const files: string[] = [];
-	for (const entry of readdirSync(dir)) {
-		const fullPath = join(dir, entry);
-		const relPath = base ? `${base}/${entry}` : entry;
-		if (statSync(fullPath).isDirectory()) {
-			files.push(...getAllMdFiles(fullPath, relPath));
-		} else if (entry.endsWith('.md')) {
-			files.push(relPath);
-		}
-	}
-	return files;
-}
-
 function buildFileMappings(): FileMapping[] {
-	const allFiles = getAllMdFiles(DOCS_DIR);
-	const mappings: FileMapping[] = [];
-
-	for (const file of allFiles) {
-		let outputSlug: string;
-
-		if (LEGACY_FILES[file]) {
-			outputSlug = LEGACY_FILES[file];
-		} else if (README_MAPPINGS[file]) {
-			outputSlug = README_MAPPINGS[file];
-		} else {
-			// Regular files: remove .md extension
-			outputSlug = file.replace(/\.md$/, '');
-		}
-
-		mappings.push({ sourcePath: file, outputSlug });
-	}
-
-	return mappings;
+  return JSON.parse(readFileSync(join(import.meta.dir, 'reference-pages.json'), 'utf-8'));
 }
 
 function extractTitle(content: string): string {
@@ -335,7 +279,9 @@ function migrate() {
 			'',
 		].join('\n');
 
-		const outputContent = frontmatter + content;
+		const existingPath = join(TRACKED_DIR, mapping.outputSlug + '.mdx');
+		const metadata = existsSync(existingPath) ? readFileSync(existingPath, 'utf8').match(/^---\n[\s\S]*?\n---/)?.[0] : null;
+		const outputContent = (metadata ?? frontmatter.trimEnd()) + '\n\n{/* reference:start */}\n\n' + content.trim() + '\n\n{/* reference:end */}\n';
 		const outputPath = join(OUTPUT_DIR, mapping.outputSlug + '.mdx');
 
 		// Ensure directory exists
@@ -346,59 +292,17 @@ function migrate() {
 		migrated++;
 	}
 
-	// Create index page
-	const indexContent = `---
-title: "Dotfiles Mastery Course"
-description: "A structured learning path from fresh macOS to keyboard-driven productivity. 8 levels, 39 lessons."
-template: splash
-hero:
-  tagline: "From fresh macOS to keyboard-driven productivity in 7 weeks."
-  actions:
-    - text: Start the Course
-      link: /course/
-      icon: right-arrow
-      variant: primary
-    - text: Browse Documentation
-      link: /docs-index/
-      variant: minimal
----
-
-import { Card, CardGrid } from '@astrojs/starlight/components';
-
-## What You'll Learn
-
-<CardGrid>
-  <Card title="Level 0-1: Foundation" icon="rocket">
-    Install everything, learn to open, edit, save, and quit files. Survive your first week.
-  </Card>
-  <Card title="Level 2-3: Navigation & Editing" icon="magnifier">
-    Move fast with motions, text objects, and search. Edit surgically with operators.
-  </Card>
-  <Card title="Level 4-5: Intelligence & Windows" icon="puzzle">
-    LSP code navigation, workspace management, and full keyboard-driven window control.
-  </Card>
-  <Card title="Level 6-7: Power & Mastery" icon="star">
-    Master every tool in the system. Build custom workflows. Achieve keyboard fluency.
-  </Card>
-</CardGrid>
-
-## The Stack
-
-| Tool | Purpose | Theme |
-|------|---------|-------|
-| **Neovim** | Modal code editor | Rose-pine |
-| **Tmux** | Terminal multiplexer | Catppuccin Mocha |
-| **Zsh** | Shell + 100 aliases | Catppuccin Mocha |
-| **AeroSpace** | Window manager | - |
-| **Ghostty** | GPU terminal | Rose-pine |
-| **Yazi** | File manager | Catppuccin |
-
-> **Philosophy:** The keyboard is faster than the mouse. Every tool, every keybinding, every choice serves that goal.
-`;
-
-	writeFileSync(join(OUTPUT_DIR, 'index.mdx'), indexContent, 'utf-8');
-
-	console.log(`\nMigration complete: ${migrated} files migrated, ${errors} errors.`);
+	embedLessons(OUTPUT_DIR);
+  if (checking) {
+    for (const mapping of mappings) {
+      const name = mapping.outputSlug + '.mdx';
+      if (!existsSync(join(TRACKED_DIR, name)) || readFileSync(join(OUTPUT_DIR, name), 'utf8') !== readFileSync(join(TRACKED_DIR, name), 'utf8')) {
+        console.error('Reference drift: ' + name); errors++;
+      }
+    }
+  }
+  if (errors) process.exitCode = 1;
+  console.log(`References: ${migrated}; errors: ${errors}; check: ${checking}`);
 }
 
-migrate();
+try { migrate(); } finally { if (checking) rmSync(OUTPUT_DIR, {recursive: true, force: true}); }

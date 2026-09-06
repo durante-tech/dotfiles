@@ -8,6 +8,8 @@ import LevelGateBanner from '../../../components/LevelGateBanner.tsx';
 
 <LevelGateBanner level={5} client:load />
 
+{/* reference:start */}
+
 Quick reference for your daily development workflow with all the tools configured.
 
 ## Morning Startup
@@ -165,40 +167,32 @@ When working across multiple project folders:
 
 ---
 
-## PAI Integration (claudecode.nvim)
+## Claude Code Integration (claudecode.nvim)
 
-PAI (Personal AI Infrastructure) integrates with Neovim via claudecode.nvim.
+Claude Code integrates with Neovim via claudecode.nvim.
 
-### Launch PAI
+### Launch
 | Action | Keys | Command |
 |--------|------|---------|
-| Toggle PAI | `<leader>ac` | `pai` |
-| Focus PAI | `<leader>af` | Focus terminal |
-| Local dir | `<leader>al` | `pai -l` |
-| Full MCPs | `<leader>am` | `pai -l -m full` |
-| Dev-work | `<leader>aw` | `pai -l -m dev-work` |
-| Resume | `<leader>ar` | `pai --resume` |
-| Full + Resume | `<leader>aM` | `pai -l -m full --resume` |
-| Dev-work + Resume | `<leader>aW` | `pai -l -m dev-work --resume` |
+| Toggle | `<leader>ac` | `claude` |
+| Focus | `<leader>af` | Focus terminal |
+| Resume | `<leader>ar` | `claude --resume` |
 
 ### Selection & Diffs
 | Action | Keys | Mode |
 |--------|------|------|
-| Send to PAI | `<leader>as` | Visual |
+| Send to Claude Code | `<leader>as` | Visual |
 | Accept diff | `<leader>aa` | Normal |
 | Reject diff | `<leader>ad` | Normal |
 
 ### Command Line Options
 ```vim
-:ClaudeCode                    " Basic PAI
-:ClaudeCode -l                 " Stay in current directory
-:ClaudeCode -m full            " Load full MCP servers
+:ClaudeCode                    " Open Claude Code
 :ClaudeCode --resume           " Resume last session
-:ClaudeCode -l -m dev-work     " Combine options
 ```
 
 ### Snacks Terminal Split Options
-Configure the PAI terminal position in `claudecode.lua`:
+Configure the terminal position in `claudecode.lua`:
 
 ```lua
 snacks_win_opts = {
@@ -216,38 +210,40 @@ snacks_win_opts = {
 | `"top"` | Horizontal | `height = 0.30` |
 
 ### Configuration Note
-The plugin uses **full paths** instead of aliases because Neovim's terminal doesn't load `.zshrc`:
+The plugin uses a **full path** instead of an alias, because Neovim's terminal
+does not load `.zshrc` and `~/.local/bin` is not on its `PATH`:
 
 ```lua
 -- In claudecode.lua (uses vim.fn.expand for portability)
-terminal_cmd = vim.fn.expand("~") .. "/.bun/bin/bun " .. vim.fn.expand("~") .. "/.claude/skills/CORE/Tools/pai.ts"
+terminal_cmd = vim.fn.expand("~") .. "/.local/bin/claude"
 ```
 
-If you get "exit code 127" (command not found), ensure bun and PAI are installed in your home directory.
+If you get "exit code 127" (command not found), check that `~/.local/bin/claude`
+exists and is executable.
 
-### Content Features (PAI ↔ Neovim)
+### Content Features (Claude Code ↔ Neovim)
 
-claudecode.nvim creates a **two-way bridge** between PAI and Neovim via WebSocket/MCP protocol.
+claudecode.nvim creates a **two-way bridge** between Claude Code and Neovim via WebSocket/MCP protocol.
 
-#### Send Selection to PAI
-Select code in visual mode and send it to PAI for discussion:
+#### Send Selection to Claude Code
+Select code in visual mode and send it to Claude Code for discussion:
 ```
 1. Visual select code (v, V, or Ctrl+v)
 2. Press <leader>as
-3. Selection is sent to PAI with file context
-4. PAI can analyze, explain, or suggest changes
+3. Selection is sent to Claude Code with file context
+4. Claude Code can analyze, explain, or suggest changes
 ```
 
-#### PAI Opens Files in Neovim
-When PAI references a file, it can open it directly in your editor:
-- PAI says "let me show you line 42 of config.lua"
+#### Claude Code Opens Files in Neovim
+When Claude Code references a file, it can open it directly in your editor:
+- Claude Code says "let me show you line 42 of config.lua"
 - File opens in Neovim at that line
 - No manual navigation needed
 
-#### PAI Proposes Diffs
-When PAI suggests code changes, they appear as a diff view:
+#### Claude Code Proposes Diffs
+When Claude Code suggests code changes, they appear as a diff view:
 ```
-1. PAI proposes changes → diff view opens
+1. Claude Code proposes changes → diff view opens
 2. Review the diff (side-by-side comparison)
 3. <leader>aa → Accept changes
 4. <leader>ad → Reject changes
@@ -255,7 +251,7 @@ When PAI suggests code changes, they appear as a diff view:
 ```
 
 #### Selection Tracking
-PAI always knows what you're looking at:
+Claude Code always knows what you're looking at:
 - Current file path
 - Cursor position
 - Visual selection (if any)
@@ -264,13 +260,13 @@ PAI always knows what you're looking at:
 This enables context-aware responses like "in the function you're viewing..." or "for the selected code...".
 
 #### File Tree Integration
-PAI can see your project structure:
+Claude Code can see your project structure:
 - All open files
 - Project file tree
 - Navigate between files programmatically
 
 #### Diagnostics Access
-PAI can read LSP diagnostics:
+Claude Code can read LSP diagnostics:
 - Errors and warnings in current file
 - Across all open buffers
 - Enables "fix this error" workflows
@@ -315,7 +311,7 @@ PAI can read LSP diagnostics:
 
 ## Tmux Integration
 
-### From Inside Tmux (prefix = `Ctrl+Space`)
+### From Inside Tmux (prefix = `Ctrl+b`)
 
 | Action                | Keys              |
 | --------------------- | ----------------- |
@@ -437,7 +433,8 @@ AeroSpace is your tiling window manager. All keybindings use **Alt (⌥)** as th
 | **T**     | `Alt+T` | `Alt+Shift+T`  | Terminal (portrait) |
 | **B**     | `Alt+B` | `Alt+Shift+B`  | Browser             |
 | **M**     | `Alt+M` | `Alt+Shift+M`  | Messaging           |
-| **F**     | `Alt+F` | `Alt+Shift+F`  | Finder (floats)     |
+| **E**     | `Alt+W` | `Alt+Shift+W` | Email |
+| **N**     | `Alt+O` | `Alt+Shift+O` | Notes |
 
 ### Layout & System
 
@@ -491,7 +488,6 @@ AeroSpace is your tiling window manager. All keybindings use **Alt (⌥)** as th
 | `B` | Workspace B (Browser)  |
 | `D` | Workspace D (Dev/IDEs) |
 | `M` | Workspace M (Messaging)|
-| `F` | Workspace F (Finder)   |
 | `1` | Workspace 1 (General)  |
 | `2` | Workspace 2 (Portrait) |
 
@@ -591,11 +587,7 @@ Think of it like a **piano chord** - hold the modifier keys, tap the action key.
 |-----|--------|
 | `s` | Search files |
 | `f` | Search folders |
-
-**`Hyper+M` → File Manager:**
-| Key | Action |
-|-----|--------|
-| `f` | Open file manager |
+| `m` | Open file manager |
 
 ---
 
@@ -735,5 +727,7 @@ lg                             # Lazygit alias
 - `Hyper+1/2` → Workspace 1/2
 
 ---
+
+{/* reference:end */}
 
 <CompleteLessonButton client:idle lessonId="5.6" slug="getting-started/daily-workflow" nextLessonSlug="yazi" nextLessonTitle="Yazi File Manager" />

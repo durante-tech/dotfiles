@@ -1,140 +1,59 @@
 # Upgrading an existing clone
 
-You already have `~/dotfiles` cloned and stowed. This walks the post-pull steps
-so a `git pull` actually takes effect across all the tools that don't auto-reload.
-
-## The one-shot upgrade
-
-Two paths — pick the one that matches how you work. Both end up at the same place.
-
-### Path A — Just pull (recommended)
+Fetch and apply are separate operations. Preserve uncommitted work before
+integrating new commits. Use a fast-forward pull or the existing launcher:
 
 ```bash
-cd ~/dotfiles && git pull
+cd ~/dotfiles
+git pull --ff-only
+./update.sh
 ```
 
-That's it. The `post-merge` hook (activated automatically by `install.sh`)
-prints a copy-pasteable upgrade prompt to your terminal:
+`./smart-pull.sh` performs the fast-forward fetch and retains its normal Claude
+launcher behavior. `./smart-pull.sh --print-prompt` prints context without
+fetching, applying configuration, or launching an agent. An already enabled
+post-merge hook may print context; routine updates do not change hook settings.
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  DOS upgrade prompt for <commit-range>
-  Copy everything between the two ┄┄┄ lines and paste into Claude/DOS.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-┄┄┄ PROMPT START ┄┄┄
-I just ran `git pull` in `~/dotfiles`. The commit range is ...
-... (full prompt with file list + diffstat) ...
-┄┄┄ PROMPT END ┄┄┄
-```
+## Apply configuration
 
-Select the text between the `┄┄┄` lines, paste into your **already-open
-Claude / DOS session** (your choice of mode, agents, context). The prompt
-instructs Claude to read this doc, classify the changes, run `./update.sh`
-for you, surface a checklist, and ask only about decisions it can't safely
-make on its own (hardware-specific values, destructive cleanup, API keys).
-
-**Disable per-pull:** `git -c core.hooksPath=/dev/null pull`.
-**Disable permanently:** `git -C ~/dotfiles config --unset core.hooksPath`.
-**Customize the prompt:** edit [`docs/POSTPULL_PROMPT.md`](POSTPULL_PROMPT.md).
-
-### Path B — Deterministic only (no AI)
+`./update.sh` stows the manifest's packages, synchronizes Neovim and tmux plugins,
+and checks deployment. It does not install tools, register services, or change
+provider environments. Failures return nonzero; independent checks still run.
 
 ```bash
-cd ~/dotfiles && git pull && ./update.sh
+./update.sh --dry-run       # effect-free preview
+./update.sh --with-tools    # explicitly add declared tool provisioning
+./update.sh --with-tools --skip-casks
 ```
 
-Skip the AI entirely. `update.sh` does the deterministic work (brew bundle,
-stow, plugin sync). Read the rest of this doc for the manual-reload table.
-The hook still prints the prompt — just ignore it.
+`--skip-brew` excludes formula installation/upgrades throughout the run;
+`--skip-casks` excludes Homebrew casks and custom GUI installers. Both suppress
+bundle installation. Flag order does not matter. See
+[maintenance contracts](maintenance.md) for the full behavior table.
 
-### Path C — Auto-open Claude (power user)
+## Reloads
 
-```bash
-cd ~/dotfiles && ./smart-pull.sh
-```
+Updates report these commands without invoking additional restarts. Existing
+native hot reload continues where an application already supports it.
 
-Pulls AND spawns a fresh Claude Code session with the prompt pre-filled.
-Useful if you don't have a Claude session already open. Caveat: starts a
-brand-new session (no carried-over context). Most of the time Path A is
-nicer because you keep your context.
+| Tool | Manual action |
+| --- | --- |
+| Zsh | Open a new login terminal, or `exec zsh -l` when ready to replace this shell |
+| tmux | `tmux source-file ~/.config/tmux/tmux.conf` (prefix is `Ctrl+b`; then `r` also reloads) |
+| Neovim | Restart the editor after saving buffers |
+| AeroSpace | `aerospace reload-config` after rendering a changed template |
+| Sketchybar | `sketchybar --reload` |
+| Kitty | `Cmd+B`, then `r` (the configured prefix binding) |
+| LaunchAgents | Review rendered templates and run an explicit `./setup.sh --configure` only when intending service changes |
 
-## What needs manual attention after a pull
+The updater preserves existing terminal sessions. Do not kill tmux just to load
+configuration. Fresh terminal sessions will use the new canonical project naming;
+existing compatible legacy sessions remain reusable.
 
-Most tools watch their config file and reload automatically. The ones that do
-not (and why):
+## Ownership and retirement
 
-| Tool | Auto-reloads? | If you need to force it |
-|------|---------------|------------------------|
-| Karabiner-Elements | ✅ Yes (watches `~/.config/karabiner/karabiner.json`) | — |
-| Sketchybar | ✅ Yes on file change | `sketchybar --reload` |
-| Stow symlinks | ✅ Idempotent | `stow -R -t ~ <package>` after a package adds new files |
-| **Zsh** | ❌ Per-shell | `exec zsh` or open a new terminal — `~/.zshrc` is evaluated at shell start, not on file change |
-| **AeroSpace** | ❌ | `aerospace reload-config` |
-| **Neovim plugins** | ❌ (Lazy.nvim is lazy by design) | Inside nvim: `:Lazy sync` to install/update plugins; some (e.g. avante.nvim) compile native code on first sync |
-| **Tmux** | ❌ Per-session | Inside tmux: `<prefix>r` to reload config; restart tmux for plugin changes |
-| **Stream Deck profile** | ❌ | Edit the profile in the Stream Deck app. The `streamdeck-build.ts` generator was removed with the streaming rig. |
-| **launchd plists** | ❌ Per-plist | `launchctl unload ~/Library/LaunchAgents/com.lucas.X.plist; launchctl load ~/Library/LaunchAgents/com.lucas.X.plist` |
-
-## Watch-list per recent commit
-
-When you pull and the changelog mentions one of these, do the matching step:
-
-- **Brewfile changed** → already covered by `./update.sh`. Standalone: `brew bundle install --file=~/dotfiles/Brewfile`.
-- **`mise` version-manager changes** → `mise install` (per project) or `mise use -g <tool>@<version>` (global).
-- **New Neovim plugin** → `:Lazy sync` inside nvim. For plugins with a `build` step (avante.nvim's `make`), wait for the build to complete.
-- **AeroSpace binding or workspace map changed** → `aerospace reload-config`.
-- **Karabiner Hyper rule added** → no action; Karabiner Elements watches the file and reloads on save.
-- **Sketchybar plugin added or VIS map changed** → `sketchybar --reload`.
-- **`bd-apply.sh` or BetterDisplay plist changed** → `launchctl unload && launchctl load` the affected plist. The wake handler (sleepwatcher) picks up changes automatically.
-
-## Removing tools retired in recent commits
-
-`brew bundle` is **additive** — it installs what's in the Brewfile but never
-uninstalls what was removed. After a pull that drops tools, clean them up
-explicitly:
-
-### Migration 2026-05-27: mise replaces fnm + pyenv
-
-```bash
-brew uninstall fnm pyenv
-rm -rf ~/.fnm ~/.pyenv         # remove orphan data dirs (~150 MB)
-```
-
-mise already manages your node + python versions; nothing else to do.
-
-### Nuclear option (use only if you trust the Brewfile as source of truth)
-
-`brew bundle cleanup --force --file=~/dotfiles/Brewfile` will uninstall
-**anything** on your system that's not in the Brewfile. This is destructive —
-it will catch tools you installed manually outside the Brewfile (cli-foo,
-experimental kegs, etc.). Always run without `--force` first to see the diff:
-
-```bash
-brew bundle cleanup --file=~/dotfiles/Brewfile      # dry-run, prints what would go
-brew bundle cleanup --force --file=~/dotfiles/Brewfile   # actually removes
-```
-
-## API keys (only if you haven't already)
-
-Export in `~/.zshrc.local` (not tracked in git):
-
-```bash
-export ANTHROPIC_API_KEY="sk-ant-..."   # avante.nvim
-export OPENAI_API_KEY="sk-..."          # gptcommit + opencode
-```
-
-## Sanity check after upgrade
-
-```bash
-~/dotfiles/update.sh --dry-run             # see what would change
-sketchybar --query bar | head              # confirm bar is responsive
-aerospace list-workspaces --all            # confirm workspaces match aerospace.toml
-zsh -i -c 'type bd-day bd-stream'          # confirm shell aliases load
-```
-
-## When something genuinely breaks
-
-1. `git -C ~/dotfiles log --oneline -10` — what just changed
-2. `git -C ~/dotfiles diff HEAD~1 -- <suspect-file>` — what specifically
-3. `git -C ~/dotfiles checkout HEAD~1 -- <suspect-file>` then re-stow if needed — temporary rollback to the previous version
-4. Open an issue or commit a fix; never `git push --force` to main
+No automatic package uninstall or runtime-state deletion is part of an update.
+Legacy `.dos` / `.pi` links are preserved and reported when present. Helm,
+DuranteOS lifecycle work, retired widgets, optional OBS tooling, and parked
+terminal configurations require a separate ownership decision before removal or
+migration. A file's presence alone does not establish that it owns the live tool.

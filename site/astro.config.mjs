@@ -157,7 +157,6 @@ export default defineConfig({
                 items: [
                     { label: 'Alacritty', slug: 'legacy/alacritty' },
                     { label: 'Kitty', slug: 'legacy/kitty' },
-                    { label: 'WezTerm', slug: 'legacy/wezterm' },
                     { label: 'Zed', slug: 'legacy/zed' },
                 ],
             },

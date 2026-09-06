@@ -115,7 +115,7 @@ Tell the user what you found. Highlight any WARNING or ERROR lines specifically.
   "options": [
     {"label": "Fresh install (Recommended)", "description": "Full install: Xcode CLT, Homebrew, all packages, dotfiles, plugins, LaunchAgents, macOS defaults"},
     {"label": "Update existing", "description": "Pull latest, re-stow packages, sync plugins, render LaunchAgents (skip Homebrew installs)"},
-    {"label": "Repair only", "description": "Re-stow packages, re-render LaunchAgents, re-bootstrap services. No git pull, no installs."},
+    {"label": "Repair only", "description": "Re-stow packages, check configuration. No service changes, git pull, or installs."},
     {"label": "Show me the plan first", "description": "Run install.sh --dry-run to preview every step without changes"},
     {"label": "Cancel", "description": "Abort"}
   ]
@@ -131,7 +131,7 @@ Tell the user what you found. Highlight any WARNING or ERROR lines specifically.
   "multiSelect": false,
   "options": [
     {"label": "Backup and Replace (Recommended)", "description": "Creates timestamped backup of ~/dotfiles + key config files, then re-clones latest"},
-    {"label": "Keep and Update", "description": "git pull origin main + re-stow (preserves uncommitted local changes if any)"},
+    {"label": "Keep and Update", "description": "fetch fast-forward separately, then apply configuration and sync plugins; preserve uncommitted changes"},
     {"label": "Force Replace", "description": "Hard reset to origin/main (DESTROYS uncommitted changes)"},
     {"label": "Abort Installation", "description": "Cancel installation, leave current dotfiles intact"}
   ]
@@ -235,7 +235,7 @@ cd "$HOME/dotfiles"
 # Fresh install — full pipeline
 ./install.sh
 
-# OR — Update mode (skip brew installs, just pull + re-stow + re-sync)
+# OR — Update mode (apply this checkout + sync plugins; no pull or provisioning)
 ./install.sh --update
 
 # OR — Skip GUI apps

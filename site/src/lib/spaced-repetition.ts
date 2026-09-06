@@ -81,7 +81,7 @@ export function isDue(card: SM2Card): boolean {
   return new Date(card.nextReview) <= new Date();
 }
 
-export function getDueCards(cards: SM2Card[]): SM2Card[] {
+export function getDueCards<T extends SM2Card>(cards: T[]): T[] {
   return cards
     .filter(isDue)
     .sort((a, b) => a.easeFactor - b.easeFactor); // Hardest first

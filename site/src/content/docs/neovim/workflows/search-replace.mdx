@@ -6,9 +6,11 @@ description: "Find text and transform it efficiently across files."
 import CompleteLessonButton from '../../../../components/CompleteLessonButton.tsx';
 import LevelGateBanner from '../../../../components/LevelGateBanner.tsx';
 import KeybindingTrainer from '../../../../components/KeybindingTrainer.tsx';
-import neovimCore from '../../../../data/keybindings/neovim-core.json';
+import drills from '../../../../data/keybindings/neovim-core.json';
 
 <LevelGateBanner level={3} client:load />
+
+{/* reference:start */}
 
 Find text and transform it efficiently across files.
 
@@ -328,10 +330,12 @@ g&                         " Repeat last :s on entire file
 
 **Next:** [Copy, Paste & Move Workflows](/neovim/workflows/copy-paste-move/)
 
+{/* reference:end */}
+
 ---
 
 ## Practice
 
-<KeybindingTrainer client:idle drillSet={neovimCore} maxQuestions={5} />
+<KeybindingTrainer client:idle drillSet={drills} maxQuestions={5} />
 
 <CompleteLessonButton client:idle lessonId="3.3" slug="neovim/workflows/search-replace" nextLessonSlug="neovim/workflows/windows-buffers" nextLessonTitle="Windows & Buffers" />

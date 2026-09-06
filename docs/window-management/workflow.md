@@ -56,7 +56,8 @@ Each workspace has a letter, a purpose, and an assigned monitor.
 | `Alt+T` | Terminal | Portrait | Ghostty, Alacritty, WezTerm, iTerm2 |
 | `Alt+B` | Browser | Laptop | Chrome, Safari, Firefox, Arc, Zen |
 | `Alt+M` | Messaging | Laptop | Slack, Discord, Telegram, Teams, WhatsApp |
-| `Alt+F` | Finder | Laptop | Finder (floating layout) |
+| `Alt+W` | Email (E) | Laptop | Mail clients |
+| `Alt+O` | Notes (N) | Laptop | Notes apps |
 
 **Note:** Workspaces N (Notes) and E (Email) exist but their `alt-n` / `alt-e` bindings are currently commented out to avoid conflicts with Brazilian accent input. Access them via the Hyper key instead.
 

@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { getProgress, saveProgress } from '../lib/progress';
+import { eventKey, parseNotation, sequenceState } from '../lib/key-sequence';
 import { createCard, reviewCard, binaryToQuality, getDueCards, type SM2Card } from '../lib/spaced-repetition';
 
 interface Drill {
   keys: string;
+  sequence: string[];
   action: string;
   context: string;
   category: string;
@@ -27,6 +29,11 @@ type Mode = 'learn' | 'drill' | 'test';
 type Phase = 'prompt' | 'input' | 'feedback' | 'summary';
 
 export default function KeybindingTrainer({ drillSet, maxQuestions = 10 }: Props) {
+  const [attempt, setAttempt] = useState(0);
+  const [typedMode, setTypedMode] = useState(false);
+  const [typedInput, setTypedInput] = useState('');
+  const entered = useRef<string[]>([]);
+  const finished = useRef(false);
   const [mode, setMode] = useState<Mode>('learn');
   const [phase, setPhase] = useState<Phase>('prompt');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -48,14 +55,14 @@ export default function KeybindingTrainer({ drillSet, maxQuestions = 10 }: Props
         const cardId = `${drillSet.id}:${drill.keys}`;
         const existing = progress.drills.keybindings[cardId];
         const card = existing
-          ? { ...existing, id: cardId } as SM2Card
+          ? { ...existing, id: cardId }
           : createCard(cardId);
         return { ...card, drill };
       });
 
       const dueCards = getDueCards(cards);
       const selected = dueCards.length > 0
-        ? dueCards.slice(0, maxQuestions).map((c) => (c as any).drill)
+        ? dueCards.slice(0, maxQuestions).map((c) => c.drill)
         : shuffle(drills).slice(0, maxQuestions);
       setShuffledDrills(selected);
     } else {
@@ -64,40 +71,27 @@ export default function KeybindingTrainer({ drillSet, maxQuestions = 10 }: Props
 
     setCurrentIndex(0);
     setResults([]);
-    setPhase(mode === 'learn' ? 'prompt' : 'prompt');
-  }, [mode, drillSet, maxQuestions]);
+    setUserInput('');
+    setTypedInput('');
+    setIsCorrect(null);
+    entered.current = [];
+    finished.current = false;
+    setPhase('prompt');
+  }, [mode, drillSet, maxQuestions, attempt]);
 
   const currentDrill = shuffledDrills[currentIndex];
 
-  const handleInputKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-
-    // Build key string from event
-    const parts: string[] = [];
-    if (e.ctrlKey) parts.push('Ctrl');
-    if (e.altKey) parts.push('Alt');
-    if (e.shiftKey && e.key.length > 1) parts.push('Shift');
-    if (e.metaKey) parts.push('Cmd');
-
-    const key = e.key;
-    if (!['Control', 'Alt', 'Shift', 'Meta'].includes(key)) {
-      if (key === ' ') parts.push('Space');
-      else if (key === 'Escape') parts.push('Escape');
-      else if (key === 'Enter') parts.push('Enter');
-      else if (key === 'Tab') parts.push('Tab');
-      else if (key === 'Backspace') parts.push('Backspace');
-      else if (key.length === 1) parts.push(e.shiftKey && key.length === 1 ? key : key);
-      else parts.push(key);
-    } else {
-      return; // Don't process modifier-only presses
-    }
-
-    const pressed = parts.join('+');
+  const submitSequence = useCallback((input: string[], final = false) => {
+    if (phase !== 'input' || finished.current) return;
+    entered.current = input;
+    const pressed = input.join(' ');
     setUserInput(pressed);
-
+    const state = sequenceState(currentDrill.sequence, input);
+    if (state === 'prefix' && !final) return;
+    finished.current = true;
     // Check answer
     const timeMs = Date.now() - startTime;
-    const correct = normalizeKeys(pressed) === normalizeKeys(currentDrill.keys);
+    const correct = state === 'correct';
     setIsCorrect(correct);
     setPhase('feedback');
 
@@ -110,7 +104,7 @@ export default function KeybindingTrainer({ drillSet, maxQuestions = 10 }: Props
       const progress = getProgress();
       const cardId = `${drillSet.id}:${currentDrill.keys}`;
       const existing = progress.drills.keybindings[cardId];
-      const card = existing ? { ...existing, id: cardId } as SM2Card : createCard(cardId);
+      const card = existing ? { ...existing, id: cardId } : createCard(cardId);
       const quality = binaryToQuality(correct, timeMs);
       const updated = reviewCard(card, quality);
 
@@ -119,9 +113,10 @@ export default function KeybindingTrainer({ drillSet, maxQuestions = 10 }: Props
         incorrect: (existing?.incorrect || 0) + (correct ? 0 : 1),
         easeFactor: updated.easeFactor,
         interval: updated.interval,
+        repetitions: updated.repetitions,
         nextReview: updated.nextReview,
         lastReview: updated.lastReview,
-      } as any;
+      };
 
       progress.drills.totalDrills += 1;
       if (correct) progress.drills.totalCorrect += 1;
@@ -129,7 +124,13 @@ export default function KeybindingTrainer({ drillSet, maxQuestions = 10 }: Props
 
       saveProgress(progress);
     }
-  }, [currentDrill, startTime, mode, drillSet.id]);
+  }, [currentDrill, startTime, mode, drillSet.id, phase]);
+
+  const handleInputKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const key = eventKey(e.nativeEvent);
+    if (key) submitSequence([...entered.current, key]);
+  }, [submitSequence]);
 
   const nextQuestion = useCallback(() => {
     if (currentIndex >= shuffledDrills.length - 1) {
@@ -137,6 +138,9 @@ export default function KeybindingTrainer({ drillSet, maxQuestions = 10 }: Props
     } else {
       setCurrentIndex((prev) => prev + 1);
       setUserInput('');
+      setTypedInput('');
+      entered.current = [];
+      finished.current = false;
       setIsCorrect(null);
       setPhase(mode === 'learn' ? 'prompt' : 'prompt');
       setStartTime(Date.now());
@@ -144,6 +148,10 @@ export default function KeybindingTrainer({ drillSet, maxQuestions = 10 }: Props
   }, [currentIndex, shuffledDrills.length, mode]);
 
   const startDrill = useCallback(() => {
+    finished.current = false;
+    entered.current = [];
+    setUserInput('');
+    setTypedInput('');
     setPhase('input');
     setStartTime(Date.now());
     setTimeout(() => inputRef.current?.focus(), 50);
@@ -213,16 +221,25 @@ export default function KeybindingTrainer({ drillSet, maxQuestions = 10 }: Props
         <div className="kb-input-phase">
           <div className="kb-action">{currentDrill.action}</div>
           <div className="kb-context">{currentDrill.context}</div>
+          <label><input type="checkbox" checked={typedMode} onChange={(e) => {
+            setTypedMode(e.target.checked); entered.current = []; setUserInput(''); setTypedInput('');
+          }} /> Type notation (for shortcuts captured by your browser or OS)</label>
+          {typedMode && <p>Use case-sensitive keys, such as <code>Ctrl+b |</code>, <code>gg</code>, or <code>Space p f</code>.</p>}
           <div className="kb-input-area">
             <input
               ref={inputRef}
               className="kb-key-input"
-              onKeyDown={handleInputKeyDown}
-              value={userInput || 'Press the key combination...'}
-              readOnly
+              aria-label={typedMode ? 'Shortcut notation' : 'Shortcut keys'}
+              onKeyDown={typedMode ? (e) => { if (e.key === 'Enter' && !e.repeat) { e.preventDefault(); submitSequence(parseNotation(typedInput), true); } } : handleInputKeyDown}
+              onChange={typedMode ? (e) => setTypedInput(e.target.value) : undefined}
+              value={typedMode ? typedInput : userInput}
+              placeholder={typedMode ? 'Type the shortcut notation' : 'Press each key in order...'}
+              readOnly={!typedMode}
               autoFocus
             />
           </div>
+          {typedMode && <button onClick={() => submitSequence(parseNotation(typedInput), true)}>Check answer</button>}
+          {!typedMode && userInput && <p>Sequence so far: <kbd>{userInput}</kbd> — waiting for the next key.</p>}
         </div>
       )}
 
@@ -279,7 +296,7 @@ export default function KeybindingTrainer({ drillSet, maxQuestions = 10 }: Props
               </div>
             ))}
           </div>
-          <button className="kb-next-btn" onClick={() => { setMode(mode); }}>
+          <button className="kb-next-btn" onClick={() => setAttempt((value) => value + 1)}>
             Try Again
           </button>
         </div>
@@ -295,15 +312,4 @@ function shuffle<T>(array: T[]): T[] {
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
-}
-
-function normalizeKeys(keys: string): string {
-  return keys
-    .toLowerCase()
-    .replace(/\s+/g, '')
-    .replace(/ctrl\+/g, 'ctrl+')
-    .replace(/alt\+/g, 'alt+')
-    .replace(/shift\+/g, 'shift+')
-    .replace(/cmd\+/g, 'cmd+')
-    .replace(/space/g, ' ');
 }

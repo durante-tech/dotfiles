@@ -165,7 +165,9 @@ cd ~/dotfiles
 
 ```bash
 ./install.sh --dry-run       # Preview without changes
-./update.sh                  # Update existing install (wraps install.sh --update)
+./update.sh                  # Apply checkout + sync plugins; no fetch or provisioning
+./update.sh --with-tools     # Explicitly include declared tool provisioning
+./smart-pull.sh --print-prompt # Context only; no fetch, apply, or agent launch
 ./smart-pull.sh              # Pull + open DOS with upgrade prompt (Claude reads diff, runs update.sh, asks smart questions)
 ./install.sh --skip-casks    # Skip GUI apps
 ./setup.sh --check           # Verify dependencies
@@ -191,7 +193,7 @@ apt cannot supply this stack — Debian 12 ships neovim **0.7.2** where this con
 container, and CI dry-runs the Linux manifest on a real Ubuntu runner.
 
 See `docs/UPGRADE.md` for the post-pull checklist (which tools auto-reload,
-which need a manual nudge, how to clean up tools retired between versions).
+which need a manual reload, and what requires explicit provisioning).
 
 **Forking?** See [`docs/PERSONALIZE.md`](docs/PERSONALIZE.md) for the catalog
 of machine-specific values (monitor names, BetterDisplay hardware tagIDs,

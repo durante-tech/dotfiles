@@ -20,12 +20,12 @@ Master tmux copy mode for vim-style scrolling, searching, and copying.
 
 **Enter copy mode:**
 ```
-C-Space v                   # "v" for vim/visual
+C-b v                   # "v" for vim/visual
 ```
 
 **Or standard binding:**
 ```
-C-Space [                   # Traditional tmux binding
+C-b [                   # Traditional tmux binding
 ```
 
 **Or with mouse:**
@@ -95,13 +95,13 @@ $                       # End of line
 ```
 C-u                     # Half page up
 C-d                     # Half page down
-C-b                     # Full page up (vim-compatible; no longer conflicts with tmux prefix since prefix moved to C-Space)
+C-b                     # Full page up (vim-compatible; no longer conflicts with tmux prefix since prefix moved to C-b)
 C-f                     # Full page down
 ```
 
 **Note about C-b:**
 - In copy mode, `C-b` means page up (vim-compatible)
-- Outside copy mode, `C-b` is free — tmux prefix is now `C-Space`
+- Outside copy mode, `C-b` is free — tmux prefix is now `C-b`
 
 **Screen positioning:**
 ```
@@ -281,7 +281,7 @@ y                       # Copy to tmux buffer (and exit)
 
 **Paste what you copied:**
 ```
-C-Space ]                   # Paste from tmux buffer
+C-b ]                   # Paste from tmux buffer
 # Works outside copy mode, in normal pane
 ```
 
@@ -301,7 +301,7 @@ C-Space ]                   # Paste from tmux buffer
 **Manual clipboard copy (macOS):**
 ```
 # If clipboard not integrated:
-C-Space ]                   # Paste from tmux buffer
+C-b ]                   # Paste from tmux buffer
 # Then manually select and Cmd+C
 
 # Or pipe to pbcopy:
@@ -312,11 +312,11 @@ tmux show-buffer | pbcopy
 ```
 # macOS:
 pbpaste | tmux load-buffer -
-C-Space ]
+C-b ]
 
 # Linux:
 xclip -o | tmux load-buffer -
-C-Space ]
+C-b ]
 ```
 
 ## Buffer Management
@@ -331,37 +331,37 @@ C-Space ]
 
 **List buffers:**
 ```
-C-Space =                   # Shows buffer list
+C-b =                   # Shows buffer list
 # Or
-C-Space :list-buffers
+C-b :list-buffers
 ```
 
 **Choose buffer to paste:**
 ```
-C-Space =                   # Interactive buffer list
+C-b =                   # Interactive buffer list
 # Navigate with j/k
 # Press Enter to paste selected buffer
 ```
 
 **Paste specific buffer:**
 ```
-C-Space :paste-buffer -b 2  # Paste buffer 2
+C-b :paste-buffer -b 2  # Paste buffer 2
 ```
 
 **Delete buffer:**
 ```
-C-Space :delete-buffer -b 0  # Delete most recent buffer
+C-b :delete-buffer -b 0  # Delete most recent buffer
 ```
 
 **Save buffer to file:**
 ```
-C-Space :save-buffer ~/saved.txt
+C-b :save-buffer ~/saved.txt
 ```
 
 **Load file into buffer:**
 ```
-C-Space :load-buffer ~/file.txt
-C-Space ]                   # Paste it
+C-b :load-buffer ~/file.txt
+C-b ]                   # Paste it
 ```
 
 ## Common Copy Mode Workflows
@@ -371,7 +371,7 @@ C-Space ]                   # Paste it
 **Scenario:** Long error in terminal, need to copy it
 
 ```
-1. C-Space v                # Enter copy mode
+1. C-b v                # Enter copy mode
 2. /error               # Search for "error"
 3. n (if needed)        # Find the specific error
 4. v                    # Start selection at error
@@ -380,7 +380,7 @@ C-Space ]                   # Paste it
 
 7. Paste in browser/Slack/issue tracker
    - If clipboard integrated: Cmd+V
-   - If not: C-Space ] (in another pane/terminal)
+   - If not: C-b ] (in another pane/terminal)
 ```
 
 ### Workflow 2: Copy Command Output
@@ -389,13 +389,13 @@ C-Space ]                   # Paste it
 
 ```
 1. # Run command (e.g., npm test)
-2. C-Space v                # Enter copy mode
+2. C-b v                # Enter copy mode
 3. gg                   # Top of output
 4. V                    # Line visual mode
 5. G                    # To bottom
 6. y                    # Copy all output
 
-7. C-Space ]                # Paste in editor/file
+7. C-b ]                # Paste in editor/file
 ```
 
 ### Workflow 3: Copy Specific Lines
@@ -403,14 +403,14 @@ C-Space ]                   # Paste it
 **Scenario:** Extract lines 50-60 from logs
 
 ```
-1. C-Space v                # Enter copy mode
+1. C-b v                # Enter copy mode
 2. gg                   # Top of buffer
 3. 50G                  # Jump to line 50
 4. V                    # Line visual mode
 5. 10j                  # Select 10 lines down
 6. y                    # Copy
 
-7. C-Space ]                # Paste
+7. C-b ]                # Paste
 ```
 
 ### Workflow 4: Copy File Path
@@ -418,7 +418,7 @@ C-Space ]                   # Paste it
 **Scenario:** Error shows file path, need to open it
 
 ```
-1. C-Space v                # Enter copy mode
+1. C-b v                # Enter copy mode
 2. /\/home              # Search for path starting with /
 3. v                    # Start selection
 4. e                    # Extend to end of word
@@ -428,7 +428,7 @@ C-Space ]                   # Paste it
 
 7. Esc (exit program showing error)
 8. nvim                 # Start nvim
-9. C-Space ]                # Paste path
+9. C-b ]                # Paste path
 10. Enter               # Open file
 ```
 
@@ -444,7 +444,7 @@ nvim $(tmux show-buffer)
 **Scenario:** Copy all lines containing "TODO"
 
 ```
-1. C-Space v                # Enter copy mode
+1. C-b v                # Enter copy mode
 2. /TODO                # Search for TODO
 3. V                    # Line visual mode
 4. n                    # Jump to next TODO
@@ -464,14 +464,14 @@ tmux capture-pane -p | grep TODO
 **Scenario:** Someone showed you command, want to run it
 
 ```
-1. C-Space v                # Enter copy mode
+1. C-b v                # Enter copy mode
 2. ?$ (or ?prompt)      # Search backward for prompt
 3. 0                    # Start of line
 4. v                    # Start selection
 5. $                    # End of line
 6. y                    # Copy command
 
-7. C-Space ]                # Paste and run
+7. C-b ]                # Paste and run
 8. Enter
 ```
 
@@ -485,7 +485,7 @@ tmux capture-pane -p | grep TODO
 # node    1234   45.2
 # ruby    5678   23.1
 
-1. C-Space v                # Enter copy mode
+1. C-b v                # Enter copy mode
 2. Navigate to "PID"
 3. C-v                  # Block visual mode
 4. 2j                   # Select column down
@@ -502,19 +502,19 @@ tmux capture-pane -p | grep TODO
 **Scenario:** Want to save entire terminal output
 
 ```
-1. C-Space v                # Enter copy mode
+1. C-b v                # Enter copy mode
 2. gg                   # Top of history
 3. VG                   # Select everything
 4. y                    # Copy
 
-5. C-Space :save-buffer ~/session-$(date +%Y%m%d).txt
+5. C-b :save-buffer ~/session-$(date +%Y%m%d).txt
 # Saves to file with date
 ```
 
 **Or directly capture:**
 ```
-C-Space :capture-pane -S -1000  # Capture last 1000 lines
-C-Space :save-buffer ~/output.txt
+C-b :capture-pane -S -1000  # Capture last 1000 lines
+C-b :save-buffer ~/output.txt
 ```
 
 ## Advanced Copy Mode Techniques
@@ -575,7 +575,7 @@ C-p                     # Previous match (while typing)
 **Your config has mouse mode enabled!**
 
 **Select with mouse:**
-1. Enter copy mode: `C-Space v`
+1. Enter copy mode: `C-b v`
 2. Click and drag to select
 3. Release mouse
 4. Press `y` to copy
@@ -594,39 +594,39 @@ C-p                     # Previous match (while typing)
 
 **Entire visible pane:**
 ```
-C-Space :capture-pane
-C-Space :save-buffer ~/pane-output.txt
+C-b :capture-pane
+C-b :save-buffer ~/pane-output.txt
 ```
 
 **With history:**
 ```
-C-Space :capture-pane -S -3000  # Last 3000 lines
-C-Space :save-buffer ~/full-output.txt
+C-b :capture-pane -S -3000  # Last 3000 lines
+C-b :save-buffer ~/full-output.txt
 ```
 
 **Specific range:**
 ```
-C-Space :capture-pane -S -100 -E -50  # Lines 100-50 from end
-C-Space :save-buffer ~/range.txt
+C-b :capture-pane -S -100 -E -50  # Lines 100-50 from end
+C-b :save-buffer ~/range.txt
 ```
 
 **Direct to file:**
 ```
-C-Space :pipe-pane -o "cat >> ~/live-log.txt"
+C-b :pipe-pane -o "cat >> ~/live-log.txt"
 # All output from pane continuously saved!
-C-Space :pipe-pane  # Stop logging
+C-b :pipe-pane  # Stop logging
 ```
 
 ### Search and Replace (via external tool)
 
 **Copy all output, modify, paste back:**
 ```
-1. C-Space v                # Copy mode
+1. C-b v                # Copy mode
 2. gg                   # Top
 3. VG                   # Select all
 4. y                    # Copy
 
-5. C-Space :save-buffer ~/temp.txt
+5. C-b :save-buffer ~/temp.txt
 6. sed 's/old/new/g' ~/temp.txt > ~/temp2.txt
 7. cat ~/temp2.txt
 # Modified output shown
@@ -637,8 +637,8 @@ C-Space :pipe-pane  # Stop logging
 | Keys | Action |
 |------|--------|
 | **Entering/Exiting** | |
-| `C-Space v` | Enter copy mode |
-| `C-Space [` | Enter copy mode (standard) |
+| `C-b v` | Enter copy mode |
+| `C-b [` | Enter copy mode (standard) |
 | `q` | Exit copy mode |
 | `C-c` | Exit copy mode |
 | **Navigation** | |
@@ -647,7 +647,7 @@ C-Space :pipe-pane  # Stop logging
 | `0/$` | Start/end of line |
 | `gg/G` | Top/bottom of buffer |
 | `C-u/C-d` | Half page up/down |
-| `C-f/C-Space` | Full page up/down |
+| `C-f/C-b` | Full page up/down |
 | `{/}` | Paragraph movement |
 | **Searching** | |
 | `/` | Search forward |
@@ -663,8 +663,8 @@ C-Space :pipe-pane  # Stop logging
 | `Enter` | Copy and exit |
 | `Escape` | Cancel selection |
 | **Pasting** | |
-| `C-Space ]` | Paste buffer |
-| `C-Space =` | Choose buffer |
+| `C-b ]` | Paste buffer |
+| `C-b =` | Choose buffer |
 
 ## Configuration Tips
 
@@ -673,7 +673,7 @@ C-Space :pipe-pane  # Stop logging
 **If you prefer a different key:**
 ```
 # In tmux.conf:
-bind-key -T prefix y copy-mode    # C-Space y instead of C-Space v
+bind-key -T prefix y copy-mode    # C-b y instead of C-b v
 ```
 
 ### Use Emacs Keys Instead
@@ -686,7 +686,7 @@ set-window-option -g mode-keys emacs
 
 **Emacs navigation:**
 - `C-p/C-n` - Up/down
-- `C-f/C-Space` - Forward/back
+- `C-f/C-b` - Forward/back
 - `M-f/M-b` - Word forward/back
 - `C-a/C-e` - Start/end of line
 
@@ -700,7 +700,7 @@ set-option -g history-limit 10000   # Default is 2000
 
 **Then reload:**
 ```
-C-Space r
+C-b r
 ```
 
 ### Clipboard Integration (macOS)
@@ -729,7 +729,7 @@ bind-key -T copy-mode-vi y send-keys -X copy-pipe-and-cancel "wl-copy"
 **"Can't scroll in terminal"**
 ```
 # Are you in copy mode? If not:
-C-Space v                   # Enter copy mode
+C-b v                   # Enter copy mode
 # Now you can scroll with j/k or C-u/C-d
 ```
 
@@ -746,7 +746,7 @@ q
 # See "Clipboard Integration" above
 
 # Workaround:
-C-Space ]                   # Paste in tmux
+C-b ]                   # Paste in tmux
 # Then use mouse to select and Cmd+C
 ```
 
@@ -768,7 +768,7 @@ v                       # Start selection
 ```
 # History might be limited
 # Check history-limit:
-C-Space :display-message -p "#{history_limit}"
+C-b :display-message -p "#{history_limit}"
 
 # Increase in tmux.conf:
 set-option -g history-limit 10000
@@ -777,7 +777,7 @@ set-option -g history-limit 10000
 **"Search not working"**
 ```
 # Are you in copy mode?
-C-Space v                   # Enter first
+C-b v                   # Enter first
 /pattern                # Then search
 ```
 
@@ -791,10 +791,10 @@ C-Space v                   # Enter first
 **"Wrong text copied"**
 ```
 # Check what's in buffer:
-C-Space :show-buffer
+C-b :show-buffer
 
 # Or list all buffers:
-C-Space =
+C-b =
 ```
 
 **"Can't paste in vim/nvim"**
@@ -806,7 +806,7 @@ C-Space =
 "* p (selection clipboard)
 
 # Or use tmux paste:
-C-Space ]
+C-b ]
 ```
 
 ## Best Practices
@@ -827,11 +827,11 @@ C-Space ]
 **Instead of scrolling:**
 ```
 # Slow:
-C-Space v
+C-b v
 # Scroll up manually...
 
 # Fast:
-C-Space v
+C-b v
 ?error                  # Jump directly to "error"
 ```
 
@@ -839,7 +839,7 @@ C-Space v
 
 **Before scrolling:**
 ```
-C-Space v                   # Enter copy mode
+C-b v                   # Enter copy mode
 m                       # Mark position
 # Scroll around
 '                       # Jump back
@@ -867,13 +867,13 @@ V y                     # Line visual mode
 
 **Don't overflow buffers:**
 ```
-C-Space =                   # Review buffers occasionally
+C-b =                   # Review buffers occasionally
 # Delete old ones if needed
 ```
 
 **Important text → file:**
 ```
-C-Space :save-buffer ~/important.txt
+C-b :save-buffer ~/important.txt
 # Don't trust buffer for critical data
 ```
 
@@ -882,8 +882,8 @@ C-Space :save-buffer ~/important.txt
 **For large output:**
 ```
 # Instead of copy mode + select all:
-C-Space :capture-pane -S -
-C-Space :save-buffer ~/output.txt
+C-b :capture-pane -S -
+C-b :save-buffer ~/output.txt
 
 # Faster and captures everything!
 ```

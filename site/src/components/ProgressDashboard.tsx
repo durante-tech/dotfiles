@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getProgress, exportProgress, importProgress, resetProgress, type CourseProgress } from '../lib/progress';
+import { getProgress, getStorageNotice, exportProgress, importProgress, resetProgress, type CourseProgress } from '../lib/progress';
 import { getAllLevelsInfo, type LevelInfo } from '../lib/level-gates';
 import { getStreakDisplay, getLast30DaysActivity } from '../lib/streak';
 
@@ -56,6 +56,7 @@ export default function ProgressDashboard() {
 
   return (
     <div className="progress-dashboard">
+      {getStorageNotice() && <p role="alert">{getStorageNotice()}</p>}
       {/* Overview */}
       <div className="pd-overview">
         <div className="pd-stat">

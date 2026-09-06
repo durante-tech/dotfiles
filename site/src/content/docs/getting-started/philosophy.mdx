@@ -5,6 +5,8 @@ description: "Why this system exists and the principles behind every choice."
 
 import CompleteLessonButton from '../../../components/CompleteLessonButton.tsx';
 
+{/* reference:start */}
+
 Why this system exists and the principles behind every choice.
 
 ## The Core Idea
@@ -108,14 +110,14 @@ Two themes, not one, because the editor should feel visually distinct from the s
 
 ```
 Layer 1: AeroSpace (Alt+key)     → Which workspace/window
-Layer 2: Tmux (Ctrl+Space)           → Which terminal pane/session
+Layer 2: Tmux (Ctrl+b)           → Which terminal pane/session
 Layer 3: Neovim (<Space>+key)    → Which file/action in editor
 Layer 4: Karabiner (Hyper+key)   → Global shortcuts from anywhere
 ```
 
 No conflicts between layers because each uses a different modifier:
 - **Alt** = Window management (AeroSpace)
-- **Ctrl+Space** = Terminal management (Tmux)
+- **Ctrl+b** = Terminal management (Tmux)
 - **Space** = Editor commands (Neovim leader)
 - **CapsLock (Hyper)** = Global shortcuts (Karabiner)
 
@@ -159,5 +161,7 @@ See [GNU Stow Guide](/getting-started/gnu-stow/) for details. The key insight: e
 ---
 
 **Next:** [Installation Guide](/getting-started/installation/)
+
+{/* reference:end */}
 
 <CompleteLessonButton client:idle lessonId="0.1" slug="getting-started/philosophy" nextLessonSlug="getting-started/installation" nextLessonTitle="Installation" />

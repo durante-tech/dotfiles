@@ -13,7 +13,7 @@ This is a macOS-focused dotfiles repository using **GNU Stow** for symlink manag
 ### Installation & Setup
 
 ```bash
-# Full automated installation (runs install.sh)
+# Full provisioning from an existing clone (runs install.sh)
 /bin/bash install.sh
 
 # Manual stow of every package (reads stow-packages.txt, same list install.sh uses)
@@ -37,6 +37,16 @@ stow -D -t ~ zsh
 ```
 
 **Important**: Before stowing, ensure parent directories exist in `$HOME` (especially `~/.config/`). Stow will fail if these don't exist.
+
+### Routine maintenance
+
+`./update.sh` (or `./install.sh --update`) applies the current checkout and
+synchronizes plugins. It does not pull, register services, configure hooks, or
+provision tools. `--with-tools` explicitly enables provisioning; `--skip-brew`
+and `--skip-casks` apply throughout that run. `--dry-run` has no deployment,
+network, service, or agent effects. Fetch separately with `smart-pull.sh`, whose
+normal launcher behavior is retained. `smart-pull.sh --print-prompt` is read-only.
+See `docs/maintenance.md` for exact contracts and reload commands.
 
 ### Linux (Debian/Ubuntu, terminal core)
 
@@ -555,26 +565,29 @@ Sessions are git-branch-specific, auto-save on exit, auto-restore on open.
 
 ### Formatting & Linting
 
-**Conform** (format on save enabled):
+**Conform**: synchronous before-save formatting (1,000 ms); manual formatting
+uses 2,000 ms. See `docs/neovim/formatters.md` for the shared project policy.
 
 | Language | Formatter |
 |----------|-----------|
-| JS/TS | biome (primary) or prettier |
-| HTML/CSS/YAML/JSON | prettier |
+| JS/TS | nearest project configuration; equal-distance ties use Biome |
+| CSS/JSON/JSONC/GraphQL | nearest project configuration; ties use Prettier |
+| HTML/YAML/Markdown/framework files | Prettier |
 | Python | black + isort |
 | Go | goimports + gofumpt |
 | Rust | rustfmt |
 | Lua | stylua |
-| Shell | shfmt |
+| Bash/POSIX shell | shfmt (Zsh has no formatter mapping) |
 | TOML | taplo |
 | SQL | sql-formatter |
 
 | Binding | Action |
 |---------|--------|
-| `<leader>mp` | Format file/range (sync, 2s timeout) |
+| `<leader>f` | Shared formatter policy (2s timeout) |
+| `<leader>mp` | Non-Markdown formatting alias; Markdown preview |
 | `<leader>mf` | Format injected code |
 
-**Nvim-Lint**: biomejs (JS/TS), pylint (Python). Auto-lints on save/enter/leave-insert. `<leader>l` for manual lint.
+**Nvim-Lint**: biomejs (JS/TS only with project Biome configuration), pylint (Python). Auto-lints on save/enter/leave-insert. `<leader>l` for manual lint.
 
 ### Code Editing Features
 
@@ -1278,7 +1291,7 @@ chmod +x ~/scripts/*
 <!-- Auto-generated body lives in docs/Sentinel/SNAPSHOT.md. Next sentinel scan writes there, not back into this section. -->
 
 - **Stack:** macOS-only dotfiles deployed via GNU Stow across 20 packages; polyglot — Zsh/Bash (config + automation), Lua (Neovim/lazy.nvim), TOML (AeroSpace/Starship), plus Bun-run TypeScript scripts and an Astro/React docs site under `site/`.
-- **Test:** `# no automated suite — verify manually` (see `VERIFY.md`). **Lint:** `# CI: .github/workflows/lint.yml` — 4 jobs: ShellCheck (gates at **`severity: warning`**), Lua (advisory, `|| true`), TOML, stow dry run (reads `stow-packages.txt`).
+- **Test:** `python3 -m unittest discover -s tests` and `python3 tests/run_formatting.py`; site checks are `cd site && bun test && bun run docs:check && bun run build && bun run links:check`. See `VERIFY.md` for fixture prerequisites and manual checks. CI preserves ShellCheck, advisory Lua, TOML, portability and per-package Stow checks alongside these regression jobs.
 - **Health:** 100% (21 healthy / 21 conventions, 3 debt indicators) — last **static** scan 2026-06-24. That score is convention-matching only and does not read CI, so treat it as a style measure, not a health measure; the live signal is `gh run list`. CI history: the gate was red on every run from 2026-05-27, was repaired on 2026-07-29, and has been **green for 20 consecutive runs since** (last failure 2026-07-29T15:50:55Z, latest run 2026-08-11). Current debt: `docs/Sentinel/TECH-DEBT.md`.
 - **Enforced patterns:** kebab-case script names; `snake_case()` shell functions; `DOTFILES_`-prefixed override vars; `set -e`/`set -u` after shebang; `#!/usr/bin/env bash` (`#!/bin/bash` for launchd/bash-3.2 scripts); `#!/usr/bin/env bun` for TS scripts; `command -v <tool> && eval` guards in `.zshrc`; one-file-per-plugin `return { ... }` Neovim specs; `personal.env` existence-guarded sourcing; LaunchAgents as `.plist.template` (`__USER__` + `__DOTFILES_DIR__` placeholders, rendered by setup.sh; repo-owned `com.lucas.*` supersedes brew-services); Raycast script-commands `exec`-delegate to canonical scripts; compiled native helpers (Swift, e.g. `unlock-watch.swift`) built to `~/.local/bin` by setup.sh `build_native_helpers()` (`swiftc`-guarded) for triggers launchd can't express (distributed notifications).
 - **Full snapshot** (Tech Stack, Architecture, Conventions, Key Decisions, Setup, Health, open debt): [`docs/Sentinel/SNAPSHOT.md`](docs/Sentinel/SNAPSHOT.md).

@@ -43,7 +43,7 @@ Playlists live in `~/.config/mpd/playlists/`; runtime state (database, state, st
 Access rmpc (MPD client) as a floating popup:
 
 ```
-Ctrl+Space > Ctrl+M    # Opens rmpc in floating window
+Ctrl+b > Ctrl+m    # Opens rmpc in floating window
 ```
 
 ## Note

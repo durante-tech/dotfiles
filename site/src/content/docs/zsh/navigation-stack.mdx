@@ -6,9 +6,11 @@ description: "How FZF, Zoxide, and Atuin work together to make shell navigation 
 import CompleteLessonButton from '../../../components/CompleteLessonButton.tsx';
 import LevelGateBanner from '../../../components/LevelGateBanner.tsx';
 import KeybindingTrainer from '../../../components/KeybindingTrainer.tsx';
-import zshCore from '../../../data/keybindings/zsh-core.json';
+import drills from '../../../data/keybindings/zsh-core.json';
 
 <LevelGateBanner level={2} client:load />
+
+{/* reference:start */}
 
 How FZF, Zoxide, and Atuin work together to make shell navigation instant.
 
@@ -262,10 +264,12 @@ Ctrl+R → find command → Tab (edit) → modify → Enter
 
 **Next:** [Git Workflow](/git/workflow/)
 
+{/* reference:end */}
+
 ---
 
 ## Practice
 
-<KeybindingTrainer client:idle drillSet={zshCore} maxQuestions={5} />
+<KeybindingTrainer client:idle drillSet={drills} maxQuestions={5} />
 
 <CompleteLessonButton client:idle lessonId="2.5" slug="zsh/navigation-stack" nextLessonSlug="neovim/workflows/editing" nextLessonTitle="Editing Workflows" />

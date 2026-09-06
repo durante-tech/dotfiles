@@ -36,21 +36,21 @@ Tmux is a **terminal multiplexer**. It lets you:
 
 ### Prefix Key
 ```
-Ctrl+Space  (C-Space)  →  Your prefix key (press before all tmux commands)
+Ctrl+b  (C-b)  →  Your prefix key (press before all tmux commands)
 ```
 
 ### Quick Access Features
 
 | Keys | Action | Use Case |
 |------|--------|----------|
-| `C-Space D` | Detach | Leave session running (capital D!) |
-| `C-Space d` | Config Menu | Quick access to dotfiles (lowercase d) |
-| `C-Space o` | SessionX | Switch between projects (like VSCode workspace) |
-| `C-Space f` | Sessionizer | Find and open project directories |
-| `C-Space C-g` | Lazygit | Git UI in floating window |
-| `C-Space C-y` | Yazi | File manager in floating window |
-| `C-Space C-t` | Quick terminal | Floating terminal |
-| `C-Space C-w` | W3m | Text-based web browser |
+| `C-b D` | Detach | Leave session running (capital D!) |
+| `C-b d` | Config Menu | Quick access to dotfiles (lowercase d) |
+| `C-b o` | SessionX | Switch between projects (like VSCode workspace) |
+| `C-b f` | Sessionizer | Find and open project directories |
+| `C-b C-g` | Lazygit | Git UI in floating window |
+| `C-b C-y` | Yazi | File manager in floating window |
+| `C-b C-t` | Quick terminal | Floating terminal |
+| `C-b C-w` | W3m | Text-based web browser |
 
 ### Smart Features
 
@@ -89,32 +89,32 @@ tmux attach          # Attach to last session
 tmux attach -t name  # Attach to specific session
 
 # Inside tmux:
-C-Space D                # Detach (capital D! - session keeps running)
-C-Space o                # SessionX - switch projects
-C-Space f                # Sessionizer - find projects
+C-b D                # Detach (capital D! - session keeps running)
+C-b o                # SessionX - switch projects
+C-b f                # Sessionizer - find projects
 ```
 
 ### Panes (Splits)
 ```bash
-C-Space |                # Split vertically
-C-Space -                # Split horizontally
-C-Space h/j/k/l          # Resize panes (vim-style)
-C-Space m                # Maximize pane (zoom)
-C-Space x                # Close pane
+C-b |                # Split vertically
+C-b -                # Split horizontally
+C-b h/j/k/l          # Resize panes (vim-style)
+C-b m                # Maximize pane (zoom)
+C-b x                # Close pane
 ```
 
 ### Windows (Tabs)
 ```bash
-C-Space c                # Create window
-C-Space ,                # Rename window
-C-Space n                # Next window
-C-Space p                # Previous window
-C-Space 1-9              # Go to window 1-9 (starts at 1!)
+C-b c                # Create window
+C-b ,                # Rename window
+C-b n                # Next window
+C-b p                # Previous window
+C-b 1-9              # Go to window 1-9 (starts at 1!)
 ```
 
 ### Copy Mode (Scrolling)
 ```bash
-C-Space v                # Enter copy mode
+C-b v                # Enter copy mode
 # Then use vim keys: h/j/k/l, /, n, N, v, y
 ```
 
@@ -134,18 +134,18 @@ This tmux configuration follows:
 ```bash
 # Each project = one session:
 tmux new -s project1
-C-Space D               # Detach (capital D!)
+C-b D               # Detach (capital D!)
 tmux new -s project2
-C-Space D               # Detach (capital D!)
-C-Space o               # Switch between them (SessionX)
+C-b D               # Detach (capital D!)
+C-b o               # Switch between them (SessionX)
 ```
 
 ### "I need to see code and run tests simultaneously"
 ```bash
-C-Space |               # Split vertically
+C-b |               # Split vertically
 # Left: run nvim
 # Right: run tests
-C-Space h/l             # Resize as needed
+C-b h/l             # Resize as needed
 ```
 
 ### "My SSH connection dropped!"
@@ -157,7 +157,7 @@ tmux attach         # Your session is still running!
 
 ### "I want to copy terminal output"
 ```bash
-C-Space v               # Enter copy mode
+C-b v               # Enter copy mode
 # Navigate with hjkl
 v                   # Start selection
 y                   # Copy
@@ -173,14 +173,14 @@ q                   # Exit copy mode
 ### With Ghostty
 - Tmux runs inside Ghostty terminal
 - Ghostty handles display, tmux handles multiplexing
-- Ghostty splits (`Cmd+B`) vs Tmux splits (`C-Space`)
+- Ghostty splits (`Cmd+B`) vs Tmux splits (`C-b`)
 
 ### With Git (Lazygit)
-- `C-Space C-g` opens lazygit in floating window
+- `C-b C-g` opens lazygit in floating window
 - Stage, commit, push without leaving tmux
 
 ### With Files (Yazi)
-- `C-Space C-y` opens file manager in floating window
+- `C-b C-y` opens file manager in floating window
 - Navigate, preview, manage files visually
 
 ## 📝 Quick Reference Card
@@ -188,21 +188,21 @@ q                   # Exit copy mode
 **Print this or keep on second monitor:**
 
 ```
-PREFIX: Ctrl+Space (C-Space)
+PREFIX: Ctrl+b (C-b)
 
 SESSIONS:              PANES:                 WINDOWS:
-C-Space D  Detach          C-Space |  Split vert     C-Space c  New
-C-Space o  SessionX        C-Space -  Split horiz    C-Space ,  Rename
-C-Space f  Sessionizer     C-Space m  Maximize       C-Space n  Next
-C-Space n  New session     C-Space x  Close          C-Space p  Previous
-                       C-Space hjkl Resize        C-Space 1-9 Go to
+C-b D  Detach          C-b |  Split vert     C-b c  New
+C-b o  SessionX        C-b -  Split horiz    C-b ,  Rename
+C-b f  Sessionizer     C-b m  Maximize       C-b n  Next
+C-b n  New session     C-b x  Close          C-b p  Previous
+                       C-b hjkl Resize        C-b 1-9 Go to
 
 COPY:                  FLOATING:              OTHER:
-C-Space v  Copy mode       C-Space C-g  Lazygit      C-Space r  Reload config
-v      Select          C-Space C-y  Yazi         C-Space d  Config menu
-y      Yank            C-Space C-t  Terminal     C-Space ?  Show keys
-q      Exit            C-Space C-m  Music
-                       C-Space C-w  W3m
+C-b v  Copy mode       C-b C-g  Lazygit      C-b r  Reload config
+v      Select          C-b C-y  Yazi         C-b d  Config menu
+y      Yank            C-b C-t  Terminal     C-b ?  Show keys
+q      Exit            C-b C-m  Music
+                       C-b C-w  W3m
 ```
 
 ## 🎓 Next Steps

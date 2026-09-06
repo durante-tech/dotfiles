@@ -12,17 +12,19 @@ Complete installation guide for setting up a new Apple Silicon Mac with these do
 
 ## Quick Start (Automated)
 
-Run this one-liner to install everything:
+Clone first so the installer can load its shared helpers:
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/durante-tech/dotfiles/main/install.sh)"
+git clone https://github.com/durante-tech/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+./install.sh
 ```
 
 This will:
 1. Install Xcode Command Line Tools
 2. Install Homebrew
 3. Install all packages and applications
-4. Clone dotfiles and symlink configs
+4. Symlink the cloned dotfiles configuration
 5. Apply macOS defaults
 
 **Then proceed to [Post-Installation Steps](#post-installation-steps)**

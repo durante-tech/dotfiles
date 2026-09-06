@@ -241,7 +241,7 @@ Each pattern name becomes its own command. There are 240+ patterns.
 ## Wallpaper Management
 
 Tied to the Durante 10-piece gallery + hourly time-banded rotation.
-See [`wallpapers/README.md`](../../wallpapers/README.md) for full layout.
+See [`wallpapers/README.md`](https://github.com/durante-tech/dotfiles/blob/main/wallpapers/README.md) for full layout.
 
 | Alias | Command |
 |-------|---------|
@@ -272,7 +272,7 @@ GLSL shader as live wallpaper.
 | `ollama-down` | `brew services stop ollama` — stop daemon |
 | `ollama-ls` | `ollama list` — show installed models |
 
-Pair with espanso's `:llm` and `:llmf` triggers (defined in [`espanso/Library/Application Support/espanso/match/base.yml`](../../espanso/Library/Application%20Support/espanso/match/base.yml)) for inline AI completions.
+Pair with espanso's `:llm` and `:llmf` triggers (defined in [`espanso/Library/Application Support/espanso/match/base.yml`](https://github.com/durante-tech/dotfiles/blob/main/espanso/Library/Application%20Support/espanso/match/base.yml)) for inline AI completions.
 
 ## GitHub Dashboard
 
@@ -280,7 +280,7 @@ Pair with espanso's `:llm` and `:llmf` triggers (defined in [`espanso/Library/Ap
 |-------|---------|
 | `ghd` | `gh dash` — interactive PR/issue dashboard |
 
-See [`docs/tier5-setup.md`](../tier5-setup.md) for config customization.
+See [`docs/tier5-setup.md`](https://github.com/durante-tech/dotfiles/blob/main/docs/tier5-setup.md) for config customization.
 
 ## Shell Functions
 

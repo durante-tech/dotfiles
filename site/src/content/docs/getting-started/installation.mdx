@@ -5,6 +5,8 @@ description: "From a fresh macOS to a fully working system, step by step."
 
 import CompleteLessonButton from '../../../components/CompleteLessonButton.tsx';
 
+{/* reference:start */}
+
 From a fresh macOS to a fully working system, step by step.
 
 ## Prerequisites
@@ -49,7 +51,7 @@ The macOS package manager. Installs to `/opt/homebrew` (Apple Silicon) or `/usr/
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-### Step 3: Homebrew Formulae (~60 packages)
+### Step 3: Homebrew Formulae (79 packages)
 
 Installs all CLI tools in categories:
 
@@ -139,7 +141,7 @@ source ~/.zprofile && source ~/.zshrc
 # Open tmux
 tmux
 
-# Press: Ctrl+Space, then Shift+I
+# Press: Ctrl+b, then Shift+I
 # Wait for plugins to install
 ```
 
@@ -254,5 +256,7 @@ export ALL_PROXY=http://proxy:port
 ---
 
 **Next:** [GNU Stow Guide](/getting-started/gnu-stow/) — understand how configs are deployed
+
+{/* reference:end */}
 
 <CompleteLessonButton client:idle lessonId="0.2" slug="getting-started/installation" nextLessonSlug="getting-started/gnu-stow" nextLessonTitle="GNU Stow" />

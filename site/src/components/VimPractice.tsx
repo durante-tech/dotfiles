@@ -26,7 +26,7 @@ export default function VimPractice({ exercise }: Props) {
   const [currentHint, setCurrentHint] = useState(0);
 
   const nextHint = useCallback(() => {
-    setCurrentHint((prev) => Math.min(prev + 1, exercise.hints.length - 1));
+    setCurrentHint((prev) => Math.min(prev + 1, exercise.hints.length));
   }, [exercise.hints.length]);
 
   return (

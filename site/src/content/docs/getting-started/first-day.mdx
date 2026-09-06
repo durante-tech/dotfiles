@@ -6,9 +6,11 @@ description: "A structured guide to get you productive on day one."
 import CompleteLessonButton from '../../../components/CompleteLessonButton.tsx';
 import LevelGateBanner from '../../../components/LevelGateBanner.tsx';
 import KeybindingTrainer from '../../../components/KeybindingTrainer.tsx';
-import neovimCore from '../../../data/keybindings/neovim-core.json';
+import drills from '../../../data/keybindings/neovim-core.json';
 
 <LevelGateBanner level={1} client:load />
+
+{/* reference:start */}
 
 A structured guide to get you productive on day one.
 
@@ -450,10 +452,12 @@ You completed day 1! That's the hardest part. Every day gets easier and faster.
 
 **See you tomorrow! Check out [Daily Cheatsheet](/neovim/daily-cheatsheet/) before bed to review.**
 
+{/* reference:end */}
+
 ---
 
 ## Practice
 
-<KeybindingTrainer client:idle drillSet={neovimCore} maxQuestions={5} />
+<KeybindingTrainer client:idle drillSet={drills} maxQuestions={5} />
 
 <CompleteLessonButton client:idle lessonId="1.2" slug="getting-started/first-day" nextLessonSlug="neovim/daily-cheatsheet" nextLessonTitle="Neovim Cheatsheet" />

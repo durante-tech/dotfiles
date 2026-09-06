@@ -4,6 +4,39 @@
 
 Designed for AI agents to walk top-to-bottom. Every check is a single bash command with a deterministic exit/output the agent can parse.
 
+## Isolated regression checks
+
+Run these from a checkout, before deployment. Python fixtures intercept package
+managers, providers, terminals, and desktop actions. They never use live accounts,
+change displays, or restart applications. Install test prerequisites explicitly:
+Python 3, Bash, Zsh, GNU Stow, jq, Neovim, and the repository-pinned Conform checkout.
+The formatter fixtures additionally require already installed Prettier and Biome.
+
+```bash
+python3 -m unittest discover -s tests -p 'test_*.py'
+python3 tests/run_formatting.py
+zsh -n zsh/.zshrc
+zsh -n zsh/.zprofile
+cd site
+bun install --frozen-lockfile
+bun test
+bun run typecheck
+bun run docs:check
+bun run build
+bun run links:check
+```
+
+The site uses disposable DOM/localStorage fixtures, including v1 backup migration,
+malformed imports, ordered key sequences, typed fallback, retries, and hints.
+Generation check writes only a temporary output directory; normal generation is
+`bun run docs:generate`. Markdown reference prose is maintained in `docs/`;
+`site/scripts/reference-pages.json` explicitly lists published mirrors. Existing
+frontmatter is preserved, and course wrappers come from `levels.json`.
+
+The checks below are manual live-environment diagnostics. Run their repairs only
+when the diagnosed action is intended; a routine update is `./update.sh` and tool
+provisioning requires `./update.sh --with-tools`.
+
 ---
 
 ## Critical CLI Tools (must all pass)

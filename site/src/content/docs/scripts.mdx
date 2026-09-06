@@ -8,6 +8,8 @@ import LevelGateBanner from '../../components/LevelGateBanner.tsx';
 
 <LevelGateBanner level={6} client:load />
 
+{/* reference:start */}
+
 Utility scripts automatically available in PATH via `~/scripts/`.
 
 ## Available Scripts
@@ -27,7 +29,7 @@ tmux-sessionizer       # Direct call
 2. Select a project
 3. Creates or attaches to tmux session named after project
 
-**Keybinding:** `Ctrl+Space > F` in tmux
+**Keybinding:** `Ctrl+b > F` in tmux
 
 ### fzf-git.sh
 
@@ -77,5 +79,7 @@ scripts/scripts/
 ├── fzf_listoldfiles.sh
 └── zoxide_openfiles_nvim.sh
 ```
+
+{/* reference:end */}
 
 <CompleteLessonButton client:idle lessonId="6.5" slug="scripts" nextLessonSlug="tmux/keybindings" nextLessonTitle="Tmux Keybindings" />

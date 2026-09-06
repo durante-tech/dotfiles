@@ -72,7 +72,7 @@ Custom Rose Pine + Catppuccin theme with:
 ## Tmux Access
 
 ```
-Ctrl+Space > Ctrl+M    # Opens rmpc in floating tmux window
+Ctrl+b > Ctrl+m    # Opens rmpc in floating tmux window
 ```
 
 ## File Locations

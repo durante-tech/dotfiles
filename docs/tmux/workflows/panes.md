@@ -20,12 +20,12 @@ Session → Windows → Panes
 
 **Split vertically (side by side):**
 ```
-C-Space |                   # Creates pane to the right
+C-b |                   # Creates pane to the right
 ```
 
 **Split horizontally (top and bottom):**
 ```
-C-Space -                   # Creates pane below
+C-b -                   # Creates pane below
 ```
 
 **Why these keys?**
@@ -43,7 +43,7 @@ C-Space -                   # Creates pane below
 |        |        |
 +--------+--------+
 
-C-Space |
+C-b |
 ```
 
 **Three panes:**
@@ -55,9 +55,9 @@ C-Space |
 |        |   C    |
 +--------+--------+
 
-C-Space |                   # Split vertical
+C-b |                   # Split vertical
 C-l                     # Move to right pane
-C-Space -                   # Split horizontal
+C-b -                   # Split horizontal
 ```
 
 **Four panes (quad):**
@@ -68,10 +68,10 @@ C-Space -                   # Split horizontal
 |   C    |   D    |
 +--------+--------+
 
-C-Space |                   # Split vertical
-C-Space -                   # Split horizontal
+C-b |                   # Split vertical
+C-b -                   # Split horizontal
 C-h                     # Move left
-C-Space -                   # Split horizontal
+C-b -                   # Split horizontal
 ```
 
 ## Navigating Between Panes
@@ -95,14 +95,14 @@ C-l                     # Move right
 
 **Show pane numbers:**
 ```
-C-Space q                   # Shows numbers briefly
-C-Space q 2                 # Jump to pane 2 (while numbers showing)
+C-b q                   # Shows numbers briefly
+C-b q 2                 # Jump to pane 2 (while numbers showing)
 ```
 
 **Cycle through panes:**
 ```
-C-Space o                   # Next pane (clockwise)
-C-Space ;                   # Last pane (toggle)
+C-b o                   # Next pane (clockwise)
+C-b ;                   # Last pane (toggle)
 ```
 
 ## Resizing Panes
@@ -111,21 +111,21 @@ C-Space ;                   # Last pane (toggle)
 
 **Resize panes (vim-style):**
 ```
-C-Space h                   # Resize left (shrink right)
-C-Space j                   # Resize down (shrink top)
-C-Space k                   # Resize up (shrink bottom)
-C-Space l                   # Resize right (shrink left)
+C-b h                   # Resize left (shrink right)
+C-b j                   # Resize down (shrink top)
+C-b k                   # Resize up (shrink bottom)
+C-b l                   # Resize right (shrink left)
 ```
 
 **How it works:**
 - Each press resizes by 5 cells
 - Repeatable (the `-r` flag in config)
-- Hold `C-Space` and tap `h` multiple times quickly
+- Hold `C-b` and tap `h` multiple times quickly
 
 **Example:**
 ```
 +-------+---+
-|       |   |     C-Space llll   +-----+-----+
+|       |   |     C-b llll   +-----+-----+
 |   A   | B |   ---------->  |  A  |  B  |
 |       |   |                +-----+-----+
 +-------+---+
@@ -135,14 +135,14 @@ C-Space l                   # Resize right (shrink left)
 
 **Make all panes equal size:**
 ```
-C-Space M-1                 # Even horizontal
-C-Space M-2                 # Even vertical
-C-Space M-5                 # Tiled layout
+C-b M-1                 # Even horizontal
+C-b M-2                 # Even vertical
+C-b M-5                 # Tiled layout
 ```
 
 Or use built-in layout cycling:
 ```
-C-Space Space               # Cycle through layouts
+C-b Space               # Cycle through layouts
 # Keep pressing Space to see different arrangements
 ```
 
@@ -150,9 +150,9 @@ C-Space Space               # Cycle through layouts
 
 **Maximize pane (zoom):**
 ```
-C-Space m                   # Toggle maximize
+C-b m                   # Toggle maximize
 # Or
-C-Space z                   # Also toggles maximize
+C-b z                   # Also toggles maximize
 ```
 
 **Use case:**
@@ -173,7 +173,7 @@ C-Space z                   # Also toggles maximize
 ```
 exit                    # Type in shell
 # Or
-C-Space x                   # Prompts for confirmation (y/n)
+C-b x                   # Prompts for confirmation (y/n)
 # Or
 C-d                     # If shell allows
 ```
@@ -182,39 +182,39 @@ C-d                     # If shell allows
 
 **Swap panes:**
 ```
-C-Space {                   # Swap with previous pane
-C-Space }                   # Swap with next pane
+C-b {                   # Swap with previous pane
+C-b }                   # Swap with next pane
 ```
 
 **Rotate panes:**
 ```
-C-Space C-o                 # Rotate panes clockwise
-C-Space M-o                 # Rotate panes counter-clockwise
+C-b C-o                 # Rotate panes clockwise
+C-b M-o                 # Rotate panes counter-clockwise
 ```
 
 ### Breaking Panes
 
 **Move pane to new window:**
 ```
-C-Space !                   # Break pane out to new window
+C-b !                   # Break pane out to new window
 ```
 
 **Join pane from another window:**
 ```
-C-Space :join-pane -s :2    # Bring pane from window 2
-C-Space :join-pane -h -s :2.1  # Join pane horizontally
+C-b :join-pane -s :2    # Bring pane from window 2
+C-b :join-pane -h -s :2.1  # Join pane horizontally
 ```
 
 ### Marking Panes
 
 **Mark a pane:**
 ```
-C-Space m                   # Mark current pane
+C-b m                   # Mark current pane
 ```
 
 **Swap with marked:**
 ```
-C-Space M-o                 # Swap with marked pane
+C-b M-o                 # Swap with marked pane
 ```
 
 ## Pane Layouts
@@ -223,16 +223,16 @@ C-Space M-o                 # Swap with marked pane
 
 **Apply layout:**
 ```
-C-Space M-1                 # even-horizontal
-C-Space M-2                 # even-vertical
-C-Space M-3                 # main-horizontal
-C-Space M-4                 # main-vertical
-C-Space M-5                 # tiled
+C-b M-1                 # even-horizontal
+C-b M-2                 # even-vertical
+C-b M-3                 # main-horizontal
+C-b M-4                 # main-vertical
+C-b M-5                 # tiled
 ```
 
 **Cycle layouts:**
 ```
-C-Space Space               # Next layout
+C-b Space               # Next layout
 ```
 
 **Visual examples:**
@@ -288,7 +288,7 @@ C-Space Space               # Next layout
 
 # Create:
 nvim                    # Start editing
-C-Space |                   # Split
+C-b |                   # Split
 npm test -- --watch     # Run tests
 C-h                     # Back to editor
 ```
@@ -308,9 +308,9 @@ C-h                     # Back to editor
 
 # Create:
 nvim
-C-Space |                   # Split
+C-b |                   # Split
 npm run dev             # Start server
-C-Space -                   # Split again
+C-b -                   # Split again
 tail -f app.log         # Watch logs
 C-h                     # Back to editor
 ```
@@ -328,9 +328,9 @@ C-h                     # Back to editor
 
 # Create:
 nvim
-C-Space |
+C-b |
 git status
-C-Space -
+C-b -
 # Ready for commands
 ```
 
@@ -345,9 +345,9 @@ C-Space -
 
 # Create:
 nvim file1.js
-C-Space |
+C-b |
 nvim file2.css
-C-Space |
+C-b |
 nvim file3.test.js
 
 # Navigate:
@@ -368,7 +368,7 @@ C-h/l                   # Switch between files
 
 # Create:
 less API_DOCS.md
-C-Space |
+C-b |
 nvim implementation.js
 ```
 
@@ -384,7 +384,7 @@ nvim implementation.js
 
 # Create:
 nvim
-C-Space |
+C-b |
 psql mydb
 ```
 
@@ -401,7 +401,7 @@ psql mydb
 
 # Create:
 cat before.txt
-C-Space |
+C-b |
 cat after.txt
 
 # Or with nvim:
@@ -415,7 +415,7 @@ nvim -d before.txt after.txt
 
 **Type in all panes simultaneously:**
 ```
-C-Space :setw synchronize-panes on
+C-b :setw synchronize-panes on
 
 # Now typing appears in ALL panes!
 # Great for:
@@ -423,26 +423,26 @@ C-Space :setw synchronize-panes on
 # - Synchronized demo/presentation
 # - Batch operations
 
-C-Space :setw synchronize-panes off  # Disable
+C-b :setw synchronize-panes off  # Disable
 ```
 
 ### Pane Titles
 
 **Set pane title:**
 ```
-C-Space :select-pane -T "My Pane Title"
+C-b :select-pane -T "My Pane Title"
 ```
 
 **Show pane titles:**
 ```
-C-Space :set -g pane-border-status top
+C-b :set -g pane-border-status top
 ```
 
 ### Pane Commands
 
 **Run command in pane without switching:**
 ```
-C-Space :send-keys -t 2 "ls -la" Enter
+C-b :send-keys -t 2 "ls -la" Enter
 # Runs "ls -la" in pane 2
 ```
 
@@ -452,10 +452,10 @@ C-Space :send-keys -t 2 "ls -la" Enter
 
 **Pipe pane output to file:**
 ```
-C-Space :pipe-pane -o "cat >> ~/pane-output.log"
+C-b :pipe-pane -o "cat >> ~/pane-output.log"
 # All output saved to file
 
-C-Space :pipe-pane          # Stop piping
+C-b :pipe-pane          # Stop piping
 ```
 
 **Great for capturing logs!**
@@ -522,31 +522,31 @@ C-Space :pipe-pane          # Stop piping
 
 **Toggle mouse mode:**
 ```
-C-Space :set -g mouse off   # Disable
-C-Space :set -g mouse on    # Enable
+C-b :set -g mouse off   # Disable
+C-b :set -g mouse on    # Enable
 ```
 
 ## Troubleshooting
 
 **"Pane is too small"**
 ```
-C-Space hjkl                # Resize
-C-Space m                   # Zoom temporarily
-C-Space Space               # Try different layout
+C-b hjkl                # Resize
+C-b m                   # Zoom temporarily
+C-b Space               # Try different layout
 ```
 
 **"Can't switch to pane"**
 ```
-C-Space q                   # Show pane numbers
+C-b q                   # Show pane numbers
 # Are all panes visible?
-# Try: C-Space z to unzoom
+# Try: C-b z to unzoom
 ```
 
 **"Lost in panes"**
 ```
-C-Space z                   # Zoom current pane
-C-Space q                   # Show numbers
-C-Space :kill-pane -a       # Kill all other panes (careful!)
+C-b z                   # Zoom current pane
+C-b q                   # Show numbers
+C-b :kill-pane -a       # Kill all other panes (careful!)
 ```
 
 **"Pane navigation not working"**
@@ -556,13 +556,13 @@ C-Space :kill-pane -a       # Kill all other panes (careful!)
 # C-h/j/k/l should work in both
 
 # If broken:
-C-Space :source-file ~/.config/tmux/tmux.conf
+C-b :source-file ~/.config/tmux/tmux.conf
 ```
 
 **"Want to start over"**
 ```
-C-Space :kill-window        # Kill whole window (all panes)
-C-Space c                   # New clean window
+C-b :kill-window        # Kill whole window (all panes)
+C-b c                   # New clean window
 ```
 
 ## Keyboard Shortcuts Summary
@@ -570,22 +570,22 @@ C-Space c                   # New clean window
 | Keys | Action |
 |------|--------|
 | **Creating** | |
-| `C-Space \|` | Split vertical |
-| `C-Space -` | Split horizontal |
+| `C-b \|` | Split vertical |
+| `C-b -` | Split horizontal |
 | **Navigating** | |
 | `C-h/j/k/l` | Move between panes |
-| `C-Space q` | Show pane numbers |
-| `C-Space o` | Next pane |
-| `C-Space ;` | Last pane |
+| `C-b q` | Show pane numbers |
+| `C-b o` | Next pane |
+| `C-b ;` | Last pane |
 | **Resizing** | |
-| `C-Space h/j/k/l` | Resize panes |
-| `C-Space Space` | Cycle layouts |
-| `C-Space M-1/2/3/4/5` | Apply layout |
+| `C-b h/j/k/l` | Resize panes |
+| `C-b Space` | Cycle layouts |
+| `C-b M-1/2/3/4/5` | Apply layout |
 | **Managing** | |
-| `C-Space m` | Maximize/zoom |
-| `C-Space x` | Close pane |
-| `C-Space !` | Break to new window |
-| `C-Space {/}` | Swap panes |
+| `C-b m` | Maximize/zoom |
+| `C-b x` | Close pane |
+| `C-b !` | Break to new window |
+| `C-b {/}` | Swap panes |
 
 ---
 

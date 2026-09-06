@@ -29,9 +29,10 @@ i3-like tiling window manager for macOS with Alt-based keybindings.
 | `Alt+T` | Terminal | Ghostty, iTerm, terminals |
 | `Alt+B` | Browser | Chrome, Safari, Firefox, Zen |
 | `Alt+M` | Messaging | Slack, Discord, WhatsApp |
-| `Alt+F` | Finder | Finder (floating) |
+| `Alt+W` | E — Email | Mail clients |
+| `Alt+O` | N — Notes | Notion, Obsidian, Apple Notes |
 
-> **Note**: `Alt+N` (Notes) and `Alt+E` (Email) stay unbound — they are pt-BR accent dead keys. Reach those workspaces via Karabiner `Hyper+N` / `Hyper+E`; `persistent-workspaces` keeps them alive when empty.
+> **Note**: `Alt+N` (Notes) and `Alt+E` (Email) stay unbound — they are pt-BR accent dead keys. Use `Alt+O` for N and `Alt+W` for E, or Karabiner `Hyper+N` / `Hyper+E`; `persistent-workspaces` keeps them alive when empty.
 
 ### Move to Workspace
 
@@ -61,7 +62,7 @@ Workspaces are pinned to monitors:
 
 | Workspace | Monitor |
 |-----------|---------|
-| 1, B, D, F, M | Built-in Retina Display |
+| 1, A, B, D, E, M, N | Built-in Retina Display |
 | 2, T | PORTRAIT-MONITOR |
 
 ## Auto-Assignments
@@ -74,8 +75,9 @@ Apps automatically move to workspaces:
 | IDEs | D |
 | Terminals | T |
 | Messaging | M |
-| Notes (Obsidian, Notion, Claude) | N (auto-assign, no hotkey) |
-| Finder | F (floating) |
+| Notes (Obsidian, Notion, Apple Notes) | N (`Alt+O`) |
+| AI apps (Claude, Codex) | A (`Alt+A`) |
+| Finder | Floats on the current workspace; no F workspace |
 
 ## Integration
 
@@ -85,5 +87,9 @@ Apps automatically move to workspaces:
 ## File Location
 
 ```
-aerospace/.config/aerospace/aerospace.toml
+aerospace/templates/aerospace.toml.template
 ```
+
+Edit the template and run `scripts/scripts/render-aerospace.sh`, then
+`aerospace reload-config`. There are nine persistent workspaces: 1, 2, A, B,
+D, E, M, N, and T. `Alt+Shift+Tab` focuses the next monitor.

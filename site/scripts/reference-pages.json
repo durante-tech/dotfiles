@@ -1,0 +1,214 @@
+[
+  {
+    "sourcePath": "README.md",
+    "outputSlug": "docs-index"
+  },
+  {
+    "sourcePath": "aerospace/README.md",
+    "outputSlug": "aerospace"
+  },
+  {
+    "sourcePath": "alacritty/README.md",
+    "outputSlug": "legacy/alacritty"
+  },
+  {
+    "sourcePath": "atuin/README.md",
+    "outputSlug": "atuin"
+  },
+  {
+    "sourcePath": "course/README.md",
+    "outputSlug": "course"
+  },
+  {
+    "sourcePath": "getting-started/customizing.md",
+    "outputSlug": "getting-started/customizing"
+  },
+  {
+    "sourcePath": "getting-started/daily-workflow.md",
+    "outputSlug": "getting-started/daily-workflow"
+  },
+  {
+    "sourcePath": "getting-started/first-day.md",
+    "outputSlug": "getting-started/first-day"
+  },
+  {
+    "sourcePath": "getting-started/gnu-stow.md",
+    "outputSlug": "getting-started/gnu-stow"
+  },
+  {
+    "sourcePath": "getting-started/installation.md",
+    "outputSlug": "getting-started/installation"
+  },
+  {
+    "sourcePath": "getting-started/new-tools-guide.md",
+    "outputSlug": "getting-started/new-tools-guide"
+  },
+  {
+    "sourcePath": "getting-started/philosophy.md",
+    "outputSlug": "getting-started/philosophy"
+  },
+  {
+    "sourcePath": "getting-started/quick-start.md",
+    "outputSlug": "getting-started/quick-start"
+  },
+  {
+    "sourcePath": "ghostty/README.md",
+    "outputSlug": "ghostty"
+  },
+  {
+    "sourcePath": "git/workflow.md",
+    "outputSlug": "git/workflow"
+  },
+  {
+    "sourcePath": "integration/development-stack.md",
+    "outputSlug": "integration/development-stack"
+  },
+  {
+    "sourcePath": "karabiner/README.md",
+    "outputSlug": "karabiner"
+  },
+  {
+    "sourcePath": "kitty/README.md",
+    "outputSlug": "legacy/kitty"
+  },
+  {
+    "sourcePath": "mpd/README.md",
+    "outputSlug": "mpd"
+  },
+  {
+    "sourcePath": "neovim/README.md",
+    "outputSlug": "neovim"
+  },
+  {
+    "sourcePath": "neovim/daily-cheatsheet.md",
+    "outputSlug": "neovim/daily-cheatsheet"
+  },
+  {
+    "sourcePath": "neovim/formatter-troubleshooting.md",
+    "outputSlug": "neovim/formatter-troubleshooting"
+  },
+  {
+    "sourcePath": "neovim/formatters.md",
+    "outputSlug": "neovim/formatters"
+  },
+  {
+    "sourcePath": "neovim/keybindings.md",
+    "outputSlug": "neovim/keybindings"
+  },
+  {
+    "sourcePath": "neovim/tips-and-tricks.md",
+    "outputSlug": "neovim/tips-and-tricks"
+  },
+  {
+    "sourcePath": "neovim/troubleshooting.md",
+    "outputSlug": "neovim/troubleshooting"
+  },
+  {
+    "sourcePath": "neovim/workflows/copy-paste-move.md",
+    "outputSlug": "neovim/workflows/copy-paste-move"
+  },
+  {
+    "sourcePath": "neovim/workflows/editing.md",
+    "outputSlug": "neovim/workflows/editing"
+  },
+  {
+    "sourcePath": "neovim/workflows/file-management.md",
+    "outputSlug": "neovim/workflows/file-management"
+  },
+  {
+    "sourcePath": "neovim/workflows/lsp.md",
+    "outputSlug": "neovim/workflows/lsp"
+  },
+  {
+    "sourcePath": "neovim/workflows/navigation.md",
+    "outputSlug": "neovim/workflows/navigation"
+  },
+  {
+    "sourcePath": "neovim/workflows/search-replace.md",
+    "outputSlug": "neovim/workflows/search-replace"
+  },
+  {
+    "sourcePath": "neovim/workflows/windows-buffers.md",
+    "outputSlug": "neovim/workflows/windows-buffers"
+  },
+  {
+    "sourcePath": "rmpc/README.md",
+    "outputSlug": "rmpc"
+  },
+  {
+    "sourcePath": "scripts/README.md",
+    "outputSlug": "scripts"
+  },
+  {
+    "sourcePath": "sketchybar/README.md",
+    "outputSlug": "sketchybar"
+  },
+  {
+    "sourcePath": "starship/README.md",
+    "outputSlug": "starship"
+  },
+  {
+    "sourcePath": "tmux/README.md",
+    "outputSlug": "tmux"
+  },
+  {
+    "sourcePath": "tmux/daily-cheatsheet.md",
+    "outputSlug": "tmux/daily-cheatsheet"
+  },
+  {
+    "sourcePath": "tmux/integration/nvim.md",
+    "outputSlug": "tmux/integration/nvim"
+  },
+  {
+    "sourcePath": "tmux/keybindings.md",
+    "outputSlug": "tmux/keybindings"
+  },
+  {
+    "sourcePath": "tmux/quick-start.md",
+    "outputSlug": "tmux/quick-start"
+  },
+  {
+    "sourcePath": "tmux/workflows/copy-mode.md",
+    "outputSlug": "tmux/workflows/copy-mode"
+  },
+  {
+    "sourcePath": "tmux/workflows/panes.md",
+    "outputSlug": "tmux/workflows/panes"
+  },
+  {
+    "sourcePath": "tmux/workflows/sessions.md",
+    "outputSlug": "tmux/workflows/sessions"
+  },
+  {
+    "sourcePath": "tmux/workflows/windows.md",
+    "outputSlug": "tmux/workflows/windows"
+  },
+  {
+    "sourcePath": "w3m/README.md",
+    "outputSlug": "w3m"
+  },
+  {
+    "sourcePath": "window-management/workflow.md",
+    "outputSlug": "window-management/workflow"
+  },
+  {
+    "sourcePath": "yazi/README.md",
+    "outputSlug": "yazi"
+  },
+  {
+    "sourcePath": "zsh/README.md",
+    "outputSlug": "zsh"
+  },
+  {
+    "sourcePath": "zsh/aliases-and-functions.md",
+    "outputSlug": "zsh/aliases-and-functions"
+  },
+  {
+    "sourcePath": "zsh/navigation-stack.md",
+    "outputSlug": "zsh/navigation-stack"
+  },
+  {
+    "sourcePath": "maintenance.md",
+    "outputSlug": "maintenance"
+  }
+]

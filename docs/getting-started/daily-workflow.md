@@ -301,7 +301,7 @@ Claude Code can read LSP diagnostics:
 
 ## Tmux Integration
 
-### From Inside Tmux (prefix = `Ctrl+Space`)
+### From Inside Tmux (prefix = `Ctrl+b`)
 
 | Action                | Keys              |
 | --------------------- | ----------------- |
@@ -423,7 +423,8 @@ AeroSpace is your tiling window manager. All keybindings use **Alt (⌥)** as th
 | **T**     | `Alt+T` | `Alt+Shift+T`  | Terminal (portrait) |
 | **B**     | `Alt+B` | `Alt+Shift+B`  | Browser             |
 | **M**     | `Alt+M` | `Alt+Shift+M`  | Messaging           |
-| **F**     | `Alt+F` | `Alt+Shift+F`  | Finder (floats)     |
+| **E**     | `Alt+W` | `Alt+Shift+W` | Email |
+| **N**     | `Alt+O` | `Alt+Shift+O` | Notes |
 
 ### Layout & System
 

@@ -2,6 +2,9 @@
 title: "Dotfiles Documentation"
 description: "Complete documentation for this macOS dotfiles configuration."
 ---
+
+{/* reference:start */}
+
 Complete documentation for this macOS dotfiles configuration.
 
 ## The Dotfiles Mastery Course
@@ -56,14 +59,14 @@ Each configured tool has its own documentation:
 | Tool | Description | Key Features |
 |------|-------------|--------------|
 | **[Atuin](/atuin/)** | Shell history search | Fuzzy search, vim-mode, secrets filter |
-| **[w3m](/w3m/)** | Terminal web browser | Vi keybindings, tmux popup (`Ctrl+Space > Ctrl+W`) |
+| **[w3m](/w3m/)** | Terminal web browser | Vi keybindings, tmux popup (`Ctrl+b > Ctrl+w`) |
 
 ### Music
 
 | Tool | Description | Key Features |
 |------|-------------|--------------|
 | **[MPD](/mpd/)** | Music player daemon | CoreAudio, auto-update library |
-| **[rmpc](/rmpc/)** | MPD TUI client | Vim controls, tmux popup (`Ctrl+Space > Ctrl+M`) |
+| **[rmpc](/rmpc/)** | MPD TUI client | Vim controls, tmux popup (`Ctrl+b > Ctrl+m`) |
 
 ### Workflows & Integration
 
@@ -89,7 +92,7 @@ Configurations kept for reference or as backups:
 |------|--------|-------------|
 | **[Kitty](/legacy/kitty/)** | Backup | Mirrors Ghostty config, available as fallback |
 | **[Alacritty](/legacy/alacritty/)** | Legacy | Original GPU terminal, replaced by Ghostty |
-| **[WezTerm](/legacy/wezterm/)** | Legacy | Lua-configurable terminal, replaced by Ghostty |
+| **WezTerm** (reference retired) | Legacy | Lua-configurable terminal, replaced by Ghostty |
 
 ### Alternative Editor
 
@@ -106,9 +109,9 @@ Configurations kept for reference or as backups:
 | **Neovim** | Find files | `<leader>pf` |
 | **Neovim** | Search in files | `<leader>ps` |
 | **Neovim** | File explorer | `-` |
-| **Tmux** | New session | `Ctrl+Space > N` |
-| **Tmux** | Lazygit | `Ctrl+Space > Ctrl+G` |
-| **Tmux** | Yazi | `Ctrl+Space > Ctrl+Y` |
+| **Tmux** | New session | `Ctrl+b > n` |
+| **Tmux** | Lazygit | `Ctrl+b > Ctrl+g` |
+| **Tmux** | Yazi | `Ctrl+b > Ctrl+y` |
 | **AeroSpace** | Focus left/right | `Alt+H/L` |
 | **AeroSpace** | Workspace | `Alt+D/T/B/M` |
 | **Ghostty** | Split right | `Cmd+B > \` |
@@ -179,3 +182,5 @@ brew bundle dump --force --describe
 ---
 
 **Tip**: Keep [Neovim Daily Cheatsheet](/neovim/daily-cheatsheet/) open while learning!
+
+{/* reference:end */}

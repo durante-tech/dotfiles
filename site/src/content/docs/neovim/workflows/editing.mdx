@@ -6,9 +6,11 @@ description: "Master efficient code editing with Neovim's powerful modal editing
 import CompleteLessonButton from '../../../../components/CompleteLessonButton.tsx';
 import LevelGateBanner from '../../../../components/LevelGateBanner.tsx';
 import KeybindingTrainer from '../../../../components/KeybindingTrainer.tsx';
-import neovimEditing from '../../../../data/keybindings/neovim-editing.json';
+import drills from '../../../../data/keybindings/neovim-editing.json';
 
 <LevelGateBanner level={3} client:load />
+
+{/* reference:start */}
 
 Master efficient code editing with Neovim's powerful modal editing system.
 
@@ -749,10 +751,12 @@ viwp       // Select and paste over
 
 **Next:** [Navigation Workflows](/neovim/workflows/navigation/) to move efficiently through your code.
 
+{/* reference:end */}
+
 ---
 
 ## Practice
 
-<KeybindingTrainer client:idle drillSet={neovimEditing} maxQuestions={5} />
+<KeybindingTrainer client:idle drillSet={drills} maxQuestions={5} />
 
 <CompleteLessonButton client:idle lessonId="3.1" slug="neovim/workflows/editing" nextLessonSlug="neovim/workflows/copy-paste-move" nextLessonTitle="Copy, Paste, Move" />

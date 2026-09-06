@@ -54,14 +54,14 @@ Each configured tool has its own documentation:
 | Tool | Description | Key Features |
 |------|-------------|--------------|
 | **[Atuin](atuin/README.md)** | Shell history search | Fuzzy search, vim-mode, secrets filter |
-| **[w3m](w3m/README.md)** | Terminal web browser | Vi keybindings, tmux popup (`Ctrl+Space > Ctrl+W`) |
+| **[w3m](w3m/README.md)** | Terminal web browser | Vi keybindings, tmux popup (`Ctrl+b > Ctrl+w`) |
 
 ### Music
 
 | Tool | Description | Key Features |
 |------|-------------|--------------|
 | **[MPD](mpd/README.md)** | Music player daemon | CoreAudio, auto-update library |
-| **[rmpc](rmpc/README.md)** | MPD TUI client | Vim controls, tmux popup (`Ctrl+Space > Ctrl+M`) |
+| **[rmpc](rmpc/README.md)** | MPD TUI client | Vim controls, tmux popup (`Ctrl+b > Ctrl+m`) |
 
 ### Workflows & Integration
 
@@ -87,13 +87,13 @@ Configurations kept for reference or as backups:
 |------|--------|-------------|
 | **[Kitty](kitty/README.md)** | Backup | Mirrors Ghostty config, available as fallback |
 | **[Alacritty](alacritty/README.md)** | Legacy | Original GPU terminal, replaced by Ghostty |
-| **[WezTerm](wezterm/README.md)** | Legacy | Lua-configurable terminal, replaced by Ghostty |
+| **WezTerm** (reference retired) | Legacy | Lua-configurable terminal, replaced by Ghostty |
 
 ### Alternative Editor
 
 | Tool | Status | Description |
 |------|--------|-------------|
-| **[Zed](zed/README.md)** | Experimental | Fast Rust editor with vim mode |
+| **[Zed](/legacy/zed/)** | Experimental | Fast Rust editor with vim mode |
 
 ## Quick Reference Cards
 
@@ -104,9 +104,9 @@ Configurations kept for reference or as backups:
 | **Neovim** | Find files | `<leader>pf` |
 | **Neovim** | Search in files | `<leader>ps` |
 | **Neovim** | File explorer | `-` |
-| **Tmux** | New session | `Ctrl+Space > N` |
-| **Tmux** | Lazygit | `Ctrl+Space > Ctrl+G` |
-| **Tmux** | Yazi | `Ctrl+Space > Ctrl+Y` |
+| **Tmux** | New session | `Ctrl+b > n` |
+| **Tmux** | Lazygit | `Ctrl+b > Ctrl+g` |
+| **Tmux** | Yazi | `Ctrl+b > Ctrl+y` |
 | **AeroSpace** | Focus left/right | `Alt+H/L` |
 | **AeroSpace** | Workspace | `Alt+D/T/B/M` |
 | **Ghostty** | Split right | `Cmd+B > \` |

@@ -8,6 +8,8 @@ import LevelGateBanner from '../../components/LevelGateBanner.tsx';
 
 <LevelGateBanner level={6} client:load />
 
+{/* reference:start */}
+
 MPD is a server-side music player that runs as a background daemon. It plays music from `~/Music/` and is controlled via the `rmpc` TUI client.
 
 ## Quick Start
@@ -51,7 +53,7 @@ Playlists live in `~/.config/mpd/playlists/`; runtime state (database, state, st
 Access rmpc (MPD client) as a floating popup:
 
 ```
-Ctrl+Space > Ctrl+M    # Opens rmpc in floating window
+Ctrl+b > Ctrl+m    # Opens rmpc in floating window
 ```
 
 ## Note
@@ -63,5 +65,7 @@ MPD does not auto-start. Start it manually with `mpd` when you want to listen to
 ```
 mpd/.config/mpd/mpd.conf
 ```
+
+{/* reference:end */}
 
 <CompleteLessonButton client:idle lessonId="6.7" slug="mpd" nextLessonSlug="w3m" nextLessonTitle="w3m Browser" />

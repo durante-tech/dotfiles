@@ -7,7 +7,7 @@ interface Props {
 const { keys, separator = '+' } = Astro.props;
 
 // Parse key string into individual keys
-// Examples: "Ctrl+Space", "leader pf", "Shift+Alt+H"
+// Examples: "Ctrl+b", "leader pf", "Shift+Alt+H"
 const keyList = keys.split(separator).map((k) => k.trim());
 
 // Special display mappings
