@@ -47,3 +47,19 @@ sessions are never renamed or killed; a hash/owner mismatch is an error.
 The shell preserves Kitty context supplied by the launching client and never
 invents a PID/window or writes guessed values into tmux. The Kitty picker requires
 `KITTY_LISTEN_ON` from the intended instance. Missing context is an explicit error.
+
+## Formatting policy
+
+The nearest explicit formatter configuration chooses the tool for JS/TS/JSX/TSX,
+JSON/JSONC, CSS and GraphQL. At equal distance, JS/TS variants choose Biome and
+other formats choose Prettier. Markdown/framework/other existing Prettier filetypes
+stay on Prettier. Without configuration, Prettier's defaults apply. Project-local
+binaries take precedence over installed fallbacks; formatting never installs tools.
+
+Project configuration, EditorConfig, ignore rules and plugins remain authoritative.
+No global Prettier/Prettierd style flags are supplied. A selected formatter's error,
+missing binary/plugin or timeout is reported and leaves the original save intact;
+web formats never silently switch to an LSP. Formatting runs once before save with
+a 1,000 ms timeout. `<leader>f` and the non-Markdown `<leader>mp` alias share the
+same policy with a 2,000 ms manual timeout; Markdown's preview mapping is retained.
+Zsh is not sent to shfmt. Biome linting requires a project Biome configuration.

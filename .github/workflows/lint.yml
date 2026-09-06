@@ -29,6 +29,31 @@ jobs:
       - name: Run isolated regression fixtures
         run: python3 -m unittest discover -s tests -p 'test_*.py'
 
+  formatting-regressions:
+    name: Project formatting policy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: v0.11.5
+      - name: Prepare pinned test dependencies
+        run: |
+          npm install --prefix "$RUNNER_TEMP/format-tools" prettier@3.6.2 @biomejs/biome@2.2.7
+          echo "$RUNNER_TEMP/format-tools/node_modules/.bin" >> "$GITHUB_PATH"
+          pin=$(python3 -c 'import json; print(json.load(open("nvim/.config/nvim/lazy-lock.json"))["conform.nvim"]["commit"])')
+          git init "$RUNNER_TEMP/conform"
+          git -C "$RUNNER_TEMP/conform" remote add origin https://github.com/stevearc/conform.nvim.git
+          git -C "$RUNNER_TEMP/conform" fetch --depth=1 origin "$pin"
+          git -C "$RUNNER_TEMP/conform" checkout --detach FETCH_HEAD
+          echo "DOTFILES_TEST_CONFORM_DIR=$RUNNER_TEMP/conform" >> "$GITHUB_ENV"
+      - name: Run minimal editor fixtures
+        run: python3 tests/run_formatting.py
+
   shellcheck:
     name: ShellCheck
     runs-on: ubuntu-latest

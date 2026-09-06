@@ -8,3 +8,11 @@ or change a live terminal or display. Zsh and Stow are required.
 Formatting and site tests have separate commands documented alongside their
 fixtures. Keep negative source examples in temporary files so repository
 linters do not mistake intentional invalid input for shipped code.
+
+## Formatting
+
+Run `python3 tests/run_formatting.py` with Neovim >=0.11, Prettier and Biome
+already installed. `DOTFILES_TEST_CONFORM_DIR` selects the Conform checkout;
+the local default is the installed lazy.nvim directory. CI fetches the exact
+`lazy-lock.json` revision. The runner uses disposable XDG roots, no startup config,
+no Lazy/Mason setup, and only fixture files. It performs no dependency installation.

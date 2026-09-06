@@ -27,15 +27,26 @@ return {
 			end,
 		}
 
-		vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
-			group = lint_augroup,
-			callback = function()
-				lint.try_lint()
-			end,
-		})
+        local function try_project_lint()
+            local ft = vim.bo.filetype
+            if vim.tbl_contains({ "javascript", "typescript", "javascriptreact", "typescriptreact", "svelte" }, ft) then
+                local dir = vim.fs.dirname(vim.api.nvim_buf_get_name(0))
+                if dir and require("sethy.formatting-policy").biome_config(dir) then
+                    lint.try_lint("biomejs")
+                else
+                    vim.diagnostic.reset(lint.get_namespace("biomejs"), 0)
+                end
+            else
+                lint.try_lint()
+            end
+        end
+        vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+            group = lint_augroup,
+            callback = try_project_lint,
+        })
 
 		vim.keymap.set("n", "<leader>l", function()
-			lint.try_lint()
-		end, { desc = "Trigger linting for current file" })
+            try_project_lint()
+        end, { desc = "Trigger linting for current file" })
 	end,
 }
