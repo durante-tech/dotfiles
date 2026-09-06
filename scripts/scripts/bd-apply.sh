@@ -233,36 +233,25 @@ resolve_port_tag() {
 # two round-trips per sketchybar click, with no timeout, in a file that already
 # documents this CLI hanging and stranding app instances. main() invokes it.
 
-# acquire_lock — serialize concurrent apply_mode runs. The five launchd timers,
-# bd-lmu-watch, bd-wake (sleepwatcher), and a manual bd-cycle can fire near
-# simultaneously and would otherwise interleave DDC writes + STATE_FILE writes.
-# macOS ships no flock(1), so use an atomic mkdir mutex with PID-based stale-lock
-# reclaim. Blocks up to 30s, then proceeds rather than dropping the apply.
+# Keep an OS-owned lock on descriptor 9 until this invocation finishes. Keeping
+# the inode avoids unlink/recreate races; closing our descriptor releases only
+# our lock. A legacy mkdir lock is left for an operator to inspect.
 acquire_lock() {
-    local waited=0 pid
-    while ! mkdir "$LOCK_DIR" 2>/dev/null; do
-        pid="$(cat "$LOCK_DIR/pid" 2>/dev/null || true)"
-        if [[ -n "$pid" ]] && ! kill -0 "$pid" 2>/dev/null; then
-            # Reclaim by RENAME, not by rm. rename(2) is atomic, so when two
-            # waiters spot the same stale lock exactly one can move it aside.
-            # The plain `rm -rf` this replaces let BOTH delete it: the loser's
-            # rm then deleted the winner's freshly-created lock, both processes
-            # believed they held the mutex, and their DDC + STATE_FILE writes
-            # interleaved — the one thing this lock exists to stop.
-            if mv "$LOCK_DIR" "$LOCK_DIR.stale.$$" 2>/dev/null; then
-                log "lock stale (pid=$pid gone) — reclaimed"
-                rm -rf "$LOCK_DIR.stale.$$"
-            fi
-            continue
-        fi
-        if (( waited >= 30 )); then
-            log "WARN lock held ${waited}s by pid=${pid:-?} — proceeding without it"
-            return 0
-        fi
-        sleep 1; waited=$((waited + 1))
-    done
-    echo "$$" > "$LOCK_DIR/pid"
-    trap 'rm -rf "$LOCK_DIR"' EXIT
+    if [[ -d "$LOCK_DIR" ]]; then
+        log "legacy display lock exists at $LOCK_DIR — inspect its owner before retrying"
+        return 75
+    fi
+    if ! command -v lockf >/dev/null 2>&1; then
+        log "lockf unavailable — refusing unprotected display writes"
+        return 75
+    fi
+    exec 9>"$LOCK_DIR.file" || return 75
+    if ! lockf -s -t "${DOTFILES_DISPLAY_LOCK_TIMEOUT:-30}" 9; then
+        exec 9>&-
+        log "display lock unavailable — intent and displays unchanged; retry later"
+        return 75
+    fi
+    trap 'exec 9>&-' EXIT
 }
 
 # set_dev_sw <brightness%> — write DEV softwareBrightness and confirm it landed
@@ -488,7 +477,7 @@ apply_mode() {
     IFS='|' read -r dev_pct port_b port_c port_t glyph label <<< "$row"
 
     # Serialize against other apply_mode invokers before touching displays.
-    acquire_lock
+    acquire_lock || return $?
 
     # DEV-MAIN uses XDR P3-1600 for EDR headroom (sw upscale on 100% hw) across
     # all modes. DEV_PRESET is constant today — if meeting/read/stream should

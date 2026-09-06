@@ -157,7 +157,6 @@ stow_packages() {
     # Ensure .config exists
     mkdir -p "$HOME/.config"
     # Ensure deep parent dirs exist for non-XDG stow packages
-    mkdir -p "$HOME/Library/Application Support/Übersicht"
 
     # here-string, not a pipe: a `while read` on the right of a pipe runs in a
     # subshell, so any counter set inside would not survive into this scope.
@@ -189,7 +188,8 @@ stow_packages() {
     # Replace with an absolute symlink so server.js can resolve it.
     local uber_link="$HOME/Library/Application Support/Übersicht/widgets"
     local uber_target="$DOTFILES_DIR/ubersicht/Library/Application Support/Übersicht/widgets"
-    if [[ -L "$uber_link" && -d "$uber_target" ]]; then
+    if [[ "$packages" == *ubersicht* && -L "$uber_link" && -d "$uber_target" ]] &&
+       [[ "$(cd -P "$uber_link" && pwd)" == "$(cd -P "$uber_target" && pwd)" ]]; then
         ln -sfn "$uber_target" "$uber_link"
         print_success "Übersicht widgets symlink rewritten to absolute"
     fi

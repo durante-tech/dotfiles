@@ -2,9 +2,23 @@
 -- Bindings: <leader>o + { i/c/t/b/x } for scenes, r/m/M/S/? for record/marker/mute/stream/status.
 -- This is a "virtual plugin" — no GitHub source, just config-local keymaps under lazy.nvim's spec format.
 
+local function available()
+  if vim.fn.executable("obs") == 1 then return true end
+  vim.notify("OBS: optional obs CLI is missing from PATH; configure it before using these bindings", vim.log.levels.WARN)
+  return false
+end
+
+local function start(args, options)
+  if not available() then return end
+  local ok, job = pcall(vim.fn.jobstart, args, options)
+  if not ok or job <= 0 then
+    vim.notify("OBS: unable to start CLI: " .. tostring(job), vim.log.levels.ERROR)
+  end
+end
+
 local function run(args, notify_msg)
   return function()
-    vim.fn.jobstart(vim.list_extend({ "obs" }, args), {
+    start(vim.list_extend({ "obs" }, args), {
       detach = true,
       on_exit = function(_, code)
         if code ~= 0 then
@@ -34,6 +48,7 @@ return {
     -- Recording / marker / mute / stream
     { "<leader>or", run({ "rec", "toggle" }, "OBS recording toggled"), desc = "OBS: Toggle recording" },
     { "<leader>om", function()
+        if not available() then return end
         local label = vim.fn.input("Marker label: ")
         if label and #label > 0 then
           run({ "marker", label }, "OBS marker: " .. label)()
@@ -47,11 +62,11 @@ return {
     -- Status floating window
     { "<leader>o?", function()
         local lines = { "─ OBS status ─" }
-        vim.fn.jobstart({ "obs", "current" }, {
+        start({ "obs", "current" }, {
           stdout_buffered = true,
           on_stdout = function(_, data)
             if data and data[1] and #data[1] > 0 then table.insert(lines, "scene: " .. data[1]) end
-            vim.fn.jobstart({ "obs", "rec", "status" }, {
+            start({ "obs", "rec", "status" }, {
               stdout_buffered = true,
               on_stdout = function(_, data2)
                 if data2 then table.insert(lines, "rec:   " .. table.concat(data2, " ")) end

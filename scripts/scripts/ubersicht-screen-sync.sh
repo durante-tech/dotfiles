@@ -1,77 +1,57 @@
 #!/usr/bin/env bash
-# ubersicht-screen-sync.sh — keep the Übersicht dashboard pinned to the external
-# (Dell) monitor even when its NSScreenNumber drifts.
-#
-# Übersicht's "show on selected screens" keys on the live NSScreenNumber, which is
-# NOT stable on this rig: it drifted 5 -> 3 during display-profile switches, which
-# silently hid the whole dashboard (the selected id no longer matched any screen).
-# This re-resolves the current external screen number and rewrites WidgetSettings.json,
-# then relaunches Übersicht ONLY when the number actually changed (cheap no-op
-# otherwise). The 3 built-in widgets use showOnMainScreen, which is stable (index 0),
-# so they're left alone.
-#
-# Wired into the display-change flow (display-restore.sh runs it best-effort after an
-# apply; bd-wake.sh covers it via display-restore on wake). Safe to run manually.
-
+# Synchronize only widgets in the currently deployed dotfiles widget directory.
 set -u
-
+[ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 SETTINGS="$HOME/Library/Application Support/tracesOf.Uebersicht/WidgetSettings.json"
+DEPLOYED="$HOME/Library/Application Support/Übersicht/widgets"
+SOURCE="$DOTFILES_DIR/ubersicht/Library/Application Support/Übersicht/widgets"
+HELPER="${BASH_SOURCE[0]%/*}/lib/widget-settings.py"
 APP="/Applications/Übersicht.app"
-LOG="/tmp/ubersicht-screen-sync.log"
-log() {
-  [ -f "$LOG" ] && [ "$(wc -c <"$LOG" 2>/dev/null || echo 0)" -gt 1048576 ] && : > "$LOG"
-  printf '[%s] %s\n' "$(date '+%F %T')" "$*" >> "$LOG"
-}
+log() { printf 'Übersicht sync: %s\n' "$*" >&2; }
 
-[ -r "$SETTINGS" ] || { log "no WidgetSettings.json — skip"; exit 0; }
-
-# Widgets that stay on the built-in (main) display. Everything else is dashboard.
-BUILTIN_WIDGETS="focus-widget-index-jsx drift-warden-widget-index-jsx clock-widget-index-jsx"
-
-# Current external (non-builtin) NSScreenNumber — the value Übersicht keys on.
-EXT="$(swift - <<'SW' 2>/dev/null
+python3 "$HELPER" verify "$SOURCE" "$DEPLOYED" || exit 0
+[[ -r "$SETTINGS" ]] || { log "no settings; skipping"; exit 0; }
+# This helper never removes another invocation's lock.
+LOCK="${SETTINGS}.dotfiles-lock"
+mkdir "$LOCK" 2>/dev/null || { log "another sync holds the lock; skipping"; exit 0; }
+trap 'rmdir "$LOCK" 2>/dev/null' EXIT
+EXT=$(swift - <<'SW' 2>/dev/null
 import AppKit
 for s in NSScreen.screens {
   let n = (s.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber)?.uint32Value ?? 0
   if CGDisplayIsBuiltin(n) == 0 { print(n); break }
 }
 SW
-)"
-if [[ -z "${EXT// }" ]]; then log "no external display connected — leaving settings as-is"; exit 0; fi
-
-# Compute the desired settings; write a tmp copy + report whether anything changed.
-# Read-only on the live file so a running Übersicht can't be clobbered mid-write.
-result="$(BUILTIN="$BUILTIN_WIDGETS" EXT="$EXT" TMP="$SETTINGS.sync.tmp" python3 - "$SETTINGS" <<'PY'
-import json, os, sys
-p = sys.argv[1]
-builtin = set(os.environ["BUILTIN"].split())
-ext = int(os.environ["EXT"])
-d = json.load(open(p))
-changed = False
-for k, v in d.items():
-    if k.startswith("-"):
-        continue
-    if k in builtin:
-        if not v.get("showOnMainScreen") or v.get("showOnAllScreens") or v.get("showOnSelectedScreens"):
-            v.update(showOnAllScreens=False, showOnMainScreen=True, showOnSelectedScreens=False, screens=[]); changed = True
-    else:
-        if v.get("screens") != [ext] or not v.get("showOnSelectedScreens"):
-            v.update(showOnAllScreens=False, showOnMainScreen=False, showOnSelectedScreens=True, screens=[ext]); changed = True
-if changed:
-    json.dump(d, open(os.environ["TMP"], "w"))
-print("changed" if changed else "nochange")
-PY
-)"
-
-if [[ "$result" == changed ]]; then
-  # Übersicht reads WidgetSettings.json only at launch and rewrites it on quit, so
-  # SIGKILL it (no save-on-quit clobber), swap in the new file, relaunch.
-  pkill -9 -f 'Uebersicht' 2>/dev/null
-  sleep 1
-  mv -f "$SETTINGS.sync.tmp" "$SETTINGS"
-  open -gj "$APP" 2>/dev/null
-  log "external=$EXT — dashboard re-pinned to screens:[$EXT], Übersicht relaunched"
-else
-  rm -f "$SETTINGS.sync.tmp" 2>/dev/null
-  log "external=$EXT — already correct, no-op"
+)
+[[ "$EXT" =~ ^[0-9]+$ ]] || { log "external screen unavailable; skipping"; exit 0; }
+result=$(python3 "$HELPER" check "$SOURCE" "$DEPLOYED" "$SETTINGS" "$EXT") || exit 1
+[[ "$result" == changed ]] || exit 0
+# Bundle metadata supplies the exact executable spelling (including Unicode).
+PROCESS=$(python3 -c 'import plistlib,sys; print(plistlib.load(open(sys.argv[1], "rb"))["CFBundleExecutable"])' "$APP/Contents/Info.plist" 2>/dev/null) || {
+    log "application identity unavailable; settings unchanged"; exit 0;
+}
+[[ -n "$PROCESS" ]] || { log "empty application identity; settings unchanged"; exit 0; }
+was_running=false
+if pgrep -x "$PROCESS" >/dev/null; then
+    was_running=true
+    # Apple events have a bounded timeout; never force termination.
+    osascript <<'AS' >/dev/null 2>&1
+with timeout of 5 seconds
+    tell application id "tracesOf.Uebersicht" to quit
+end timeout
+AS
+    for ((i=0; i<5; i++)); do
+        pgrep -x "$PROCESS" >/dev/null || break
+        sleep 1
+    done
+    if pgrep -x "$PROCESS" >/dev/null; then
+        log "application did not quit cleanly; settings unchanged"
+        exit 0
+    fi
 fi
+# Read again AFTER quit: Übersicht may save preferences during shutdown.
+python3 "$HELPER" apply "$SOURCE" "$DEPLOYED" "$SETTINGS" "$EXT"
+result=$?
+if $was_running; then open -gj "$APP" || result=1; fi
+exit "$result"

@@ -63,3 +63,22 @@ web formats never silently switch to an LSP. Formatting runs once before save wi
 a 1,000 ms timeout. `<leader>f` and the non-Markdown `<leader>mp` alias share the
 same policy with a 2,000 ms manual timeout; Markdown's preview mapping is retained.
 Zsh is not sent to shfmt. Biome linting requires a project Biome configuration.
+
+## Desktop helpers
+
+Display applies acquire macOS `lockf` on descriptor 9 and return temporary
+failure (75) after 30 seconds of contention. They preserve the last intent and
+perform no display writes without that lock. A remaining legacy
+`~/.cache/bd-apply.lock` directory requires inspection of its recorded owner;
+the updater does not delete it. The new `.lock.file` inode remains on disk,
+while the operating system releases the lock when its owner closes the descriptor.
+
+Übersicht screen synchronization requires its deployed widget directory to
+resolve to this checkout. It edits only the supplied widgets, rereads preferences
+after graceful shutdown, and skips if the app cannot quit. Unrelated widget
+preferences are preserved. This does not reactivate a retired deployment.
+
+Memory refreshes use one `vm_stat` snapshot; Spotify uses at most one Apple
+script query and parses JSON with `jq`. Their existing polling intervals remain
+unchanged. Unavailable data displays `?`. These are reductions in repeated
+operations; no wall-clock performance improvement is claimed.

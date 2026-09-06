@@ -98,8 +98,8 @@ command -v mise &>/dev/null && eval "$(mise activate zsh 2>/dev/null)"
 # `command -v fzf` passes there — fzf exists, the OPTION does not. Older
 # packages ship the same bindings as files instead.
 if command -v fzf &>/dev/null; then
-    if fzf --zsh &>/dev/null; then
-        eval "$(fzf --zsh)"
+    if _fzf_init="$(fzf --zsh 2>/dev/null)"; then
+        eval "$_fzf_init"
     else
         for _fzf_f in /usr/share/doc/fzf/examples/key-bindings.zsh \
                       /usr/share/doc/fzf/examples/completion.zsh \
@@ -109,6 +109,7 @@ if command -v fzf &>/dev/null; then
         done
         unset _fzf_f
     fi
+    unset _fzf_init
 fi
 
 # FZF with Git right in the shell by Junegunn : check out his github below
@@ -329,7 +330,7 @@ if [[ -d "$FABRIC_PATTERNS_DIR" ]]; then
             # sourced junk like `alias pattern_explanations.md='fabric ...'`.
             # N also stops an empty patterns dir from erroring during startup.
             for pattern_file in "$FABRIC_PATTERNS_DIR"/*(/N); do
-                pattern_name="$(basename "$pattern_file")"
+                pattern_name="${pattern_file:t}"
                 echo "alias ${pattern_name}='fabric --pattern ${pattern_name}'"
             done
         } > "$FABRIC_ALIAS_CACHE"
