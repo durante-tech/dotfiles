@@ -237,3 +237,15 @@ go "honnef.co/go/tools/cmd/staticcheck"
 brew "wallpaper"                                # CLI for desktop wallpaper (Sindre Sorhus)
 cask "ubersicht"                                # Webview widgets above wallpaper
 # Note: Plash is Mac App Store only — install from https://sindresorhus.com/plash
+
+brew "jq"
+
+brew "prettier"
+
+brew "node"
+
+brew "deno"
+
+cask "raycast"
+
+cask "karabiner-elements"

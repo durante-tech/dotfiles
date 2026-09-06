@@ -24,8 +24,11 @@ for arg in "$@"; do
             sed -n '2,12p' "$0" | sed 's|^# \?||'
             exit 0
             ;;
+        *) printf 'Unknown option: %s\n' "$arg" >&2; exit 2 ;;
     esac
 done
+
+[ "$PRINT_ONLY" = true ] && NO_PULL=true
 
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 TEMPLATE="$DOTFILES_DIR/docs/POSTPULL_PROMPT.md"
@@ -38,7 +41,7 @@ warn() { printf "${Y}!${N} %s\n" "$*"; }
 err()  { printf "${R}✗${N} %s\n" "$*" >&2; }
 
 [ ! -f "$TEMPLATE" ] && { err "Prompt template missing: $TEMPLATE"; exit 1; }
-[ ! -d "$DOTFILES_DIR/.git" ] && { err "Not a git repo: $DOTFILES_DIR"; exit 1; }
+git -C "$DOTFILES_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1 || { err "Not a git repo: $DOTFILES_DIR"; exit 1; }
 
 cd "$DOTFILES_DIR"
 
@@ -80,7 +83,7 @@ fi
 # If --no-pull, default the range to "last 5 commits" so the user can re-run
 # the upgrade prompt against a past pull they forgot to process.
 if [ "$NO_PULL" = true ]; then
-    BEFORE=$(git rev-parse HEAD~5)
+    BEFORE=$(git rev-list --max-count=6 "$AFTER" | tail -1)
 fi
 
 RANGE="${BEFORE}..${AFTER}"

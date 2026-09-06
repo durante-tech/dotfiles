@@ -110,6 +110,7 @@ check_dependencies() {
 # ============================================================================
 
 stow_packages() {
+    local failed=0
     print_header "Stowing Packages"
 
     cd "$DOTFILES_DIR" || exit 1
@@ -128,6 +129,7 @@ stow_packages() {
             print_success "Rendered aerospace.toml from template"
         else
             print_warning "render-aerospace.sh failed - aerospace.toml may be missing or stale"
+            failed=1
         fi
     fi
 
@@ -162,16 +164,23 @@ stow_packages() {
     local pkg stow_err
     while IFS= read -r pkg; do
         [[ -n "$pkg" ]] || continue
+        if [[ "$pkg" == aerospace && ! -f "$DOTFILES_DIR/aerospace/.config/aerospace/aerospace.toml" ]]; then
+            print_error "AeroSpace render is missing; skipping its deployment"
+            failed=1
+            continue
+        fi
         if [[ -d "$DOTFILES_DIR/$pkg" ]]; then
             # Keep stderr so a genuine error is distinguishable from a conflict.
             if stow_err="$(stow -t ~ -R "$pkg" 2>&1)"; then
                 print_success "Stowed $pkg"
             else
                 print_warning "Failed to stow $pkg:"
+                failed=1
                 sed 's/^/    /' <<< "$stow_err"
             fi
         else
-            print_info "Skipping $pkg (directory not found)"
+            print_error "Package $pkg is missing"
+            failed=1
         fi
     done <<< "$packages"
 
@@ -184,6 +193,7 @@ stow_packages() {
         ln -sfn "$uber_target" "$uber_link"
         print_success "Übersicht widgets symlink rewritten to absolute"
     fi
+    return "$failed"
 }
 
 # ============================================================================
@@ -191,6 +201,7 @@ stow_packages() {
 # ============================================================================
 
 configure_environment() {
+    local failed=0
     print_header "Configuring Environment"
 
     # Detect monitors for AeroSpace
@@ -265,11 +276,11 @@ configure_environment() {
 
     # Python venv for nvim's python3 provider (Molten/Jupyter — pynvim).
     # options.lua points python3_host_prog here with an existence guard.
-    setup_nvim_python
+    setup_nvim_python || failed=1
 
     # Compile native helper binaries (unlock-watch) before the agents that run
     # them are bootstrapped.
-    build_native_helpers
+    build_native_helpers || failed=1
 
     # Render LaunchAgent plists from templates and bootstrap them.
     # ~/.wakeup — the hook BOTH wake-recovery agents execute.
@@ -298,14 +309,15 @@ configure_environment() {
         fi
     fi
 
-    render_launchagents
+    render_launchagents || failed=1
 
     # Symlink dotfiles-tracked Raycast script-commands into the indexed dir.
-    link_raycast_commands
+    link_raycast_commands || failed=1
 
 
     # Wire the rtk token-saver hook into Claude Code's PreToolUse:Bash chain.
-    configure_rtk_hook
+    configure_rtk_hook || failed=1
+    return "$failed"
 }
 
 # ============================================================================
@@ -324,8 +336,8 @@ setup_nvim_python() {
     print_header "Nvim Python Provider"
 
     if ! command -v python3 >/dev/null 2>&1; then
-        print_info "python3 not found — skipping nvim python provider venv"
-        return 0
+        print_error "python3 not found — provider provisioning unavailable"
+        return 1
     fi
 
     local VENV="$HOME/.venvs/nvim"
@@ -383,9 +395,11 @@ setup_nvim_python() {
             print_success "nvim python provider venv ready -> $VENV (python3 kernel registered)"
         else
             print_warning "Provisioned $VENV but could not register the python3 Jupyter kernel"
+            return 1
         fi
     else
         print_warning "Failed to provision $VENV (Molten/Jupyter provider disabled)"
+        return 1
     fi
 }
 
@@ -624,89 +638,30 @@ configure_rtk_hook() {
 # shaders, zsh docs + completion cache) are excluded by each package's
 # .stow-local-ignore, so they never show up here.
 check_stow_drift() {
+    STOW_LEGACY_PRESENT=0
     print_header "Checking Stow Drift"
-
-    command -v stow >/dev/null 2>&1 || { print_warning "stow not installed — skipping"; return 0; }
+    command -v stow >/dev/null 2>&1 || { print_error "stow not installed"; return 1; }
     cd "$DOTFILES_DIR" || return 1
-
-    # Package list comes from stow-packages.txt, the single source of truth this
-    # shares with install.sh and the CI stow dry run. It used to be a third
-    # hand-maintained copy.
-    local manifest="$DOTFILES_DIR/stow-packages.txt"
-    if [[ ! -r "$manifest" ]]; then
-        print_warning "Missing $manifest — skipping stow drift check"
-        return 0
-    fi
-    # `|| true` for the same reason as the grep pipeline below — under `set -e`
-    # an empty manifest would abort the whole --check run instead of warning.
-    local packages
+    local manifest="$DOTFILES_DIR/stow-packages.txt" packages pkg raw out rc drifted=0
+    [[ -r "$manifest" ]] || { print_error "Missing package manifest"; return 1; }
     packages="$(sed -e 's/#.*//' -e 's/[[:space:]]//g' "$manifest" | grep -v '^$' || true)"
-    if [[ -z "$packages" ]]; then
-        print_warning "$manifest lists no packages — skipping stow drift check"
-        return 0
-    fi
-
-    # here-string, not a pipe — `drifted` must accumulate in THIS shell. Same
-    # subshell trap the comment below documents for the grep pipeline.
-    local pkg drifted=0 out raw rc
+    [[ -n "$packages" ]] || { print_error "Empty package manifest"; return 1; }
     while IFS= read -r pkg; do
         [[ -n "$pkg" ]] || continue
-        [[ -d "$DOTFILES_DIR/$pkg" ]] || continue
-        # "(reverts previous action)" lines are stow's re-stow bookkeeping for links
-        # that already exist — only the remainder are genuinely missing.
-        #
-        # The trailing `|| true` is load-bearing under this file's `set -e`. A
-        # CLEAN package filters to zero lines, grep exits 1, and a bare
-        # `out="$(...)"` propagates that status — which aborted the whole script
-        # on the first healthy package, so `--check` printed this header and then
-        # died before reporting anything or running any later verification. The
-        # healthy path was the failing one.
-        # Capture BOTH stow's output and whether it refused to run at all. The
-        # previous version counted only LINK: lines, so a package where stow
-        # aborted before emitting any — a genuine conflict — produced an empty
-        # result and was counted CLEAN. That is how ~/.config/linearmouse being a
-        # real app-written file instead of a symlink stayed invisible while this
-        # check printed "All packages fully stowed".
-        #
-        # `|| rc=$?` rather than a following `rc=$?`: a bare assignment from a
-        # command substitution propagates the command's exit status, which under
-        # this file's `set -e` aborts the function before rc is ever read.
+        if [[ ! -d "$DOTFILES_DIR/$pkg" ]]; then
+            print_error "Package $pkg is missing"
+            drifted=$((drifted + 1))
+            continue
+        fi
         rc=0
         raw="$(stow -n -v -R -t ~ "$pkg" 2>&1)" || rc=$?
         if (( rc != 0 )); then
-            # One conflict is INTENTIONAL and must not be reported, or this check
-            # cries wolf on every single run — the same way a permanently-red CI
-            # gate trained everyone here to ignore it.
-            #
-            # stow_packages() rewrites the Übersicht widgets link to an ABSOLUTE
-            # symlink because Übersicht's server.js cannot follow the relative one
-            # stow creates. stow then disowns it ("existing target is not owned by
-            # stow") even though the link is correctly pointing into this repo.
-            # So: a conflict counts as REAL only if some conflicting target is not
-            # already an absolute symlink into $DOTFILES_DIR.
-            local bad tgt real_conflict=0 had_conflict=0
-            while IFS= read -r bad; do
-                [[ -n "$bad" ]] || continue
-                had_conflict=1
-                bad="${bad##*not owned by stow: }"
-                tgt="$HOME/$bad"
-                if [[ -L "$tgt" && "$(readlink "$tgt")" == "$DOTFILES_DIR"/* ]]; then
-                    continue
-                fi
-                real_conflict=1
-            done <<< "$(grep 'not owned by stow:' <<< "$raw" || true)"
-
-            if (( had_conflict == 1 && real_conflict == 0 )); then
-                : # every conflict explained by an intentional absolute link
-            else
-                print_warning "$pkg — stow refused to run (conflict or error):"
-                sed 's/^/    /' <<< "$raw"
-                drifted=$((drifted + 1))
-            fi
+            print_warning "$pkg — stow refused to run (conflict or error):"
+            sed 's/^/    /' <<< "$raw"
+            drifted=$((drifted + 1))
             continue
         fi
-        # "(reverts previous action)" lines are stow's re-stow bookkeeping for
-        # links that already exist — only the remainder are genuinely missing.
+        # A re-stow lists existing links as UNLINK + LINK(reverts previous action).
         out="$(printf '%s\n' "$raw" | grep '^LINK:' | grep -v 'reverts previous action' || true)"
         if [[ -n "$out" ]]; then
             print_warning "$pkg has unstowed file(s):"
@@ -714,21 +669,25 @@ check_stow_drift() {
             drifted=$((drifted + 1))
         fi
     done <<< "$packages"
-
-    if [[ $drifted -eq 0 ]]; then
-        print_success "All packages fully stowed"
+    if (( drifted )); then
+        print_warning "$drifted package(s) drifted — inspect before applying stow"
     else
-        print_warning "$drifted package(s) drifted — fix with: stow -t ~ -R <package>"
+        print_success "All manifest packages fully stowed"
     fi
-    return 0
+    if [[ -L "$HOME/.dos/isc-state.json" ]]; then
+        STOW_LEGACY_PRESENT=1
+        print_warning "Legacy ~/.dos/isc-state.json link preserved; producer/successor ownership remains unresolved"
+    fi
+    (( drifted == 0 ))
 }
 
 verify_config() {
     print_header "Verifying Configuration"
 
-    local issues=0
+    local issues=0 cfg_warn=0
 
-    check_stow_drift
+    check_stow_drift || issues=$((issues + 1))
+    cfg_warn=${STOW_LEGACY_PRESENT:-0}
 
     # Check symlinks
     echo "Checking symlinks..."
@@ -748,8 +707,7 @@ verify_config() {
         if [[ -L "$target" ]]; then
             print_success "$target linked"
         elif [[ -e "$target" ]]; then
-            print_warning "$target exists but is not a symlink"
-            issues=$((issues + 1))
+            print_info "$target exists; ownership checked by Stow (unfolded directories are valid)"
         else
             print_error "$target missing"
             issues=$((issues + 1))
@@ -787,6 +745,7 @@ verify_config() {
         if DOTFILES_DIR="$DOTFILES_DIR" "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" --doctor; then
             print_success "AeroSpace doctor checks passed"
         else
+            cfg_warn=$((cfg_warn + 1))
             print_warning "See doctor WARN lines above for the specific fix (personalize.sh, brew upgrade --cask aerospace, or persistent-workspaces edit)"
         fi
     fi
@@ -797,8 +756,6 @@ verify_config() {
     # that would not bootstrap, a venv that could not be built, a wake hook that
     # was never linked) passed verification silently.
     echo -e "\nConfigured state..."
-    local cfg_warn=0
-
     local agent_count
     agent_count=$(find "$HOME/Library/LaunchAgents" -name 'com.lucas.*.plist' 2>/dev/null | wc -l | tr -d ' ')
     local tpl_count
@@ -903,23 +860,35 @@ main() {
             # never ran on exactly the machines that needed diagnosing.
             # check_dependencies prints its own "Run ./install.sh first"
             # remediation, so continuing costs nothing.
-            check_dependencies || true
-            verify_config
+            local check_failed=0
+            check_dependencies || check_failed=1
+            verify_config || check_failed=1
+            return "$check_failed"
             ;;
         --stow)
             stow_packages
             ;;
+        --provision)
+            local provision_failed=0
+            setup_nvim_python || provision_failed=1
+            build_native_helpers || provision_failed=1
+            return "$provision_failed"
+            ;;
         --configure)
-            configure_environment
-            verify_config
+            local configure_failed=0
+            configure_environment || configure_failed=1
+            verify_config || configure_failed=1
             post_update
+            return "$configure_failed"
             ;;
         --all|"")
-            check_dependencies
-            stow_packages
-            configure_environment
-            verify_config
+            local all_failed=0
+            check_dependencies || all_failed=1
+            stow_packages || all_failed=1
+            configure_environment || all_failed=1
+            verify_config || all_failed=1
             post_update
+            return "$all_failed"
             ;;
         --help|-h)
             echo "Usage: ./setup.sh [OPTION]"
@@ -927,7 +896,8 @@ main() {
             echo "Options:"
             echo "  --check      Check dependencies and verify config"
             echo "  --stow       Stow all packages"
-            echo "  --configure  Configure environment for this machine"
+            echo "  --configure  Explicit service/helper/integration setup"
+            echo "  --provision  Provision provider environment and native helpers only"
             echo "  --all        Run all steps (default)"
             echo "  --help       Show this help"
             ;;

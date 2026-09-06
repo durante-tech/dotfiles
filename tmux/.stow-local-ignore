@@ -1,0 +1,20 @@
+# Agent runtime is never terminal configuration. Existing links are not removed.
+(^|/)\.(dos|pi)(/|$)
+
+# --- stow defaults, preserved ---
+RCS
+.+,v
+CVS
+\.\#.+
+\.cvsignore
+\.svn
+_darcs
+\.hg
+\.git
+\.gitignore
+\.gitmodules
+.+~
+\#.*\#
+^/README.*
+^/LICENSE.*
+^/COPYING

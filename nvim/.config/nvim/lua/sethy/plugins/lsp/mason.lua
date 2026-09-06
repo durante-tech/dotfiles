@@ -29,6 +29,11 @@ return {
             },
         })
 
+        if vim.env.DOTFILES_CONFIG_ONLY == "1" then
+            mason_lspconfig.setup({ automatic_enable = false })
+            return
+        end
+
         mason_lspconfig.setup({
             automatic_enable = false,
             -- servers for mason to install

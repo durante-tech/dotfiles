@@ -9,7 +9,8 @@
 #   ./install.sh --help       # Show all options
 #
 
-set -e  # Exit on error
+set -e  # Fatal prerequisites stop; phase failures are accumulated.
+FAILURES=0
 
 # =============================================================================
 # CONFIGURATION
@@ -17,7 +18,7 @@ set -e  # Exit on error
 
 DOTFILES_REPO="https://github.com/durante-tech/dotfiles.git"
 # Clone target / repo root; env var overrides for non-default locations
-# (install.sh may run via curl before the clone exists, so it cannot derive
+# (the configured installation target may differ from this source checkout, so it cannot derive
 # the path from its own location like setup.sh/personalize.sh do).
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 # TPM lives at a NON-DEFAULT path. tmux.conf relocates it via
@@ -44,10 +45,6 @@ UPDATE_ONLY=false
 FORCE_STOW=false
 VERBOSE=false
 DRY_RUN=false
-# Accumulated package failures. brew_install/cask_install append here instead of
-# aborting, so a single unavailable formula cannot stop the run before stow.
-BREW_FAILED=""
-CASK_FAILED=""
 
 # =============================================================================
 # HELPER FUNCTIONS
@@ -83,6 +80,11 @@ print_error() {
     echo -e "${RED}✗${NC} $1"
 }
 
+record_failure() {
+    FAILURES=$((FAILURES + 1))
+    print_warn "$1"
+}
+
 print_success() {
     echo -e "${GREEN}✓${NC} $1"
 }
@@ -98,55 +100,6 @@ print_dry_skip() {
 # Check if a command exists
 cmd_exists() {
     command -v "$1" &>/dev/null
-}
-
-# Check if a brew formula is installed
-brew_installed() {
-    brew list "$1" &>/dev/null 2>&1
-}
-
-# Check if a brew cask is installed
-cask_installed() {
-    brew list --cask "$1" &>/dev/null 2>&1
-}
-
-# Install brew formula if not already installed
-brew_install() {
-    if brew_installed "$1"; then
-        $VERBOSE && print_skip "$1"
-        $DRY_RUN && print_dry_skip "$1"
-        return 0
-    fi
-    if [ "$DRY_RUN" = true ]; then
-        print_dry "brew install $1"
-        return 0
-    fi
-    print_step "Installing $1..."
-    # NOT fatal. This used to be a bare `brew install`, which under `set -e`
-    # meant one unavailable formula — a rename, a bad bottle mirror, a tap that
-    # failed to clone — aborted the entire install. Since stow is phase 6, any
-    # phase-3 casualty left the machine with packages but ZERO dotfiles
-    # deployed, which is the worst possible failure shape for this script.
-    brew install "$1" || { print_warn "$1 failed to install"; BREW_FAILED="$BREW_FAILED $1"; }
-}
-
-# Install brew cask if not already installed
-cask_install() {
-    if cask_installed "$1"; then
-        $VERBOSE && print_skip "$1 (cask)"
-        $DRY_RUN && print_dry_skip "$1 (cask)"
-        return 0
-    fi
-    if [ "$DRY_RUN" = true ]; then
-        print_dry "brew install --cask $1"
-        return 0
-    fi
-    print_step "Installing $1 (cask)..."
-    # Non-fatal for the same reason as brew_install, and one more: pkg-based
-    # casks (karabiner-elements, font-sf-pro, basictex) shell out to
-    # `sudo installer`, which cannot prompt in a non-TTY run — exactly how
-    # INSTALL.md tells an agent to drive this script.
-    brew install --cask "$1" || { print_warn "$1 (cask) failed to install"; CASK_FAILED="$CASK_FAILED $1"; }
 }
 
 # Execute command (or show in dry-run mode)
@@ -167,8 +120,9 @@ Usage: ./install.sh [OPTIONS]
 Options:
     --help, -h          Show this help message
     --dry-run, -n       Show what would be done without making changes
-    --update, -u        Update mode: skip Homebrew installs, just sync plugins
-    --skip-brew         Skip all Homebrew formula installations
+    --update, -u        Apply current checkout and sync plugins; no provisioning or pull
+    --with-tools        With --update, also provision declared tools/environments
+    --skip-brew         Skip all Homebrew formula installations/upgrades
     --skip-casks        Skip all Homebrew cask installations
     --skip-macos        Skip macOS defaults configuration
     --force-stow        Pass stow --adopt. RARELY NEEDED: conflicts are backed
@@ -180,7 +134,7 @@ Examples:
     ./install.sh                    # Full fresh install
     ./install.sh --dry-run          # Preview what would be installed
     ./update.sh                     # Quick update (alias of --update)
-    ./install.sh --update           # Quick update (plugins only)
+    ./install.sh --update           # Apply configuration and sync plugins
     ./install.sh --skip-casks       # Install without GUI apps
     ./install.sh --force-stow       # Re-stow and adopt existing configs
 
@@ -193,50 +147,19 @@ EOF
 # PARSE ARGUMENTS
 # =============================================================================
 
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        --help|-h)
-            show_help
-            ;;
-        --dry-run|-n)
-            DRY_RUN=true
-            VERBOSE=true  # Show all in dry-run
-            shift
-            ;;
-        --update|-u)
-            UPDATE_ONLY=true
-            SKIP_BREW=true
-            SKIP_CASKS=true
-            SKIP_MACOS_DEFAULTS=true
-            shift
-            ;;
-        --skip-brew)
-            SKIP_BREW=true
-            shift
-            ;;
-        --skip-casks)
-            SKIP_CASKS=true
-            shift
-            ;;
-        --skip-macos)
-            SKIP_MACOS_DEFAULTS=true
-            shift
-            ;;
-        --force-stow)
-            FORCE_STOW=true
-            shift
-            ;;
-        --verbose|-v)
-            VERBOSE=true
-            shift
-            ;;
-        *)
-            print_error "Unknown option: $1"
-            echo "Use --help for usage information"
-            exit 1
-            ;;
-    esac
-done
+INSTALL_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [[ ! -r "$INSTALL_SCRIPT_DIR/lib/install-options.sh" ]]; then
+    echo 'Clone the repository before running install.sh; its support library is required.' >&2
+    exit 1
+fi
+# shellcheck source=lib/install-options.sh
+source "$INSTALL_SCRIPT_DIR/lib/install-options.sh"
+# shellcheck source=lib/maintenance.sh
+source "$INSTALL_SCRIPT_DIR/lib/maintenance.sh"
+dotfiles_options "$@" || exit "$?"
+if "$SHOW_HELP"; then show_help; fi
+if "$DRY_RUN"; then dotfiles_preview; exit "$?"; fi
+if ! "$PROVISION_TOOLS"; then dotfiles_update; exit "$?"; fi
 
 # =============================================================================
 # MAIN INSTALLATION
@@ -270,6 +193,7 @@ fi
 # 2. HOMEBREW
 # -----------------------------------------------------------------------------
 
+if ! "$SKIP_BREW" || ! "$SKIP_CASKS"; then
 print_header "2. Homebrew"
 
 if cmd_exists brew; then
@@ -277,7 +201,7 @@ if cmd_exists brew; then
     # Update Homebrew
     if [ "$UPDATE_ONLY" = true ] && [ "$DRY_RUN" = false ]; then
         print_step "Updating Homebrew..."
-        brew update
+        brew update || record_failure "Homebrew update failed"
     elif [ "$UPDATE_ONLY" = true ] && [ "$DRY_RUN" = true ]; then
         print_dry "brew update"
     fi
@@ -310,31 +234,16 @@ else
 fi
 
 if [ "$DRY_RUN" = false ]; then
-    brew analytics off
+    brew analytics off || record_failure "Homebrew analytics setting failed"
 fi
 
-# Taps
-print_step "Configuring Homebrew taps..."
-if [ "$DRY_RUN" = true ]; then
-    print_dry "brew tap FelixKratz/formulae"
-    print_dry "brew tap nikitabobko/tap"
-else
-    brew tap FelixKratz/formulae 2>/dev/null || true
-    brew tap nikitabobko/tap 2>/dev/null || true
 fi
 
 # -----------------------------------------------------------------------------
 # 2.5 DOTFILES CLONE (must precede every phase that reads a file from the repo)
 # -----------------------------------------------------------------------------
-# The documented Quick Start (README_NEW_MACOS.md) is a curl one-liner, so this
-# script routinely runs with NO clone on disk. The clone used to live in §6,
-# but §3.5 gates the Brewfile on `[ -f "$DOTFILES_DIR/Brewfile" ]` with no else
-# branch and §4 execs install-linearmouse.sh out of the repo. On the one-liner
-# path both were therefore no-ops: the 28 formulae that exist only in the
-# Brewfile (sleepwatcher, gh, rtk, shellcheck, wget, osx-cpu-temp, ...) plus
-# every Brewfile-only cask were skipped in complete silence, and LinearMouse
-# degraded to a warning. Clone here instead — git ships with the Xcode CLT from
-# §1, so it is already available — and §6 then takes its "already cloned" branch.
+# Helpers require an existing source checkout. If DOTFILES_DIR deliberately
+# names a separate installation target, prepare that clone before provisioning.
 
 if [ ! -d "$DOTFILES_DIR" ]; then
     if [ "$DRY_RUN" = true ]; then
@@ -349,127 +258,13 @@ fi
 # 3. HOMEBREW FORMULAE
 # -----------------------------------------------------------------------------
 
-if [ "$SKIP_BREW" = false ]; then
-    print_header "3. Homebrew Formulae"
-
-    # Core Utils
-    print_step "Installing core utilities..."
-    brew_install coreutils
-
-    # Shell & Plugins
-    print_step "Installing shell tools..."
-    brew_install zsh-autosuggestions
-    brew_install zsh-syntax-highlighting
-    brew_install stow
-    brew_install starship
-    brew_install atuin
-    brew_install zoxide
-    brew_install fzf
-
-    # File & Text Tools
-    print_step "Installing file/text tools..."
-    brew_install bat
-    brew_install fd
-    brew_install ripgrep
-    brew_install eza
-    brew_install tree
-    brew_install jq
-    brew_install yazi
-    brew_install broot
-    brew_install w3m
-
-    # Development
-    print_step "Installing development tools..."
-    brew_install git
-    brew_install lazygit
-    brew_install git-delta
-    brew_install neovim
-    brew_install tmux
-    brew_install tree-sitter
-    brew_install lua
-    brew_install luajit
-    brew_install luarocks
-    brew_install prettier
-    brew_install make
-
-    # Languages & Version Managers
-    # mise is the polyglot manager — replaces fnm + pyenv + nvm + asdf.
-    # node here is just the bootstrap binary; per-project versions managed by mise.
-    print_step "Installing languages & version managers..."
-    brew_install mise
-    brew_install uv              # Python packaging (see Brewfile note)
-    brew_install node
-    brew_install go
-    brew_install deno
-    brew_install sqlite
-
-    # Modern CLI Replacements
-    print_step "Installing modern CLI tools..."
-    brew_install procs
-    brew_install bottom
-    brew_install curlie
-    brew_install dust
-    brew_install duf
-    brew_install onefetch
-    brew_install fx
-    brew_install navi
-    brew_install tldr
-    brew_install direnv
-
-    # Image & PDF Tools (for Neovim plugins)
-    print_step "Installing image/PDF tools..."
-    brew_install pngpaste
-    brew_install imagemagick
-    brew_install poppler
-    brew_install ghostscript
-
-    # macOS Window Management & UI
-    print_step "Installing window management tools..."
-    brew_install borders
-    brew_install sketchybar
-
-    # Media
-    print_step "Installing media tools..."
-    brew_install mpd
-    brew_install rmpc
-
-    # AI & Productivity
-    print_step "Installing AI/productivity tools..."
-    brew_install aider
-    brew_install gum             # glamorous shell scripts
-    brew_install glow            # terminal markdown renderer
-    brew_install wallpaper       # macOS wallpaper CLI (used by hourly rotation)
-
-    # NOTE: qmk is NOT installed here. It lives only in the qmk/qmk tap
-    # (formulae.brew.sh returns 404 for a bare `qmk`), and this phase runs
-    # BEFORE §3.5 adds that tap via the Brewfile — so `brew_install qmk` aborted
-    # a fresh install at this exact line, under set -e, before stow ever ran.
-    # Brewfile:7 taps qmk/qmk and Brewfile:155 installs qmk/qmk/qmk correctly.
-
-    print_success "Homebrew formulae complete"
-else
-    print_header "3. Homebrew Formulae (SKIPPED)"
-fi
-
-# -----------------------------------------------------------------------------
-# 3.5 BREWFILE RECONCILIATION (fires in BOTH full-install AND --update modes)
-# -----------------------------------------------------------------------------
-# Idempotent — brew bundle skips already-installed packages. This is what
-# picks up new additions (gptcommit, osv-scanner, custom taps, casks) for
-# existing devs running `./install.sh --update` after a git pull.
-#
-# Note: brew bundle is ADDITIVE only — it does not uninstall tools that were
-# removed from the Brewfile. See docs/UPGRADE.md "Removing retired tools" for
-# the opt-in cleanup path.
-
-if cmd_exists brew && [ -f "$DOTFILES_DIR/Brewfile" ]; then
-    print_header "3.5 Brewfile Reconciliation"
-    if [ "$DRY_RUN" = true ]; then
-        print_dry "brew bundle install --file=$DOTFILES_DIR/Brewfile"
+if ! "$SKIP_BREW" || ! "$SKIP_CASKS"; then
+    print_header "3. Brewfile Reconciliation"
+    if cmd_exists brew && [[ -r "$DOTFILES_DIR/Brewfile" ]]; then
+        dotfiles_bundle_args
+        brew "${BUNDLE_ARGS[@]}" || record_failure "Brewfile provisioning failed"
     else
-        print_step "Installing anything missing from Brewfile..."
-        brew bundle install --file="$DOTFILES_DIR/Brewfile" || \
-            print_warn "brew bundle had failures (check output above)"
+        record_failure "Homebrew or Brewfile is unavailable"
     fi
 fi
 
@@ -477,44 +272,8 @@ fi
 # 4. HOMEBREW CASKS (GUI Applications)
 # -----------------------------------------------------------------------------
 
-if [ "$SKIP_CASKS" = false ]; then
-    print_header "4. Homebrew Casks (GUI Apps)"
-
-    cask_install raycast
-    cask_install karabiner-elements
-    cask_install ghostty
-    cask_install kitty
-    cask_install aerospace
-    cask_install betterdisplay
-    # LinearMouse is NOT installed via cask — it is pinned to v0.11.2.
-    # >=0.11.3 carries upstream PR #1209, which FSEvents-watches $HOME and its
-    # parent roots and pegs a core on a busy home directory (1% vs 92% peak
-    # under an identical load). See scripts/scripts/install-linearmouse.sh.
-    if [ "$DRY_RUN" = true ]; then
-        print_dry "install-linearmouse.sh (pinned v0.11.2)"
-    else
-        "$DOTFILES_DIR/scripts/scripts/install-linearmouse.sh" || print_warn "LinearMouse pinned install failed"
-    fi
-    cask_install ubersicht       # webview widgets above wallpaper
-    cask_install espanso         # system-wide text expander
-    cask_install maccy           # clipboard history manager
-    cask_install claude-code     # AI coding assistant (Anthropic)
-    # keycastr and boring-notch are deliberately NOT installed, and the
-    # theboredteam/boring-notch tap is deliberately NOT added. All three were
-    # retired from the Brewfile and uninstalled from the maintainer's machine,
-    # but the cask_install lines and the tap were missed — so a fresh Mac
-    # re-tapped a third-party repo and reinstalled two apps that had been
-    # explicitly removed.
-
-    # Fonts
-    print_step "Installing fonts..."
-    cask_install font-hack-nerd-font
-    cask_install font-jetbrains-mono-nerd-font
-    cask_install font-sf-pro
-
-    print_success "Homebrew casks complete"
-else
-    print_header "4. Homebrew Casks (SKIPPED)"
+if ! "$SKIP_CASKS"; then
+    "$DOTFILES_DIR/scripts/scripts/install-linearmouse.sh" || record_failure "Pinned LinearMouse install failed"
 fi
 
 # -----------------------------------------------------------------------------
@@ -531,7 +290,7 @@ if cmd_exists bun; then
             print_dry "bun upgrade"
         else
             print_step "Updating Bun..."
-            bun upgrade || true
+            bun upgrade || record_failure "Bun upgrade failed"
         fi
     fi
 else
@@ -581,7 +340,7 @@ elif cmd_exists npm; then
         print_dry "npm install -g opencode-ai"
     else
         print_step "Installing opencode globally via npm..."
-        npm install -g opencode-ai 2>/dev/null || print_warn "opencode install failed"
+        npm install -g opencode-ai 2>/dev/null || record_failure "opencode install failed"
     fi
 fi
 
@@ -593,7 +352,7 @@ if cmd_exists fabric; then
             print_dry "go install github.com/danielmiessler/fabric/cmd/fabric@latest"
         else
             print_step "Updating Fabric..."
-            go install github.com/danielmiessler/fabric/cmd/fabric@latest || true
+            go install github.com/danielmiessler/fabric/cmd/fabric@latest || record_failure "Fabric upgrade failed"
         fi
     fi
 else
@@ -606,7 +365,7 @@ else
             # always had `|| true`. The fresh path was the fatal one, and it is
             # the path that runs before stow.
             go install github.com/danielmiessler/fabric/cmd/fabric@latest \
-                || print_warn "Fabric install failed - the fb* aliases will be inert"
+                || record_failure "Fabric install failed - the fb* aliases will be inert"
         fi
     else
         print_warn "Go not found - skipping Fabric installation"
@@ -625,7 +384,7 @@ if [ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]; then
             print_step "Updating SDKMAN..."
             # shellcheck disable=SC1091
             ( . "$HOME/.sdkman/bin/sdkman-init.sh" && sdk selfupdate force ) \
-                || print_warn "SDKMAN selfupdate failed"
+                || record_failure "SDKMAN selfupdate failed"
         fi
     fi
 else
@@ -652,7 +411,7 @@ else
         # post-install check below then catches every other partial-failure mode.
         sdkman_zdot="$(mktemp -d)"
         ZDOTDIR="$sdkman_zdot" bash -c 'set -o pipefail; curl -fsSL https://get.sdkman.io | bash' \
-            || print_warn "SDKMAN install failed"
+            || record_failure "SDKMAN install failed"
         rm -rf "$sdkman_zdot"
         if [ ! -s "$HOME/.sdkman/bin/sdkman-init.sh" ]; then
             print_warn "SDKMAN did not land - skipping Java, install by hand later"
@@ -674,7 +433,7 @@ if [ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]; then
         # candidate is already present, and this must never hang a headless run.
         # shellcheck disable=SC1091
         ( . "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install java </dev/null ) \
-            || print_warn "Java install failed - run 'sdk install java' by hand"
+            || record_failure "Java install failed - run 'sdk install java' by hand"
     fi
 fi
 
@@ -684,20 +443,7 @@ fi
 
 print_header "6. Dotfiles"
 
-# The clone itself now happens in §2.5 — §3.5 (Brewfile) and §4 (LinearMouse)
-# read files out of the repo, so it cannot wait until here. What is left for
-# this phase is the update-mode pull.
-if [ -d "$DOTFILES_DIR" ]; then
-    print_success "Dotfiles already cloned"
-    if [ "$UPDATE_ONLY" = true ]; then
-        if [ "$DRY_RUN" = true ]; then
-            print_dry "cd $DOTFILES_DIR && git pull"
-        else
-            print_step "Pulling latest changes..."
-            cd "$DOTFILES_DIR" && git pull || true
-        fi
-    fi
-fi
+# Apply the selected checkout; Git fetching belongs to smart-pull.sh.
 
 # Ensure we're in dotfiles directory (skip in dry-run if not cloned)
 if [ -d "$DOTFILES_DIR" ]; then
@@ -732,7 +478,7 @@ if [ -f "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" ]; then
         # exports DOTFILES_DIR into the child's environment, and the path expansion
         # reads the OUTER variable — same string. Not the `FOO=bar echo $FOO` bug.
         DOTFILES_DIR="$DOTFILES_DIR" "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" || \
-            print_warn "render-aerospace.sh failed — aerospace.toml may be stale"
+            record_failure "render-aerospace.sh failed — aerospace.toml may be stale"
     fi
 fi
 
@@ -764,7 +510,6 @@ if [ "$DRY_RUN" = true ]; then
     print_dry "mkdir -p $HOME/.config \"$HOME/Library/Application Support/Übersicht\""
 else
     mkdir -p "$HOME/.config"
-    mkdir -p "$HOME/Library/Application Support/Übersicht"
 fi
 
 # One conflicting plain file makes stow refuse the ENTIRE package — it prints
@@ -818,6 +563,8 @@ for pkg in $PACKAGES; do
                 STOW_FAILED=$((STOW_FAILED + 1))
             fi
         fi
+    else
+        record_failure "Manifest package is missing: $pkg"
     fi
 done
 
@@ -854,7 +601,8 @@ UBER_LINK="$HOME/Library/Application Support/Übersicht/widgets"
 UBER_TARGET="$DOTFILES_DIR/ubersicht/Library/Application Support/Übersicht/widgets"
 if [ "$DRY_RUN" = true ]; then
     print_dry "ln -sfn \"$UBER_TARGET\" \"$UBER_LINK\""
-elif [ -L "$UBER_LINK" ] && [ -d "$UBER_TARGET" ]; then
+elif [[ "$PACKAGES" == *ubersicht* && -L "$UBER_LINK" && -d "$UBER_TARGET" ]] &&
+     [[ "$(cd -P "$UBER_LINK" && pwd)" == "$(cd -P "$UBER_TARGET" && pwd)" ]]; then
     ln -sfn "$UBER_TARGET" "$UBER_LINK"
     print_success "Übersicht widgets symlink rewritten to absolute"
 fi
@@ -866,7 +614,7 @@ fi
 # prints a copy-pasteable upgrade prompt to the terminal. Idempotent.
 # Bypass per-pull with: `git -c core.hooksPath=/dev/null pull`.
 
-if [ -d "$DOTFILES_DIR/hooks" ] && [ -d "$DOTFILES_DIR/.git" ]; then
+if ! "$UPDATE_ONLY" && [ -d "$DOTFILES_DIR/hooks" ] && [ -d "$DOTFILES_DIR/.git" ]; then
     expected="$DOTFILES_DIR/hooks"
     current=$(git -C "$DOTFILES_DIR" config --get core.hooksPath 2>/dev/null || echo "")
     if [ "$current" != "$expected" ]; then
@@ -897,7 +645,7 @@ if [ "$UPDATE_ONLY" = false ] && [ ! -f "$PERSONAL_ENV_PATH" ] && [ -t 0 ] && [ 
     echo
     read -r -p "Run ./personalize.sh now? [Y/n]: " run_p
     if [ -z "$run_p" ] || [ "$run_p" = "y" ] || [ "$run_p" = "Y" ]; then
-        "$DOTFILES_DIR/personalize.sh" || print_warn "personalize.sh exited non-zero (skip is fine)"
+        "$DOTFILES_DIR/personalize.sh" || record_failure "personalize.sh exited non-zero (skip is fine)"
     else
         print_info "Skipping personalize.sh — run it later with ./personalize.sh"
     fi
@@ -918,9 +666,10 @@ if cmd_exists mise; then
         # status, which is 0 even when mise fails. pipefail in a subshell so the
         # real status survives the pipe without changing the rest of the script.
         if ! ( set -o pipefail; mise install 2>&1 | tail -5 ); then
-            print_warn "mise install had issues - run 'mise install' by hand"
+            record_failure "mise install had issues - run 'mise install' by hand"
+        else
+            print_success "mise versions installed"
         fi
-        print_success "mise versions installed"
     fi
 else
     print_warn "mise not found - skipping language version install"
@@ -933,20 +682,11 @@ fi
 # to setup.sh's render function which substitutes $USER and runs launchctl
 # bootstrap so sketchybar-firstboot + the bd/ubersicht agents fire on next login.
 
-if [ -f "$DOTFILES_DIR/setup.sh" ]; then
-    if [ "$DRY_RUN" = true ]; then
-        print_dry "$DOTFILES_DIR/setup.sh --configure"
+if [[ -x "$DOTFILES_DIR/setup.sh" ]]; then
+    if "$UPDATE_ONLY"; then
+        "$DOTFILES_DIR/setup.sh" --provision || record_failure "Provider/helper provisioning failed"
     else
-        print_step "Configuring environment (LaunchAgents, dirs, TPM)..."
-        # --configure runs configure_environment (which calls render_launchagents)
-        # + verify_config + post_update. It does NOT re-stow (we did that above).
-        # NOT piped through `tail -30` any more. --configure's warnings are
-        # emitted early (missing tools, skipped Raycast links, agents that could
-        # not bootstrap) and the tail discarded exactly those, while `|| true`
-        # hid a non-zero exit. Show all of it and report failure honestly.
-        if ! bash "$DOTFILES_DIR/setup.sh" --configure 2>&1; then
-            print_warn "setup.sh --configure reported problems - see output above"
-        fi
+        "$DOTFILES_DIR/setup.sh" --configure || record_failure "Explicit setup reported problems"
     fi
 fi
 
@@ -954,14 +694,14 @@ fi
 # 6d. ESPANSO — register and start
 # -----------------------------------------------------------------------------
 
-if cmd_exists espanso; then
+if ! "$UPDATE_ONLY" && cmd_exists espanso; then
     if [ "$DRY_RUN" = true ]; then
         print_dry "espanso service register && espanso start"
     else
         print_step "Registering Espanso service..."
-        espanso service register 2>/dev/null || true
+        espanso service register 2>/dev/null || record_failure "Espanso registration failed"
         espanso start 2>/dev/null || \
-            print_warn "Espanso start failed — grant Accessibility in System Settings then run: espanso start"
+            record_failure "Espanso start failed — grant Accessibility in System Settings then run: espanso start"
     fi
 fi
 
@@ -969,6 +709,9 @@ fi
 # 7. TMUX PLUGIN MANAGER (TPM)
 # -----------------------------------------------------------------------------
 
+if "$UPDATE_ONLY"; then
+    dotfiles_sync_plugins || record_failure "Plugin synchronization failed"
+else
 print_header "7. Tmux Plugin Manager"
 
 if [ -d "$TPM_DIR" ]; then
@@ -986,7 +729,7 @@ else
         print_dry "git clone https://github.com/tmux-plugins/tpm $TPM_DIR"
     else
         print_step "Installing TPM..."
-        git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
+        git clone https://github.com/tmux-plugins/tpm "$TPM_DIR" || record_failure "TPM provisioning failed"
     fi
 fi
 
@@ -998,7 +741,7 @@ if cmd_exists tmux; then
         print_step "Installing tmux plugins..."
         # Run TPM install script (works even if tmux isn't running)
         "$TPM_DIR/bin/install_plugins" 2>/dev/null || {
-            print_warn "Could not auto-install tmux plugins"
+            record_failure "Could not auto-install tmux plugins"
             echo "    Run 'prefix + I' inside tmux to install plugins"
         }
     fi
@@ -1021,12 +764,14 @@ if cmd_exists nvim; then
         if nvim --headless "+Lazy! sync" +qa; then
             print_success "Neovim plugins synced"
         else
-            print_warn "Could not sync Neovim plugins automatically"
+            record_failure "Could not sync Neovim plugins automatically"
             echo "    Run ':Lazy sync' inside Neovim"
         fi
     fi
 else
     print_warn "Neovim not found - skipping plugin sync"
+fi
+
 fi
 
 # -----------------------------------------------------------------------------
@@ -1043,8 +788,11 @@ if [[ "$(uname)" == "Darwin" ]] && [ "$SKIP_MACOS_DEFAULTS" = false ]; then
             print_dry "$DOTFILES_DIR/macos/.macos"
         else
             print_step "Applying full macOS defaults from ./macos/.macos..."
-            "$DOTFILES_DIR/macos/.macos" || print_warn "macOS defaults script had issues"
-            print_success "macOS defaults configured"
+            if "$DOTFILES_DIR/macos/.macos"; then
+                print_success "macOS defaults configured"
+            else
+                record_failure "macOS defaults script had issues"
+            fi
         fi
     else
         print_warn "macos/.macos not found or not executable"
@@ -1088,22 +836,15 @@ else
     print_warn "Some tools missing - check errors above"
 fi
 
-# Report anything brew could not install. These were warnings at the time so the
-# run could reach stow; surface them here rather than letting them scroll past.
-if [ -n "${BREW_FAILED// /}" ] || [ -n "${CASK_FAILED// /}" ]; then
-    echo ""
-    print_warn "Some packages did not install:"
-    [ -n "${BREW_FAILED// /}" ] && echo "    formulae:$BREW_FAILED"
-    [ -n "${CASK_FAILED// /}" ] && echo "    casks:$CASK_FAILED"
-    echo "    Re-run ./install.sh, or install them individually with brew."
-    echo "    pkg-based casks (karabiner-elements, font-sf-pro, basictex) need an"
-    echo "    interactive terminal for sudo and cannot install from a script."
-fi
-
 # =============================================================================
 # COMPLETION
 # =============================================================================
 
+if [[ "$ALL_OK" != true || "$STOW_FAILED" -ne 0 || "$FAILURES" -ne 0 ]]; then
+    dotfiles_reload_steps
+    print_error "Installation/update incomplete. Required phases failed; see diagnostics above."
+    exit 1
+fi
 print_header "Installation Complete!"
 
 cat << EOF
@@ -1119,4 +860,5 @@ For updates, run:
 
 EOF
 
+dotfiles_reload_steps
 print_success "Done!"
