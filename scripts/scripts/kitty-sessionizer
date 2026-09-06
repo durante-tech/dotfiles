@@ -1,18 +1,17 @@
 #!/usr/bin/env bash
-
-# kitty-sessionizer - FZF-based project picker (kitty-native, no tmux)
-# Opens selected project in a new kitty tab
-# Customize paths via TMUX_SESSIONIZER_PATHS env var (reuses same env var)
-
-SESSIONIZER_PATHS="${TMUX_SESSIONIZER_PATHS:-$HOME/dotfiles $HOME/Projects $HOME/Developer $HOME}"
-
-selected=$(fd -H . $SESSIONIZER_PATHS -t d -d 1 2>/dev/null | fzf --prompt="Project> " --border --reverse)
-
-if [[ -z $selected ]]; then
-    exit 0
-fi
-
-selected_name=$(basename "$selected" | tr . _)
-
-# Open a new kitty tab at the selected directory with a title
-kitty @ launch --type=tab --tab-title "$selected_name" --cwd "$selected"
+set -u
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/scripts/lib/sessionizer.sh
+source "$SCRIPT_DIR/lib/sessionizer.sh"
+[[ -n "${KITTY_LISTEN_ON:-}" ]] || { echo 'No Kitty connection context; run this picker inside the intended Kitty instance.' >&2; exit 1; }
+command -v kitty >/dev/null 2>&1 || { echo 'kitty is missing.' >&2; exit 127; }
+case $# in
+    0)
+        if sessionizer_select; then selected="$SESSIONIZER_SELECTED"
+        else rc=$?; [[ "$rc" -eq 1 ]] && exit 0; exit "$rc"; fi ;;
+    1) selected="$1" ;;
+    *) echo 'Usage: kitty-sessionizer [directory]' >&2; exit 2 ;;
+esac
+sessionizer_canonical "$selected" || { echo 'Selected project directory is unavailable.' >&2; exit 1; }
+sessionizer_label "$SESSIONIZER_CANONICAL"
+kitty @ --to "$KITTY_LISTEN_ON" launch --type=tab --tab-title "$SESSIONIZER_LABEL" --cwd "$SESSIONIZER_CANONICAL"

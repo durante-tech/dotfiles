@@ -1,59 +1,70 @@
 #!/usr/bin/env bash
+# One canonical directory owns one session. Existing sessions are never renamed.
+set -u
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/scripts/lib/sessionizer.sh
+source "$SCRIPT_DIR/lib/sessionizer.sh"
 
-# tmux-sessionizer - FZF-based project picker for tmux sessions
-# Usage: tmux-sessionizer [path]
-# Customize paths via TMUX_SESSIONIZER_PATHS env var
-
-switch_to() {
-    if [[ -z $TMUX ]]; then
-        tmux attach-session -t "$1"
-    else
-        tmux switch-client -t "$1"
-    fi
+tmux_value() {
+    local value
+    value="$(tmux "$@" && printf '/')" || return 1
+    value="${value%/}"
+    TMUX_VALUE="${value%$'\n'}"
 }
 
-has_session() {
-    tmux list-sessions | grep -q "^$1:"
+owned_session() {
+    local name="$1" path="$2"
+    tmux_value show-option -qv -t "=$name" @dotfiles_project_path || return 1
+    if [[ -n "$TMUX_VALUE" ]]; then
+        [[ "$TMUX_VALUE" == "$path" ]]
+    else
+        tmux_value display-message -p -t "=$name" '#{session_path}' || return 1
+        sessionizer_canonical "$TMUX_VALUE" && [[ "$SESSIONIZER_CANONICAL" == "$path" ]]
+    fi
 }
 
 hydrate() {
-    if [ -f "$2/.tmux-sessionizer" ]; then
-        tmux send-keys -t "$1" "source \"$2/.tmux-sessionizer\"" C-m
-    elif [ -f "$HOME/.tmux-sessionizer" ]; then
-        tmux send-keys -t "$1" "source \"$HOME/.tmux-sessionizer\"" C-m
-    fi
+    local name="$1" directory="$2" hook='' quoted
+    if [[ -f "$directory/.tmux-sessionizer" ]]; then hook="$directory/.tmux-sessionizer"
+    elif [[ -f "$HOME/.tmux-sessionizer" ]]; then hook="$HOME/.tmux-sessionizer"; fi
+    [[ -n "$hook" ]] || return 0
+    printf -v quoted '%q' "$hook"
+    tmux send-keys -t "=$name:" -l "source $quoted" && tmux send-keys -t "=$name:" Enter
 }
 
-# Use CLI arg if provided, otherwise fzf from your custom paths
-# Customize by setting TMUX_SESSIONIZER_PATHS env var or edit defaults below
-if [[ $# -eq 1 ]]; then
-    selected=$1
+command -v tmux >/dev/null 2>&1 || { echo 'tmux is missing.' >&2; exit 127; }
+case $# in
+    0)
+        if sessionizer_select; then selected="$SESSIONIZER_SELECTED"
+        else rc=$?; [[ "$rc" -eq 1 ]] && exit 0; exit "$rc"; fi ;;
+    1) selected="$1" ;;
+    *) echo 'Usage: tmux-sessionizer [directory]' >&2; exit 2 ;;
+esac
+sessionizer_canonical "$selected" || { echo 'Selected project directory is unavailable.' >&2; exit 1; }
+project="$SESSIONIZER_CANONICAL"
+sessionizer_label "$project"
+sessionizer_digest "$project" || exit 1
+session="${SESSIONIZER_LABEL}--${SESSIONIZER_DIGEST}"
+legacy="${project##*/}"
+legacy="${legacy//./_}"
+created=false
+
+if tmux has-session -t "=$session" 2>/dev/null; then
+    owned_session "$session" "$project" || { echo 'Session identity collision or mismatched project owner.' >&2; exit 1; }
+elif [[ -n "$legacy" ]] && tmux has-session -t "=$legacy" 2>/dev/null && owned_session "$legacy" "$project"; then
+    session="$legacy"
 else
-    SESSIONIZER_PATHS="${TMUX_SESSIONIZER_PATHS:-$HOME/dotfiles $HOME/Projects $HOME/Developer $HOME}"
-    selected=$(fd -H . $SESSIONIZER_PATHS -t d -d 1 2>/dev/null | fzf)
+    if tmux new-session -d -s "$session" -c "$project"; then
+        created=true
+    else
+        # A concurrent picker may have created the same session; verify its path.
+        owned_session "$session" "$project" || exit 1
+    fi
 fi
-
-# Abort if nothing selected
-if [[ -z $selected ]]; then
-    exit 0
+tmux set-option -t "=$session" @dotfiles_project_path "$project" || exit 1
+if "$created"; then hydrate "$session" "$project" || exit 1; fi
+if [[ -n "${TMUX:-}" ]]; then
+    tmux switch-client -t "=$session"
+else
+    tmux attach-session -t "=$session"
 fi
-
-# Normalize session name (basename with dots replaced)
-selected_name=$(basename "$selected" | tr . _)
-tmux_running=$(pgrep tmux)
-
-# Create session if tmux not running
-if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
-    tmux new-session -ds "$selected_name" -c "$selected"
-    hydrate "$selected_name" "$selected"
-fi
-
-# Create session if it doesn't exist
-if ! has_session "$selected_name"; then
-    tmux new-session -ds "$selected_name" -c "$selected"
-    hydrate "$selected_name" "$selected"
-fi
-
-# Switch or attach
-switch_to "$selected_name"
-

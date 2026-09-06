@@ -31,3 +31,19 @@ Native file-watching behavior, such as Sketchybar hot reload, still applies.
 Stow remains per package and reads `stow-packages.txt`. The tmux package excludes
 agent runtime directories; existing legacy state links are preserved and reported.
 No command performs broad cleanup or removes unlisted packages.
+
+## Project navigation
+
+Both pickers accept an optional directory argument. Otherwise they use the same
+null-delimited fd/fzf discovery. Export `DOTFILES_SESSIONIZER_PATHS` as a newline-
+delimited list to support spaces in roots; the old `TMUX_SESSIONIZER_PATHS` remains
+whitespace-delimited. Unavailable roots are skipped; no available root is an error.
+
+New tmux sessions use a readable basename plus a 12-character SHA-256 suffix of
+the canonical directory. `@dotfiles_project_path` records the full owner. An old
+basename-only session is reused only when its starting directory matches. Existing
+sessions are never renamed or killed; a hash/owner mismatch is an error.
+
+The shell preserves Kitty context supplied by the launching client and never
+invents a PID/window or writes guessed values into tmux. The Kitty picker requires
+`KITTY_LISTEN_ON` from the intended instance. Missing context is an explicit error.

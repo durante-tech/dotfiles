@@ -16,21 +16,9 @@
 # live fpath. Duplicates make compinit re-scan the same dirs on every rebuild.
 typeset -U path PATH fpath FPATH
 
-# Kitty-in-tmux: propagate KITTY env vars so kitty graphics protocol works
-if [[ -n "$TMUX" && -z "$KITTY_PID" ]]; then
-    local _kitty_pid
-    _kitty_pid=$(pgrep -a kitty 2>/dev/null | grep -v 'kitten\|ssh' | head -1 | awk '{print $1}')
-    if [[ -n "$_kitty_pid" ]]; then
-        export KITTY_PID="$_kitty_pid"
-        # Resolve KITTY_WINDOW_ID from kitty's environment
-        local _kitty_wid
-        _kitty_wid=$(command ps -p "$_kitty_pid" -o command= 2>/dev/null | grep -q kitty && echo "1")
-        export KITTY_WINDOW_ID="${_kitty_wid:-1}"
-        # Inject into tmux server so new panes/windows inherit
-        tmux setenv KITTY_PID "$KITTY_PID" 2>/dev/null
-        tmux setenv KITTY_WINDOW_ID "$KITTY_WINDOW_ID" 2>/dev/null
-    fi
-fi
+# Kitty context belongs to the launching client. Preserve inherited values;
+# missing context stays unavailable instead of guessing a process/window and
+# mutating the shared tmux environment during shell startup.
 
 # Add deno completions to search path
 if [[ ":$FPATH:" != *":$HOME/.zsh/completions:"* ]]; then export FPATH="$HOME/.zsh/completions:$FPATH"; fi
