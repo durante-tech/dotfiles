@@ -48,3 +48,24 @@ num  calls                time                       self            name
 13)    1           0.00     0.00    0.00%      0.00     0.00    0.00%  _zsh_highlight_bind_widgets
 
 ```
+
+## Measuring the complete startup path
+
+Measure these separately in a controlled terminal, after reviewing local hooks:
+
+```bash
+# Login + interactive initialization
+/usr/bin/time -p zsh -l -i -c exit
+# Nested interactive shell (inherits the parent's environment)
+/usr/bin/time -p zsh -i -c exit
+# Function profile, now printed after the SDK completion block
+ZSH_PROFILE=1 zsh -l -i -c exit
+```
+
+Use one warmup and at least six measured runs; record versions, working directory,
+cache state, median, and range. Startup can access machine-local configuration and
+credentials, so CI fixtures do not run these against the real user profile.
+
+Initialization-command generation (`fzf --zsh`, `mise activate zsh`, etc.) is a
+separate measurement: it excludes evaluation of the returned code, completions,
+prompt rendering, and local hooks. Do not report its sum as terminal startup time.
