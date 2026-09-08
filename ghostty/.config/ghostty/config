@@ -1,5 +1,8 @@
 # By default Reload config with shft + cmd + , 
 config-file = themes/rosepine 
+# Personal readability loads after the theme. A missing file is harmless.
+# Generated outside Git by personalize.sh; null/reset keeps the base values below.
+config-file = ?~/.config/dotfiles/readability/ghostty.conf
 # No `background` here: themes/rosepine sets it (#000000). Ghostty 1.3.1 loads
 # config-file includes AFTER the file that declares them, so a background set
 # here is dead config — the theme always wins. Same trap as cursor-color below.

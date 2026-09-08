@@ -1,0 +1,111 @@
+# Fonts and readability
+
+Terminal readability is an optional part of [personalization](PERSONALIZE.md).
+Shared terminal configuration stays in Git; your overrides stay in
+`~/.config/dotfiles/preferences.json` and generated personal include files.
+No font, size, or opacity changes until you choose an override.
+
+## Supported controls
+
+| Preference | Accepted value | When unset or `null` |
+| --- | --- | --- |
+| `readability.font_family` | Installed, plain font family name | Each terminal uses its existing family |
+| `readability.ghostty_font_size` | Number from 8 to 40, in points | Ghostty keeps its base 16 pt |
+| `readability.kitty_font_size` | Number from 8 to 40, in points | Kitty keeps its base 14 pt |
+| `readability.background_opacity` | Number from 0.2 to 1; 1 is opaque | Both keep their base 0.75 |
+
+The ranges are guardrails for this personalizer. Font sizes use points, not
+pixels, and the terminals retain separate size controls. The same point size
+does not promise identical perceived text size between terminals or fonts.
+Ligatures, text weight, cell spacing, blur, colors, and unrelated application
+appearance retain their current configuration.
+
+Start by trying a size change in the terminal you use most. If seeing the desktop
+behind text is distracting, try opacity `0.95` or `1`. These are choices to compare
+at your own desk, not a measured optimum or a display-brightness adjustment.
+
+```bash
+cd ~/dotfiles
+./personalize.sh list-fonts
+./personalize.sh set readability.ghostty_font_size 18 --diff
+./personalize.sh set readability.ghostty_font_size 18 --apply
+./personalize.sh set readability.background_opacity 0.95 --apply
+./personalize.sh set readability.font_family 'JetBrainsMono Nerd Font' --apply
+```
+
+Preview does not install anything. Applying a chosen family checks local font
+metadata and fails clearly if the family is unavailable. `list-fonts` is an
+explicit, read-only query: macOS uses `system_profiler`; other supported systems
+use an already installed `fc-list`. A size or opacity change does not need to
+query font metadata when no family override is configured.
+
+The shared family setting accepts a literal name. Terminal-specific font
+expressions, embedded configuration, double quotes, and newlines are rejected. Installed
+family availability does not prove that every glyph or Nerd Font icon exists;
+inspect your usual prompt and editor after choosing a different family.
+
+## Reset, undo, and reload
+
+```bash
+./personalize.sh reset readability.ghostty_font_size --apply
+./personalize.sh reset readability.font_family --apply
+./personalize.sh reset readability.background_opacity --apply
+```
+
+Reset removes the generated directive and returns to the base configuration;
+it does not copy the current default into your preferences. `null` explicitly
+selects the same base behavior. Backups and guarded `undo BACKUP_NAME --apply`
+cover the generated include files with the rest of the personalization change.
+
+When ready, reload the terminal configuration using the existing chord:
+
+| Terminal | Reload |
+| --- | --- |
+| Ghostty | Cmd+B, then R |
+| Kitty | Cmd+B, then R |
+
+The personalizer never opens, reloads, or closes a terminal. Existing sessions
+remain running. Applications may implement their own native configuration reload
+behavior. A terminal window with a manually adjusted font size may retain its
+local size; check a new window or reset its font size if the new preference is
+not apparent. No brightness-controller or display-mode state is changed.
+
+## Generated-file ownership
+
+The only generated readability targets are:
+
+```text
+~/.config/dotfiles/readability/ghostty.conf
+~/.config/dotfiles/readability/kitty.conf
+```
+
+Each begins with `# dotfiles managed readability v1`. Applying refuses to adopt
+an existing file without that exact first-line marker, or to replace a symlink.
+Edit preferences through the personalizer; these small files are generated
+outputs. With all overrides unset, they contain only comments.
+
+Ghostty reads the personal include after its existing theme include. Its
+`?` prefix suppresses missing-file errors. Ghostty font-family settings form
+a fallback list, so a generated family override first clears the inherited list
+before adding the selected family. [Ghostty configuration reference](https://ghostty.org/docs/config/reference#config-file)
+
+Kitty reads the personal include last, using a home-relative path that also works
+when Stow links the configuration directory into the repository. If the include
+is absent, Kitty prints a missing-file diagnostic and keeps its base values; it
+does not reject the configuration. Normal personalization creates a comment-only
+file when needed to avoid that diagnostic. The installed Kitty parser rejects
+absolute `globinclude` patterns, so this configuration uses its ordinary
+`include` directive. [Kitty configuration reference](https://sw.kovidgoyal.net/kitty/conf/)
+
+`DOTFILES_USER_CONFIG_DIR` redirects generated output for tests or alternate
+configuration roots. The deployed terminal includes continue to point to
+`~/.config/dotfiles`; changing this environment variable does not silently switch
+running terminals to another profile.
+
+## Verification
+
+Run `python3 -m unittest discover -s tests -p test_readability.py` from the checkout.
+The fixtures cover absent includes, distinct base sizes, reset, literal rendering,
+numeric bounds, font lookup failures, and foreign-file/symlink protection. When
+installed, the native Ghostty and Kitty parsers read only temporary configuration
+roots without opening windows or applying changes to an existing terminal.

@@ -2,6 +2,7 @@
 import ast
 from copy import deepcopy
 import json
+import math
 from pathlib import Path
 import re
 from .envfile import PreferenceError, literal_assignments, user_content
@@ -21,6 +22,10 @@ FIELDS = {
     'workspaces.browser': ('B', 'workspace', None, 'Browser app routing and Alt+B'),
     'workspaces.editor': ('D', 'workspace', None, 'GUI editor routing and Alt+D'),
     'workspaces.notes': ('N', 'workspace', None, 'Notes app routing, Alt+O, and Hyper+N'),
+    'readability.font_family': (None, 'font', None, 'Ghostty and Kitty font family; null keeps each base config'),
+    'readability.ghostty_font_size': (None, 'font_size', None, 'Ghostty font size, 8–40 points; null keeps its base size'),
+    'readability.kitty_font_size': (None, 'font_size', None, 'Kitty font size, 8–40 points; null keeps its base size'),
+    'readability.background_opacity': (None, 'opacity', None, 'Ghostty and Kitty background opacity, 0.2–1; 1 is opaque'),
 }
 
 
@@ -49,7 +54,21 @@ def validate_value(key, value, repo, home):
     if key not in FIELDS:
         raise PreferenceError('Unknown preference: ' + key)
     _, kind, _, _ = FIELDS[key]
-    if kind in ('serial', 'app', 'paths') and value is None:
+    if kind in ('serial', 'app', 'paths', 'font', 'font_size', 'opacity') and value is None:
+        return
+    if kind in ('font_size', 'opacity'):
+        lower, upper = (8, 40) if kind == 'font_size' else (0.2, 1)
+        if (type(value) not in (int, float) or not lower <= value <= upper
+                or (isinstance(value, float) and not math.isfinite(value))):
+            unit = 'points' if kind == 'font_size' else 'opacity (1 is opaque)'
+            raise PreferenceError(f'{key} requires a number from {lower} to {upper} {unit}, or null')
+        return
+    if kind == 'font':
+        # A literal family name, not Kitty's advanced font-specification syntax.
+        # The restricted alphabet is safe in both terminals without interpolation.
+        if (not isinstance(value, str) or not value or value != value.strip() or len(value) > 128
+                or re.fullmatch(r"[\w .()'-]+", value) is None):
+            raise PreferenceError(key + ' requires a plain font family name, or null')
         return
     if kind == 'paths':
         if not isinstance(value, list) or not value:
