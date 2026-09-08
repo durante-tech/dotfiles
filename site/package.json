@@ -12,7 +12,7 @@
     "docs:generate": "bun scripts/migrate-docs.ts",
     "docs:check": "bun scripts/migrate-docs.ts --check",
     "links:check": "python3 scripts/check-links.py",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "astro sync && tsc --noEmit"
   },
   "dependencies": {
     "@astrojs/react": "^4.4.2",
