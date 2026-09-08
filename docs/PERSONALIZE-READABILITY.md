@@ -30,8 +30,12 @@ cd ~/dotfiles
 ./personalize.sh set readability.ghostty_font_size 18 --diff
 ./personalize.sh set readability.ghostty_font_size 18 --apply
 ./personalize.sh set readability.background_opacity 0.95 --apply
-./personalize.sh set readability.font_family 'JetBrainsMono Nerd Font' --apply
+./personalize.sh set readability.font_family 'Menlo' --apply
 ```
+
+Use an installed family from your own `list-fonts` output; `Menlo` is an example.
+For terminal use, start with a monospaced family. A base-config font name is not
+proof that it is installed: terminals can silently fall back when a font is absent.
 
 Preview does not install anything. Applying a chosen family checks local font
 metadata and fails clearly if the family is unavailable. `list-fonts` is an

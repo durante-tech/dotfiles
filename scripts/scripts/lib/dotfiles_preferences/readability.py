@@ -39,7 +39,9 @@ def render_files(preferences, values):
         # Ghostty font-family is a repeatable fallback list. Reset its inherited
         # entries before the preferred family, otherwise the base font stays first.
         ghostty += ['font-family =', 'font-family = ' + family]
-        kitty.append('font_family ' + family)
+        # Kitty parses apostrophes as font-spec syntax. An explicit family field
+        # with a quoted literal preserves the exact name, including apostrophes.
+        kitty.append('font_family family=' + json.dumps(family, ensure_ascii=False))
     for name, lines, option in [('ghostty', ghostty, 'font-size = '), ('kitty', kitty, 'font_size ')]:
         size = values.get('readability.' + name + '_font_size')
         if size is not None:

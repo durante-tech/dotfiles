@@ -44,7 +44,7 @@ class Readability(Fixture):
                             'readability.background_opacity': 1})
         ghostty, kitty = (value.decode() for value in render_files(self.prefs, self.values).values())
         self.assertIn("font-family =\nfont-family = O'Brien Mono (Test)\n", ghostty)
-        self.assertIn("font_family O'Brien Mono (Test)\n", kitty)
+        self.assertIn('font_family family="O\'Brien Mono (Test)"\n', kitty)
         self.assertIn('background-opacity = 1\n', ghostty)
         self.assertIn('background_opacity 1\n', kitty)
 
@@ -146,7 +146,8 @@ class Readability(Fixture):
                    KITTY_CONFIG_DIRECTORY=str(self.home/'.config/kitty'))
         script = ('import json; from kitty.config import load_config; bad=[]; o=load_config('
                   + repr(str(self.home/'.config/kitty/kitty.conf')) + ',accumulate_bad_lines=bad); '
-                  'print(json.dumps({"size":o.font_size,"opacity":o.background_opacity,"bad":str(bad)}))')
+                  'print(json.dumps({"size":o.font_size,"opacity":o.background_opacity,'
+                  '"family":o.font_family.family,"bad":str(bad)}))')
         def read():
             process = subprocess.run([executable, '+runpy', script], env=env, capture_output=True, text=True, timeout=10)
             self.assertEqual(process.returncode, 0, process.stderr)
@@ -155,11 +156,13 @@ class Readability(Fixture):
         initial, diagnostic = read()
         self.assertEqual(initial['size'], 14)
         self.assertIn('Could not find included config file', diagnostic)
-        self.values.update({'readability.kitty_font_size': 18.5, 'readability.background_opacity': 1})
+        self.values.update({'readability.kitty_font_size': 18.5, 'readability.background_opacity': 1,
+                            'readability.font_family': "O'Brien Mono (Test)"})
         path = output_paths(self.prefs)[1]; path.parent.mkdir(parents=True)
         path.write_bytes(render_files(self.prefs, self.values)[path])
         effective, diagnostic = read()
         self.assertEqual(effective['size'], 18.5); self.assertEqual(effective['opacity'], 1)
+        self.assertEqual(effective['family'], "O'Brien Mono (Test)")
         self.assertNotIn('Could not find included config file', diagnostic)
         path.write_bytes(HEADER)
         self.assertEqual(read()[0]['size'], 14)
