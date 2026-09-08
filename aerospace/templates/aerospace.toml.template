@@ -388,6 +388,9 @@ alt-shift-l = ['join-with right', 'mode main']
 
 # BetterDisplay mode-switching chord. Entry: alt-shift-x. Single key picks the mode.
 [mode.bd-mode.binding]
+# u = resume Auto; h = hold current managed values.
+u = ['exec-and-forget /bin/bash -c "@DOTFILES_DIR@/scripts/scripts/bd-apply.sh auto"', 'mode main']
+h = ['exec-and-forget /bin/bash -c "@DOTFILES_DIR@/scripts/scripts/bd-apply.sh manual"', 'mode main']
 # exec-and-forget runs `/bin/bash -c '<bash-script>'` and passes the rest of the
 # string to bash as-is (aerospace-exec-and-forget(1)), so shell syntax already
 # works here; the explicit /bin/bash -c wrap below is belt-and-braces, not a

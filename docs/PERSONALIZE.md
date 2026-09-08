@@ -81,17 +81,19 @@ scripts/scripts/render-aerospace.sh --doctor   # 5 checks: monitor patterns, Aer
 
 **Override:** add to `~/.config/dotfiles/personal.env`:
 ```bash
-DOTFILES_BD_DEV_TAG=2          # your built-in display tagID
-DOTFILES_BD_PORT_TAG=60        # your external display tagID
+# Optional: pin the registered serials reported by bd-apply.sh doctor.
+DOTFILES_BD_DEV_SERIAL="YOUR-BUILTIN-SERIAL"
+DOTFILES_BD_PORT_SERIAL="YOUR-EXTERNAL-SERIAL"
 ```
-The bd-* scripts source this file at top.
+The controller learns serial identities from an unambiguous first resolution.
+Use explicit serials when selecting among multiple displays. Numeric tag IDs
+change across connections and are no longer identity authority. Ambiguous or
+mismatched identities fail before writes. Existing tag variables can remain for
+legacy tools; new managed display controls use serials.
 
-> **These go stale on a redock.** Reattaching a display through a different port
-> renumbers its tagID. `betterdisplaycli` then answers `Failed.` for every write to
-> the old tag **but still exits 0**, so nothing reports the breakage — DDC brightness
-> and color silently stop applying. Re-derive with
-> `betterdisplaycli get --identifiers`, then confirm with `bd-apply.sh doctor`
-> (exit 1 + live identifier table when a tag no longer resolves).
+Personal calibrated values live in `~/.config/dotfiles/display-profiles.json`.
+Use `bd-backlight`, `bd-set`, and `bd-save <preset>` to adjust and save them.
+See [display controls](DISPLAY.md) and [luminance calibration](DISPLAY-LUMINANCE.md).
 
 ### Display layout (display-restore.sh)
 

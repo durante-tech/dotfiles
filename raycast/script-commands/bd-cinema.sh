@@ -4,9 +4,9 @@
 # @raycast.mode silent
 # @raycast.icon 🎬
 # @raycast.packageName DOS · Screen
-# @raycast.description Switch displays to Cinema mode (XDR 150%, video viewing)
+# @raycast.description Select your Cinema preset and hold until Auto is selected
 
 # Raycast launches with no shell env — pick up DOTFILES_DIR from personal.env.
 [ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
 
-exec "${DOTFILES_DIR:-$HOME/dotfiles}/scripts/scripts/bd-apply.sh" cinema
+BD_SOURCE=raycast exec "${DOTFILES_DIR:-$HOME/dotfiles}/scripts/scripts/bd-apply.sh" cinema

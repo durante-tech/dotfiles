@@ -4,9 +4,9 @@
 # @raycast.mode silent
 # @raycast.icon 🌇
 # @raycast.packageName DOS · Screen
-# @raycast.description Switch displays to Afternoon mode (XDR 110%, gentle dim)
+# @raycast.description Select your Afternoon preset and hold until Auto is selected
 
 # Raycast launches with no shell env — pick up DOTFILES_DIR from personal.env.
 [ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
 
-exec "${DOTFILES_DIR:-$HOME/dotfiles}/scripts/scripts/bd-apply.sh" afternoon
+BD_SOURCE=raycast exec "${DOTFILES_DIR:-$HOME/dotfiles}/scripts/scripts/bd-apply.sh" afternoon

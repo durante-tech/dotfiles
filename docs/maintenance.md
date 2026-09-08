@@ -66,7 +66,7 @@ Zsh is not sent to shfmt. Biome linting requires a project Biome configuration.
 
 ## Desktop helpers
 
-Display applies acquire macOS `lockf` on descriptor 9 and return temporary
+Display applies acquire an OS file lock shared with the prior macOS `lockf` implementation and return temporary
 failure (75) after 30 seconds of contention. They preserve the last intent and
 perform no display writes without that lock. A remaining legacy
 `~/.cache/bd-apply.lock` directory requires inspection of its recorded owner;
@@ -82,3 +82,6 @@ Memory refreshes use one `vm_stat` snapshot; Spotify uses at most one Apple
 script query and parses JSON with `jq`. Their existing polling intervals remain
 unchanged. Unavailable data displays `?`. These are reductions in repeated
 operations; no wall-clock performance improvement is claimed.
+
+Manual display choices persist until Auto is explicitly selected. See
+[display controls](DISPLAY.md) and [luminance calibration](DISPLAY-LUMINANCE.md).

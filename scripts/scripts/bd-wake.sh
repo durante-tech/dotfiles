@@ -6,13 +6,12 @@
 
 set -u
 
-STATE_FILE="$HOME/.cache/bd-state"
-PROFILE_FILE="$HOME/.cache/bd-profile"
 # launchd (sleepwatcher) context — interactive-shell exports never reach here,
 # so pick up DOTFILES_DIR (and other overrides) from personal.env.
 [ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
 
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+PROFILE_FILE="${DOTFILES_DISPLAY_STATE_DIR:-$HOME/.cache}/bd-profile"
 APPLY="$DOTFILES_DIR/scripts/scripts/bd-apply.sh"
 RESTORE="$DOTFILES_DIR/scripts/scripts/display-restore.sh"
 DP="$(command -v displayplacer || echo /opt/homebrew/bin/displayplacer)"
@@ -56,22 +55,16 @@ restore_rc=na
 if [[ -x "$RESTORE" ]]; then "$RESTORE" --"$profile" >/dev/null 2>&1; restore_rc=$?; fi
 wlog "  post-restore profile=$profile restore_rc=$restore_rc displays=$(dcount)"
 
-if [[ ! -r "$STATE_FILE" ]]; then
-    echo "no state — defaulting to day"
-    wlog "  no bd-state — applying day"
-    exec env BD_SOURCE=wake "$APPLY" day
-fi
-
-mode="$(cut -d'|' -f1 "$STATE_FILE")"
-[[ -z "$mode" ]] && mode=day
-
+# Re-read authoritative intent under the controller lock on EVERY attempt.
+# No mode name is captured before backoff, so a new manual choice always wins.
 for attempt in 1 2 3; do
-    if BD_SOURCE=wake "$APPLY" "$mode"; then
-        wlog "  bd-apply mode=$mode result=ok attempt=$attempt displays=$(dcount)"
-        exit 0
+    if BD_SOURCE=wake "$APPLY" reapply; then
+        wlog "  bd-apply current intent result=ok attempt=$attempt displays=$(dcount)"
+        [[ "$restore_rc" == 0 || "$restore_rc" == na ]] && exit 0
+        exit 1
     fi
-    wlog "  bd-apply mode=$mode result=FAIL attempt=$attempt"
+    wlog "  bd-apply current intent result=FAIL attempt=$attempt"
     sleep $(( attempt * 5 ))
 done
-wlog "  bd-apply mode=$mode result=gave-up after 3 attempts"
+wlog "  bd-apply current intent result=gave-up after 3 attempts"
 exit 1

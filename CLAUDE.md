@@ -357,8 +357,8 @@ nvim/
 | `wpw` | Manual per-workspace trigger (`wallpaper-workspace.sh`) |
 | `wpl` | Tail `~/Library/Logs/wallpaper-rotate.log` |
 
-**BetterDisplay** — defined only when `betterdisplaycli` is on PATH. Everything
-here routes through `scripts/scripts/bd-apply.sh`; reach for these before the
+**BetterDisplay** — defined only when `betterdisplaycli` is on PATH. Managed writes
+here route through `scripts/scripts/bd-apply.sh`; reach for these before the
 full script path, and never for `--favoriteMode` (broken on 4.3.0 pre-release):
 
 | Alias | Action |
@@ -367,8 +367,10 @@ full script path, and never for `--favoriteMode` (broken on 4.3.0 pre-release):
 | `bd-dawn` / `bd-day` / `bd-afternoon` / `bd-evening` / `bd-night` | Time-of-day modes |
 | `bd-meeting` / `bd-read` / `bd-cinema` | Task modes |
 | `bd-status` | Print the current mode |
-| `bd-stream` / `bd-stream-stop` | (functions) Connect/disconnect the STREAM-CAPTURE virtual screen for OBS |
-| `bd-up` / `bd-down` | (functions) Brightness ±10% across the synced display group |
+| `bd-stream` / `bd-stream-stop` | Select Stream / restore the preceding managed choice |
+| `bd-up` / `bd-down` | Adjust managed brightness ±10 points and enter Manual |
+| `bd-auto` / `bd-manual` | Resume ambient control / hold current managed intent |
+| `bd-backlight` / `bd-save` | Calibrate built-in hardware level / save a personal preset |
 | `bd-snap` | (function) Dump display state to `~/Documents/betterdisplay-<ts>.json` |
 | `bd-srgb` / `bd-xdr` | (functions) DEV-MAIN colorspace toggles (sRGB caps at 100%, XDR reaches 160%) |
 
@@ -1038,7 +1040,7 @@ Hot-reloads on config change. Receives `aerospace_workspace_change` events;
 
 | Script | Description |
 |--------|-------------|
-| `bd-apply.sh` | Mode-switching entrypoint — 9 modes plus `status` / `verify` / `doctor`. Drives the external panel over raw DDC VCP; `doctor` first when anything looks wrong |
+| `bd-apply.sh` | Manual/Auto intent controller; presets, calibration, HDR, status, verification, and identity diagnostics. See `docs/DISPLAY.md` |
 | `bd-cycle.sh` | `[next\|prev]` — advance/reverse through ORDER (sketchybar handler) |
 | `bd-lmu-watch.sh` | Ambient-light bridge — auto-switches mode from the light sensor |
 | `bd-wake.sh` | Re-apply the current mode after wake (sleepwatcher `~/.wakeup`) |

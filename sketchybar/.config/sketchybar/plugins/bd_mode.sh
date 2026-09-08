@@ -1,42 +1,23 @@
 #!/bin/sh
-
-# bd_mode plugin — the SINGLE renderer for this item.
-#
-# Every path that can change bd_mode re-enters here: bd-apply.sh's
-# bd_mode_changed trigger, system_woke, and bd-lmu-watch.sh's ambient-sensor
-# alert. So every property this item mutates must be re-asserted on EVERY run,
-# colors included — a property written by one path and not the others is a
-# one-way door.
-#
-# That is exactly how this broke: the sensor alert used to be a direct
-# `--set bd_mode label=... label.color=<red>` from bd-lmu-watch.sh, while the
-# clear path only re-rendered icon + label. After the overnight outage of
-# 2026-08-25 22:02 → 2026-08-26 08:37 the item read "Afternoon" in alert red and
-# stayed that way, because nothing ever wrote the color back.
-
+# Render ownership + target + outcome from the controller's atomic state.
 . "$CONFIG_DIR/colors.sh"
-
-STATE_FILE="$HOME/.cache/bd-state"
-ALERT_FILE="/tmp/bd-lmu-sensor-alert"   # created/removed by bd-lmu-watch.sh
-
-# Sensor alert wins over the mode: auto-switching is paused, so the mode on
-# screen is frozen and saying so beats naming it.
-if [ -f "$ALERT_FILE" ]; then
-    sketchybar --set "$NAME" icon=󰀦 label="ambient sensor down" \
-                             icon.color="$RED" label.color="$RED"
-    exit 0
+[ -f "$HOME/.config/dotfiles/personal.env" ] && . "$HOME/.config/dotfiles/personal.env"
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+APPLY="$DOTFILES_DIR/scripts/scripts/bd-apply.sh"
+if ! DATA=$("$APPLY" status --json 2>/dev/null); then
+    sketchybar --set "$NAME" icon=󰀦 label="display state unavailable" icon.color="$RED" label.color="$RED"
+    exit 1
 fi
-
-GLYPH="${GLYPH:-}"
-LABEL="${LABEL:-}"
-
-if [ -z "$GLYPH" ] && [ -r "$STATE_FILE" ]; then
-    GLYPH="$(cut -d'|' -f4 "$STATE_FILE")"
-    LABEL="$(cut -d'|' -f5 "$STATE_FILE")"
+LABEL=$(printf '%s' "$DATA" | jq -r '((if .hdr.enabled == true then "HDR / " else "" end) + (if .owner == "manual" then "Manual" else "Auto" end) + " · " + (if .base.hardware < 100 then "H" + (.base.hardware|tostring) else "S" + (.base.dev|tostring) end) + "/" + (if .hdr.enabled == true then .hdr.brightness else .base.port end|tostring) + "%")')
+STATUS=$(printf '%s' "$DATA" | jq -r '.outcome.status')
+OWNER=$(printf '%s' "$DATA" | jq -r '.owner')
+GLYPH=$(printf '%s' "$DATA" | jq -r '.base.glyph')
+COLOR="$LABEL_COLOR"
+case "$STATUS" in
+    failed) LABEL="$LABEL · failed"; COLOR="$RED" ;;
+    pending|awaiting-sensor|unverified) LABEL="$LABEL · $STATUS"; COLOR="$YELLOW" ;;
+esac
+if [ "$OWNER" = auto ] && [ -f /tmp/bd-lmu-sensor-alert ]; then
+    LABEL="$LABEL · sensor unavailable"; COLOR="$RED"
 fi
-
-[ -z "$GLYPH" ] && GLYPH=󰖙
-[ -z "$LABEL" ] && LABEL=""
-
-sketchybar --set "$NAME" icon="$GLYPH" label="$LABEL" \
-                         icon.color="$ICON_COLOR" label.color="$LABEL_COLOR"
+sketchybar --set "$NAME" icon="$GLYPH" label="$LABEL" icon.color="$COLOR" label.color="$COLOR"

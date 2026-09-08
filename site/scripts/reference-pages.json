@@ -210,5 +210,13 @@
   {
     "sourcePath": "maintenance.md",
     "outputSlug": "maintenance"
+  },
+  {
+    "sourcePath": "DISPLAY.md",
+    "outputSlug": "display"
+  },
+  {
+    "sourcePath": "DISPLAY-LUMINANCE.md",
+    "outputSlug": "display/luminance"
   }
 ]

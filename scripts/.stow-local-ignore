@@ -1,0 +1,21 @@
+# Python bytecode is runtime cache, not configuration.
+(^|/)__pycache__(/|$)
+\.py[co]$
+
+# --- stow defaults, preserved ---
+RCS
+.+,v
+CVS
+\.\#.+
+\.cvsignore
+\.svn
+_darcs
+\.hg
+\.git
+\.gitignore
+\.gitmodules
+.+~
+\#.*\#
+^/README.*
+^/LICENSE.*
+^/COPYING

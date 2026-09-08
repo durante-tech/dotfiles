@@ -1,4 +1,9 @@
-# Display control
+---
+title: "Display control"
+description: "The display controller keeps manual choices in effect until you explicitly select"
+---
+
+{/* reference:start */}
 
 The display controller keeps manual choices in effect until you explicitly select
 Auto. Raycast, the `bd-*` commands, the AeroSpace mode chord, and Sketchybar use
@@ -88,7 +93,7 @@ Contrast and temperature on the external display are independent of this table:
 `DOTFILES_BD_PORT_REF_CONTRAST` defaults to 75, temperature to 0, and gamma to 0.
 Gamma 0 means leave gamma untouched. The unused per-mode color columns were removed.
 
-Read [luminance research and calibration](DISPLAY-LUMINANCE.md) before choosing
+Read [luminance research and calibration](/display/luminance/) before choosing
 new values. Brightness percentages cannot be converted to nits using the maximum
 brightness specification. Save each preset only after adjusting it in the room
 conditions where you use it. Keep HDR off during SDR calibration.
@@ -170,3 +175,5 @@ New shells pick up aliases. Reload the rendered AeroSpace configuration when
 ready. A running ambient watcher must restart to load its revised retry loop;
 existing old watchers are compatible with the controller's manual protection
 during the transition. General `update.sh` still performs no extra service restart.
+
+{/* reference:end */}

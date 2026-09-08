@@ -4,9 +4,9 @@
 # @raycast.mode silent
 # @raycast.icon 📞
 # @raycast.packageName DOS · Screen
-# @raycast.description Switch displays to Meeting mode (XDR 130%, video-call ready)
+# @raycast.description Select your Meeting preset and hold until Auto is selected
 
 # Raycast launches with no shell env — pick up DOTFILES_DIR from personal.env.
 [ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
 
-exec "${DOTFILES_DIR:-$HOME/dotfiles}/scripts/scripts/bd-apply.sh" meeting
+BD_SOURCE=raycast exec "${DOTFILES_DIR:-$HOME/dotfiles}/scripts/scripts/bd-apply.sh" meeting

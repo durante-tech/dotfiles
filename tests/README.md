@@ -16,3 +16,11 @@ already installed. `DOTFILES_TEST_CONFORM_DIR` selects the Conform checkout;
 the local default is the installed lazy.nvim directory. CI fetches the exact
 `lazy-lock.json` revision. The runner uses disposable XDG roots, no startup config,
 no Lazy/Mason setup, and only fixture files. It performs no dependency installation.
+
+## Display control
+
+`test_display_control.py` covers Manual/Auto ownership, calibrated presets,
+HDR round trips, per-display failures, identifier ambiguity, malformed state,
+lock contention, and fresh wake intent. `test_display_layout.py` covers layout
+preview precedence, failed writes/readback, atomic profile persistence, and
+ambient retries. Hardware is fake; no real brightness changes occur in fixtures.

@@ -52,15 +52,14 @@ class DesktopTests(Fixture):
         self.assertEqual(count.read_text(),'x')
 
     def test_lock_failure_preserves_intent_and_no_hardware(self):
-        self.stub('lockf','import sys\nsys.exit(75)')
-        state=self.root/'intent';state.write_text('before')
-        code=shell_function('scripts/scripts/bd-apply.sh','acquire_lock')+'\n'+shell_function('scripts/scripts/bd-apply.sh','apply_mode')
-        code+='\nlog() { echo "$*" >&2; }; mode_row() { echo "1|2|3|4|x|test"; }; dev_present() { echo hardware; }; set_port() { echo hardware; }; '
-        code+='\nLOCK_DIR="$FIXTURE_ROOT/lock"; STATE_FILE="$FIXTURE_ROOT/intent"; apply_mode day'
-        result=self.run_command(['bash','-c',code],{'FIXTURE_ROOT':str(self.root)})
+        (self.root/'bd-apply.lock').mkdir()
+        state=self.root/'bd-state';state.write_text('night|old|manual|x|Night')
+        self.stub('betterdisplaycli', 'raise RuntimeError("hardware must not be called")')
+        result=self.run_command(['python3',str(REPO/'scripts/scripts/lib/display-control.py'),'night'],
+                                {'DOTFILES_DISPLAY_PROFILES_FILE':str(self.root/'profiles.json'),'DOTFILES_DISPLAY_STATE_DIR':str(self.root),'DOTFILES_DISPLAY_LOCK_TIMEOUT':'0'})
         self.assertEqual(result.returncode,75,result.stderr)
-        self.assertNotIn('hardware',result.stdout)
-        self.assertEqual(state.read_text(),'before')
+        self.assertNotIn('hardware',result.stderr)
+        self.assertEqual(state.read_text(),'night|old|manual|x|Night')
 
     def test_native_lock_ownership(self):
         if not Path('/usr/bin/lockf').is_file(): self.skipTest('native macOS lockf only')

@@ -383,23 +383,18 @@ if command -v betterdisplaycli >/dev/null 2>&1; then
   alias bd-read='bd-apply read'
   alias bd-cinema='bd-apply cinema'
   alias bd-status='bd-apply status'
-  bd-stream() {
-    bd-apply stream
-    betterdisplaycli set --tagID=163 --connected=on
-    echo "STREAM-CAPTURE connected — OBS can now capture the virtual screen."
-  }
-  bd-stream-stop() {
-    betterdisplaycli set --tagID=163 --connected=off
-    bd-day
-  }
-  # Quick brightness nudges across the synced display group
-  bd-up()   { betterdisplaycli set --tagID=2 --brightness=+10% --offset; }
-  bd-down() { betterdisplaycli set --tagID=2 --brightness=-10% --offset; }
-  # Snapshot current state to JSON (for diff / backup)
+  alias bd-auto='bd-apply auto'
+  alias bd-manual='bd-apply manual'
+  alias bd-stream='bd-apply stream'
+  alias bd-stream-stop='bd-apply stream-stop'
+  bd-up()   { bd-apply up "${1:-all}"; }
+  bd-down() { bd-apply down "${1:-all}"; }
+  bd-set()  { bd-apply set "$@"; }
+  bd-backlight() { bd-apply backlight "$@"; }
+  bd-save() { bd-apply save-preset "$@"; }
+  alias bd-srgb='bd-apply srgb'
+  alias bd-xdr='bd-apply xdr'
   bd-snap() { betterdisplaycli get --identifiers > "$HOME/Documents/betterdisplay-$(date +%Y%m%d-%H%M%S).json" && echo "saved snapshot."; }
-  # DEV-MAIN colorspace toggles (preset + brightness move together; sRGB caps at 100%, XDR allows 160% via software upscaling)
-  bd-srgb() { betterdisplaycli set --tagID=2 --xdrPreset='Internet & Web (sRGB)' --brightness=100%; }
-  bd-xdr()  { betterdisplaycli set --tagID=2 --xdrPreset='Apple XDR Display (P3-1600 nits)' --brightness=160%; }
 fi
 # ---------------------------------------
 

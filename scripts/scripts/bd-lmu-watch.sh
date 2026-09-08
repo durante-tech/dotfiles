@@ -42,8 +42,6 @@ ALERT_FILE="/tmp/bd-lmu-sensor-alert"
 # guarded sketchybar block was skipped in production while working fine from a
 # terminal. Resolve it the way bd-wake.sh already resolves displayplacer.
 SB="$(command -v sketchybar || echo /opt/homebrew/bin/sketchybar)"
-CLI="/opt/homebrew/bin/betterdisplaycli"
-PORT_TAG="${DOTFILES_BD_PORT_TAG:-60}"
 POLL_S=60
 
 # Ambient bucket boundaries in raw AppleLMUController units (NOT lux — see
@@ -69,7 +67,7 @@ log() {
 # both empty here, harmless to try. Returns -1 if no source yields a number.
 read_lmu() {
     local raw
-    raw="$("$CLI" get --ambientLight 2>/dev/null)"
+    raw="$("$APPLY" sensor 2>/dev/null)"
     [[ "$raw" =~ ^-?[0-9]*\.?[0-9]+$ ]] && { echo "$raw"; return; }
     raw="$(ioreg -r -c AppleLMUController 2>/dev/null | awk '/"brightness"/ {gsub(/[^0-9.]/,"",$NF); print $NF; exit}')"
     if [[ -z "$raw" ]]; then
@@ -123,13 +121,11 @@ bucket_to_mode() {
     esac
 }
 
-# port_awake — probe whether the portrait monitor is reachable via DDC.
-# Returns 0 (awake) if hardwareBrightness reads back as a numeric value, 1
-# (asleep / DDC down) otherwise. Drives the wake-triggered re-apply below.
+# port_awake — software availability signal through the shared resolver.
+# This is not a physical DDC acknowledgement. Transitions retain the existing
+# best-effort recovery path; actual writes remain under the controller lock.
 port_awake() {
-    local v
-    v="$("$CLI" get --tagID="$PORT_TAG" --hardwareBrightness 2>/dev/null)"
-    [[ "$v" =~ ^-?[0-9]*\.?[0-9]+$ ]]
+    "$APPLY" probe >/dev/null 2>&1
 }
 
 last_bucket=-1
@@ -204,9 +200,12 @@ while true; do
     printf '%s|%s|%s\n' "$bucket" "$lux" "$(date -u +%FT%TZ)" > "$BUCKET_FILE"
     if [[ "$bucket" != "$last_bucket" ]]; then
         mode="$(bucket_to_mode "$bucket")"
-        log "transition lux=$lux bucket=$last_bucket→$bucket mode=$mode"
-        BD_SOURCE=lmu "$APPLY" "$mode" >>"$LOG_FILE" 2>&1 || log "WARN apply $mode failed"
+        log "transition lux=$lux bucket=${last_bucket}->${bucket} mode=$mode"
         last_bucket="$bucket"
     fi
+    mode="$(bucket_to_mode "$bucket")"
+    # Called every poll: the controller skips unchanged accepted intent and
+    # manual/HDR holds, while retrying pending failures with this 60s backoff.
+    BD_SOURCE=lmu "$APPLY" ambient "$mode" >>"$LOG_FILE" 2>&1 || log "WARN apply $mode failed; retrying next poll"
     sleep "$POLL_S"
 done

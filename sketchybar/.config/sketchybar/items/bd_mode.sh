@@ -5,7 +5,8 @@
 
 # sketchybar runs under launchd — pick up DOTFILES_DIR override from personal.env.
 [ -f "$HOME/.config/dotfiles/personal.env" ] && . "$HOME/.config/dotfiles/personal.env"
-CYCLE="${DOTFILES_DIR:-$HOME/dotfiles}/scripts/scripts/bd-cycle.sh"
+CLICK="${DOTFILES_DIR:-$HOME/dotfiles}/scripts/scripts/bd-bar-click.sh"
+printf -v CLICK_COMMAND '%q' "$CLICK"
 
 bd_mode=(
     background.color="$PURE_BLACK"
@@ -15,7 +16,7 @@ bd_mode=(
     label.font="$FONT:Bold:12.0"
     update_freq=0
     script="$PLUGIN_DIR/bd_mode.sh"
-    click_script="if [ \"\$BUTTON\" = right ]; then $CYCLE prev; else $CYCLE next; fi"
+    click_script="$CLICK_COMMAND"
 )
 
 sketchybar --add event bd_mode_changed
