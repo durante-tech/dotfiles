@@ -28,7 +28,7 @@ class CustomizationIntegration(Fixture):
                   'DOTFILES_APPLICATION_DIRS':'[]','HOME':str(self.prefs.home)}
 
     def cli(self,*args):
-        return self.run_command(['python3','-B',str(REPO/'scripts/scripts/lib/preferences-cli.py'),*args],self.env)
+        return self.run_command([sys.executable,'-B',str(REPO/'scripts/scripts/lib/preferences-cli.py'),*args],self.env)
 
     def test_profile_capture_preview_apply_and_undo_only_touch_owned_outputs(self):
         Plan(self.prefs,{'readability.ghostty_font_size':20,'workspaces.notes':'2'}).apply()

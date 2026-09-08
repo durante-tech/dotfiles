@@ -154,7 +154,15 @@ def main(argv=None):
     parser.add_argument('--diff', action='store_true')
     parser.add_argument('--check', action='store_true')
     parser.add_argument('--replace', action='store_true')
-    args = parser.parse_intermixed_args(argv)
+    arguments = list(sys.argv[1:] if argv is None else argv)
+    # Python 3.9/3.12 parse_intermixed_args can reinterpret flags after `--`.
+    # Enforce the positional boundary before handing anything to argparse.
+    if '--' in arguments:
+        boundary = arguments.index('--')
+        args = parser.parse_intermixed_args(arguments[:boundary])
+        args.items.extend(arguments[boundary+1:])
+    else:
+        args = parser.parse_intermixed_args(arguments)
     items = args.items
     command = items[0] if items else 'wizard'
     params = items[1:]
