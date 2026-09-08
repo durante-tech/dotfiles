@@ -14,8 +14,8 @@ git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 bash install.sh
 
-# 4. Stow everything
-stow -t ~ .
+# 4. Apply the manifest packages
+./setup.sh --stow
 ```
 
 ## What to Customize First
@@ -29,43 +29,35 @@ git config --global user.name "Your Name"
 git config --global user.email "your@email.com"
 ```
 
-### 2. Shell Aliases
+### 2. Personal preferences and aliases
 
-**File:** `zsh/.zshrc`
-
-Add your own aliases near the existing ones (around line 80-130):
+Use the supported preference interface before editing shared files:
 
 ```bash
-# Your project shortcuts
-alias myapp="cd ~/Projects/myapp && nvim ."
-alias deploy="ssh deploy@myserver"
-
-# Your preferred tools
-alias k="kubectl"
-alias tf="terraform"
+./personalize.sh show
+./personalize.sh list-apps
+./personalize.sh set apps.browser com.apple.Safari          # preview
+./personalize.sh set apps.browser com.apple.Safari --apply
 ```
 
-After editing:
-```bash
-source ~/.zshrc    # Reload without restarting terminal
-```
+Saved values live outside Git in `~/.config/dotfiles/preferences.json`.
+Put personal aliases in `~/.zshrc.local`, which runs after initialization.
+Initialization inputs such as SDK locations belong in
+`~/.config/dotfiles/personal.env`.
 
-### 3. tmux-sessionizer Paths
+### 3. Project picker roots
 
-**File:** `scripts/scripts/tmux-sessionizer`
-
-The script scans these directories for projects by default:
+The tmux and Kitty pickers share the preferred roots setting. Spaces remain literal:
 
 ```bash
-SESSIONIZER_PATHS="${TMUX_SESSIONIZER_PATHS:-$HOME/dotfiles $HOME/Projects $HOME/Developer $HOME}"
+./personalize.sh set projects.roots '["~/Developer", "~/Work Projects"]' --apply
 ```
 
-To customize without editing the script, set the env var in `.zprofile`:
+This projects `DOTFILES_SESSIONIZER_PATHS` as a newline-delimited exported value.
+The older whitespace-delimited `TMUX_SESSIONIZER_PATHS` remains supported by the
+pickers. Open a new shell after updating environment preferences.
 
-```bash
-# In zsh/.zprofile, add:
-export TMUX_SESSIONIZER_PATHS="$HOME/dotfiles $HOME/Projects $HOME/Work $HOME/Personal"
-```
+See [personalization](../PERSONALIZE.md) for validation, previews, and undo.
 
 ### 4. Neovim Plugins
 
@@ -91,26 +83,26 @@ Lazy.nvim auto-discovers files in this directory. Restart Neovim and it installs
 
 **Modify a plugin:** Edit the existing `.lua` file in the plugins directory. Most changes take effect on next Neovim start.
 
-### 5. AeroSpace Workspaces
+### 5. Apps and workspaces
 
-**File:** `aerospace/.config/aerospace/aerospace.toml`
+Set preferred apps and their existing workspace destinations together:
 
-Customize workspace names and monitor assignments:
-
-```toml
-[workspace-to-monitor-force-assignment]
-D = "DEV-MAIN"           # Your main monitor
-T = "PORTRAIT-MONITOR"   # Your portrait monitor
-B = "DEV-SECOND"         # Your second monitor
+```bash
+./personalize.sh set workspaces.browser B --diff
+./personalize.sh set workspaces.browser B --apply
+aerospace reload-config
 ```
 
-Monitor names come from `aerospace list-monitors`. Update these to match your setup.
+Launch bindings and routing share these preferences. Structural changes belong
+in `aerospace/templates/aerospace.toml.template`; run
+`scripts/scripts/render-aerospace.sh` afterward. Do not edit the generated TOML.
 
 ### 6. Karabiner Rules
 
 **File:** `karabiner/.config/karabiner/karabiner.json`
 
-The Hyper key sublayers (app launchers, window management) can be customized. Edit the complex modifications section to:
+The Hyper key sublayers (app launchers, window management) can be customized. The browser and notes launchers now read preferred-app settings. For structural
+keyboard changes, edit the complex modifications section to:
 - Change which apps open with which keys
 - Add new sublayers
 - Modify existing shortcuts
@@ -124,7 +116,9 @@ For machine-specific configuration that shouldn't be committed to git:
 | `~/.zshrc.local` | Machine-specific aliases, env vars, secrets |
 | `~/.zprofile.local` | Machine-specific PATH additions |
 
-These are sourced at the end of `.zshrc` and `.zprofile` respectively, so they can override anything.
+These hooks run after initialization in their respective startup files. The
+existing interactive-agent safety guard follows `.zshrc.local`; project formatter
+settings retain their separate authority.
 
 ### Example `.zshrc.local`
 
@@ -165,6 +159,8 @@ mkdir -p ~/dotfiles/mytool/.config/mytool
 nvim ~/dotfiles/mytool/.config/mytool/config.toml
 ```
 
+Add the package to `stow-packages.txt` if it should be part of standard deployment.
+
 ### Step 2: Stow It
 
 ```bash
@@ -176,8 +172,8 @@ stow -t ~ mytool
 ### Step 3: Add to Brewfile (if installable via Homebrew)
 
 ```bash
-# Add to install.sh or Brewfile:
-brew install mytool
+# Declare the tool in Brewfile, then provision explicitly:
+./update.sh --with-tools
 ```
 
 ### Step 4: Add Documentation
@@ -210,7 +206,7 @@ Then install the server:
 
 **Directory:** `scripts/scripts/`
 
-Scripts here are automatically in your PATH (set up in `.zprofile`).
+`~/scripts` is on PATH. New files need a package Stow pass to create their links.
 
 ```bash
 # Create the script
@@ -219,7 +215,9 @@ nvim ~/dotfiles/scripts/scripts/my-script
 # Make it executable
 chmod +x ~/dotfiles/scripts/scripts/my-script
 
-# Use it immediately (no re-stow needed)
+# Link the new script from its package, then use it
+cd ~/dotfiles
+stow -t ~ scripts
 my-script
 ```
 

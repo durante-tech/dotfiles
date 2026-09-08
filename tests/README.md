@@ -24,3 +24,11 @@ HDR round trips, per-display failures, identifier ambiguity, malformed state,
 lock contention, and fresh wake intent. `test_display_layout.py` covers layout
 preview precedence, failed writes/readback, atomic profile persistence, and
 ambient retries. Hardware is fake; no real brightness changes occur in fixtures.
+
+## Personalization
+
+`test_personalization.py` covers literal multiline preservation, typed preferences,
+preview precedence, app/workspace routing, shell/TOML quoting, concurrent edits,
+write rollback, and guarded undo. App bundles and launch commands are fixtures;
+no applications, hardware controls, or services are started. `test_shell.py` also
+checks the final local-override ordering before the profiling report.

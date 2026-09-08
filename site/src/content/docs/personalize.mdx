@@ -1,4 +1,9 @@
-# Personalizing your setup
+---
+title: "Personalizing your setup"
+description: "./personalize.sh edits a small set of supported preferences without changing"
+---
+
+{/* reference:start */}
 
 `./personalize.sh` edits a small set of supported preferences without changing
 shared defaults. It preserves unknown settings and complete multiline values,
@@ -137,7 +142,7 @@ aerospace reload-config
 The personalizer prints reload instructions instead of reloading apps or restarting
 services. New shells pick up projected environment settings. Display calibration
 and Manual/Auto ownership remain in their existing files and are not reset by
-personalization; see [display controls](DISPLAY.md).
+personalization; see [display controls](/display/).
 
 Edit `aerospace/templates/aerospace.toml.template` for structural changes. The
 rendered `aerospace/.config/aerospace/aerospace.toml` is generated output and should
@@ -162,3 +167,5 @@ Unknown values are retained. Numeric BetterDisplay tag variables and
 not advertise them as active controls. Display identity is serial-based. The
 existing accent-safe keyboard bindings remain unchanged until a separate keyboard
 customization feature is requested.
+
+{/* reference:end */}

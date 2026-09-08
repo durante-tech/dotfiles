@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Focus the workspace assigned to a preferred role.
+set -eu
+[ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+export DOTFILES_DIR DOTFILES_USER_CONFIG_DIR
+exec python3 -B "$DOTFILES_DIR/scripts/scripts/lib/preferences-cli.py" workspace "$@"

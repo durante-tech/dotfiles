@@ -48,6 +48,21 @@ network, service, or agent effects. Fetch separately with `smart-pull.sh`, whose
 normal launcher behavior is retained. `smart-pull.sh --print-prompt` is read-only.
 See `docs/maintenance.md` for exact contracts and reload commands.
 
+### Supported personalization
+
+`./personalize.sh` is preview-first. `show` explains values and sources; `set KEY
+VALUE --apply` saves validated preferences and renders AeroSpace. `--dry-run`
+suppresses writes and live discovery regardless of flag order. `undo BACKUP_NAME
+--apply` restores a backup only when its inputs have not since changed.
+
+Shared defaults < legacy literal `personal.env` values < `preferences.json`.
+Unknown and multiline environment content is preserved, and never executed during
+editing. Final `.zprofile.local`/`.zshrc.local` hooks handle shell customization;
+pre-init values belong in `personal.env`. The agent safety guard remains last
+before profiling. Preferred app roles are consumed by `dotfiles-app` and matching
+AeroSpace/Karabiner bindings; GUI editor choice does not alter shell `EDITOR`.
+See `docs/PERSONALIZE.md` for the supported fields and reload boundaries.
+
 ### Linux (Debian/Ubuntu, terminal core)
 
 ```bash
@@ -162,7 +177,7 @@ nvim/
 | **macOS** | `macos/` | System defaults scripts |
 | **Wallpapers** | `wallpapers/` | Rotation assets + Plash shaders |
 | **Site** | `site/` | Astro/React docs site (not stowed) |
-| **Templates** | `templates/personal.env.example` | Personalization values (copied to `~/.config/dotfiles/personal.env` by `personalize.sh`) |
+| **Templates** | `templates/personal.env.example` | Examples of legacy/custom environment values; typed overrides use `preferences.json` |
 
 ---
 
@@ -1187,11 +1202,10 @@ Runtime` — SDKMAN's candidate is the only real JDK here.
   `$HOME/dotfiles` literal.
 - LaunchAgents are `.plist.template` files with `__USER__` placeholders, rendered by
   `setup.sh --configure`. Never commit a rendered `.plist`.
-- Personal data and machine-specific overrides (including `DOTFILES_DIR`) belong in
-  `~/.config/dotfiles/personal.env` — outside the repo, created by `personalize.sh`
-  from `templates/personal.env.example` — sourced with existence guards, never
-  inline in configs. Daemon contexts (launchd, sketchybar, Raycast) never see
-  interactive-shell exports, so overrides MUST live there.
+- Personal preferences belong outside Git in `~/.config/dotfiles/preferences.json`.
+  `personal.env` retains custom/legacy assignments and an owned projection block
+  for shell consumers. Use `personalize.sh` for validated preview, apply, and undo.
+  Keep initialization inputs and `DOTFILES_DIR` in `personal.env` for daemon contexts.
 - References to DOS-private `~/Durante/` paths must existence-guard and gracefully
   no-op when absent.
 

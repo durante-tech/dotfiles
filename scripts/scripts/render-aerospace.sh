@@ -5,11 +5,11 @@
 # differ per machine (built-in display model varies by laptop, external
 # monitor names depend on BetterDisplay tag rewrites). So we keep
 # aerospace.toml.template as the source of truth in git, and generate
-# aerospace.toml at install/update time by sed-substituting the
-# @DOTFILES_MONITOR_*@ sentinels from ~/.config/dotfiles/personal.env.
+# aerospace.toml at install/update time through the typed preference renderer.
 #
-# Falls back to the maintainer's defaults when personal.env is absent so a
-# fresh clone still produces a working config.
+# Shared defaults, legacy literal personal.env values, and preferences.json
+# overrides are validated before substitution. Rendering never executes the env
+# file or rewrites saved preferences.
 #
 # Usage: render-aerospace.sh [--dry-run | --doctor]
 #   --dry-run  show what would be rendered, write nothing
@@ -44,10 +44,11 @@ OUTPUT="$DOTFILES_DIR/aerospace/.config/aerospace/aerospace.toml"
 
 [ -f "$TEMPLATE" ] || { echo "render-aerospace: template not found: $TEMPLATE" >&2; exit 1; }
 
-[ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
-
-BUILTIN="${DOTFILES_MONITOR_BUILTIN:-Built-in Retina Display}"
-EXTERNAL="${DOTFILES_MONITOR_EXTERNAL:-PORTRAIT-MONITOR}"
+export DOTFILES_DIR
+PREFS="$DOTFILES_DIR/scripts/scripts/lib/preferences-cli.py"
+# Read validated preferences without executing personal.env during rendering.
+BUILTIN="$(python3 -B "$PREFS" get monitors.builtin --raw)"
+EXTERNAL="$(python3 -B "$PREFS" get monitors.external --raw)"
 
 # --- monitor-pattern doctor ---------------------------------------------------
 # Warns when a configured pattern matches no connected monitor. Never blocks a
@@ -116,23 +117,7 @@ doctor_version() {
 # on-window-detected rule must be in persistent-workspaces (and vice versa) —
 # a workspace missing from the list silently vanishes whenever it empties.
 doctor_workspaces() {
-    local persistent referenced missing extra
-    persistent=$(grep '^persistent-workspaces' "$TEMPLATE" \
-        | grep -oE "'[A-Za-z0-9]+'" | tr -d "'" | sort -u)
-    referenced=$( { grep -vE '^\s*#' "$TEMPLATE" \
-        | grep -oE "move-node-to-workspace [A-Za-z0-9]+|'workspace [A-Za-z0-9]+'" \
-        | awk '{print $NF}' | tr -d "'" ;
-        sed -n '/^\[workspace-to-monitor-force-assignment\]/,/^\[/p' "$TEMPLATE" \
-        | grep -oE '^[A-Za-z0-9]+ =' | awk '{print $1}' ; } | sort -u)
-    missing=$(comm -13 <(printf '%s\n' "$persistent") <(printf '%s\n' "$referenced"))
-    extra=$(comm -23 <(printf '%s\n' "$persistent") <(printf '%s\n' "$referenced"))
-    if [ -n "$missing" ]; then
-        echo "doctor: WARN workspaces referenced but NOT in persistent-workspaces:" \
-             $missing "— they vanish from listings when empty"
-        return 1
-    fi
-    [ -n "$extra" ] && echo "doctor: NOTE persistent-workspaces entries never referenced:" $extra
-    echo "doctor: OK   persistent-workspaces covers every referenced workspace"
+    python3 -B "$PREFS" check-workspaces
 }
 
 # --- window-detection doctor ---------------------------------------------------
@@ -166,9 +151,8 @@ doctor_detection() {
         return 0
     fi
 
-    # app-ids carry no @SENTINEL@ placeholders, so the template is as good as the
-    # render and is always present.
-    ids=$(grep -oE "^if\.app-id = '[^']+'" "$TEMPLATE" | sed "s/.*'\(.*\)'/\1/" | sort -u) || true
+    # Inspect effective preferred apps as well as the category defaults.
+    ids=$(python3 -B "$PREFS" app-routes) || true
 
     while IFS= read -r id; do
         [ -n "$id" ] || continue
@@ -202,26 +186,14 @@ doctor_detection() {
 # state, so all four report OK while `alt-r` reloads yesterday's bindings; the
 # only symptom is "the change I just pulled did nothing".
 #
-# Compares mtimes rather than re-running the substitution: a second copy of the
-# sed would drift from the real one, and both triggers that matter — a checkout
-# rewriting the template, an editor saving it — bump mtime. A content-free
-# `touch` is the only false positive, and re-rendering is idempotent.
+# Compare content using the same renderer; timestamps alone do not establish drift.
 doctor_stale() {
-    if [ ! -f "$OUTPUT" ]; then
-        echo "doctor: WARN no rendered config at $OUTPUT — AeroSpace is running its"
-        echo "             bundled defaults; run render-aerospace.sh"
-        return 1
+    if python3 -B "$PREFS" render-aerospace --check >/dev/null 2>&1; then
+        echo "doctor: OK   rendered aerospace.toml matches template and preferences"
+        return 0
     fi
-    if [ "$TEMPLATE" -nt "$OUTPUT" ] ||
-       { [ -f "$HOME/.config/dotfiles/personal.env" ] &&
-         [ "$HOME/.config/dotfiles/personal.env" -nt "$OUTPUT" ]; }; then
-        echo "doctor: WARN rendered aerospace.toml is STALE — the template or"
-        echo "             personal.env changed after the last render, so AeroSpace"
-        echo "             still runs the OLD bindings and alt-r only reloads them."
-        echo "             Fix: render-aerospace.sh && aerospace reload-config"
-        return 1
-    fi
-    echo "doctor: OK   rendered aerospace.toml is newer than its inputs"
+    echo "doctor: WARN rendered AeroSpace config differs from template/preferences; run render-aerospace.sh"
+    return 1
 }
 
 run_doctors() {
@@ -239,34 +211,9 @@ if [ "$DOCTOR_ONLY" = true ]; then
 fi
 
 if [ "$DRY_RUN" = true ]; then
-    echo "Template:  $TEMPLATE"
-    echo "Output:    $OUTPUT"
-    echo "BUILTIN:   $BUILTIN"
-    echo "EXTERNAL:  $EXTERNAL"
+    python3 -B "$PREFS" render-aerospace --dry-run --diff
     exit 0
 fi
 
-# Escape sed replacement metacharacters (&, \, delimiter) in EVERY substituted
-# value, not just the repo path. personalize.sh writes monitor names as escaped
-# regexes — "^DELL U2718Q \(1\)$" for the duplicate-name case its own prompt uses
-# as the example — and an unescaped replacement string strips those backslashes
-# straight back out: sed emits "^DELL U2718Q (1)$", whose bare parens are a
-# capture group, so the workspace pin matches nothing and 2/M/T fall back to
-# 'secondary'. A name containing '|' is worse: it closes the s||| command, sed
-# exits non-zero under `set -e`, and the shell has already truncated $OUTPUT —
-# leaving an EMPTY aerospace.toml and AeroSpace on its bundled defaults.
-sed_escape() { printf '%s' "$1" | sed -e 's/[&\\|]/\\&/g'; }
-
-BUILTIN_ESC=$(sed_escape "$BUILTIN")
-EXTERNAL_ESC=$(sed_escape "$EXTERNAL")
-DOTFILES_DIR_ESC=$(sed_escape "$DOTFILES_DIR")
-
-sed \
-    -e "s|@DOTFILES_MONITOR_BUILTIN@|${BUILTIN_ESC}|g" \
-    -e "s|@DOTFILES_MONITOR_EXTERNAL@|${EXTERNAL_ESC}|g" \
-    -e "s|@DOTFILES_DIR@|${DOTFILES_DIR_ESC}|g" \
-    "$TEMPLATE" > "$OUTPUT"
-
-echo "rendered: $OUTPUT (builtin='$BUILTIN' external='$EXTERNAL')"
-
+python3 -B "$PREFS" render-aerospace --apply
 run_doctors || true

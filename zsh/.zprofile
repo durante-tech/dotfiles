@@ -111,8 +111,6 @@ fi
 export SDKMAN_DIR="$HOME/.sdkman"
 [ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
 
-# Source machine-specific local overrides (not tracked in git)
-[[ -f ~/.zprofile.local ]] && source ~/.zprofile.local
 
 
 
@@ -126,3 +124,6 @@ export PATH="$HOME/.localcan/bin:$PATH"
 
 # Added by Obsidian
 export PATH="$PATH:/Applications/Obsidian.app/Contents/MacOS"
+
+# Final login-shell overrides (not tracked in Git).
+[[ -f ~/.zprofile.local ]] && source ~/.zprofile.local

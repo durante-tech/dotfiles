@@ -418,8 +418,6 @@ fi
 # Source project-specific aliases if they exist
 [[ -f ~/Developer/tac/scripts/aliases.sh ]] && source ~/Developer/tac/scripts/aliases.sh
 
-# Source machine-specific local overrides (not tracked in git)
-[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
 # bun completions (sourced in .zprofile, not duplicated here)
 
@@ -470,20 +468,7 @@ fi
 [[ -f "$HOME/.dart-cli-completion/zsh-config.zsh" ]] && . "$HOME/.dart-cli-completion/zsh-config.zsh" || true
 ## [/Completion]
 
-# ---------------------------------------
-# Agent-safety guard: hand Claude Code / non-interactive agents the STOCK tools.
-# The interactive replacements above mangle output (eza/bat force color+icons and
-# drop columns) or hang (TUIs, $EDITOR). CLAUDECODE is set by Claude Code in the
-# shell it snapshots, so this strips them ONLY for agent shells — your interactive
-# setup is untouched. Must run after all aliases are defined (i.e. here, near EOF).
-if [[ -n "$CLAUDECODE" ]]; then
-  for _a in ls la ll lm lsd lsg lz lt lt3 tree dtree cat curl du ps top htop vim; do
-    unalias "$_a" 2>/dev/null
-  done
-  unset _a
-  export EDITOR=true VISUAL=true   # nothing should pop an editor in an agent shell
-fi
-# ---------------------------------------
+
 
 
 # Installer-appended blocks land here at EOF — re-home them (PATH → .zprofile
@@ -499,6 +484,24 @@ DOTFILES_GCLOUD_SDK_DIR="${DOTFILES_GCLOUD_SDK_DIR:-$HOME/Downloads/google-cloud
 [[ -r "$DOTFILES_GCLOUD_SDK_DIR/path.zsh.inc" ]] && source "$DOTFILES_GCLOUD_SDK_DIR/path.zsh.inc"
 [[ -r "$DOTFILES_GCLOUD_SDK_DIR/completion.zsh.inc" ]] && source "$DOTFILES_GCLOUD_SDK_DIR/completion.zsh.inc"
 export GOOGLE_WORKSPACE_CLI_KEYRING_BACKEND=file
+
+# Final interactive overrides. Initialization inputs belong in personal.env.
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+
+# ---------------------------------------
+# Agent-safety guard: hand Claude Code / non-interactive agents the STOCK tools.
+# The interactive replacements above mangle output (eza/bat force color+icons and
+# drop columns) or hang (TUIs, $EDITOR). CLAUDECODE is set by Claude Code in the
+# shell it snapshots, so this strips them ONLY for agent shells — your interactive
+# setup is untouched. Must run after all aliases are defined (i.e. here, near EOF).
+if [[ -n "$CLAUDECODE" ]]; then
+  for _a in ls la ll lm lsd lsg lz lt lt3 tree dtree cat curl du ps top htop vim; do
+    unalias "$_a" 2>/dev/null
+  done
+  unset _a
+  export EDITOR=true VISUAL=true   # nothing should pop an editor in an agent shell
+fi
+# ---------------------------------------
 
 # Print profiling only after every startup block has run.
 [[ -n "$ZSH_PROFILE" ]] && zprof

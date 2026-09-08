@@ -172,7 +172,7 @@ cd ~/dotfiles
 ./install.sh --skip-casks    # Skip GUI apps
 ./setup.sh --check           # Verify dependencies
 ./setup.sh --stow            # Re-stow all packages
-./personalize.sh             # Interactive: write ~/.config/dotfiles/personal.env (monitor names, BD tagIDs, keyboard layout)
+./personalize.sh             # Interactive: write ~/.config/dotfiles/personal.env (monitor names, display serials, preferred apps, workspace roles)
 ```
 
 ### Linux (Debian/Ubuntu)
@@ -197,8 +197,7 @@ which need a manual reload, and what requires explicit provisioning).
 
 **Forking?** See [`docs/PERSONALIZE.md`](docs/PERSONALIZE.md) for the catalog
 of machine-specific values (monitor names, BetterDisplay hardware tagIDs,
-keyboard layout, personal app preferences). Run `./personalize.sh` for an
-interactive prompt that writes `~/.config/dotfiles/personal.env` for you.
+keyboard layout, personal app preferences). Run `./personalize.sh` for a validated preview of your saved preferences.
 
 **Pulling updates?** Just `git pull` — the tracked `post-merge` hook prints
 a copy-pasteable upgrade prompt to your terminal. Paste it into your
@@ -390,19 +389,22 @@ nvim +Lazy sync +qa
 
 ## Customization
 
-User customizations live separately and are never overwritten by updates.
+Supported preferences live outside Git and are projected into tool configuration
+with validation, previews, and backups. Use `./personalize.sh show`, `set`, and
+`apply`; see [Personalization](docs/PERSONALIZE.md). Structural edits to shared
+configuration remain repository changes.
 
 For machine-specific overrides (gitignored):
 
 ```bash
-~/.zshrc.local        # sourced after .zshrc
-~/.zprofile.local     # sourced after .zprofile
+~/.zshrc.local        # final interactive overrides (before agent safety/profiling)
+~/.zprofile.local     # final login-shell overrides
 ```
 
 For agent-driven personalization (template substitutions):
 
 ```bash
-~/.config/dotfiles/personal.env                                # DOTFILES_SIG_NAME/EMAIL (espanso :sig; falls back to git config), DOTFILES_DIR, monitor/tagID overrides
+~/.config/dotfiles/personal.env                                # DOTFILES_SIG_NAME/EMAIL (espanso :sig; falls back to git config), DOTFILES_DIR, legacy machine overrides
 ~/dotfiles/launchagents/Library/LaunchAgents/*.plist.template  # __USER__ + __DOTFILES_DIR__ rendered at install time
 ```
 
@@ -426,7 +428,7 @@ No name, email, or absolute user path lives in the repo — see
 ### 2.1.1 — 2026-07-08
 
 - **Monitor-agnostic AeroSpace setup:** workspace pinning now uses fallback chains ending in `'secondary'`/`'main'` — fresh clones behave sensibly on any hardware (single display, unknown external, desktop Macs) instead of silently collapsing onto one screen
-- `personalize.sh` auto-detects connected monitors (`aerospace list-monitors`, `system_profiler` fallback) and offers a numbered pick — no free-text regex; single-display setups configured automatically
+- `personalize.sh --recheck` explicitly discovers monitor names and serials; the wizard previews validated preferences, preserves unknown values, and backs up applies
 - New `render-aerospace.sh --doctor`: flags configured monitor patterns that match no connected display (also runs post-render and in `setup.sh --check`)
 
 ### 2.1.0 — 2026-07-07

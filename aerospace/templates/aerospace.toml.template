@@ -1,5 +1,5 @@
-# Place a copy of this config to ~/.aerospace.toml
-# After that, you can edit ~/.aerospace.toml to your liking
+# Shared template. Use personalize.sh for supported preferences, or edit this
+# template for structural changes and run scripts/scripts/render-aerospace.sh.
 
 # It's not necessary to copy all keys to your config.
 # If the key is missing in your config, "default-config.toml" will serve as a fallback
@@ -246,7 +246,7 @@ alt-r = 'reload-config'
 # alt-s sketchybar toggle moved to Karabiner (Ctrl+Shift+\) — terminals swallow Option key
 alt-0 = 'workspace-back-and-forth'
 alt-shift-c = 'close'
-alt-enter = '''exec-and-forget open -na /Applications/Ghostty.app'''
+alt-enter = '@DOTFILES_LAUNCH_TERMINAL@'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#focus
 alt-h = 'focus --boundaries-action wrap-around-the-workspace left'
@@ -285,7 +285,7 @@ alt-2 = 'workspace 2'
 # alt-8 = 'workspace 8'
 # alt-9 = 'workspace 9'
 alt-a = 'workspace A' # for AI engineer apps (Claude, Codex) — also fires on Caps+A via Karabiner Hyper→alt rewrite
-alt-b = 'workspace B' # for browser
+alt-b = 'workspace @DOTFILES_WS_BROWSER@' # for browser
 # alt-e is the pt-BR acute-accent dead key, so E lives on alt-w — W sits
 # immediately left of E on QWERTY, which is the closest thing to a positional
 # mnemonic available. Karabiner Hyper+E still works and is unchanged.
@@ -294,13 +294,13 @@ alt-w = 'workspace E' # for email (alt-e is a pt-BR dead key)
 # by design (see its on-window-detected rule), so F could never hold a window.
 # The key is left FREE rather than reassigned: an 'f' key opening a non-F
 # workspace is worse than an open slot.
-alt-d = 'workspace D' # for development
+alt-d = 'workspace @DOTFILES_WS_EDITOR@' # for development
 alt-m = 'workspace M' #
 # alt-n is the pt-BR tilde dead key, so N lives on alt-o — mnemonic: nOtes /
 # Obsidian. Karabiner Hyper+N still works and is unchanged.
-alt-o = 'workspace N' # for notes (alt-n is a pt-BR dead key)
+alt-o = 'workspace @DOTFILES_WS_NOTES@' # for notes (alt-n is a pt-BR dead key)
 # alt-p = 'workspace P'
-alt-t = 'workspace T' # for terminal shell
+alt-t = 'workspace @DOTFILES_WS_TERMINAL@' # for terminal shell
 # alt-v = 'workspace V'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
@@ -314,23 +314,23 @@ alt-shift-2 = 'move-node-to-workspace 2'
 # alt-shift-8 = 'move-node-to-workspace 8'
 # alt-shift-9 = 'move-node-to-workspace 9'
 alt-shift-a = 'move-node-to-workspace A'
-alt-shift-b = 'move-node-to-workspace B'
+alt-shift-b = 'move-node-to-workspace @DOTFILES_WS_BROWSER@'
 # Unbound by design (pt-BR acute dead key) — move windows to E via
 # on-window-detected rules or `aerospace move-node-to-workspace E`.
 # alt-shift-e = 'move-node-to-workspace E'
-alt-shift-d = 'move-node-to-workspace D'
+alt-shift-d = 'move-node-to-workspace @DOTFILES_WS_EDITOR@'
 alt-shift-m = 'move-node-to-workspace M'
 # Unbound by design (pt-BR tilde dead key) — move windows to N via
-# on-window-detected rules or `aerospace move-node-to-workspace N`.
-# alt-shift-n = 'move-node-to-workspace N'
+# on-window-detected rules or `aerospace move-node-to-workspace @DOTFILES_WS_NOTES@`.
+# alt-shift-n = 'move-node-to-workspace @DOTFILES_WS_NOTES@'
 # alt-shift-p = 'move-node-to-workspace P'
-alt-shift-t = 'move-node-to-workspace T'
+alt-shift-t = 'move-node-to-workspace @DOTFILES_WS_TERMINAL@'
 # E and N never had move bindings at all — alt-shift-e / alt-shift-n are the same
 # pt-BR dead keys that blocked their switch bindings, so you could reach those
 # workspaces but never send a window to one. These complete the symmetry on the
 # same substitute keys used for switching (alt-w -> E, alt-o -> N).
 alt-shift-w = 'move-node-to-workspace E'
-alt-shift-o = 'move-node-to-workspace N'
+alt-shift-o = 'move-node-to-workspace @DOTFILES_WS_NOTES@'
 # alt-shift-v = 'move-node-to-workspace V'
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
 alt-tab = 'workspace-back-and-forth'
@@ -422,52 +422,54 @@ run = 'layout floating'  # Opens on current screen, not forced to workspace F
 if.app-name-regex-substring = 'Shottr|CleanShot'
 run = 'layout floating'
 
-[[on-window-detected]]
-if.app-id = 'com.mitchellh.ghostty'
-run = "move-node-to-workspace T"
-
 # Playwright browser - keep floating in current workspace
 [[on-window-detected]]
 if.app-name-regex-substring = 'Chromium'
 run = 'layout floating'
 
+# @DOTFILES_PREFERRED_APPS@
+
+[[on-window-detected]]
+if.app-id = 'com.mitchellh.ghostty'
+run = "move-node-to-workspace @DOTFILES_WS_TERMINAL@"
+
 [[on-window-detected]]
 if.app-id = 'com.google.Chrome'
-run = "move-node-to-workspace B"
+run = "move-node-to-workspace @DOTFILES_WS_BROWSER@"
 
 [[on-window-detected]]
 if.app-id = 'app.zen-browser.zen'
-run = "move-node-to-workspace B"
+run = "move-node-to-workspace @DOTFILES_WS_BROWSER@"
 
 [[on-window-detected]]
 if.app-id = 'company.thebrowser.Browser'
-run = "move-node-to-workspace B"
+run = "move-node-to-workspace @DOTFILES_WS_BROWSER@"
 
 [[on-window-detected]]
 if.app-id = 'company.thebrowser.dia'
-run = "move-node-to-workspace B"
+run = "move-node-to-workspace @DOTFILES_WS_BROWSER@"
 
 [[on-window-detected]]
 if.app-id = 'com.apple.Safari'
-run = "move-node-to-workspace B"
+run = "move-node-to-workspace @DOTFILES_WS_BROWSER@"
 
 [[on-window-detected]]
 if.app-id = 'org.mozilla.firefox'
-run = "move-node-to-workspace B"
+run = "move-node-to-workspace @DOTFILES_WS_BROWSER@"
 
 # Duplicate fallback Finder mapping removed (handled above with float + move)
 
 [[on-window-detected]]
 if.app-id = 'notion.id'
-run = "move-node-to-workspace N"
+run = "move-node-to-workspace @DOTFILES_WS_NOTES@"
 
 [[on-window-detected]]
 if.app-id = 'md.obsidian'
-run = "move-node-to-workspace N"
+run = "move-node-to-workspace @DOTFILES_WS_NOTES@"
 
 [[on-window-detected]]
 if.app-id = 'com.apple.Notes'
-run = "move-node-to-workspace N"
+run = "move-node-to-workspace @DOTFILES_WS_NOTES@"
 
 # AI apps → A (Claude, ChatGPT, Perplexity, wispr-flow)
 #
@@ -495,19 +497,19 @@ run = "move-node-to-workspace A"
 # Terminals → T
 [[on-window-detected]]
 if.app-id = 'com.googlecode.iterm2'
-run = "move-node-to-workspace T"
+run = "move-node-to-workspace @DOTFILES_WS_TERMINAL@"
 
 [[on-window-detected]]
 if.app-id = 'org.alacritty'
-run = "move-node-to-workspace T"
+run = "move-node-to-workspace @DOTFILES_WS_TERMINAL@"
 
 [[on-window-detected]]
 if.app-id = 'com.github.wez.wezterm'
-run = "move-node-to-workspace T"
+run = "move-node-to-workspace @DOTFILES_WS_TERMINAL@"
 
 [[on-window-detected]]
 if.app-id = 'net.kovidgoyal.kitty'
-run = "move-node-to-workspace T"
+run = "move-node-to-workspace @DOTFILES_WS_TERMINAL@"
 
 # Messaging → M
 [[on-window-detected]]
@@ -547,35 +549,35 @@ run = "move-node-to-workspace M"
 # IDEs → Development workspace (D) on Built-in display
 [[on-window-detected]]
 if.app-id = 'com.microsoft.VSCode'
-run = ['layout tiling', 'move-node-to-workspace D']
+run = ['layout tiling', 'move-node-to-workspace @DOTFILES_WS_EDITOR@']
 
 [[on-window-detected]]
 if.app-id = 'com.cursor.cursor'
-run = ['layout tiling', 'move-node-to-workspace D']
+run = ['layout tiling', 'move-node-to-workspace @DOTFILES_WS_EDITOR@']
 
 [[on-window-detected]]
 if.app-id = 'com.todesktop.230313mzl4w4u4'
-run = ['layout tiling', 'move-node-to-workspace D']
+run = ['layout tiling', 'move-node-to-workspace @DOTFILES_WS_EDITOR@']
 
 [[on-window-detected]]
 if.app-id = 'com.todesktop.230313mzl4w4u92'
-run = ['layout tiling', 'move-node-to-workspace D']
+run = ['layout tiling', 'move-node-to-workspace @DOTFILES_WS_EDITOR@']
 
 [[on-window-detected]]
 if.app-id = 'com.google.android.studio'
-run = ['layout tiling', 'move-node-to-workspace D']
+run = ['layout tiling', 'move-node-to-workspace @DOTFILES_WS_EDITOR@']
 
 [[on-window-detected]]
 if.app-id = 'com.apple.dt.Xcode'
-run = ['layout tiling', 'move-node-to-workspace D']
+run = ['layout tiling', 'move-node-to-workspace @DOTFILES_WS_EDITOR@']
 
 [[on-window-detected]]
 if.app-name-regex-substring = 'intellij|clion|pycharm|webstorm|rider|goland|datagrip|rubymine|phpstorm|fleet'
-run = ['layout tiling', 'move-node-to-workspace D']
+run = ['layout tiling', 'move-node-to-workspace @DOTFILES_WS_EDITOR@']
 
 [[on-window-detected]]
 if.app-id = 'dev.zed.Zed'
-run = ['layout tiling', 'move-node-to-workspace D']
+run = ['layout tiling', 'move-node-to-workspace @DOTFILES_WS_EDITOR@']
 
 # Docker Desktop → floating (accessible from any workspace)
 [[on-window-detected]]
@@ -609,12 +611,12 @@ run = ['layout tiling', 'move-node-to-workspace A']
 # Godot → D. Game/engine editor, same class as the other IDEs.
 [[on-window-detected]]
 if.app-id = 'org.godotengine.godot'
-run = ['layout tiling', 'move-node-to-workspace D']
+run = ['layout tiling', 'move-node-to-workspace @DOTFILES_WS_EDITOR@']
 
 # Frame0 → D. Wireframing sits next to the editors, not with the browsers.
 [[on-window-detected]]
 if.app-id = 'com.electron.frame0'
-run = ['layout tiling', 'move-node-to-workspace D']
+run = ['layout tiling', 'move-node-to-workspace @DOTFILES_WS_EDITOR@']
 
 # OBS → 2 (portrait). JUDGEMENT CALL, flagged as such: the --stream display
 # profile drives the BUILT-IN at 1728x1080 because that is the panel OBS
