@@ -1,0 +1,56 @@
+# Preferences in Raycast
+
+The existing Script Commands setup now exposes the same preference backend as
+`./personalize.sh`. Search for **Dotfiles** in Raycast. These commands show text
+results inside Raycast and use its argument fields for changes.
+
+| Command | Purpose |
+| --- | --- |
+| Dotfiles · Preferences | Effective values and sources, saved profiles, backups, and reload guidance |
+| Dotfiles · Set Preference | A setting key, value, and Preview/Apply choice |
+| Dotfiles · Profile | List profiles, or preview/apply one saved profile |
+| Dotfiles · Save Profile | Capture the named keys into a profile; replacement is explicit |
+| Dotfiles · Undo Preferences | Preview or restore an unchanged backup by name |
+| Dotfiles · Personal Shortcuts | Read the reference generated from current source bindings and choices |
+
+Preview is the first action choice. Apply, Save new, and Replace existing are
+explicit writes through the shared validated transaction. No command restarts
+applications or installs dependencies. Inputs stay literal arguments; text cannot
+introduce command flags or executable shell syntax. The preference entry does not
+source `personal.env` while editing or inspecting it.
+
+For example, choose **Dotfiles · Set Preference**, enter
+`readability.ghostty_font_size`, enter `18`, and choose **Preview**. The output
+shows the setting and affected files. Choose **Apply** when ready, then use the
+printed reload guidance. Font family names must come from the CLI's `list-fonts`;
+missing fonts fail before any configuration write.
+
+To save a profile, enter a lowercase name such as `presentation`, then list its
+owned keys separated by spaces, such as
+`readability.ghostty_font_size readability.background_opacity`. Saving captures
+their current effective values. It does not activate the profile. See
+[profiles](PERSONALIZE-PROFILES.md) for ownership, matching, and reset semantics.
+
+The Preferences view reports saved/rendered consistency. It does not query live
+terminal settings or claim that a reload occurred. Reload guidance comes from
+the latest applicable backup; confirmation remains **unverified**. Backup undo
+availability is checked against current input hashes before being displayed.
+
+## Registration and deployment
+
+The scripts live in `raycast/script-commands/`, the same directory as the display
+commands. If it is already registered, Raycast can discover the additions there.
+If the commands are absent, open Raycast Settings → Extensions → Script Commands
+and add `~/dotfiles/raycast/script-commands`. The helper must be deployed first:
+
+```bash
+cd ~/dotfiles
+stow -t ~ scripts
+```
+
+Raycast uses its supported Script Command arguments (at most three inputs and
+dropdown choices). This adds no separate extension build or dependency installer.
+[Raycast argument reference](https://github.com/raycast/script-commands/blob/master/documentation/ARGUMENTS.md)
+
+See [personalization](PERSONALIZE.md) for the CLI equivalents, storage, backups,
+and reload boundaries.

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Read-only bootstrap for CLI and Raycast preference operations; never source user code.
+set -eu
+DOTFILES_PREFERENCE_LIB="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/preferences-cli.py"
+exec python3 -B "$DOTFILES_PREFERENCE_LIB" "$@"

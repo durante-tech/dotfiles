@@ -32,3 +32,10 @@ preview precedence, app/workspace routing, shell/TOML quoting, concurrent edits,
 write rollback, and guarded undo. App bundles and launch commands are fixtures;
 no applications, hardware controls, or services are started. `test_shell.py` also
 checks the final local-override ordering before the profiling report.
+
+`test_readability.py`, `test_preference_profiles.py`, and `test_personal_shortcuts.py`
+cover terminal rendering, explicit profile ownership, and source-derived key
+sequences. `test_customization_integration.py` exercises shared rollback/undo,
+old backups, late symlink changes, non-executing entry points, and Raycast argument
+boundaries. Optional native font/parser checks use temporary configurations and
+never open terminal windows. See `docs/CUSTOMIZATION-ROADMAP.md` for real-use checks.

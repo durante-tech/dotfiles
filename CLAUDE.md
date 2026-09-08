@@ -63,6 +63,13 @@ before profiling. Preferred app roles are consumed by `dotfiles-app` and matchin
 AeroSpace/Karabiner bindings; GUI editor choice does not alter shell `EDITOR`.
 See `docs/PERSONALIZE.md` for the supported fields and reload boundaries.
 
+Readability overrides generate owned files in `~/.config/dotfiles/readability/`;
+seed comment-only files before activating terminal includes. Named profiles own
+explicit supported keys and never own `display.*` or brightness intent. CLI and
+Raycast preference inspection must never source arbitrary `personal.env` code.
+Personal shortcut exports are read-only course references, not progress imports.
+See `docs/CUSTOMIZATION-ROADMAP.md` for the capability and activation boundaries.
+
 ### Linux (Debian/Ubuntu, terminal core)
 
 ```bash

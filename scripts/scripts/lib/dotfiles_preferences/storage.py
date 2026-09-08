@@ -21,6 +21,36 @@ def digest(value):
     return hashlib.sha256(value).hexdigest() if value is not None else None
 
 
+def targets(preferences, version=2):
+    paths = {preferences.file, preferences.env, preferences.repo/'aerospace/.config/aerospace/aerospace.toml'}
+    if version == 2:
+        from .readability import output_paths
+        paths.update(output_paths(preferences))
+        paths.add(preferences.directory/'profiles.json')
+    return paths
+
+
+def inputs(preferences, version=2):
+    return targets(preferences, version) | {preferences.repo/'aerospace/templates/aerospace.toml.template'}
+
+
+def check_paths(preferences, paths):
+    """Recheck ownership under the transaction lock, including replaced parents."""
+    roots = (preferences.directory, preferences.repo)
+    for path in paths:
+        path = Path(path)
+        root = next((base for base in roots if path == base or base in path.parents), None)
+        if root is None:
+            raise PreferenceError('Unexpected personalization path')
+        current = path
+        while True:
+            if current.is_symlink():
+                raise PreferenceError('Refusing a symlinked personalization target or parent: '+str(current))
+            if current == root:
+                break
+            current = current.parent
+
+
 def atomic(path, value, mode=0o600):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -34,6 +64,22 @@ def atomic(path, value, mode=0o600):
         os.replace(temporary, path)
     finally:
         Path(temporary).unlink(missing_ok=True)
+
+
+def rollback(preferences, written, previous, records):
+    failed = []
+    for path in reversed(written):
+        try:
+            check_paths(preferences, [path])
+            value = previous[path]
+            if value is None:
+                path.unlink(missing_ok=True)
+            else:
+                atomic(path, value, next(r['mode'] for r in records if r['path'] == str(path)))
+        except (OSError, PreferenceError):
+            failed.append(str(path))
+    if failed:
+        raise PreferenceError('Rollback could not safely restore changed targets; preserve the backup for recovery: '+', '.join(failed))
 
 
 @contextmanager
@@ -52,14 +98,21 @@ def locked(directory):
 
 
 class Plan:
-    def __init__(self, preferences, patch=None, reset=(), validate_apps=lambda _: None, render_only=False):
+    def __init__(self, preferences, patch=None, reset=(), validate_apps=lambda _: None, render_only=False,
+                 extra_before=None, extra_files=None, save_only=False, generated_only=False):
         from .model import validate_overrides
+        from .readability import render_files, validate_owned, output_paths
         self.preferences = preferences
         output = preferences.repo/'aerospace/.config/aerospace/aerospace.toml'
-        paths = [preferences.file, preferences.env, output]
+        paths = inputs(preferences)
         self.before = {path: content(path) for path in paths}
         self.template = preferences.repo/'aerospace/templates/aerospace.toml.template'
-        self.template_before = content(self.template)
+        self.template_before = self.before[self.template]
+        for path, value in (extra_before or {}).items():
+            if path not in paths or self.before[path] != value:
+                raise PreferenceError('Profile inputs changed during preview; retry')
+        if set(extra_files or {}) - {preferences.directory/'profiles.json'}:
+            raise PreferenceError('Unexpected profile output target')
         data = json.loads(self.before[preferences.file]) if self.before[preferences.file] is not None else {'version': 1, 'values': {}}
         validate_overrides(data, preferences.repo, preferences.home)
         for key in reset:
@@ -73,18 +126,32 @@ class Plan:
             preferences.env: project((self.before[preferences.env] or b'').decode(), preferences.env_assignments(data)).encode(),
             output: aerospace(preferences.repo, self.values, self.template_before.decode()).encode(),
         }
+        if not render_only and not save_only:
+            for path, value in render_files(preferences, self.values).items():
+                if path not in output_paths(preferences):
+                    raise PreferenceError('Unexpected readability output target')
+                validate_owned(path, self.before[path])
+                self.files[path] = value
+        if self.before[preferences.file] is None and not data['values']:
+            self.files.pop(preferences.file)
+        if self.before[preferences.env] is None and not self.files[preferences.env]:
+            self.files.pop(preferences.env)
         if render_only:
             self.files = {output: self.files[output]}
+        if generated_only:
+            self.files = {p: v for p, v in self.files.items() if p not in (preferences.file, preferences.env)}
+        if save_only:
+            self.files = {}
+        self.files.update(extra_files or {})
         self.changes = [path for path in self.files if self.before[path] != self.files[path]]
-        for path in paths:
-            if path.is_symlink():
-                raise PreferenceError('Refusing to replace a symlink; inspect ownership: ' + str(path))
+        check_paths(preferences, paths)
 
     def apply(self):
         if not self.changes:
             return None
         prefs = self.preferences
         with locked(prefs.directory):
+            check_paths(prefs, self.before)
             if content(self.template) != self.template_before or any(content(p) != old for p, old in self.before.items()):
                 raise PreferenceError('Configuration changed during preview; retry with a fresh preview')
             backup = prefs.directory/'backups'/('personalization-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S')+'-'+str(time.time_ns()))
@@ -97,22 +164,17 @@ class Plan:
                     atomic(backup/str(index), old, mode)
                 records.append({'path': str(path), 'before': digest(old), 'after': digest(self.files[path]), 'mode': mode})
             guards = {str(path): digest(self.files[path] if path in self.files else value) for path, value in self.before.items()}
-            guards[str(self.template)] = digest(self.template_before)
-            manifest = {'version': 1, 'files': records, 'guards': guards}
+            manifest = {'version': 2, 'files': records, 'guards': guards}
             atomic(backup/'manifest.json', (json.dumps(manifest, indent=2)+'\n').encode())
             written = []
             try:
                 for record in records:
                     path = Path(record['path'])
+                    check_paths(prefs, [path])
                     atomic(path, self.files[path], record['mode'])
                     written.append(path)
-            except OSError:
-                for path in reversed(written):
-                    old = self.before[path]
-                    if old is None:
-                        path.unlink(missing_ok=True)
-                    else:
-                        atomic(path, old, next(r['mode'] for r in records if r['path'] == str(path)))
+            except (OSError, PreferenceError):
+                rollback(prefs, written, self.before, records)
                 raise
             return backup
 
@@ -122,14 +184,15 @@ def restore(preferences, identifier, apply=False):
         raise PreferenceError('Use the backup directory name printed by apply')
     backup = preferences.directory/'backups'/identifier
     manifest = json.loads((backup/'manifest.json').read_text())
-    if not isinstance(manifest, dict) or manifest.get('version') != 1 or not isinstance(manifest.get('files'), list) or not isinstance(manifest.get('guards'), dict):
+    if (not isinstance(manifest, dict) or type(manifest.get('version')) is not int or manifest['version'] not in (1, 2)
+            or not isinstance(manifest.get('files'), list) or not isinstance(manifest.get('guards'), dict)):
         raise PreferenceError('Invalid personalization backup manifest')
     records, guards = manifest['files'], manifest['guards']
-    allowed = {preferences.file, preferences.env, preferences.repo/'aerospace/.config/aerospace/aerospace.toml'}
-    inputs = allowed | {preferences.repo/'aerospace/templates/aerospace.toml.template'}
+    allowed = targets(preferences, manifest['version'])
+    input_paths = inputs(preferences, manifest['version'])
     def valid_hash(value, nullable=False):
         return (value is None and nullable) or (isinstance(value, str) and re.fullmatch(r'[0-9a-f]{64}', value) is not None)
-    if set(guards) != {str(path) for path in inputs} or not all(valid_hash(value, True) for value in guards.values()):
+    if set(guards) != {str(path) for path in input_paths} or not all(valid_hash(value, True) for value in guards.values()):
         raise PreferenceError('Invalid personalization backup guards')
     seen = set()
     for record in records:
@@ -140,9 +203,10 @@ def restore(preferences, identifier, apply=False):
             raise PreferenceError('Invalid personalization backup record')
         seen.add(record['path'])
     def check_guards():
+        check_paths(preferences, input_paths)
         for name, expected in guards.items():
             path = Path(name)
-            if path not in allowed | {preferences.repo/'aerospace/templates/aerospace.toml.template'} or digest(content(path)) != expected:
+            if path not in input_paths or path.is_symlink() or digest(content(path)) != expected:
                 raise PreferenceError('A configuration input changed after apply; preserve newer work before undo')
     check_guards()
     for i, record in enumerate(records):
@@ -164,17 +228,13 @@ def restore(preferences, identifier, apply=False):
             try:
                 for i, record in enumerate(records):
                     path = Path(record['path'])
+                    check_paths(preferences, [path])
                     if record['before'] is None:
                         path.unlink(missing_ok=True)
                     else:
                         atomic(path, (backup/str(i)).read_bytes(), record['mode'])
                     written.append(path)
-            except OSError:
-                for path in reversed(written):
-                    value = previous[path]
-                    if value is None:
-                        path.unlink(missing_ok=True)
-                    else:
-                        atomic(path, value, next(r['mode'] for r in records if r['path'] == str(path)))
+            except (OSError, PreferenceError):
+                rollback(preferences, written, previous, records)
                 raise
     return [record['path'] for record in records]

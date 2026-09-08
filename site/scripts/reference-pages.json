@@ -222,5 +222,25 @@
   {
     "sourcePath": "PERSONALIZE.md",
     "outputSlug": "personalize"
+  },
+  {
+    "sourcePath": "PERSONALIZE-READABILITY.md",
+    "outputSlug": "personalize/readability"
+  },
+  {
+    "sourcePath": "PERSONALIZE-PROFILES.md",
+    "outputSlug": "personalize/profiles"
+  },
+  {
+    "sourcePath": "PERSONALIZE-RAYCAST.md",
+    "outputSlug": "personalize/raycast"
+  },
+  {
+    "sourcePath": "PERSONALIZE-SHORTCUTS.md",
+    "outputSlug": "personalize/shortcuts"
+  },
+  {
+    "sourcePath": "CUSTOMIZATION-ROADMAP.md",
+    "outputSlug": "customization-roadmap"
   }
 ]

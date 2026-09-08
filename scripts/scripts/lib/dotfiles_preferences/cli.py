@@ -17,6 +17,7 @@ from .storage import Plan, restore
 USAGE = '''Personalization (saved values remain outside Git):
   personalize.sh [--recheck] [--dry-run]      interactive preview
   personalize.sh show [--json]
+  personalize.sh status [--json]             values, profiles, backups, reload guidance
   personalize.sh get KEY [--raw]
   personalize.sh set KEY VALUE [--apply] [--dry-run]
   personalize.sh reset KEY [--apply]
@@ -24,6 +25,12 @@ USAGE = '''Personalization (saved values remain outside Git):
   personalize.sh check
   personalize.sh undo BACKUP_NAME [--apply]
   personalize.sh list-apps [--json]
+  personalize.sh list-fonts [--json]
+  personalize.sh profile list|show NAME
+  personalize.sh profile save NAME KEY... [--replace] [--apply]
+  personalize.sh profile use NAME [--apply]
+  personalize.sh shortcuts [--json]          personal reference; never edits progress
+  personalize.sh backups [--json]
   personalize.sh discover                   explicit read-only hardware discovery
   personalize.sh catalog                   fields, defaults, units, and consumers
 
@@ -65,11 +72,12 @@ def decode(key, text):
         raise PreferenceError('Unknown preference: '+key)
     if text == 'null':
         return None
-    if FIELDS[key][1] == 'paths' or text.startswith('"'):
+    numeric = key in ('readability.ghostty_font_size', 'readability.kitty_font_size', 'readability.background_opacity')
+    if FIELDS[key][1] == 'paths' or numeric or text.startswith('"'):
         try:
             return json.loads(text)
         except ValueError:
-            raise PreferenceError('Use valid JSON for arrays and quoted strings') from None
+            raise PreferenceError('Use valid JSON for arrays, numeric values, and quoted strings') from None
     return text  # Workspace names and serials can consist entirely of digits.
 
 
@@ -83,12 +91,14 @@ def preview(plan, patch=None, reset=(), show_diff=False):
     for path in plan.changes:
         print('Would update: ' + str(path))
         # Never print unrelated personal.env content, even in a preview.
-        if show_diff and path.suffix == '.toml':
+        if show_diff and (path.suffix == '.toml' or path.parent == plan.preferences.directory/'readability'):
             print(''.join(difflib.unified_diff((plan.before[path] or b'').decode().splitlines(True),
                                               plan.files[path].decode().splitlines(True),
-                                              fromfile='current AeroSpace', tofile='proposed AeroSpace')))
-    print('Launchers read saved app preferences immediately. Reload routing when ready: aerospace reload-config')
-    print('New interactive shells read the managed environment block; no service restart is performed.')
+                                              fromfile='current '+path.name, tofile='proposed '+path.name)))
+    from .operations import reload_hints
+    print('Launchers read saved app preferences immediately; no applications are reloaded automatically.')
+    for hint in reload_hints(plan.changes):
+        print(hint)
 
 
 def wizard(prefs, recheck=False, dry=False):
@@ -143,12 +153,38 @@ def main(argv=None):
     parser.add_argument('--new', action='store_true')
     parser.add_argument('--diff', action='store_true')
     parser.add_argument('--check', action='store_true')
+    parser.add_argument('--replace', action='store_true')
     args = parser.parse_intermixed_args(argv)
     items = args.items
     command = items[0] if items else 'wizard'
     params = items[1:]
     try:
         prefs = preferences()
+        if command in ('status', 'backups'):
+            if params:
+                raise PreferenceError(command+' takes no arguments')
+            from .operations import status, status_text, backups
+            report = status(prefs) if command == 'status' else backups(prefs)
+            if args.json:
+                print(json.dumps(report, ensure_ascii=False, indent=2))
+            elif command == 'status':
+                print(status_text(report))
+            else:
+                print('\n'.join(item['name']+' — undo '+item['undo'] for item in report) or 'No backups yet.')
+            return 0
+        if command == 'shortcuts':
+            if params:
+                raise PreferenceError('shortcuts takes no arguments; redirect stdout to export')
+            from .shortcuts import records, guide
+            print(json.dumps(records(prefs), ensure_ascii=False, indent=2) if args.json else guide(prefs))
+            return 0
+        if command == 'list-fonts':
+            if params:
+                raise PreferenceError('list-fonts takes no arguments')
+            from .readability import discover_fonts
+            fonts = [] if args.dry_run else discover_fonts()
+            print(json.dumps(fonts, ensure_ascii=False, indent=2) if args.json else '\n'.join(fonts))
+            return 0
         if command == 'catalog':
             print(json.dumps({key: {'default': field[0], 'type': field[1], 'environment': field[2], 'consumer': field[3]}
                               for key, field in FIELDS.items()}, indent=2))
@@ -217,10 +253,30 @@ def main(argv=None):
             actual = args.apply and not args.dry_run
             paths = restore(prefs, params[0], actual)
             print(('Restored: ' if actual else 'Would restore: ') + ', '.join(paths))
-            print('Reload routing when ready: aerospace reload-config')
+            from .operations import reload_hints
+            for hint in reload_hints(paths):
+                print(hint)
             return 0
-        patch, resets = {}, []
-        if command == 'wizard':
+        patch, resets, extra, saving_profile = {}, [], {}, False
+        if command == 'profile':
+            from .profiles import list_profiles, show_profile
+            if params == ['list']:
+                report = list_profiles(prefs)
+                print(json.dumps(report, ensure_ascii=False, indent=2) if args.json else '\n'.join(item['name']+': '+item['state'] for item in report))
+                return 0
+            if len(params) == 2 and params[0] == 'show':
+                print(json.dumps(show_profile(prefs, params[1]), ensure_ascii=False, indent=2))
+                return 0
+            from .operations import profile_plan
+            profile = profile_plan(prefs, params, args.replace)
+            patch, resets = profile.patch, profile.reset
+            saving_profile = params[0] == 'save'
+            extra = {'extra_before': profile.before, 'extra_files': profile.files, 'save_only': saving_profile}
+            print('Profile '+params[1]+': '+('capture declared settings' if saving_profile else 'apply owned settings'))
+            if saving_profile:
+                proposed = json.loads(profile.files[prefs.directory/'profiles.json'])
+                print(json.dumps(next(item for item in proposed['profiles'] if item['name'] == params[1]), ensure_ascii=False, indent=2))
+        elif command == 'wizard':
             if params:
                 raise PreferenceError('Unexpected wizard arguments')
             patch = wizard(prefs, args.recheck, args.dry_run)
@@ -232,12 +288,20 @@ def main(argv=None):
             if len(params) != 1 or params[0] not in FIELDS:
                 raise PreferenceError('reset requires a known setting')
             resets = params
-        elif command not in ('apply', 'check', 'render-aerospace') or params:
+        elif command not in ('apply', 'check', 'render-aerospace', 'render-settings') or params:
             raise PreferenceError('Unknown command or unexpected arguments')
-        apps = discover() if command not in ('render-aerospace',) else {}
-        validator = (lambda _: None) if command == 'render-aerospace' else lambda values: require_selected(values, apps)
-        plan = Plan(prefs, patch, resets, validator, render_only=command == 'render-aerospace')
+        generated_only = command in ('render-aerospace', 'render-settings')
+        apps = discover() if not generated_only and not saving_profile else {}
+        validator = (lambda _: None) if generated_only or saving_profile else lambda values: require_selected(values, apps)
+        plan = Plan(prefs, patch, resets, validator, render_only=command == 'render-aerospace',
+                    generated_only=command == 'render-settings', **extra)
+        def validate_font():
+            from .readability import discover_fonts, require_font
+            if plan.values.get('readability.font_family') is not None:
+                require_font(plan.values, discover_fonts())
         if command == 'check' or args.check:
+            if not args.dry_run:
+                validate_font()
             meaningful = [path for path in plan.changes if path != prefs.file or prefs.file.exists()]
             if meaningful:
                 print('Configuration drift: ' + ', '.join(str(p) for p in meaningful))
@@ -249,6 +313,8 @@ def main(argv=None):
         if command == 'wizard' and not args.dry_run and not actual:
             actual = input('Apply this validated preview? [y/N]: ').strip().lower() == 'y'
         if actual:
+            if not saving_profile and not generated_only:
+                validate_font()
             backup = plan.apply()
             if backup:
                 print('Applied. Backup: '+str(backup))

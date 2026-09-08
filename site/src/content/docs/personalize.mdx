@@ -14,6 +14,7 @@ shows a preview, validates the result, and keeps a backup before applying.
 ```bash
 cd ~/dotfiles
 ./personalize.sh show
+./personalize.sh status              # sources, saved profiles, backups, reload guidance
 ./personalize.sh list-apps
 ./personalize.sh                     # interactive preview, then an apply prompt
 ./personalize.sh --recheck           # also query current display identities/names
@@ -58,12 +59,19 @@ Run `./personalize.sh catalog` for the authoritative field/type/consumer catalog
 | `monitors.builtin/external` | Regular expressions used by AeroSpace monitor pinning |
 | `display.builtin_serial/external_serial` | Optional serial pins used by the display controller |
 | `projects.roots` | JSON array of absolute or home-relative project roots |
+| `readability.font_family` | Optional installed family shared by Ghostty and Kitty |
+| `readability.ghostty_font_size/kitty_font_size` | Optional separate sizes in points, 8–40 |
+| `readability.background_opacity` | Optional terminal opacity, 0.2–1 |
 
 The app/workspace mapping affects the existing category routes as well as the
 preferred app. Role navigation and move shortcuts agree: Alt+T/B/D/O follow the
 configured destinations, as do their Shift variants; Hyper+N follows Notes.
 Finder, screenshot-tool, and automation-browser floating exceptions are retained.
 Existing windows are not moved by the personalizer.
+
+Readability overrides preserve each terminal's current values when unset. See
+[fonts and readability](/personalize/readability/) for font discovery, units,
+reset behavior, and the terminal reload sequence.
 
 App preferences are bundle IDs, not shell commands. `list-apps` reads installed
 app metadata; the wizard accepts a number from that list. Missing or ambiguous
@@ -86,7 +94,8 @@ These examples illustrate the interfaces; choose values appropriate for your set
 
 `set`, `reset`, and `undo` preview by default. `--apply` writes the validated plan;
 `--dry-run` wins in either argument order. `--diff` additionally shows the proposed
-AeroSpace diff. Unknown/private environment content is not printed in previews.
+AeroSpace and generated readability diffs. Unknown/private environment content is
+not printed in previews.
 
 For optional settings, `null` explicitly disables the override's value. For an app
 role it leaves the launcher unconfigured. For serials it uses the display
@@ -126,9 +135,33 @@ apply, and can be previewed:
 ```
 
 A render-only update does not rewrite preferences or create an empty preference
-file. It backs up changed generated configuration. Rendering requires Python
+file. It backs up changed generated configuration. Readability files and saved
+profiles share these transactions; older version-1 backups remain readable, with
+their original input guards. Rendering requires Python
 3.11+ or an already installed Bun for TOML validation; neither is installed by
 this tool.
+
+## Profiles, Raycast, and personal references
+
+Laptop, Desk, and Presentation begin unconfigured. Save only the keys a profile
+should own; applying it later preserves unrelated settings. Profiles do not own
+display brightness, calibration, serial identities, or Manual/Auto intent.
+
+```bash
+./personalize.sh profile list
+./personalize.sh profile save desk workspaces.browser workspaces.terminal --apply
+./personalize.sh profile use desk       # preview
+./personalize.sh profile use desk --apply
+./personalize.sh backups
+./personalize.sh shortcuts             # Markdown on stdout
+./personalize.sh shortcuts --json      # structured reference, no progress import
+```
+
+See [explicit profiles](/personalize/profiles/), [Raycast preferences](/personalize/raycast/),
+and [personal shortcuts](/personalize/shortcuts/). The CLI and Raycast commands
+use the same backend. `status` compares saved preferences with generated files;
+it does not claim that running apps have reloaded. The latest applicable backup
+supplies reload guidance, with confirmation explicitly unverified.
 
 ## Reload and deployment boundaries
 
@@ -156,9 +189,11 @@ stow -R -t ~ zsh scripts aerospace karabiner
 
 A custom `DOTFILES_DIR` stays in `personal.env` for existing daemon contexts. The
 root personalizer derives its checkout location or honors an exported
-`DOTFILES_DIR`; runtime helpers honor `personal.env`. For test/alternate profiles,
+`DOTFILES_DIR`; app/workspace launch helpers honor `personal.env`. The preference
+entry uses its deployed library path and never sources that file. For tests,
 `DOTFILES_USER_CONFIG_DIR` selects the configuration directory. This first batch
-keeps profiles explicit; it adds no automatic context switching.
+keeps terminal include paths in the normal configuration directory; named profiles
+change explicitly owned values there. It adds no automatic context switching.
 
 ## Legacy settings
 
