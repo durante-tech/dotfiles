@@ -39,3 +39,7 @@ sequences. `test_customization_integration.py` exercises shared rollback/undo,
 old backups, late symlink changes, non-executing entry points, and Raycast argument
 boundaries. Optional native font/parser checks use temporary configurations and
 never open terminal windows. See `docs/CUSTOMIZATION-ROADMAP.md` for real-use checks.
+
+`test_adoption.py` verifies fresh-home preparation before desktop deployment,
+repeat-run stability, failure propagation, preservation of unmanaged files, and
+the full install path's generated-only rendering contract.

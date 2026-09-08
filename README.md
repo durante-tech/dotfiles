@@ -172,7 +172,8 @@ cd ~/dotfiles
 ./install.sh --skip-casks    # Skip GUI apps
 ./setup.sh --check           # Verify dependencies
 ./setup.sh --stow            # Re-stow all packages
-./personalize.sh             # Interactive: write ~/.config/dotfiles/personal.env (monitor names, display serials, preferred apps, workspace roles)
+./personalize.sh             # Preview-first monitor/app/workspace wizard
+./personalize.sh status      # Preferences, profiles, backups, and reload guidance
 ```
 
 ### Linux (Debian/Ubuntu)
@@ -391,8 +392,15 @@ nvim +Lazy sync +qa
 
 Supported preferences live outside Git and are projected into tool configuration
 with validation, previews, and backups. Use `./personalize.sh show`, `set`, and
-`apply`; see [Personalization](docs/PERSONALIZE.md). Structural edits to shared
-configuration remain repository changes.
+`apply`; see [Personalization](docs/PERSONALIZE.md). Install/update prepares the
+terminal include files automatically. Start with `./personalize.sh check` and
+`./personalize.sh status`, or use **Dotfiles · Preferences** in Raycast after
+registering `~/dotfiles/raycast/script-commands` under Script Commands.
+
+[Readability](docs/PERSONALIZE-READABILITY.md), [profiles](docs/PERSONALIZE-PROFILES.md),
+[Raycast controls](docs/PERSONALIZE-RAYCAST.md), and [personal shortcuts](docs/PERSONALIZE-SHORTCUTS.md)
+have separate first-use guides. See the [customization roadmap](docs/CUSTOMIZATION-ROADMAP.md)
+for activation boundaries. Structural edits remain repository changes.
 
 For machine-specific overrides (gitignored):
 

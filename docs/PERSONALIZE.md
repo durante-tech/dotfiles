@@ -16,6 +16,8 @@ cd ~/dotfiles
 ./personalize.sh --dry-run           # preview only; no live hardware discovery
 ```
 
+The wizard covers monitor patterns, serials, project roots, apps, and workspace
+roles. Readability and profiles use the named CLI or Raycast controls below.
 The wizard starts from current values. Enter keeps a value unchanged. The optional
 GUI editor is initially unconfigured; choosing it does not change the terminal's
 `EDITOR` setting. Existing default launch choices remain Ghostty, Chrome, and Notion.
@@ -72,6 +74,12 @@ App preferences are bundle IDs, not shell commands. `list-apps` reads installed
 app metadata; the wizard accepts a number from that list. Missing or ambiguous
 selected installations fail visibly. The same app cannot be assigned to two
 roles with different workspace destinations. No tool installs are performed.
+
+App discovery covers immediate `.app` bundles in the standard Applications,
+Setapp, system Applications/Utilities, and home Applications folders. For another
+location, advanced users can export `DOTFILES_APPLICATION_DIRS` as a JSON array
+of search directories. It replaces the search roots and must be present in both
+the editing and launcher environments; it is not a saved preference field.
 
 ## Preview and apply examples
 
@@ -132,9 +140,9 @@ apply, and can be previewed:
 A render-only update does not rewrite preferences or create an empty preference
 file. It backs up changed generated configuration. Readability files and saved
 profiles share these transactions; older version-1 backups remain readable, with
-their original input guards. Rendering requires Python
-3.11+ or an already installed Bun for TOML validation; neither is installed by
-this tool.
+their original input guards. Python 3.9+ is required to run the personalizer.
+Python 3.11+ includes TOML validation; Python 3.9/3.10 also needs an already
+installed Bun for that step. This command does not install either runtime.
 
 ## Profiles, Raycast, and personal references
 
@@ -171,6 +179,12 @@ The personalizer prints reload instructions instead of reloading apps or restart
 services. New shells pick up projected environment settings. Display calibration
 and Manual/Auto ownership remain in their existing files and are not reset by
 personalization; see [display controls](DISPLAY.md).
+
+Normal install/update and `./setup.sh --stow` prepare AeroSpace and readability
+outputs before deploying their consumer packages. Existing users can run
+`./update.sh --dry-run` followed by `./update.sh`. For a deliberate manual
+per-package deployment, run `./personalize.sh render-settings --apply` before
+stowing terminal packages. That preparation command writes generated outputs only.
 
 Edit `aerospace/templates/aerospace.toml.template` for structural changes. The
 rendered `aerospace/.config/aerospace/aerospace.toml` is generated output and should

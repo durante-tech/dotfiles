@@ -193,7 +193,7 @@ The install script supports flags for partial installs:
 ./install.sh --dry-run        # Preview without installing
 ./install.sh --update         # Update only (skip installs)
 ./install.sh --skip-casks     # Skip GUI apps
-./install.sh --skip-brew      # Skip all Homebrew
+./install.sh --skip-brew      # Skip formulae; casks have their own flag
 ./install.sh --force-stow     # Re-stow (adopt existing configs)
 ./install.sh --verbose        # Show all output
 ```
@@ -202,11 +202,36 @@ The install script supports flags for partial installs:
 
 ```bash
 cd ~/dotfiles
-git pull
-./install.sh --update
+git pull --ff-only           # Explicitly fetch the checkout
+./update.sh --dry-run        # Preview configuration/plugin work
+./update.sh
 ```
 
-This updates Homebrew, pulls latest dotfiles, re-stows packages, and syncs plugins.
+`update.sh` applies the current checkout, prepares AeroSpace and terminal include
+files, re-stows packages, and synchronizes plugins. It does not fetch the repository
+or provision tools. Use `./update.sh --with-tools` to opt into declared tool
+provisioning. `--skip-brew` and `--skip-casks` control formulae and GUI installs
+separately. Reload instructions are printed without triggering extra restarts.
+
+## First personalization
+
+After install or update:
+
+```bash
+./personalize.sh check
+./personalize.sh status
+./personalize.sh             # Optional monitor/app/workspace wizard
+```
+
+The installer/update prepares harmless terminal includes before deploying Ghostty
+or Kitty, so no separate seeding command is needed. Personal settings stay outside
+Git. No profile or visual override is selected automatically.
+
+In Raycast, add `~/dotfiles/raycast/script-commands` under Settings → Extensions →
+Script Commands if that directory is not registered, then search for
+**Dotfiles · Preferences**. Follow [Personalization](../PERSONALIZE.md) for
+readability, profiles, backups, and the shortcut reference. Choose monitor
+patterns and installed apps appropriate to your own machine.
 
 ## Troubleshooting Installation
 

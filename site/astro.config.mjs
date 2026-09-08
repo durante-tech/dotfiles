@@ -40,6 +40,17 @@ export default defineConfig({
                 ],
             },
             {
+                label: 'Personalize Your Setup',
+                items: [
+                    { label: 'Start Here', slug: 'personalize' },
+                    { label: 'Fonts and Readability', slug: 'personalize/readability' },
+                    { label: 'Laptop / Desk / Presentation', slug: 'personalize/profiles' },
+                    { label: 'Raycast Preferences', slug: 'personalize/raycast' },
+                    { label: 'Your Shortcut Reference', slug: 'personalize/shortcuts' },
+                    { label: 'Customization Roadmap', slug: 'customization-roadmap' },
+                ],
+            },
+            {
                 label: 'Level 0: Foundation',
                 collapsed: true,
                 badge: { text: 'Day 1', variant: 'note' },

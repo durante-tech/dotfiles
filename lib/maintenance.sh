@@ -12,7 +12,7 @@ dotfiles_preview() {
         fi
         if ! "$SKIP_CASKS"; then echo "Install the pinned LinearMouse release if needed."; fi
     fi
-    echo "Render AeroSpace configuration and apply these Stow packages:"
+    echo "Prepare AeroSpace and terminal include files, then apply these Stow packages:"
     while IFS= read -r pkg; do
         if [[ -n "$pkg" ]]; then printf '  %s\n' "$pkg"; listed=$((listed + 1)); fi
     done < <(sed -e 's/#.*//' -e 's/[[:space:]]//g' "$manifest")
@@ -33,9 +33,10 @@ Reload when convenient (no extra restart is triggered by an update):
   aerospace reload-config
   sketchybar --reload
   Restart Neovim for plugin/configuration changes.
-  Reload Kitty with Cmd+B, then r (the configured prefix binding).
+  Reload Ghostty/Kitty with Cmd+b, release, then lowercase r.
   Review changed LaunchAgent templates before explicit setup.sh --configure.
 STEPS
+    printf 'Raycast Script Commands directory: %s/raycast/script-commands (add in Raycast Settings if absent).\n' "$DOTFILES_DIR"
 }
 
 dotfiles_sync_plugins() {

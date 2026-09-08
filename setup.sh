@@ -111,26 +111,28 @@ check_dependencies() {
 
 stow_packages() {
     local failed=0
+    local settings_ready=false
     print_header "Stowing Packages"
 
     cd "$DOTFILES_DIR" || exit 1
 
-    # aerospace.toml is the GITIGNORED render output of render-aerospace.sh, so a
-    # fresh clone does not have it. install.sh renders it before its own stow
-    # loop, but stow_packages() never did — meaning `setup.sh --stow` and
-    # `--all`, the documented repair paths, stowed the aerospace package around a
-    # file that does not exist and left the window manager unconfigured.
-    if [[ -x "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" ]]; then
+    # Prepare AeroSpace and terminal includes before deploying their consumers.
+    # This preserves personal inputs and selects no profile or visual override.
+    if [[ -x "$DOTFILES_DIR/personalize.sh" ]]; then
         # shellcheck disable=SC2097,SC2098  # false positive, same as install.sh:
         # the prefix assignment exports DOTFILES_DIR into the child's environment
         # and the path expansion reads the OUTER variable — the same string. This
         # is not the `FOO=bar echo $FOO` bug those checks look for.
-        if DOTFILES_DIR="$DOTFILES_DIR" "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" >/dev/null 2>&1; then
-            print_success "Rendered aerospace.toml from template"
+        if DOTFILES_DIR="$DOTFILES_DIR" "$DOTFILES_DIR/personalize.sh" render-settings --apply; then
+            settings_ready=true
+            print_success "Prepared AeroSpace and terminal include files"
         else
-            print_warning "render-aerospace.sh failed - aerospace.toml may be missing or stale"
+            print_warning "Preference rendering failed; dependent desktop packages will not be deployed"
             failed=1
         fi
+    else
+        print_error "personalize.sh is missing; generated settings cannot be prepared"
+        failed=1
     fi
 
     # Package list comes from stow-packages.txt, the single source of truth
@@ -163,6 +165,13 @@ stow_packages() {
     local pkg stow_err
     while IFS= read -r pkg; do
         [[ -n "$pkg" ]] || continue
+        case "$pkg" in
+            aerospace|ghostty|kitty)
+                if [[ "$settings_ready" != true ]]; then
+                    print_error "Skipping $pkg: generated settings are not ready"
+                    continue
+                fi ;;
+        esac
         if [[ "$pkg" == aerospace && ! -f "$DOTFILES_DIR/aerospace/.config/aerospace/aerospace.toml" ]]; then
             print_error "AeroSpace render is missing; skipping its deployment"
             failed=1

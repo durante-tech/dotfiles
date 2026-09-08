@@ -467,19 +467,25 @@ if [ "$FORCE_STOW" = true ]; then
 fi
 STOW_FAILED=0
 
-# Render aerospace.toml from template + personal.env BEFORE stowing so the
-# symlink target exists. AeroSpace TOML can't read env vars, so monitor names
-# are sentinelized in aerospace.toml.template and substituted here.
-if [ -f "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" ]; then
+# Prepare generated settings before stowing consumers. Empty terminal overrides
+# become comment-only includes, with no profile or visual choice selected.
+SETTINGS_READY=false
+if [ -x "$DOTFILES_DIR/personalize.sh" ]; then
     if [ "$DRY_RUN" = true ]; then
-        print_dry "render-aerospace.sh"
+        print_dry "personalize.sh render-settings --apply"
+        SETTINGS_READY=true
     else
         # shellcheck disable=SC2097,SC2098  # false positive: the prefix assignment
         # exports DOTFILES_DIR into the child's environment, and the path expansion
         # reads the OUTER variable — same string. Not the `FOO=bar echo $FOO` bug.
-        DOTFILES_DIR="$DOTFILES_DIR" "$DOTFILES_DIR/scripts/scripts/render-aerospace.sh" || \
-            record_failure "render-aerospace.sh failed — aerospace.toml may be stale"
+        if DOTFILES_DIR="$DOTFILES_DIR" "$DOTFILES_DIR/personalize.sh" render-settings --apply; then
+            SETTINGS_READY=true
+        else
+            record_failure "Preference rendering failed; dependent desktop packages will not be deployed"
+        fi
     fi
+else
+    record_failure "personalize.sh is missing; generated settings cannot be prepared"
 fi
 
 # Re-stow to handle updates (-R flag). The package list lives in
@@ -548,6 +554,14 @@ backup_stow_conflicts() {
 }
 
 for pkg in $PACKAGES; do
+    case "$pkg" in
+        aerospace|ghostty|kitty)
+            if [ "$SETTINGS_READY" != true ]; then
+                print_warn "Skipping $pkg: generated settings are not ready"
+                STOW_FAILED=$((STOW_FAILED + 1))
+                continue
+            fi ;;
+    esac
     if [ -d "$DOTFILES_DIR/$pkg" ]; then
         if [ "$DRY_RUN" = true ]; then
             print_dry "stow -R ${STOW_OPTS[*]} $pkg"

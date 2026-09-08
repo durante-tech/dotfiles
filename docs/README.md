@@ -19,6 +19,12 @@ New here? Follow the structured learning path from zero to productive:
 | **[First Day](getting-started/first-day.md)** | Your first day with this config |
 | **[Daily Workflow](getting-started/daily-workflow.md)** | Daily dev workflow reference |
 | **[Customizing](getting-started/customizing.md)** | Fork and make it yours |
+| **[Personalization](PERSONALIZE.md)** | First-use preferences, validation, backups, and reloads |
+| **[Readability](PERSONALIZE-READABILITY.md)** | Terminal font, size, and opacity |
+| **[Profiles](PERSONALIZE-PROFILES.md)** | Save and apply explicitly owned settings |
+| **[Raycast Preferences](PERSONALIZE-RAYCAST.md)** | Register and use the commands |
+| **[Personal Shortcuts](PERSONALIZE-SHORTCUTS.md)** | Generate your own reference |
+| **[Customization Roadmap](CUSTOMIZATION-ROADMAP.md)** | Delivered capabilities and activation boundaries |
 | **[New Tools Guide](getting-started/new-tools-guide.md)** | Modern CLI tools reference |
 
 ## Tool Documentation
