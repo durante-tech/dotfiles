@@ -97,3 +97,19 @@ esac
         result=self.run_command(['bash','-c',source],{'FIXTURE_HOME':str(self.root),'DOTFILES_DIR':str(self.root),'CALLS':str(self.root/'calls')})
         self.assertEqual(result.returncode,0,result.stderr)
         self.assertEqual((self.root/'calls').read_text().splitlines(),['ambient night','ambient night'])
+
+
+class RaycastEnvironment(Fixture):
+    def test_locale_normalization_is_local_to_script(self):
+        target=self.root/'scripts/scripts';target.mkdir(parents=True)
+        apply=target/'bd-apply.sh'
+        apply.write_text('#!/bin/bash\nprintf "Manual · Ready\\n"\n')
+        apply.chmod(0o755)
+        script=self.root/'bd-status.sh'
+        script.write_text((REPO/'raycast/script-commands/bd-status.sh').read_text().replace('$HOME','$FIXTURE_HOME'))
+        script.chmod(0o755)
+        result=self.run_command([str(script)],{'DOTFILES_DIR':str(self.root),'FIXTURE_HOME':str(self.root),
+                                              'LC_ALL':'en-US-u-ca-gregory-co-standard-cu-usd'})
+        self.assertEqual(result.returncode,0,result.stderr)
+        self.assertEqual(result.stdout.strip(),'Manual · Ready')
+        self.assertEqual(result.stderr,'')

@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+#!/usr/bin/env -S LC_ALL=C PYTHONUTF8=1 /bin/bash
+# shellcheck shell=bash
 # @raycast.schemaVersion 1
 # @raycast.title DOS Cinema
 # @raycast.mode silent
