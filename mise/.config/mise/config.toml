@@ -3,13 +3,12 @@
 # (mise reads all four formats natively, so existing project files keep working)
 
 [tools]
-# Node 24 is the Active LTS line (LTS since 2025-10-28, maintenance through
-# 2028-04-30). This previously pinned 25.5.0 "to match the former fnm default",
-# but the v25 line was never LTS and reached maintenance-end on 2026-06-01 — it
-# has received no security patches since. Verified against nodejs/Release
-# schedule.json. Node 26 becomes Active LTS on 2026-10-28 if you prefer to move
-# again then.
-node   = "24"
+# Node 26 is the Active LTS line: LTS since 2026-10-28, maintenance from
+# 2027-10-20, end of life 2029-04-30. Node 24, pinned here before, moved to
+# maintenance on 2026-10-20. Dates from nodejs/Release schedule.json, read
+# 2026-11-10. Odd-numbered lines (25, 27) never become LTS: skip them.
+# Renovate raises this within the 26 line; a new major waits for approval.
+node   = "26"
 # 3.12 left its bugfix phase on 2025-04-02, so every 3.12.x published since is
 # a SECURITY release -- drifting on the patch level is the whole cost here. The
 # line itself is supported to 2028-10-31 (endoflife.date), so stay on 3.12 and

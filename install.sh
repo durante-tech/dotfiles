@@ -684,7 +684,7 @@ fi
 # 6b. MISE — install pinned tool versions
 # -----------------------------------------------------------------------------
 # Runs AFTER stow so that mise/.config/mise/config.toml is in place.
-# Pulls node@25.5.0 + python@3.12.12 (or whatever is pinned in config).
+# Installs whatever mise/.config/mise/config.toml pins (Node and Python).
 
 if cmd_exists mise; then
     if [ "$DRY_RUN" = true ]; then

@@ -1143,7 +1143,7 @@ Install via Mason (`:Mason`) or manually before enabling.
 ```bash
 mise install             # install everything a project's config pins
 mise current             # show active versions
-mise use -g node@24      # ⚠ WRITES ~/.config/mise/config.toml — see below
+mise use -g node@26      # ⚠ WRITES ~/.config/mise/config.toml — see below
 ```
 
 ⚠ **`mise use -g` edits the repo.** `~/.config/mise/config.toml` is a stow symlink to
