@@ -2,6 +2,7 @@
 
 mic=(
   update_freq=10
+  updates=on
   script="$PLUGIN_DIR/mic.sh"
   click_script="$PLUGIN_DIR/mic_click.sh"
   label.drawing=off

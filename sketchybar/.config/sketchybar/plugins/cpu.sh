@@ -27,4 +27,6 @@ else
     COLOR="$GREEN"
 fi
 
-sketchybar --set "$NAME" icon="󰻠" label="${CPU}%" icon.color="$COLOR"
+# Quiet by default: the item is drawn only while it has something to say.
+if [ "$CPU" -gt 50 ]; then DRAWING=on; else DRAWING=off; fi
+sketchybar --set "$NAME" icon="󰻠" label="${CPU}%" icon.color="$COLOR" drawing="$DRAWING"

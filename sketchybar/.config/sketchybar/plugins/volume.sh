@@ -18,7 +18,10 @@ update_icon() {
 
 volume_change() {
   ICON=$(update_icon "$INFO")
-  sketchybar --set "$NAME" icon="$ICON" label="${INFO}%"
+  # Quiet by default: macOS draws its own OSD on change; the bar shows the
+  # item only while output is muted.
+  if [ "$INFO" = 0 ]; then DRAWING=on; else DRAWING=off; fi
+  sketchybar --set "$NAME" icon="$ICON" label="${INFO}%" drawing="$DRAWING"
 }
 
 # update_freq fires with SENDER=routine and no INFO — read OS volume directly

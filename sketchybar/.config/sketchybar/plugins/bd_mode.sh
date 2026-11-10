@@ -20,4 +20,10 @@ esac
 if [ "$OWNER" = auto ] && [ -f /tmp/bd-lmu-sensor-alert ]; then
     LABEL="$LABEL · sensor unavailable"; COLOR="$RED"
 fi
-sketchybar --set "$NAME" icon="$GLYPH" label="$LABEL" icon.color="$COLOR" label.color="$COLOR"
+# Quiet by default: Auto with a clean outcome is just the mode glyph. Manual,
+# HDR and every pending or failed state keep the full label.
+LABEL_DRAWING=on
+if [ "$OWNER" = auto ] && [ "$COLOR" = "$LABEL_COLOR" ] && [ "$(printf '%s' "$DATA" | jq -r '.hdr.enabled')" != true ]; then
+    LABEL_DRAWING=off
+fi
+sketchybar --set "$NAME" icon="$GLYPH" label="$LABEL" label.drawing="$LABEL_DRAWING" icon.color="$COLOR" label.color="$COLOR"

@@ -28,6 +28,51 @@ class DesktopTests(Fixture):
         result=self.run_command(['bash',str(script)],self.env)
         self.assertIn('label=?',result.stdout)
 
+    def bar_sets(self, stdout):
+        """Map item -> {property: value} from the stub's echoed --set calls."""
+        sets={}
+        for line in stdout.splitlines():
+            args=json.loads(line); item=None
+            for arg in args:
+                if arg=='--set': item=None
+                elif item is None and '=' not in arg: item=arg; sets.setdefault(item,{})
+                elif item is not None and '=' in arg:
+                    key,value=arg.split('=',1); sets[item][key]=value
+        return sets
+
+    def test_spaces_draw_only_occupied_and_focused(self):
+        (self.root/'colors.sh').write_text('WHITE=white\n')
+        items=['space.'+w for w in '12ABDT']+['front_app']
+        self.stub('sketchybar', 'import sys,json\nif sys.argv[1:3]==["--query","bar"]: print(json.dumps({"items":'+json.dumps(items)+'}))\nelse: print(json.dumps(sys.argv[1:]))')
+        self.stub('jq', 'import sys,json\nfor i in json.load(sys.stdin)["items"]:\n    if i.startswith("space."): print(i)')
+        self.stub('aerospace', 'import sys\nprint("D" if "--focused" in sys.argv else "A\\nT")')
+        script=REPO/'sketchybar/.config/sketchybar/plugins/spaces.sh'
+        sets=self.bar_sets(self.run_command(['bash',str(script)],dict(self.env,FOCUSED_WORKSPACE='B')).stdout)
+        self.assertEqual({k:v['drawing'] for k,v in sets.items()},
+                         {'space.1':'off','space.2':'off','space.A':'on','space.B':'on','space.D':'off','space.T':'on'})
+        self.assertEqual(sets['space.B']['background.drawing'],'on')
+        self.assertEqual(sets['space.A']['background.drawing'],'off')
+        # Without the event variable the focused workspace is asked for.
+        sets=self.bar_sets(self.run_command(['bash',str(script)],self.env).stdout)
+        self.assertEqual(sets['space.D']['background.drawing'],'on')
+        # A bar with no workspaces looks broken: fail open.
+        self.stub('aerospace','raise SystemExit(1)')
+        sets=self.bar_sets(self.run_command(['bash',str(script)],self.env).stdout)
+        self.assertEqual({v['drawing'] for v in sets.values()},{'on'})
+
+    def test_quiet_items_draw_only_with_something_to_say(self):
+        (self.root/'icons.sh').write_text('')
+        volume=REPO/'sketchybar/.config/sketchybar/plugins/volume.sh'
+        for level,expected in [('0','on'),('38','off')]:
+            out=self.run_command(['bash',str(volume)],dict(self.env,SENDER='volume_change',INFO=level)).stdout
+            self.assertEqual(self.bar_sets(out)['fixture']['drawing'],expected,level)
+        memory=REPO/'sketchybar/.config/sketchybar/plugins/memory.sh'
+        self.stub('pagesize','print(4096)');self.stub('sysctl','print(409600)')
+        for free,expected in [(60,'off'),(10,'on')]:
+            self.stub('vm_stat',f'print("Pages free: {free}.\\nPages inactive: 0.\\nPages speculative: 0.")')
+            out=self.run_command(['bash',str(memory)],self.env).stdout
+            self.assertEqual(self.bar_sets(out)['fixture']['drawing'],expected,free)
+
     def test_spotify_one_query_and_stopped(self):
         self.stub('pgrep','import sys\nsys.exit(0)')
         count=self.root/'apple-events'

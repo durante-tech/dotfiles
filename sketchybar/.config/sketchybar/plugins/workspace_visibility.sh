@@ -40,20 +40,13 @@ fi
 # macOS /bin/bash 3.2 (the Brewfile installs no newer bash), where `declare -A`
 # is an error and the bracketed keys collapse to index 0 — the loop then ran
 # once, against an item named "0", and no real item was ever shown or hidden.
+# Only items whose content is ALWAYS present belong here. Everything else is
+# quiet by default: its own plugin draws it while it has something to say
+# (docker running, github count > 0, cpu > 50%, memory > 80%, network >= 1 MiB/s,
+# vpn connected, updates pending, mic or volume muted). Two writers of one
+# item's `drawing` would fight, so those items must not be listed here.
 VIS=(
-    # ambient cluster — distractions during focus work
     "weather:1 2 N"              # ambient/thinking context only
-    "calendar:1 2 B M N E"       # meeting-adjacent contexts
-    "macupdater:1 2"             # never urgent
-    "clearvpn:1 2"               # status only
-
-    # system_health cluster — relevant only on dev / transitional workspaces
-    "cpu:1 2 A D T"
-    "memory:1 2 A D T"
-    "network:1 2 A D T"
-
-    # context-sensitive dev tools
-    "github:1 2 A B D T E"       # dev + AI + browser (PR review) + email
 )
 
 for row in "${VIS[@]}"; do

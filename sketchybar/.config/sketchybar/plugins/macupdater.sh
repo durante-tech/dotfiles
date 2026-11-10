@@ -6,7 +6,7 @@ LOG_FILE="$HOME/Library/Application Support/MacUpdater/MacUpdater.log"
 
 # Check if MacUpdater is running
 if ! pgrep -f "MacUpdater" > /dev/null 2>&1; then
-    sketchybar --set "$NAME" icon="󰚰" label="Off" icon.color="$GREY"
+    sketchybar --set "$NAME" icon="󰚰" label="Off" icon.color="$GREY" drawing=off
     exit 0
 fi
 
@@ -25,15 +25,15 @@ if [ -f "$LOG_FILE" ]; then
         fi
 
         if [ "$UPDATES" -eq 0 ]; then
-            sketchybar --set "$NAME" icon="󰚰" label="✓" icon.color="$GREEN"
+            sketchybar --set "$NAME" icon="󰚰" label="✓" icon.color="$GREEN" drawing=off
         elif [ "$UPDATES" -eq 1 ]; then
-            sketchybar --set "$NAME" icon="󰚰" label="1" icon.color="$YELLOW"
+            sketchybar --set "$NAME" icon="󰚰" label="1" icon.color="$YELLOW" drawing=on
         else
-            sketchybar --set "$NAME" icon="󰚰" label="${UPDATES}" icon.color="$ORANGE"
+            sketchybar --set "$NAME" icon="󰚰" label="${UPDATES}" icon.color="$ORANGE" drawing=on
         fi
     else
-        sketchybar --set "$NAME" icon="󰚰" label="..." icon.color="$GREY"
+        sketchybar --set "$NAME" icon="󰚰" label="..." icon.color="$GREY" drawing=off
     fi
 else
-    sketchybar --set "$NAME" icon="󰚰" label="No log" icon.color="$GREY"
+    sketchybar --set "$NAME" icon="󰚰" label="No log" icon.color="$GREY" drawing=off
 fi
