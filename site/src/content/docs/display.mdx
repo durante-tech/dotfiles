@@ -158,6 +158,11 @@ readback retain the last confirmed profile and return nonzero.
 | `--portrait-hires` | 1728×1117 | 1440×2560, 90° |
 | `--solo` | The single connected display | Defaults to 2560×1440 on an external |
 
+`DOTFILES_DISPLAY_BUILTIN_RES` in `personal.env` replaces the built-in's 1728×1117
+in every profile except Stream and Native, for example `2056x1329` for the panel's
+scaled "More Space" mode (more room, slightly softer than the exact 2× mode).
+External origins follow the new width.
+
 The current rig's preferred layout is Portrait-hires; an empty layout cache still
 falls back to Daily. Explicit layout overrides use `DOTFILES_DISPLAY_LAYOUT`.
 The helper retains existing UUID discovery/profile behavior; more complex
