@@ -307,8 +307,10 @@ alias ghd='gh dash'                          # interactive PR/issue browser
 
 # Wallpaper management — Durante hourly rotation + Plash shaders + manual control
 alias wp='wallpaper'                                              # wp [path] - get/set
-alias wpn='~/scripts/wallpaper-rotate.sh'                         # rotate now (time-banded)
-alias wpa='~/scripts/wallpaper-rotate.sh --all'                   # rotate from FULL gallery (ignore band)
+# Both append to the log `wpl` tails. The LaunchAgent that used to write it is
+# gone, so without the tee nothing did and `wpl` watched a file that never came.
+alias wpn='~/scripts/wallpaper-rotate.sh 2>&1 | tee -a ~/Library/Logs/wallpaper-rotate.log'        # rotate now (time-banded)
+alias wpa='~/scripts/wallpaper-rotate.sh --all 2>&1 | tee -a ~/Library/Logs/wallpaper-rotate.log'  # rotate from FULL gallery (ignore band)
 alias wpr='~/scripts/wallpaper-cycle.sh'                          # random from any image in ~/Pictures/Wallpapers
 alias wpw='~/scripts/wallpaper-workspace.sh'                      # manual per-workspace trigger
 alias wpl='tail -f ~/Library/Logs/wallpaper-rotate.log'           # watch rotation log

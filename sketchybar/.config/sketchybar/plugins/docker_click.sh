@@ -8,28 +8,8 @@
 source "$CONFIG_DIR/colors.sh"
 
 DOCKER=$(command -v docker || echo "/usr/local/bin/docker")
-
-# GNU timeout is not on sketchybar's PATH: coreutils puts it in a gnubin dir
-# that only the interactive .zprofile adds, and Homebrew's bin has it only as
-# `gtimeout`. A bare `timeout` therefore failed as "command not found", which
-# `if ! timeout ... docker info` read as "Docker is off" — permanently.
-# Resolve it once; with none available, run unbounded rather than lie.
-TIMEOUT_BIN=""
-for candidate in timeout gtimeout /opt/homebrew/bin/gtimeout /usr/local/bin/gtimeout; do
-    if command -v "$candidate" >/dev/null 2>&1; then
-        TIMEOUT_BIN="$candidate"
-        break
-    fi
-done
-with_timeout() {
-    local limit="$1"
-    shift
-    if [ -n "$TIMEOUT_BIN" ]; then
-        "$TIMEOUT_BIN" "$limit" "$@"
-    else
-        "$@"
-    fi
-}
+# shellcheck source=../timeout.sh
+source "$CONFIG_DIR/timeout.sh"
 
 open_dashboard() {
     open -a 'Docker Desktop' && sleep 0.3 && open docker-desktop://dashboard/containers

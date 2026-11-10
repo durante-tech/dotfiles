@@ -39,7 +39,7 @@ sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOC
 
 ## Toggle Visibility
 
-`Ctrl+Shift+\` (Karabiner) or `Hyper+S` then `B` toggles the bar.
+`Ctrl+Shift+\` (Karabiner) toggles the bar; so does tapping `B` while `Hyper+S` is still held.
 
 ## File Structure
 

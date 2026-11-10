@@ -29,7 +29,7 @@ Configure app shortcuts with Hyper+letter combinations:
 | `Hyper+E` | AeroSpace workspace E (Email) |
 | `Hyper+X` | Raycast AI Chat |
 | `Hyper+,` / `Hyper+.` | Raycast Focus session / Raycast Notes |
-| `Hyper+O`, then `n` / `d` / `i` / `p` / `c` | Preferred notes app / Discord / Messages / Music / preferred browser |
+| Hold `Hyper+O`, tap `n` / `d` / `i` / `p` / `c` (releasing `O` first cancels the layer) | Preferred notes app / Discord / Messages / Music / preferred browser |
 
 ## Sub-Layers
 

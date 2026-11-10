@@ -143,6 +143,9 @@ done
 LAND_ALL=()
 PORT_ALL=()
 for f in "$DIR"/[0-9][0-9]-*.jpg; do
+  # With no match the glob stays literal; without this it was filed as a
+  # landscape "image" and handed to the wallpaper tool.
+  [ -e "$f" ] || continue
   if is_portrait "$f"; then PORT_ALL+=("$f"); else LAND_ALL+=("$f"); fi
 done
 

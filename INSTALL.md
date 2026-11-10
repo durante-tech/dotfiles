@@ -204,7 +204,7 @@ for dir in ~/.config/nvim ~/.config/tmux ~/.config/aerospace ~/.config/sketchyba
 done
 
 echo "Backup created at: $BACKUP_DIR"
-echo "Restore with: rm -rf ~/dotfiles && mv $BACKUP_DIR/dotfiles ~/dotfiles"
+echo "Restore with: rm -rf \"$DOTFILES_DIR\" && mv \"$BACKUP_DIR/dotfiles\" \"$DOTFILES_DIR\""
 ```
 
 ---
@@ -216,10 +216,11 @@ The repo ships **install.sh** as the canonical installer. Wizard agents should d
 ### 4.1 Clone the Repo (if not present)
 
 ```bash
-if [ ! -d "$HOME/dotfiles/.git" ]; then
-  git clone <repo-url> "$HOME/dotfiles"
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+if [ ! -d "$DOTFILES_DIR/.git" ]; then
+  git clone <repo-url> "$DOTFILES_DIR"
 fi
-cd "$HOME/dotfiles"
+cd "$DOTFILES_DIR"
 ```
 
 ### 4.2 Run Install Script

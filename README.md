@@ -91,7 +91,7 @@ neovim.png, tmux.png and yazi.png, then uncomment this whole block.
 | **[AeroSpace](docs/aerospace/README.md)** | i3-like tiling WM with workspace-to-monitor pinning |
 | **[Sketchybar](docs/sketchybar/README.md)** | Custom status bar — workspaces, weather, CPU, media, git |
 | **[Karabiner](docs/karabiner/README.md)** | Key remapping |
-| **[Wallpapers](wallpapers/README.md)** | On-demand time-banded rotation (`wpn`/`wpa`; no LaunchAgent) + GLSL shaders for Plash. The image gallery itself is personal and **not tracked here** — set `DOTFILES_WALLPAPER_DIR` in `personal.env` to point at your own; rotation no-ops cleanly without it |
+| **[Wallpapers](wallpapers/README.md)** | On-demand time-banded rotation (`wpn`/`wpa`; no LaunchAgent) + GLSL shaders for Plash. The image gallery itself is personal and **not tracked here** — set `DOTFILES_WALLPAPER_DIR` in `personal.env` to point at your own (rotation picks files named `NN-*.jpg`, two digits then a dash; see `wallpapers/README.md` for the time bands); rotation no-ops cleanly without it |
 | **Übersicht** | Webview widgets above wallpaper, below windows |
 
 ### CLI Tools

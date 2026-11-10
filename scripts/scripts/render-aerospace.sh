@@ -38,6 +38,25 @@ case "${1:-}" in
        exit 2 ;;
 esac
 
+# Repo root: the environment (or personal.env) when it says, else the checkout
+# this script actually lives in. Reached through a stow symlink in ~/scripts,
+# so the link is followed first. Falling straight back to ~/dotfiles rendered a
+# DIFFERENT checkout, or failed, whenever the repo lived anywhere else and the
+# caller's shell had not exported DOTFILES_DIR.
+if [ -z "${DOTFILES_DIR:-}" ]; then
+    self="${BASH_SOURCE[0]}"
+    while [ -L "$self" ]; do
+        link="$(readlink "$self")"
+        case "$link" in
+            /*) self="$link" ;;
+            *)  self="$(dirname "$self")/$link" ;;
+        esac
+    done
+    own_root="$(cd "$(dirname "$self")/../.." 2>/dev/null && pwd)"
+    if [ -n "$own_root" ] && [ -f "$own_root/aerospace/templates/aerospace.toml.template" ]; then
+        DOTFILES_DIR="$own_root"
+    fi
+fi
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 TEMPLATE="$DOTFILES_DIR/aerospace/templates/aerospace.toml.template"
 OUTPUT="$DOTFILES_DIR/aerospace/.config/aerospace/aerospace.toml"

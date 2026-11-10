@@ -816,11 +816,19 @@ verify_config() {
     # fall back to ~/dotfiles unless personal.env says otherwise. A checkout
     # anywhere else deploys cleanly and then fails at runtime, one script at a
     # time, with nothing pointing back here.
-    if [[ "$DOTFILES_DIR" != "$HOME/dotfiles" ]] \
-        && ! grep -Eq '^[[:space:]]*(export[[:space:]]+)?DOTFILES_DIR=' "$HOME/.config/dotfiles/personal.env" 2>/dev/null; then
-        print_warning "Repository is at $DOTFILES_DIR but personal.env does not set DOTFILES_DIR - deployed scripts will look in ~/dotfiles"
-        echo "  Add to ~/.config/dotfiles/personal.env:  export DOTFILES_DIR=\"$DOTFILES_DIR\""
-        cfg_warn=$((cfg_warn + 1))
+    #
+    # Compared by VALUE, in a clean shell: the mere presence of an assignment
+    # proves nothing when it still names an older checkout. A failure, not a
+    # warning: every deployed script would be running against the wrong tree.
+    local runtime_root="$HOME/dotfiles"
+    if [[ -r "$HOME/.config/dotfiles/personal.env" ]]; then
+        # shellcheck disable=SC2016  # expanded by the child shell, on purpose
+        runtime_root="$(env -u DOTFILES_DIR /bin/bash -c '. "$1" >/dev/null 2>&1; printf %s "${DOTFILES_DIR:-$HOME/dotfiles}"' _ "$HOME/.config/dotfiles/personal.env")"
+    fi
+    if [[ "$(cd "$runtime_root" 2>/dev/null && pwd -P)" != "$(cd "$DOTFILES_DIR" && pwd -P)" ]]; then
+        print_error "Deploying $DOTFILES_DIR, but deployed scripts will use $runtime_root"
+        echo "  Set in ~/.config/dotfiles/personal.env:  export DOTFILES_DIR=\"$DOTFILES_DIR\""
+        issues=$((issues + 1))
     fi
 
     # "All checks passed!" used to print even with warnings on screen, because
