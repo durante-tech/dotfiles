@@ -13,8 +13,8 @@
 #   raycast/       — script-commands symlinked by setup.sh link_raycast_commands
 #   macos/         — defaults scripts, executed not stowed
 #   site/          — Astro docs site, not deployed to $HOME
-#   ubersicht/     — the APP is still in use (and still installed by install.sh,
-#                    still started at login by com.lucas.ubersicht). Only these
+#   ubersicht/     — retired. The app itself was dropped 2026-11-10 (cask and
+#                    com.lucas.ubersicht LaunchAgent removed); before that, the
 #                    CUSTOM WIDGETS were retired, 2026-08-26: Lucas does not run
 #                    them, so ~/Library/Application Support/Übersicht/widgets is
 #                    now a plain empty directory the app owns. The 11 widgets stay

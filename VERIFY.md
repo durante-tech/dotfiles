@@ -154,10 +154,10 @@ done
 
 ```bash
 # Plists were rendered (no __USER__ placeholders left).
-# These are the five templates setup.sh renders; the bd-* time-of-day jobs and
+# These are the four templates setup.sh renders; the bd-* time-of-day jobs and
 # com.lucas.wallpaper-rotate were removed 2026-08-25 (bd modes now come from
 # bd-lmu-watch + bd-wake; wallpaper rotation is manual via `wpn` / `wpa`).
-for plist in ~/Library/LaunchAgents/com.lucas.{sketchybar-firstboot,bd-lmu-watch,sleepwatcher,ubersicht,unlock-watch}.plist; do
+for plist in ~/Library/LaunchAgents/com.lucas.{sketchybar-firstboot,bd-lmu-watch,sleepwatcher,unlock-watch}.plist; do
   if [ -f "$plist" ]; then
     if grep -q "__USER__" "$plist"; then
       echo "FAIL $plist still has __USER__ placeholder — setup.sh render failed"

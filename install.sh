@@ -708,7 +708,7 @@ fi
 # -----------------------------------------------------------------------------
 # Plists in launchagents/ are templates with __USER__ placeholders. Delegate
 # to setup.sh's render function which substitutes $USER and runs launchctl
-# bootstrap so sketchybar-firstboot + the bd/ubersicht agents fire on next login.
+# bootstrap so sketchybar-firstboot + the bd agents fire on next login.
 
 if [[ -x "$DOTFILES_DIR/setup.sh" ]]; then
     if "$UPDATE_ONLY"; then
