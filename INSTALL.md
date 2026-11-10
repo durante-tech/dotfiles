@@ -30,7 +30,7 @@ Before starting, greet the user:
   • Espanso text expander (:dt, :ts, :sig triggers)
   • On-demand Durante-themed wallpaper rotation (`wpn`/`wpa`, 10-piece gallery)
 
-This pack installs 84 Homebrew formulas, 20 GUI casks, and 20 stowable dotfile directories. Plus 4 LaunchAgents — ambient-light watcher, sleep/display-wake watcher, screen-unlock watcher, and Sketchybar firstboot — all rendered from templates with your $USER.
+This pack installs 84 Homebrew formulas, 21 GUI casks, and 20 stowable dotfile directories. Plus 4 LaunchAgents — ambient-light watcher, sleep/display-wake watcher, screen-unlock watcher, and Sketchybar firstboot — all rendered from templates with your $USER.
 
 Let me analyze your system and guide you through installation."
 ```
@@ -254,7 +254,7 @@ cd "${DOTFILES_DIR:-$HOME/dotfiles}" || exit 1
 |---|-------|------|
 | 1 | Xcode CLT | Installs if missing |
 | 2 | Homebrew | Installs if missing |
-| 3 | Brewfile reconciliation | `brew bundle install --file=Brewfile` — 84 formulae (mise, neovim, tmux, fzf, atuin, rust, gum, glow, wallpaper, sleepwatcher, etc.) and 20 casks (Ghostty, Espanso, Maccy, BetterDisplay, etc.). Never uninstalls; retired-tool cleanup is opt-in via docs/UPGRADE.md |
+| 3 | Brewfile reconciliation | `brew bundle install --file=Brewfile` — 84 formulae (mise, neovim, tmux, fzf, atuin, rust, gum, glow, wallpaper, sleepwatcher, etc.) and 21 casks (Ghostty, Espanso, Maccy, 1Password, BetterDisplay, etc.). Never uninstalls; retired-tool cleanup is opt-in via docs/UPGRADE.md |
 | 4 | Pinned LinearMouse | `scripts/scripts/install-linearmouse.sh` (the cask is deliberately not in the Brewfile) |
 | 5 | Bun + Fabric | Non-Homebrew tools |
 | 6 | Stow dotfiles | Symlinks 20 packages into `~/.config/`, `~/Library/`, and `~/` |
@@ -401,7 +401,7 @@ brew bundle cleanup --force   # actually remove (destructive)
 ### Top-level
 - `install.sh` — automated installer (canonical entrypoint)
 - `setup.sh` — post-install configuration (called by install.sh)
-- `Brewfile` — declarative package manifest (84 formulae, 20 casks)
+- `Brewfile` — declarative package manifest (84 formulae, 21 casks)
 - `README.md` — overview + key bindings reference
 - `README_NEW_MACOS.md` — onboarding guide (uses mise, not nvm)
 - `INSTALL.md` — this file

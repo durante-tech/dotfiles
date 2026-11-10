@@ -189,6 +189,9 @@ brew "supabase/tap/supabase"
 # Convert images into ascii art
 brew "thezoraiz/ascii-image-converter/ascii-image-converter"
 brew "tursodatabase/tap/turso"
+# Password manager; also the SSH agent that zsh/.zprofile points SSH_AUTH_SOCK
+# at. Without the app that socket never exists and git over SSH has no keys.
+cask "1password"
 # Command-line interface for 1Password
 cask "1password-cli"
 # AeroSpace is an i3-like tiling window manager for macOS (tap declared above)
