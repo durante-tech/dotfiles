@@ -1,0 +1,91 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard"
+  ],
+  "schedule": [
+    "before 9am on monday"
+  ],
+  "prConcurrentLimit": 5,
+  "labels": [
+    "dependencies"
+  ],
+  "enabledManagers": [
+    "github-actions",
+    "bun",
+    "npm",
+    "mise",
+    "custom.regex"
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Versions in workflow files that carry a '# renovate:' comment on the line above",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/.+\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)(?: extractVersion=(?<extractVersion>\\S+))?\\s+[A-Za-z_-]+:\\s*['\"]?(?<currentValue>[^'\"\\s]+)"
+      ]
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "One PR for all GitHub Actions",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "groupName": "github actions"
+    },
+    {
+      "description": "One PR for non-major site dependencies",
+      "matchFileNames": [
+        "site/**"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "site dependencies (non-major)"
+    },
+    {
+      "description": "Bun moves together: the CI runtime and its types",
+      "matchPackageNames": [
+        "oven-sh/bun",
+        "@types/bun"
+      ],
+      "groupName": "bun"
+    },
+    {
+      "description": "Python stays on the 3.12 line on purpose (see mise/.config/mise/config.toml); patch releases only",
+      "matchManagers": [
+        "mise"
+      ],
+      "matchDepNames": [
+        "python"
+      ],
+      "allowedVersions": "<3.13"
+    },
+    {
+      "description": "A new Node major is a decision, not a routine bump: approve it from the dashboard",
+      "matchManagers": [
+        "mise"
+      ],
+      "matchDepNames": [
+        "node"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Majors arrive one at a time and never auto-merge",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "automerge": false
+    }
+  ]
+}
