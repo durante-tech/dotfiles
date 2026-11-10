@@ -31,11 +31,35 @@ return {
 			},
 		},
 		mappings = {
-			-- Disable defaults; remap under <leader>v to avoid clashing with claudecode.nvim
+			-- Every avante default lives under <leader>a, which claudecode.nvim
+			-- owns. opts are MERGED with the defaults, so a key not named here
+			-- keeps its default: with only ask/edit/refresh/focus remapped,
+			-- avante still claimed <leader>ac (add file — claudecode's toggle),
+			-- <leader>ad (debug — claudecode's reject diff) and <leader>as.
+			-- All of them move to <leader>v. Not <leader>vh (snacks help) and
+			-- not <leader>vc (prefix of <leader>vca, LSP code actions).
 			ask = "<leader>vk",
+			new_ask = "<leader>vn",
+			zen_mode = "<leader>vz",
 			edit = "<leader>ve",
 			refresh = "<leader>vr",
 			focus = "<leader>vf",
+			stop = "<leader>vS",
+			toggle = {
+				default = "<leader>vt",
+				debug = "<leader>vd",
+				selection = "<leader>vC",
+				suggestion = "<leader>vs",
+				repomap = "<leader>vR",
+			},
+			files = {
+				add_current = "<leader>vb",
+				add_all_buffers = "<leader>vB",
+			},
+			select_model = "<leader>v?",
+			select_history = "<leader>vH",
+			select_acp_model = "<leader>vM",
+			select_acp_mode = "<leader>vm",
 			diff = {
 				ours = "co",
 				theirs = "ct",

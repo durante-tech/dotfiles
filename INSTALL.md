@@ -2,7 +2,7 @@
 
 **This guide is designed for AI agents installing/updating these dotfiles on a user's Mac.**
 
-The repo is the personal dev environment for Lucas Gertel: terminal-first, keyboard-driven macOS setup with Neovim, Tmux, AeroSpace, Sketchybar, and a Catppuccin/Rose-pine theme stack. Includes hourly Durante-themed wallpaper rotation and 96 brew packages (77 formulae + 19 casks).
+The repo is the personal dev environment for Lucas Gertel: terminal-first, keyboard-driven macOS setup with Neovim, Tmux, AeroSpace, Sketchybar, and a Catppuccin/Rose-pine theme stack. Includes on-demand Durante-themed wallpaper rotation and 105 brew packages (84 formulae + 21 casks).
 
 ---
 
@@ -23,15 +23,14 @@ Before starting, greet the user:
 "I'm installing your dotfiles — a macOS terminal-first development environment featuring:
 
   • Zsh + Starship + Atuin + FZF + Zoxide
-  • Neovim 0.12 with 36 plugins (Lazy.nvim + snacks.nvim + mini.nvim)
+  • Neovim 0.12 with 70 plugins (lazy-lock.json) (Lazy.nvim + snacks.nvim + mini.nvim)
   • Tmux with TPM, AeroSpace tiling WM, Sketchybar
-  • Ghostty primary terminal, Catppuccin Mocha
+  • Ghostty primary terminal, Rose-pine
   • mise polyglot version manager (Node + Python)
   • Espanso text expander (:dt, :ts, :sig triggers)
-  • Hourly Durante-themed wallpaper rotation (10-piece gallery)
-  • Sketchybar Claude Code 5-hour billing block indicator (via ccusage)
+  • On-demand Durante-themed wallpaper rotation (`wpn`/`wpa`, 10-piece gallery)
 
-This pack installs 79 Homebrew formulas, 22 GUI casks, and 21 stowable dotfile directories. Plus 11 LaunchAgents — BetterDisplay time-of-day chord (5 modes), ambient-light watcher, sleep/display-wake watcher, Sketchybar firstboot, Übersicht, and hourly wallpaper rotation — all rendered from templates with your $USER.
+This pack installs 84 Homebrew formulas, 21 GUI casks, and 20 stowable dotfile directories. Plus 5 LaunchAgents — ambient-light watcher, sleep/display-wake watcher, screen-unlock watcher, Sketchybar firstboot, and Übersicht — all rendered from templates with your $USER.
 
 Let me analyze your system and guide you through installation."
 ```
@@ -45,7 +44,7 @@ Let me analyze your system and guide you through installation."
 ### 1.1 Run These Commands
 
 ```bash
-DOTFILES_DIR="$HOME/dotfiles"
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 echo "Dotfiles directory: $DOTFILES_DIR"
 
 # Existing installation check
@@ -114,7 +113,7 @@ Tell the user what you found. Highlight any WARNING or ERROR lines specifically.
   "multiSelect": false,
   "options": [
     {"label": "Fresh install (Recommended)", "description": "Full install: Xcode CLT, Homebrew, all packages, dotfiles, plugins, LaunchAgents, macOS defaults"},
-    {"label": "Update existing", "description": "Pull latest, re-stow packages, sync plugins, render LaunchAgents (skip Homebrew installs)"},
+    {"label": "Update existing", "description": "Apply this checkout: re-stow packages, sync plugins, check deployment (no git pull, no service changes, no provisioning)"},
     {"label": "Repair only", "description": "Re-stow packages, check configuration. No service changes, git pull, or installs."},
     {"label": "Show me the plan first", "description": "Run install.sh --dry-run to preview every step without changes"},
     {"label": "Cancel", "description": "Abort"}
@@ -188,7 +187,7 @@ Tell the user what you found. Highlight any WARNING or ERROR lines specifically.
 **Only execute if user chose "Backup and Replace":**
 
 ```bash
-DOTFILES_DIR="$HOME/dotfiles"
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 BACKUP_DIR="$HOME/.dotfiles-backup-$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$BACKUP_DIR"
 
@@ -254,11 +253,10 @@ cd "$HOME/dotfiles"
 |---|-------|------|
 | 1 | Xcode CLT | Installs if missing |
 | 2 | Homebrew | Installs if missing |
-| 3 | Brew formulae | 77 CLI tools (mise, neovim, tmux, fzf, atuin, rust, gum, glow, wallpaper, sleepwatcher, etc.) |
-| 3.5 | Brewfile reconciliation | `brew bundle install --file=Brewfile` — installs anything in the Brewfile the explicit list missed. Never uninstalls; retired-tool cleanup is opt-in via docs/UPGRADE.md |
-| 4 | Brew casks | 19 GUI apps (Ghostty, Espanso, Maccy, Übersicht, BetterDisplay, etc.) |
-| 5 | Bun + ccusage + Fabric | Non-Homebrew tools |
-| 6 | Stow dotfiles | Symlinks 21 packages into `~/.config/`, `~/Library/`, and `~/` |
+| 3 | Brewfile reconciliation | `brew bundle install --file=Brewfile` — 84 formulae (mise, neovim, tmux, fzf, atuin, rust, gum, glow, wallpaper, sleepwatcher, etc.) and 21 casks (Ghostty, Espanso, Maccy, Übersicht, BetterDisplay, etc.). Never uninstalls; retired-tool cleanup is opt-in via docs/UPGRADE.md |
+| 4 | Pinned LinearMouse | `scripts/scripts/install-linearmouse.sh` (the cask is deliberately not in the Brewfile) |
+| 5 | Bun + Fabric | Non-Homebrew tools |
+| 6 | Stow dotfiles | Symlinks 20 packages into `~/.config/`, `~/Library/`, and `~/` |
 | 6a | Personalization prompt | Fresh installs only. **Blocks on an interactive `Run ./personalize.sh now? [Y/n]` read** when `~/.config/dotfiles/personal.env` is missing and stdin is a TTY — answer it, or an unattended driver looks hung |
 | 6b | `mise install` | Pulls Node + Python versions pinned in `mise/.config/mise/config.toml` |
 | 6c | `setup.sh --configure` | Renders LaunchAgent plists from templates (substitutes `$USER`), creates dirs, installs TPM |
@@ -339,7 +337,6 @@ If any verification fails, surface the specific check that failed and suggest th
 What's now active:
   • Shell: open a new terminal — startup ~140ms
   • Wallpaper: rotate on demand with `wpn` (time-banded) or `wpa` (full gallery)
-  • Sketchybar: Claude Code 5-hour billing block indicator (label `$X • XhYm`)
   • Espanso: type :dt anywhere → today's ISO date
 
 Manual steps remaining (5 min total):
@@ -380,7 +377,7 @@ git pull origin main
 ./install.sh --update
 ```
 
-This skips Homebrew installs (faster) but re-stows packages, re-renders LaunchAgents, syncs Tmux + Neovim plugins.
+This skips Homebrew installs and service changes (faster) but re-stows packages, syncs Tmux + Neovim plugins and checks deployment. Re-render LaunchAgents only with an explicit `./setup.sh --configure`.
 
 ### Repair a broken install
 
@@ -404,7 +401,7 @@ brew bundle cleanup --force   # actually remove (destructive)
 ### Top-level
 - `install.sh` — automated installer (canonical entrypoint)
 - `setup.sh` — post-install configuration (called by install.sh)
-- `Brewfile` — declarative package manifest (~67 entries)
+- `Brewfile` — declarative package manifest (84 formulae, 21 casks)
 - `README.md` — overview + key bindings reference
 - `README_NEW_MACOS.md` — onboarding guide (uses mise, not nvm)
 - `INSTALL.md` — this file
@@ -412,7 +409,7 @@ brew bundle cleanup --force   # actually remove (destructive)
 - `CLAUDE.md` — full reference for AI assistants
 - `macos/.macos` — 44 macOS defaults entries
 
-### Stowable packages (21)
+### Stowable packages (20)
 - `aerospace/` → `~/.config/aerospace/` — i3-like tiling window manager
 - `atuin/` → `~/.config/atuin/` — encrypted shell history sync
 - `espanso/` → `~/Library/Application Support/espanso/` — text expander config
@@ -423,13 +420,12 @@ brew bundle cleanup --force   # actually remove (destructive)
 - `linearmouse/` → `~/.config/linearmouse/` — pointer/scroll config (app pinned to v0.11.2)
 - `mise/` → `~/.config/mise/` — polyglot version manager (replaces fnm + pyenv)
 - `mpd/` → `~/.config/mpd/` — music daemon
-- `nvim/` → `~/.config/nvim/` — Neovim 0.12 config (36 plugins)
+- `nvim/` → `~/.config/nvim/` — Neovim 0.12 config (70 plugins, lazy-lock.json)
 - `rmpc/` → `~/.config/rmpc/` — TUI music player
 - `scripts/` → `~/scripts/` — tmux-sessionizer, fzf helpers, wallpaper-rotate, wallpaper-cycle, wallpaper-workspace
 - `sketchybar/` → `~/.config/sketchybar/` — custom status bar
 - `starship/` → `~/.config/starship/` — shell prompt
 - `tmux/` → `~/.config/tmux/` — multiplexer config + TPM plugins
-- `ubersicht/` → `~/Library/Application Support/Übersicht/` — desktop widgets
 - `w3m/` → `~/.w3m/` — terminal browser
 - `wallpapers/` → stowed (Plash shaders + gallery README live in-repo; the 10-piece JPG gallery itself is NOT in the repo — regenerate via Media skill or copy from another machine)
 - `yazi/` → `~/.config/yazi/` — terminal file manager

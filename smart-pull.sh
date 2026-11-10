@@ -30,7 +30,8 @@ done
 
 [ "$PRINT_ONLY" = true ] && NO_PULL=true
 
-DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+# This checkout unless the environment names another (see install.sh).
+DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
 TEMPLATE="$DOTFILES_DIR/docs/POSTPULL_PROMPT.md"
 
 # Colors

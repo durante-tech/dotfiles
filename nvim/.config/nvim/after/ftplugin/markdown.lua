@@ -368,8 +368,9 @@ local opts = { buffer = 0, silent = true }
 
 local function safe_markdown_cmd(cmd, success_msg)
     return function()
-        -- undo point
-        vim.cmd("normal! t'")
+        -- Mark the position (jumplist) before the bulk edit. This was `t'`,
+        -- the till-quote MOTION, which moved the cursor to the next apostrophe.
+        vim.cmd("normal! m'")
 
         -- run
         local ok, err = pcall(vim.cmd, cmd)

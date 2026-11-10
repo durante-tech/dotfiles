@@ -12,7 +12,11 @@ DIR="${1:-$HOME/Pictures/Wallpapers}"
 [ -d "$DIR" ] || { echo "no such dir: $DIR" >&2; exit 1; }
 
 # Collect candidates: jpg/jpeg/png/heic, exclude workspace-* and default.*
-mapfile -t IMGS < <(find "$DIR" -maxdepth 1 -type f \
+# Read line-wise: `mapfile` is bash 4+, and `env bash` here is macOS bash 3.2.
+IMGS=()
+while IFS= read -r img; do
+  IMGS+=("$img")
+done < <(find "$DIR" -maxdepth 1 -type f \
   \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.heic" \) \
   ! -iname "workspace-*" ! -iname "default.*" 2>/dev/null)
 

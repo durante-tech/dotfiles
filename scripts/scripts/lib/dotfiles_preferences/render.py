@@ -20,11 +20,23 @@ def parse_toml(text):
         bun = shutil.which('bun') or str(Path.home()/'.bun/bin/bun')
         if not Path(bun).is_file():
             raise PreferenceError('TOML validation needs Python 3.11+ or an installed Bun') from None
-        result = subprocess.run([bun, '--no-install', '--no-env-file', '--config=/dev/null', '-e', 'console.log(JSON.stringify(Bun.TOML.parse(await Bun.stdin.text())))'],
-                                input=text, text=True, capture_output=True, timeout=10,
-                                env={k: v for k, v in os.environ.items() if k not in ('BUN_OPTIONS', 'NODE_OPTIONS')})
-        if result.returncode:
+        # Exit 3 is the script's own "this text does not parse". Any other
+        # failure means the validator never ran (a PATH wrapper that refuses,
+        # a broken install, a timeout) and must not be reported as bad TOML:
+        # that sends the reader to a template that is fine.
+        script = ('let d; try { d = Bun.TOML.parse(await Bun.stdin.text()) } catch { process.exit(3) } '
+                  'console.log(JSON.stringify(d))')
+        try:
+            result = subprocess.run([bun, '--no-install', '--no-env-file', '--config=/dev/null', '-e', script],
+                                    input=text, text=True, capture_output=True, timeout=10,
+                                    env={k: v for k, v in os.environ.items() if k not in ('BUN_OPTIONS', 'NODE_OPTIONS')})
+        except (OSError, subprocess.TimeoutExpired) as error:
+            raise PreferenceError('TOML validation could not run Bun (%s): %s' % (bun, error)) from None
+        if result.returncode == 3:
             raise PreferenceError('Rendered AeroSpace configuration is not valid TOML')
+        if result.returncode:
+            detail = (result.stderr.strip().splitlines() or ['no output'])[-1]
+            raise PreferenceError('TOML validation could not run Bun (%s, exit %d): %s' % (bun, result.returncode, detail))
         return json.loads(result.stdout)
     try:
         return tomllib.loads(text)

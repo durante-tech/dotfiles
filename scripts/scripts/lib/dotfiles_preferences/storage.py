@@ -42,12 +42,13 @@ def check_paths(preferences, paths):
         root = next((base for base in roots if path == base or base in path.parents), None)
         if root is None:
             raise PreferenceError('Unexpected personalization path')
+        # Everything BELOW the root must be a real file or directory. The
+        # root itself is the user's choice of location and may be a symlink
+        # (~/dotfiles -> ~/Developer/dotfiles); refusing it failed every plan.
         current = path
-        while True:
+        while current != root:
             if current.is_symlink():
                 raise PreferenceError('Refusing a symlinked personalization target or parent: '+str(current))
-            if current == root:
-                break
             current = current.parent
 
 

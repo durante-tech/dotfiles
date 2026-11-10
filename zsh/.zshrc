@@ -135,8 +135,14 @@ command -v atuin &>/dev/null && eval "$(atuin init zsh 2>/dev/null)"
 # whatever else claimed it. Measured here: `bindkey -M vicmd '^r'` reported
 # `fzf-history-widget`, i.e. the same key ran two different history searchers
 # depending on which mode you happened to be in.
-bindkey -M viins '^r' atuin-search-viins
-bindkey -M vicmd '^r' atuin-search-vicmd
+#
+# Only when the widgets exist. `bindkey` accepts an undefined widget name and
+# returns 0, so with atuin absent or unrunnable (the glibc case above) these
+# replaced fzf's working Ctrl+R with "No such widget" in both modes.
+if (( $+widgets[atuin-search-viins] && $+widgets[atuin-search-vicmd] )); then
+  bindkey -M viins '^r' atuin-search-viins
+  bindkey -M vicmd '^r' atuin-search-vicmd
+fi
 
 #User configuration
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -180,7 +186,9 @@ alias e="exit"
 alias vim="nvim"
 
 # Tmux
-alias tmux="tmux -f $TMUX_CONF"
+# Defaulted: TMUX_CONF is exported by .zprofile, which a non-login shell never
+# runs — unset, this became `tmux -f ` and ate the next argument as the config.
+alias tmux="tmux -f ${TMUX_CONF:-$HOME/.config/tmux/tmux.conf}"
 alias a="tmux attach"
 # calls the tmux new session script
 alias tns="$HOME/scripts/tmux-sessionizer"
@@ -245,7 +253,15 @@ alias cheat="navi"                        # Interactive cheatsheets
 alias ginfo="onefetch"                    # Git repo summary (like neofetch for repos)
 
 # Yazi with cd on exit (changes to last visited directory)
+# Yazi also ships a `ya` binary (its plugin/package CLI), which this name
+# shadows; its subcommands are handed straight to it.
 function ya() {
+    case "${1:-}" in
+        pkg|pack|pub|pub-to|emit|emit-to|sub)
+            command ya "$@"
+            return
+            ;;
+    esac
     local tmp
     tmp=$(mktemp -t "yazi-cwd.XXXXXX") || return 1
     trap "rm -f -- '$tmp'" RETURN

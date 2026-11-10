@@ -136,7 +136,7 @@ Atuin replaces the default `Ctrl+R` history search with a full-featured history 
 
 ### Atuin Configuration
 
-Key settings (from `~/.config/atuin/config.toml`):
+Key settings (upstream defaults; commented out in `~/.config/atuin/config.toml`, where only `keymap_mode` is set):
 
 ```toml
 keymap_mode = "vim-insert"    # Vi-mode keybindings in search

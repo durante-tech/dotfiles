@@ -18,10 +18,24 @@ on:
 
 jobs:
   shell-regressions:
-    name: Shell regression fixtures
+    name: Shell regression fixtures (Python ${{ matrix.python }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.9 is what macOS ships as /usr/bin/python3 and what every wrapper
+        # here execs. It has no tomllib, so it is the only leg that exercises
+        # the Bun TOML fallback; on the runner default alone that path, and the
+        # tests guarding it, never ran in CI.
+        python: ['3.9', '3.12']
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
       - name: Install fixture tools
         run: sudo apt-get update -qq && sudo apt-get install -y -qq zsh stow jq
       - name: Check Zsh syntax
@@ -104,7 +118,8 @@ jobs:
       # default severity to pick these up unless they are fixed first — that is
       # exactly how this gate died the first time.
       - name: Run ShellCheck on custom scripts
-        uses: ludeeus/action-shellcheck@master
+        # Pinned: @master let an upstream push change this gate unreviewed.
+        uses: ludeeus/action-shellcheck@2.0.0
         env:
           SHELLCHECK_OPTS: -e SC1090 -e SC1091 -e SC2034 -e SC2155
         with:

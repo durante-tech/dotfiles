@@ -81,6 +81,23 @@ pick_random() {
   echo "${arr[$((RANDOM % n))]}"
 }
 
+# pick_pool PRIMARY FALLBACK — random pick from the array named PRIMARY, or from
+# FALLBACK when PRIMARY is empty. Takes NAMES and checks lengths first because
+# "${A[@]:-${B[@]}}" aborts under `set -u` on bash 3.2 when both are empty
+# ("B[@]: unbound variable"), which killed the run for a gallery with no image
+# in the connected monitor's orientation instead of just skipping that screen.
+pick_pool() {
+  local name count
+  for name in "$1" "$2"; do
+    eval "count=\${#${name}[@]}"
+    if [ "$count" -gt 0 ]; then
+      eval "pick_random \"\${${name}[@]}\""
+      return
+    fi
+  done
+  return 1
+}
+
 # Daily nano-banana wallpaper: the DailyBrief agent drops a fresh generated
 # piece into $DIR/daily/ each evening (dailybrief-YYYY-MM-DD.png). If one
 # exists and is <36h old, it joins every band's landscape pool for its day —
@@ -143,13 +160,13 @@ while read -r line; do
     w="$(echo "$res" | sed -E 's/.* ([0-9]+) x ([0-9]+).*/\1/')"
     h="$(echo "$res" | sed -E 's/.* ([0-9]+) x ([0-9]+).*/\2/')"
     if [ "$h" -gt "$w" ]; then
-      pick="$(pick_random "${PORT[@]:-${PORT_ALL[@]}}")"
+      pick="$(pick_pool PORT PORT_ALL)"
     else
-      pick="$(pick_random "${LAND[@]:-${LAND_ALL[@]}}")"
+      pick="$(pick_pool LAND LAND_ALL)"
     fi
   else
     # Fall back to landscape pool when geometry probe fails.
-    pick="$(pick_random "${LAND[@]:-${LAND_ALL[@]}}")"
+    pick="$(pick_pool LAND LAND_ALL)"
   fi
 
   if [ -n "$pick" ]; then

@@ -35,7 +35,7 @@ Each configured tool has its own documentation:
 
 | Tool | Description | Key Features |
 |------|-------------|--------------|
-| **[Neovim](neovim/README.md)** | Modal editor with LSP | 40+ plugins, Snacks picker, Blink.cmp |
+| **[Neovim](neovim/README.md)** | Modal editor with LSP | 70 plugins (lazy-lock.json), Snacks picker, Blink.cmp |
 | **[Tmux](tmux/README.md)** | Terminal multiplexer | Sessions, floating popups, vim-navigator |
 | **[Zsh](zsh/README.md)** | Shell configuration | 100+ aliases, vi-mode, modern CLI tools |
 
@@ -92,14 +92,8 @@ Configurations kept for reference or as backups:
 | Tool | Status | Description |
 |------|--------|-------------|
 | **[Kitty](kitty/README.md)** | Backup | Mirrors Ghostty config, available as fallback |
-| **[Alacritty](alacritty/README.md)** | Legacy | Original GPU terminal, replaced by Ghostty |
+| **[Alacritty](alacritty/README.md)** | Legacy | Reference docs only, no package in this repo |
 | **WezTerm** (reference retired) | Legacy | Lua-configurable terminal, replaced by Ghostty |
-
-### Alternative Editor
-
-| Tool | Status | Description |
-|------|--------|-------------|
-| **[Zed](/legacy/zed/)** | Experimental | Fast Rust editor with vim mode |
 
 ## Quick Reference Cards
 
@@ -140,7 +134,6 @@ All tools configured with vi-style keybindings:
 ```
 ~/dotfiles/
 ├── aerospace/    → ~/.config/aerospace/
-├── alacritty/    → ~/.config/alacritty/       (legacy)
 ├── atuin/        → ~/.config/atuin/
 ├── ghostty/      → ~/.config/ghostty/
 ├── karabiner/    → ~/.config/karabiner/
@@ -153,9 +146,7 @@ All tools configured with vi-style keybindings:
 ├── starship/     → ~/.config/starship/
 ├── tmux/         → ~/.config/tmux/
 ├── w3m/          → ~/.w3m/
-├── wezterm/      → ~/.config/wezterm/         (legacy)
 ├── yazi/         → ~/.config/yazi/
-├── zed/          → ~/.config/zed/             (experimental)
 ├── zsh/          → ~/.zshrc, ~/.zprofile
 └── docs/         → This documentation
 ```

@@ -17,10 +17,14 @@ FAILURES=0
 # =============================================================================
 
 DOTFILES_REPO="https://github.com/durante-tech/dotfiles.git"
-# Clone target / repo root; env var overrides for non-default locations
-# (the configured installation target may differ from this source checkout, so it cannot derive
-# the path from its own location like setup.sh/personalize.sh do).
-DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+# Repo root: this checkout, unless the environment names another one. It used
+# to default to $HOME/dotfiles regardless of where the script lived, so from a
+# checkout anywhere else `./update.sh` died on "Missing package manifest:
+# ~/dotfiles/stow-packages.txt" and a full install cloned a SECOND copy into
+# ~/dotfiles and deployed that. install.sh cannot run without lib/ beside it
+# (checked below), so it is always inside a checkout — the same derivation
+# setup.sh and personalize.sh use.
+DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
 # TPM lives at a NON-DEFAULT path. tmux.conf relocates it via
 #   set-environment -g TMUX_PLUGIN_MANAGER_PATH ~/.config/tmux/.tmux/plugins
 # and sources it from there on the last line (`run '.../tpm/tpm'`). Cloning to
@@ -127,7 +131,8 @@ Options:
     --skip-macos        Skip macOS defaults configuration
     --force-stow        Pass stow --adopt. RARELY NEEDED: conflicts are backed
                         up automatically. --adopt moves the machine's files INTO
-                        the repo, overwriting tracked config.
+                        the repo, overwriting tracked config. No effect on a
+                        plain --update, which refuses conflicts instead.
     --verbose, -v       Show verbose output (including skipped packages)
 
 Examples:
@@ -848,6 +853,12 @@ if [ "$ALL_OK" = true ]; then
     print_success "All critical tools installed!"
 else
     print_warn "Some tools missing - check errors above"
+fi
+
+# `--update --with-tools` runs this pipeline instead of dotfiles_update, and so
+# skipped the configuration check every plain update ends with.
+if "$UPDATE_ONLY" && [ "$DRY_RUN" = false ]; then
+    "$DOTFILES_DIR/setup.sh" --check || record_failure "Configuration check reported problems"
 fi
 
 # =============================================================================

@@ -4,15 +4,37 @@ source "$CONFIG_DIR/colors.sh"
 
 DOCKER=$(command -v docker || echo "/usr/local/bin/docker")
 
+# GNU timeout is not on sketchybar's PATH: coreutils puts it in a gnubin dir
+# that only the interactive .zprofile adds, and Homebrew's bin has it only as
+# `gtimeout`. A bare `timeout` therefore failed as "command not found", which
+# `if ! timeout ... docker info` read as "Docker is off" — permanently.
+# Resolve it once; with none available, run unbounded rather than lie.
+TIMEOUT_BIN=""
+for candidate in timeout gtimeout /opt/homebrew/bin/gtimeout /usr/local/bin/gtimeout; do
+    if command -v "$candidate" >/dev/null 2>&1; then
+        TIMEOUT_BIN="$candidate"
+        break
+    fi
+done
+with_timeout() {
+    local limit="$1"
+    shift
+    if [ -n "$TIMEOUT_BIN" ]; then
+        "$TIMEOUT_BIN" "$limit" "$@"
+    else
+        "$@"
+    fi
+}
+
 # Check if Docker is running (with timeout to prevent blocking)
-if ! timeout 2s $DOCKER info >/dev/null 2>&1; then
+if ! with_timeout 2s $DOCKER info >/dev/null 2>&1; then
     sketchybar --set "$NAME" icon="󰡨" label="Off" icon.color="$GREY"
     exit 0
 fi
 
 # Single docker command to get all info we need (optimized from 4 commands to 1)
 # Format: ID|Status|MemPerc
-CONTAINER_DATA=$(timeout 3s $DOCKER ps --format "{{.ID}}|{{.Status}}" 2>/dev/null)
+CONTAINER_DATA=$(with_timeout 3s $DOCKER ps --format "{{.ID}}|{{.Status}}" 2>/dev/null)
 
 if [ -z "$CONTAINER_DATA" ]; then
     sketchybar --set "$NAME" icon="󰡨" label="0" icon.color="$GREY"
@@ -31,7 +53,7 @@ HEALTHY=$(echo "$CONTAINER_DATA" | grep -c "(healthy)") || HEALTHY=0
 UNHEALTHY=$(echo "$CONTAINER_DATA" | grep -c "(unhealthy)") || UNHEALTHY=0
 
 # Get memory only if containers are running (with timeout)
-MEM_TOTAL=$(timeout 2s $DOCKER stats --no-stream --format "{{.MemPerc}}" 2>/dev/null | awk '{gsub(/%/,""); sum += $1} END {printf "%.0f", sum}')
+MEM_TOTAL=$(with_timeout 2s $DOCKER stats --no-stream --format "{{.MemPerc}}" 2>/dev/null | awk '{gsub(/%/,""); sum += $1} END {printf "%.0f", sum}')
 
 # Build label
 if [ "$UNHEALTHY" -gt 0 ]; then

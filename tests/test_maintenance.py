@@ -110,9 +110,16 @@ class StowStatus(Fixture):
             self.assertNotEqual(self.run_function(name).returncode,0)
         (r/'sample').mkdir();(r/'sample/.sample').write_text('repo');(t/'.sample').write_text('user')
         (r/'stow-packages.txt').write_text('sample\n')
+        # Without a working personalize.sh, stow_packages fails before it ever
+        # reaches stow, and a nonzero exit proved nothing about the conflict.
+        (r/'personalize.sh').write_text('#!/bin/sh\nexit 0\n');(r/'personalize.sh').chmod(0o755)
         for name in ['stow_packages','check_stow_drift']:
-            self.assertNotEqual(self.run_function(name).returncode,0)
+            result=self.run_function(name)
+            self.assertNotEqual(result.returncode,0)
             self.assertEqual((t/'.sample').read_text(),'user')
+            if name=='stow_packages':
+                self.assertIn('Failed to stow sample',result.stdout+result.stderr)
+                self.assertNotIn('personalize.sh is missing',result.stdout+result.stderr)
 
     def test_runtime_exclusion_keeps_existing_link(self):
         if not shutil.which('stow'):self.skipTest('stow required')

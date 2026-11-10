@@ -274,16 +274,6 @@ GLSL shader as live wallpaper.
 
 `gum` is used directly inside shell scripts (`gum confirm`, `gum choose`, etc.) — no aliases.
 
-## Local LLM (Ollama)
-
-| Alias | Command |
-|-------|---------|
-| `ollama-up` | `brew services run ollama` — start daemon for current session only (no boot persistence) |
-| `ollama-down` | `brew services stop ollama` — stop daemon |
-| `ollama-ls` | `ollama list` — show installed models |
-
-Pair with espanso's `:llm` and `:llmf` triggers (defined in [`espanso/Library/Application Support/espanso/match/base.yml`](https://github.com/durante-tech/dotfiles/blob/main/espanso/Library/Application%20Support/espanso/match/base.yml)) for inline AI completions.
-
 ## GitHub Dashboard
 
 | Alias | Command |
@@ -313,7 +303,7 @@ ya                       # Open yazi file manager
                          # When you quit, terminal cd's to last visited directory
 ```
 
-Unlike `y` (plain yazi), `ya` tracks the directory you navigated to inside yazi and changes your shell's working directory on exit.
+Unlike `y` (plain yazi), `ya` tracks the directory you navigated to inside yazi and changes your shell's working directory on exit. Yazi's own `ya` CLI subcommands (`pkg`, `pack`, `pub`, `pub-to`, `emit`, `emit-to`, `sub`) are passed through to the real `ya` binary.
 
 ### YouTube Transcript (`yt`)
 

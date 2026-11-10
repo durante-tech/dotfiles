@@ -2,22 +2,20 @@
 
 # kitty-config-menu - FZF config file picker (replaces tmux display-menu)
 
-declare -A configs
-configs=(
-    [".zshrc"]="$HOME/.zshrc"
-    [".zprofile"]="$HOME/.zprofile"
-    ["kitty.conf"]="$HOME/.config/kitty/kitty.conf"
-    ["nvim"]="$HOME/.config/nvim"
-    ["tmux.conf"]="$HOME/.config/tmux/tmux.conf"
-)
+# A label list plus a case, not `declare -A`: `env bash` is macOS bash 3.2,
+# where associative arrays do not exist and this script died before the picker.
+labels=(.zprofile .zshrc kitty.conf nvim tmux.conf)
 
-selected=$(printf "%s\n" "${!configs[@]}" | sort | fzf --prompt="Config> " --border --reverse)
+selected=$(printf "%s\n" "${labels[@]}" | fzf --prompt="Config> " --border --reverse)
 
-if [[ -z $selected ]]; then
-    exit 0
-fi
-
-target="${configs[$selected]}"
+case "$selected" in
+    .zshrc)     target="$HOME/.zshrc" ;;
+    .zprofile)  target="$HOME/.zprofile" ;;
+    kitty.conf) target="$HOME/.config/kitty/kitty.conf" ;;
+    nvim)       target="$HOME/.config/nvim" ;;
+    tmux.conf)  target="$HOME/.config/tmux/tmux.conf" ;;
+    *)          exit 0 ;;
+esac
 
 if [[ -d "$target" ]]; then
     cd "$target" && nvim .

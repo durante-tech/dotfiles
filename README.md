@@ -3,7 +3,7 @@ name: dotfiles
 pack-id: durante-tech-dotfiles-v2.0.0
 version: 2.0.0
 author: durante-tech (Lucas Gertel)
-description: macOS terminal-first, keyboard-driven development environment. 21 stowable packages, 77 brew formulae + 19 casks, mise polyglot version manager, hourly time-banded wallpaper rotation, espanso text expansion. USE WHEN install dotfiles, set up new mac, clone dotfiles, install lucas dotfiles, configure new development machine, restore dotfiles, update dotfiles, repair dotfiles, fresh mac setup, dotfile installation, durante dotfiles, dotfiles new machine, terminal-first setup, install brewfile, mise migration, durante setup.
+description: macOS terminal-first, keyboard-driven development environment. 20 stowable packages, 84 brew formulae + 21 casks, mise polyglot version manager, on-demand time-banded wallpaper rotation, espanso text expansion. USE WHEN install dotfiles, set up new mac, clone dotfiles, install lucas dotfiles, configure new development machine, restore dotfiles, update dotfiles, repair dotfiles, fresh mac setup, dotfile installation, durante dotfiles, dotfiles new machine, terminal-first setup, install brewfile, mise migration, durante setup.
 type: dotfiles
 role: environment
 visibility: public
@@ -51,7 +51,7 @@ keywords: [dotfiles, install dotfiles, set up new mac, clone dotfiles, install l
 "Set up a fresh Mac with these dotfiles"   → Read INSTALL.md → choose Fresh install
 ```
 
-The full 12-step install runs `install.sh` which internally drives: Xcode CLT → Homebrew → 77 formulae → 19 casks → Bun + ccusage + Fabric → stow 20 packages → `mise install` → `setup.sh --configure` (renders 11 LaunchAgent templates with `__USER__` substitution; Raycast script-commands are linked only when `~/Durante` or `DOTFILES_RAYCAST_DIR` exists, and skipped with a notice otherwise) → Espanso service register → TPM tmux plugins → Neovim Lazy sync → `./macos/.macos` (44 defaults entries) → verification.
+The full 12-step install runs `install.sh` which internally drives: Xcode CLT → Homebrew → 84 formulae → 21 casks → Bun + Fabric → stow 20 packages → `mise install` → `setup.sh --configure` (renders 5 LaunchAgent templates with `__USER__` substitution; Raycast script-commands are linked only when `~/Durante` or `DOTFILES_RAYCAST_DIR` exists, and skipped with a notice otherwise) → Espanso service register → TPM tmux plugins → Neovim Lazy sync → `./macos/.macos` (44 defaults entries) → verification.
 
 > **For human readers:** the rest of this README is the standard overview. AI agents can skip to `INSTALL.md`.
 
@@ -73,16 +73,16 @@ neovim.png, tmux.png and yazi.png, then uncomment this whole block.
 
 ## What's Included
 
-21 stowable packages — install everything or pick what you need.
+20 stowable packages — install everything or pick what you need.
 
 ### Core
 
 | Tool | Description | Theme |
 |------|-------------|-------|
 | **[Zsh](docs/zsh/README.md)** | Shell with vi-mode, 70+ aliases, Starship prompt | Catppuccin Mocha |
-| **[Neovim](docs/neovim/README.md)** | IDE-like editor — LSP, Snacks picker, 30+ plugins | Rose-pine |
+| **[Neovim](docs/neovim/README.md)** | IDE-like editor — LSP, Snacks picker, 70 plugins (lazy-lock.json) | Rose-pine |
 | **[Tmux](docs/tmux/README.md)** | Multiplexer with session persistence, floating tools | Catppuccin Mocha |
-| **[Ghostty](docs/ghostty/README.md)** | Primary terminal — 75% opacity, 23px blur | Catppuccin Mocha |
+| **[Ghostty](docs/ghostty/README.md)** | Primary terminal — 75% opacity, 23px blur | Rose-pine |
 
 ### Window Management & UI
 
@@ -91,7 +91,7 @@ neovim.png, tmux.png and yazi.png, then uncomment this whole block.
 | **[AeroSpace](docs/aerospace/README.md)** | i3-like tiling WM with workspace-to-monitor pinning |
 | **[Sketchybar](docs/sketchybar/README.md)** | Custom status bar — workspaces, weather, CPU, media, git |
 | **[Karabiner](docs/karabiner/README.md)** | Key remapping |
-| **[Wallpapers](wallpapers/README.md)** | Hourly time-banded rotation (LaunchAgent) + GLSL shaders for Plash. The image gallery itself is personal and **not tracked here** — set `DOTFILES_WALLPAPER_DIR` in `personal.env` to point at your own; rotation no-ops cleanly without it |
+| **[Wallpapers](wallpapers/README.md)** | On-demand time-banded rotation (`wpn`/`wpa`; no LaunchAgent) + GLSL shaders for Plash. The image gallery itself is personal and **not tracked here** — set `DOTFILES_WALLPAPER_DIR` in `personal.env` to point at your own; rotation no-ops cleanly without it |
 | **Übersicht** | Webview widgets above wallpaper, below windows |
 
 ### CLI Tools
@@ -107,7 +107,6 @@ neovim.png, tmux.png and yazi.png, then uncomment this whole block.
 
 | Tool | Status |
 |------|--------|
-| **Alacritty** | Configured, secondary |
 | **Kitty** | Configured, secondary |
 
 ### Media & Extras
@@ -263,7 +262,6 @@ on its own. See [`docs/UPGRADE.md`](docs/UPGRADE.md) for paths A/B/C.
 ```
 dotfiles/
 ├── aerospace/        → ~/.config/aerospace/
-├── alacritty/        → ~/.config/alacritty/
 ├── atuin/            → ~/.config/atuin/
 ├── ghostty/          → ~/.config/ghostty/
 ├── karabiner/        → ~/.config/karabiner/

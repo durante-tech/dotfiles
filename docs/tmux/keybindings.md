@@ -28,7 +28,6 @@ Complete keyboard shortcut reference for your tmux configuration.
 | `C-b d` | **Config menu** | **Custom:** Quick edit dotfiles |
 | `C-b (` | Switch to previous session | Cycles backward |
 | `C-b )` | Switch to next session | Cycles forward |
-| `C-b L` | Switch to last session | Toggle between two sessions |
 | `C-b s` | List sessions | Interactive tree view |
 | `C-b $` | Rename current session | Prompts for new name |
 | `C-b n` | Create new session | **Custom:** Prompts for name |
@@ -57,10 +56,10 @@ tmux kill-session -t name      # Kill session
 
 | Keys | Action | Notes |
 |------|--------|-------|
-| `C-b c` | Create new window | Starts in current path |
+| `C-b c` | Create new window | Default tmux behaviour (no pane-path binding) |
 | `C-b ,` | Rename window | Prompts for new name |
 | `C-b &` | Kill window | Confirmation prompt (y/n) |
-| `C-b n` | Next window | Cycles forward |
+| `C-b w` | Window list | Interactive picker (`C-b n` is New session here) |
 | `C-b p` | Previous window | Cycles backward |
 | `C-b l` | Last window | Toggle between two windows |
 | `C-b 1-9` | Switch to window N | Direct access to windows 1-9 (starts at 1!) |
@@ -104,7 +103,6 @@ tmux kill-session -t name      # Kill session
 | `C-j` | Move to pane below | **Plugin:** vim-tmux-navigator |
 | `C-k` | Move to pane above | **Plugin:** vim-tmux-navigator |
 | `C-l` | Move to right pane | **Plugin:** vim-tmux-navigator |
-| `C-b o` | Next pane | Cycles clockwise |
 | `C-b ;` | Last pane | Toggle between two panes |
 | `C-b q` | Show pane numbers | Brief display |
 | `C-b q 0-9` | Jump to pane N | While numbers showing |
@@ -115,16 +113,16 @@ tmux kill-session -t name      # Kill session
 
 | Keys | Action | Notes |
 |------|--------|-------|
-| `C-b h` | Resize left (shrink right) | **Custom:** Repeatable |
-| `C-b j` | Resize down (shrink top) | **Custom:** Repeatable |
-| `C-b k` | Resize up (shrink bottom) | **Custom:** Repeatable |
-| `C-b l` | Resize right (shrink left) | **Custom:** Repeatable |
+| `C-b H` | Resize left (shrink right) | **Custom:** Repeatable |
+| `C-b J` | Resize down (shrink top) | **Custom:** Repeatable |
+| `C-b K` | Resize up (shrink bottom) | **Custom:** Repeatable |
+| `C-b L` | Resize right (shrink left) | **Custom:** Repeatable |
 | `C-b C-h/j/k/l` | Resize (arrow keys) | Standard bindings |
 
 **Your config:**
 - Resize step: **5 cells**
 - **Repeatable (`-r` flag):** Can press quickly without prefix
-- Example: `C-b h h h h` (hold `C-b`, tap `h` multiple times)
+- Example: `C-b H H H H` (hold `C-b`, tap `H` multiple times)
 
 ### Pane Management
 
@@ -144,11 +142,11 @@ tmux kill-session -t name      # Kill session
 
 | Keys | Action | Layout Type |
 |------|--------|-------------|
-| `C-b M-1` | Even horizontal | All panes equal width, side by side |
-| `C-b M-2` | Even vertical | All panes equal height, stacked |
-| `C-b M-3` | Main horizontal | One large top, small panes below |
-| `C-b M-4` | Main vertical | One large left, small panes right |
-| `C-b M-5` | Tiled | Grid layout, all equal size |
+| `C-b M-1` | Main vertical | One large left, small panes right |
+| `C-b M-2` | Main horizontal | One large top, small panes below |
+| `C-b M-3` | Tiled | Grid layout, all equal size |
+| `C-b M-4` | Even horizontal | All panes equal width, side by side |
+| `C-b M-5` | Even vertical | All panes equal height, stacked |
 
 **Your config settings:**
 - Pane base index starts at **1** (not 0)
@@ -526,7 +524,7 @@ set -g @sessionx-bind 'o'
 
 **Your config:**
 ```bash
-bind-key -r f run-shell "tmux neww ~/scripts/tmux-sessionizer"
+bind-key f run-shell "tmux neww ~/scripts/tmux-sessionizer"
 ```
 
 **What it does:**
@@ -580,13 +578,15 @@ Some keys have **multiple functions** depending on context:
 | `C-b o` | **Your config** | **SessionX** (fuzzy find) |
 | `C-b o` | Standard tmux | Next pane (overridden!) |
 | `C-b n` | **Your config** | **New session** (prompts for name) |
-| `C-b n` | Standard tmux | Next window (still works!) |
+| `C-b n` | Standard tmux | Next window (overridden — no binding for next-window; use `C-b w`, `C-b p`, `C-b 1-9`) |
+| `C-b L` | **Your config** | **Resize right** |
+| `C-b L` | Standard tmux | Last session (overridden!) |
 
 **To use these features:**
 - **Detach:** Use `C-b D` (capital D)
 - **Config menu:** Use `C-b d` (lowercase d)
 - **Next pane:** Use `C-h/j/k/l` (vim-tmux-navigator) or mouse
-- **Next window:** `C-b n` still works for next window
+- **Next window:** no binding; use `C-b w` (list), `C-b p` (previous) or `C-b 1-9`
 
 **Check your bindings anytime:**
 ```
@@ -607,9 +607,9 @@ PREFIX: Ctrl+b (C-b)
 SESSIONS              WINDOWS              PANES
 C-b D  Detach         C-b c  New           C-b |  Split vert
 C-b d  Config menu    C-b ,  Rename        C-b -  Split horiz
-C-b o  SessionX       C-b n  Next          C-b m  Maximize
+C-b o  SessionX       C-b w  Windows       C-b m  Maximize
 C-b f  Sessionizer    C-b p  Previous      C-b x  Kill
-C-b n  New session    C-b 1-9 Go to #      C-b h/j/k/l Resize
+C-b n  New session    C-b 1-9 Go to #      C-b H/J/K/L Resize
 C-b $  Rename         C-b l  Last          C-h/j/k/l Navigate
 C-b s  List           C-b w  Tree          (no prefix!)
 C-b (  Previous       C-b &  Kill
@@ -677,7 +677,7 @@ C-b r                   # Reload config
 **Week 1: Core navigation**
 - Master `C-b |` and `C-b -` (splits)
 - Use `C-h/j/k/l` (pane navigation - no prefix!)
-- Practice `C-b c`, `C-b n/p` (windows)
+- Practice `C-b c`, `C-b p`, `C-b w`, `C-b 1-9` (windows)
 - Use `C-b D` (capital D!) to detach, `tmux attach` to return
 - Try `C-b d` (lowercase) for quick config edits
 

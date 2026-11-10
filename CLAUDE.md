@@ -195,10 +195,10 @@ nvim/
 1. **`.zprofile`** (login shell)
    - Homebrew environment
    - PATH setup (coreutils, uv, scripts, Mason, Go, Fabric, Bun, Deno)
-   - Environment variables (STARSHIP_CONFIG, FZF_*, ATUIN_NOBIND, SSH_AUTH_SOCK)
+   - Environment variables (STARSHIP_CONFIG, FZF_*, TMUX_CONF, SSH_AUTH_SOCK)
    - SSH agent via **1Password** (macOS socket at `~/Library/Group Containers/...`)
    - FZF configuration (fd-based with .git/node_modules/.venv exclusions)
-   - Bun, Deno completions (Node + Python via **mise**, activated in `.zshrc`)
+   - Bun (Deno env and `ATUIN_NOBIND` live in `.zshrc`; Node + Python via **mise**, activated in `.zshrc`)
 
 2. **`.zshrc`** (interactive shell)
    - Vi mode (`set -o vi`) + Starship prompt
@@ -266,7 +266,7 @@ nvim/
 | `lsd` | Directories only |
 | `lm` | Sort by modified time (newest first) |
 | `lz` | Sort by size (largest first) |
-| `lsg` | Git-modified files only |
+| `lsg` | Files only, with git status, git-ignored files hidden (eza has no modified-only filter) |
 | `tree` | tree -L 3 (excludes .git) |
 | `dtree` | tree -L 3 directories only |
 
@@ -360,14 +360,6 @@ nvim/
 | `gmp` | `glow -p` — paged, for long docs |
 | `ghd` | `gh dash` — interactive PR/issue browser |
 
-**Local LLM (Ollama):**
-
-| Alias | Command |
-|-------|---------|
-| `ollama-up` | `brew services run ollama` — this session only. `start` would register a boot LaunchAgent; avoid unless you want always-on ollama |
-| `ollama-down` | `brew services stop ollama` |
-| `ollama-ls` | `ollama list` |
-
 **Wallpaper:**
 
 | Alias | Description |
@@ -394,7 +386,7 @@ full script path, and never for `--favoriteMode` (broken on 4.3.0 pre-release):
 | `bd-auto` / `bd-manual` | Resume ambient control / hold current managed intent |
 | `bd-backlight` / `bd-save` | Calibrate built-in hardware level / save a personal preset |
 | `bd-snap` | (function) Dump display state to `~/Documents/betterdisplay-<ts>.json` |
-| `bd-srgb` / `bd-xdr` | (functions) DEV-MAIN colorspace toggles (sRGB caps at 100%, XDR reaches 160%) |
+| `bd-srgb` / `bd-xdr` | DEV-MAIN colorspace toggles (sRGB caps at 100%, XDR reaches 160%) |
 
 **Other:**
 
@@ -572,7 +564,7 @@ Sessions are git-branch-specific, auto-save on exit, auto-restore on open.
 | `<leader>rs` | Restart LSP |
 | `<C-h>` (insert) | Signature help |
 
-**Configured LSP Servers**: lua_ls, ts_ls, emmet_language_server, denols, gopls
+**Configured LSP Servers**: lua_ls, ts_ls, emmet_language_server, denols, gopls (with settings); html, cssls, tailwindcss, marksman, clangd (enabled at defaults)
 
 **Mason Auto-installs**: lua_ls, ts_ls, html, cssls, tailwindcss, gopls, angularls, emmet_language_server, marksman
 
@@ -690,7 +682,7 @@ Spell checking enabled, textwidth 80 for markdown files.
 
 **Showkeys**: `ShowkeysToggle` displays last 3 keypresses in floating window
 
-**Faster.nvim**: Auto-disables expensive features for files >1MB
+**Faster.nvim**: Auto-disables expensive features for files over 2 MiB (snacks bigfile triggers at 1.5 MiB)
 
 ### Claude Code Integration
 
@@ -718,7 +710,7 @@ Spell checking enabled, textwidth 80 for markdown files.
 - Markdown: render-markdown, markdown-preview (with Mermaid), custom filetype bindings
 - Jupyter: molten.nvim
 - Productivity: auto-session, project.nvim, undotree, snacks
-- AI: claudecode.nvim
+- AI: claudecode.nvim (`<leader>a*`), avante.nvim (`<leader>v*` — every avante mapping is remapped off `<leader>a`)
 
 **LSP Configuration (Neovim 0.11+)**:
 Uses the modern `vim.lsp.config` API:
@@ -785,11 +777,11 @@ vim.lsp.enable("server_name")
 
 | Binding | Layout |
 |---------|--------|
-| `Alt+1` | Main-vertical (main left, stack right) |
-| `Alt+2` | Main-horizontal (main top, stack bottom) |
-| `Alt+3` | Tiled (equal grid) |
-| `Alt+4` | Even-horizontal (side by side) |
-| `Alt+5` | Even-vertical (stacked) |
+| `prefix + Alt+1` | Main-vertical (main left, stack right) |
+| `prefix + Alt+2` | Main-horizontal (main top, stack bottom) |
+| `prefix + Alt+3` | Tiled (equal grid) |
+| `prefix + Alt+4` | Even-horizontal (side by side) |
+| `prefix + Alt+5` | Even-vertical (stacked) |
 | `prefix + F2` | Layout selection menu |
 
 ### Copy-Mode (Vi-Mode)
@@ -1218,8 +1210,8 @@ Runtime` — SDKMAN's candidate is the only real JDK here.
 
 ### Color Scheme Consistency
 
-**Terminal tools**: Catppuccin Mocha (starship, tmux, ghostty, sketchybar, w3m)
-**Editor**: Rose-pine (neovim)
+**Terminal tools**: Catppuccin Mocha (starship, tmux, sketchybar, w3m)
+**Editor and terminal emulators**: Rose-pine (neovim, ghostty, kitty)
 
 When adding new tools, follow this pattern.
 
@@ -1315,7 +1307,7 @@ chmod +x ~/scripts/*
 
 - **Stack:** macOS-only dotfiles deployed via GNU Stow across 20 packages; polyglot — Zsh/Bash (config + automation), Lua (Neovim/lazy.nvim), TOML (AeroSpace/Starship), plus Bun-run TypeScript scripts and an Astro/React docs site under `site/`.
 - **Test:** `python3 -m unittest discover -s tests` and `python3 tests/run_formatting.py`; site checks are `cd site && bun test && bun run docs:check && bun run build && bun run links:check`. See `VERIFY.md` for fixture prerequisites and manual checks. CI preserves ShellCheck, advisory Lua, TOML, portability and per-package Stow checks alongside these regression jobs.
-- **Health:** 100% (21 healthy / 21 conventions, 3 debt indicators) — last **static** scan 2026-06-24. That score is convention-matching only and does not read CI, so treat it as a style measure, not a health measure; the live signal is `gh run list`. CI history: the gate was red on every run from 2026-05-27, was repaired on 2026-07-29, and has been **green for 20 consecutive runs since** (last failure 2026-07-29T15:50:55Z, latest run 2026-08-11). Current debt: `docs/Sentinel/TECH-DEBT.md`.
+- **Health:** 100% (21 healthy / 21 conventions, 3 debt indicators) — last **static** scan 2026-06-24. That score is convention-matching only and does not read CI, so treat it as a style measure, not a health measure; the live signal is `gh run list`. CI history: the gate was red on every run from 2026-05-27, was repaired on 2026-07-29, and has passed most runs since, with four red pushes on 2026-09-06 and 2026-09-08 each fixed by the next commit (latest run 2026-09-08, green). Current debt: `docs/Sentinel/TECH-DEBT.md`.
 - **Enforced patterns:** kebab-case script names; `snake_case()` shell functions; `DOTFILES_`-prefixed override vars; `set -e`/`set -u` after shebang; `#!/usr/bin/env bash` (`#!/bin/bash` for launchd/bash-3.2 scripts); `#!/usr/bin/env bun` for TS scripts; `command -v <tool> && eval` guards in `.zshrc`; one-file-per-plugin `return { ... }` Neovim specs; `personal.env` existence-guarded sourcing; LaunchAgents as `.plist.template` (`__USER__` + `__DOTFILES_DIR__` placeholders, rendered by setup.sh; repo-owned `com.lucas.*` supersedes brew-services); Raycast script-commands `exec`-delegate to canonical scripts; compiled native helpers (Swift, e.g. `unlock-watch.swift`) built to `~/.local/bin` by setup.sh `build_native_helpers()` (`swiftc`-guarded) for triggers launchd can't express (distributed notifications).
 - **Full snapshot** (Tech Stack, Architecture, Conventions, Key Decisions, Setup, Health, open debt): [`docs/Sentinel/SNAPSHOT.md`](docs/Sentinel/SNAPSHOT.md).
 - **Architecture artifacts:** `docs/Sentinel/MODULE-MAP.md`, `C4-CONTEXT.md`, `C4-CONTAINER.md`, `ADRS.md`, `TECH-DEBT.md`, `DURANTE-NATIVE.md`.

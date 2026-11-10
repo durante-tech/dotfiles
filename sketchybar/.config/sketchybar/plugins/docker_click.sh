@@ -9,6 +9,28 @@ source "$CONFIG_DIR/colors.sh"
 
 DOCKER=$(command -v docker || echo "/usr/local/bin/docker")
 
+# GNU timeout is not on sketchybar's PATH: coreutils puts it in a gnubin dir
+# that only the interactive .zprofile adds, and Homebrew's bin has it only as
+# `gtimeout`. A bare `timeout` therefore failed as "command not found", which
+# `if ! timeout ... docker info` read as "Docker is off" — permanently.
+# Resolve it once; with none available, run unbounded rather than lie.
+TIMEOUT_BIN=""
+for candidate in timeout gtimeout /opt/homebrew/bin/gtimeout /usr/local/bin/gtimeout; do
+    if command -v "$candidate" >/dev/null 2>&1; then
+        TIMEOUT_BIN="$candidate"
+        break
+    fi
+done
+with_timeout() {
+    local limit="$1"
+    shift
+    if [ -n "$TIMEOUT_BIN" ]; then
+        "$TIMEOUT_BIN" "$limit" "$@"
+    else
+        "$@"
+    fi
+}
+
 open_dashboard() {
     open -a 'Docker Desktop' && sleep 0.3 && open docker-desktop://dashboard/containers
 }
@@ -21,13 +43,13 @@ fi
 # Start fresh: drop any prior rows, then toggle the popup.
 args=(--remove '/docker.row\.*/' --set docker popup.drawing=toggle)
 
-if ! timeout 2s "$DOCKER" info >/dev/null 2>&1; then
+if ! with_timeout 2s "$DOCKER" info >/dev/null 2>&1; then
     args+=(--add item docker.row.0 popup.docker
            --set docker.row.0 label="Docker not running" label.color="$GREY"
                  icon.drawing=off background.drawing=off
                  click_script="sketchybar --set docker popup.drawing=off")
 else
-    DATA=$(timeout 3s "$DOCKER" ps --format "{{.Names}}|{{.Status}}" 2>/dev/null)
+    DATA=$(with_timeout 3s "$DOCKER" ps --format "{{.Names}}|{{.Status}}" 2>/dev/null)
     if [ -z "$DATA" ]; then
         args+=(--add item docker.row.0 popup.docker
                --set docker.row.0 label="No running containers" label.color="$GREY"

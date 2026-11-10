@@ -279,8 +279,12 @@ configure_environment() {
         print_info "TPM already installed"
     else
         echo "Installing TPM (Tmux Plugin Manager)..."
-        git clone https://github.com/tmux-plugins/tpm "$HOME/.config/tmux/.tmux/plugins/tpm" 2>/dev/null || true
-        print_success "TPM installed - press prefix + I in tmux to install plugins"
+        if git clone https://github.com/tmux-plugins/tpm "$HOME/.config/tmux/.tmux/plugins/tpm"; then
+            print_success "TPM installed - press prefix + I in tmux to install plugins"
+        else
+            print_warning "TPM clone failed - tmux plugins are not installed"
+            failed=1
+        fi
     fi
 
     # Python venv for nvim's python3 provider (Molten/Jupyter — pynvim).
@@ -805,6 +809,18 @@ verify_config() {
         print_success "personal.env present"
     else
         print_info "No ~/.config/dotfiles/personal.env - run ./personalize.sh for machine-specific values"
+    fi
+
+    # Deployed scripts, aliases and LaunchAgents cannot derive the repo from
+    # their own location (they run through stow symlinks and launchd), so they
+    # fall back to ~/dotfiles unless personal.env says otherwise. A checkout
+    # anywhere else deploys cleanly and then fails at runtime, one script at a
+    # time, with nothing pointing back here.
+    if [[ "$DOTFILES_DIR" != "$HOME/dotfiles" ]] \
+        && ! grep -Eq '^[[:space:]]*(export[[:space:]]+)?DOTFILES_DIR=' "$HOME/.config/dotfiles/personal.env" 2>/dev/null; then
+        print_warning "Repository is at $DOTFILES_DIR but personal.env does not set DOTFILES_DIR - deployed scripts will look in ~/dotfiles"
+        echo "  Add to ~/.config/dotfiles/personal.env:  export DOTFILES_DIR=\"$DOTFILES_DIR\""
+        cfg_warn=$((cfg_warn + 1))
     fi
 
     # "All checks passed!" used to print even with warnings on screen, because

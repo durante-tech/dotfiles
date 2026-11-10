@@ -36,24 +36,29 @@ fi
 # including the D/T focus zones this table exists to declutter (docker parks a
 # grey "Off" box there whenever Docker isn't running). Add rows for them above
 # if that should change.
-declare -A VIS=(
+# A plain "item:workspaces" list, not `declare -A`: `env bash` resolves to
+# macOS /bin/bash 3.2 (the Brewfile installs no newer bash), where `declare -A`
+# is an error and the bracketed keys collapse to index 0 — the loop then ran
+# once, against an item named "0", and no real item was ever shown or hidden.
+VIS=(
     # ambient cluster — distractions during focus work
-    [weather]="1 2 N"              # ambient/thinking context only
-    [calendar]="1 2 B M N E"       # meeting-adjacent contexts
-    [macupdater]="1 2"             # never urgent
-    [clearvpn]="1 2"               # status only
+    "weather:1 2 N"              # ambient/thinking context only
+    "calendar:1 2 B M N E"       # meeting-adjacent contexts
+    "macupdater:1 2"             # never urgent
+    "clearvpn:1 2"               # status only
 
     # system_health cluster — relevant only on dev / transitional workspaces
-    [cpu]="1 2 A D T"
-    [memory]="1 2 A D T"
-    [network]="1 2 A D T"
+    "cpu:1 2 A D T"
+    "memory:1 2 A D T"
+    "network:1 2 A D T"
 
     # context-sensitive dev tools
-    [github]="1 2 A B D T E"       # dev + AI + browser (PR review) + email
+    "github:1 2 A B D T E"       # dev + AI + browser (PR review) + email
 )
 
-for item in "${!VIS[@]}"; do
-    if [[ " ${VIS[$item]} " == *" $WS "* ]]; then
+for row in "${VIS[@]}"; do
+    item="${row%%:*}"
+    if [[ " ${row#*:} " == *" $WS "* ]]; then
         sketchybar --set "$item" drawing=on
     else
         sketchybar --set "$item" drawing=off

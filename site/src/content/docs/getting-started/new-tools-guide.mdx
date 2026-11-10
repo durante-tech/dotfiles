@@ -20,7 +20,7 @@ Quick reference for the CLI tools added to your dotfiles setup.
 
 ```bash
 y                    # Open yazi in current directory
-ya                   # Open yazi, cd to last directory on exit
+ya                   # Open yazi, cd to last directory on exit (ya pkg|pack|pub|pub-to|emit|emit-to|sub pass through to yazi's own `ya` binary)
 ya ~/Projects        # Open yazi in specific directory
 ```
 
@@ -38,7 +38,8 @@ ya ~/Projects        # Open yazi in specific directory
 | `D` | Delete permanently |
 | `a` | Create file/directory |
 | `r` | Rename |
-| `/` | Search |
+| `s` / `S` | Search by name (fd) / content (rg) |
+| `f` | Filter |
 | `z` | Jump with zoxide |
 | `gg` | Go to top |
 | `G` | Go to bottom |
