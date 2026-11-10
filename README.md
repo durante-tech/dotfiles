@@ -3,7 +3,7 @@ name: dotfiles
 pack-id: dotfiles-v2.0.0
 version: 2.0.0
 author: repository maintainer
-description: macOS terminal-first, keyboard-driven development environment. 20 stowable packages, 84 brew formulae + 20 casks, mise polyglot version manager, on-demand time-banded wallpaper rotation, espanso text expansion. USE WHEN install dotfiles, set up new mac, clone dotfiles, install lucas dotfiles, configure new development machine, restore dotfiles, update dotfiles, repair dotfiles, fresh mac setup, dotfile installation, durante dotfiles, dotfiles new machine, terminal-first setup, install brewfile, mise migration, durante setup.
+description: macOS terminal-first, keyboard-driven development environment. 20 stowable packages, 84 brew formulae + 21 casks, mise polyglot version manager, on-demand time-banded wallpaper rotation, espanso text expansion. USE WHEN install dotfiles, set up new mac, clone dotfiles, install lucas dotfiles, configure new development machine, restore dotfiles, update dotfiles, repair dotfiles, fresh mac setup, dotfile installation, durante dotfiles, dotfiles new machine, terminal-first setup, install brewfile, mise migration, durante setup.
 type: dotfiles
 role: environment
 visibility: public
@@ -51,7 +51,7 @@ keywords: [dotfiles, install dotfiles, set up new mac, clone dotfiles, install l
 "Set up a fresh Mac with these dotfiles"   → Read INSTALL.md → choose Fresh install
 ```
 
-The full 12-step install runs `install.sh` which internally drives: Xcode CLT → Homebrew → 84 formulae → 20 casks → Bun + Fabric → stow 20 packages → `mise install` → `setup.sh --configure` (renders 5 LaunchAgent templates with `__USER__` substitution; Raycast script-commands are linked only when `~/Durante` or `DOTFILES_RAYCAST_DIR` exists, and skipped with a notice otherwise) → Espanso service register → TPM tmux plugins → Neovim Lazy sync → `./macos/.macos` (44 defaults entries) → verification.
+The full 12-step install runs `install.sh` which internally drives: Xcode CLT → Homebrew → 84 formulae → 21 casks → Bun + Fabric → stow 20 packages → `mise install` → `setup.sh --configure` (renders 5 LaunchAgent templates with `__USER__` substitution; Raycast script-commands are linked only when `~/Durante` or `DOTFILES_RAYCAST_DIR` exists, and skipped with a notice otherwise) → Espanso service register → TPM tmux plugins → Neovim Lazy sync → `./macos/.macos` (44 defaults entries) → verification.
 
 > **For human readers:** the rest of this README is the standard overview. AI agents can skip to `INSTALL.md`.
 
