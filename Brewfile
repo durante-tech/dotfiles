@@ -149,6 +149,11 @@ brew "tmux"
 brew "tree"
 # Incremental parsing library
 brew "tree-sitter"
+# The `tree-sitter` command itself. Homebrew ships it separately from the
+# library above, and nvim-treesitter shells out to it to compile every parser:
+# without it a fresh machine logs "ENOENT: no such file or directory (cmd):
+# 'tree-sitter'" for each language and ends up with no parsers at all.
+brew "tree-sitter-cli"
 # Pager/text based browser
 brew "w3m"
 # Internet file retriever
