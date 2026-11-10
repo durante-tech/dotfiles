@@ -173,6 +173,11 @@ brew "felixkratz/formulae/borders"
 # Custom macOS statusbar with shell plugin, interaction and graph support
 brew "felixkratz/formulae/sketchybar"
 # Quantum Mechanical Keyboard (QMK) Firmware
+# The qmk 1.1.8 bottle ships a venv linked to python@3.13, which the formula
+# does not declare (it depends on `python`, now 3.15). Without this the pour
+# fails: "bad interpreter .../libexec/bin/python". A source build is no way
+# out either: rpds-py does not build on 3.15.
+brew "python@3.13"
 brew "qmk/qmk/qmk"
 # Supabase CLI
 brew "supabase/tap/supabase"
