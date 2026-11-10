@@ -1,4 +1,5 @@
 """Guards that only matter when something is missing or stale; disposable roots."""
+import shutil
 import sys
 import time
 from support import Fixture, REPO, shell_function
@@ -59,3 +60,22 @@ class BoundedTimeout(Fixture):
         self.assertIn('status=124',result.stdout);self.assertLess(elapsed,5)
         self.assertIn('status=0',self.run_limited('true')[0].stdout)
         self.assertIn('status=1',self.run_limited('false')[0].stdout)
+
+    def test_timeout_binary_is_asked_to_escalate(self):
+        # A stand-in records how it was called and reports a forced kill.
+        self.stub('timeout','import sys\nprint(" ".join(sys.argv[1:4]))\nsys.exit(137)\n')
+        script=f'source "{self.HELPER}"; with_timeout 2s sleep 9; echo "status=$?"'
+        result=self.run_command(['/bin/bash','-c',script])
+        self.assertIn('-k 1 2',result.stdout)
+        self.assertIn('status=124',result.stdout)
+
+    def test_real_timeout_binary_bounds_a_command_that_ignores_term(self):
+        binary=shutil.which('timeout') or shutil.which('gtimeout')
+        if not binary:self.skipTest('GNU timeout is not installed')
+        stubborn=self.root/'stubborn.py'
+        stubborn.write_text('import signal,time\nsignal.signal(signal.SIGTERM,signal.SIG_IGN)\ntime.sleep(15)\n')
+        script=f'source "{self.HELPER}"; TIMEOUT_BIN="{binary}"; with_timeout 1s "{sys.executable}" "{stubborn}"; echo "status=$?"'
+        started=time.monotonic()
+        result=self.run_command(['/bin/bash','-c',script])
+        self.assertIn('status=124',result.stdout)
+        self.assertLess(time.monotonic()-started,6)

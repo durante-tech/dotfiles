@@ -20,12 +20,18 @@ done
 with_timeout() {
     local limit="${1%s}"
     shift
+    local status
     if [ -n "$TIMEOUT_BIN" ]; then
-        "$TIMEOUT_BIN" "$limit" "$@"
-        return
+        # -k 1: KILL one second after the TERM. Without it GNU timeout waits
+        # forever on a command that ignores TERM, the very hang this bounds.
+        "$TIMEOUT_BIN" -k 1 "$limit" "$@"
+        status=$?
+        # timeout exits 137 when it had to KILL; one code for "timed out".
+        [ "$status" -eq 137 ] && status=124
+        return "$status"
     fi
     "$@" &
-    local pid=$! status
+    local pid=$!
     # TERM first; a command that ignores it gets KILL one second later, so the
     # `wait` below is bounded by limit + 1 whatever the command does.
     ( sleep "$limit"; kill "$pid" 2>/dev/null; sleep 1; kill -9 "$pid" 2>/dev/null ) >/dev/null 2>&1 &
