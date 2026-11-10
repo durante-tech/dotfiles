@@ -1,7 +1,8 @@
 #!/bin/bash
 
 mic=(
-  update_freq=10
+  # Mute state only; nothing emits an event for input volume.
+  update_freq=60
   updates=on
   script="$PLUGIN_DIR/mic.sh"
   click_script="$PLUGIN_DIR/mic_click.sh"

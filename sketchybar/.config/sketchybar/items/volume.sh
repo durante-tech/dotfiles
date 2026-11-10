@@ -19,7 +19,8 @@ volume=(
   script="$PLUGIN_DIR/volume.sh"
   click_script="$PLUGIN_DIR/volume_click.sh"
   updates=on
-  update_freq=60
+  # Event-driven only: volume_change and system_woke cover every change.
+  update_freq=0
   padding_left=5
   padding_right=5
   icon.padding_left=8

@@ -59,6 +59,6 @@ done
 # One invisible item decides which workspaces are drawn (occupied + focused) and
 # which is highlighted. See plugins/spaces.sh for why it also polls.
 sketchybar --add item spaces_sync left \
-           --set spaces_sync drawing=off updates=on update_freq=10 \
+           --set spaces_sync drawing=off updates=on update_freq=120 \
                  script="$CONFIG_DIR/plugins/spaces.sh" \
            --subscribe spaces_sync aerospace_workspace_change front_app_switched

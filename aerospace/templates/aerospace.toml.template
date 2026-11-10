@@ -304,8 +304,11 @@ alt-t = 'workspace @DOTFILES_WS_TERMINAL@' # for terminal shell
 # alt-v = 'workspace V'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
-alt-shift-1 = 'move-node-to-workspace 1'
-alt-shift-2 = 'move-node-to-workspace 2'
+# Each move also fires the sketchybar event: the bar lists only occupied
+# workspaces, and AeroSpace emits nothing when a window moves without focus
+# following it.
+alt-shift-1 = ['move-node-to-workspace 1', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+alt-shift-2 = ['move-node-to-workspace 2', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
 # alt-shift-3 = 'move-node-to-workspace 3'
 # alt-shift-4 = 'move-node-to-workspace 4'
 # alt-shift-5 = 'move-node-to-workspace 5'
@@ -313,24 +316,24 @@ alt-shift-2 = 'move-node-to-workspace 2'
 # alt-shift-7 = 'move-node-to-workspace 7'
 # alt-shift-8 = 'move-node-to-workspace 8'
 # alt-shift-9 = 'move-node-to-workspace 9'
-alt-shift-a = 'move-node-to-workspace A'
-alt-shift-b = 'move-node-to-workspace @DOTFILES_WS_BROWSER@'
+alt-shift-a = ['move-node-to-workspace A', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+alt-shift-b = ['move-node-to-workspace @DOTFILES_WS_BROWSER@', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
 # Unbound by design (pt-BR acute dead key) — move windows to E via
 # on-window-detected rules or `aerospace move-node-to-workspace E`.
 # alt-shift-e = 'move-node-to-workspace E'
-alt-shift-d = 'move-node-to-workspace @DOTFILES_WS_EDITOR@'
-alt-shift-m = 'move-node-to-workspace M'
+alt-shift-d = ['move-node-to-workspace @DOTFILES_WS_EDITOR@', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+alt-shift-m = ['move-node-to-workspace M', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
 # Unbound by design (pt-BR tilde dead key) — move windows to N via
 # on-window-detected rules or `aerospace move-node-to-workspace @DOTFILES_WS_NOTES@`.
 # alt-shift-n = 'move-node-to-workspace @DOTFILES_WS_NOTES@'
 # alt-shift-p = 'move-node-to-workspace P'
-alt-shift-t = 'move-node-to-workspace @DOTFILES_WS_TERMINAL@'
+alt-shift-t = ['move-node-to-workspace @DOTFILES_WS_TERMINAL@', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
 # E and N never had move bindings at all — alt-shift-e / alt-shift-n are the same
 # pt-BR dead keys that blocked their switch bindings, so you could reach those
 # workspaces but never send a window to one. These complete the symmetry on the
 # same substitute keys used for switching (alt-w -> E, alt-o -> N).
-alt-shift-w = 'move-node-to-workspace E'
-alt-shift-o = 'move-node-to-workspace @DOTFILES_WS_NOTES@'
+alt-shift-w = ['move-node-to-workspace E', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+alt-shift-o = ['move-node-to-workspace @DOTFILES_WS_NOTES@', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
 # alt-shift-v = 'move-node-to-workspace V'
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
 alt-tab = 'workspace-back-and-forth'

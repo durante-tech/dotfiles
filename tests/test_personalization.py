@@ -113,7 +113,9 @@ CUSTOM='quotes " and ; $(not-an-execution)'
         text=data.files[self.repo/'aerospace/.config/aerospace/aerospace.toml'].decode()
         document=parse_toml(text)
         self.assertEqual(document['mode']['main']['binding']['alt-b'],'workspace 2')
-        self.assertEqual(document['mode']['main']['binding']['alt-shift-b'],'move-node-to-workspace 2')
+        # A move also tells sketchybar, which lists only occupied workspaces.
+        self.assertEqual(document['mode']['main']['binding']['alt-shift-b'],
+                         ['move-node-to-workspace 2','exec-and-forget sketchybar --trigger aerospace_workspace_change'])
         rule=next(r for r in document['on-window-detected'] if r.get('if',{}).get('app-id')=='org.example.Browser')
         self.assertEqual(rule['run'],['move-node-to-workspace 2'])
         finder=document['on-window-detected'][0]

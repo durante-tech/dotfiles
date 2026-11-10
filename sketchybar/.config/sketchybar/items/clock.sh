@@ -2,7 +2,8 @@
 
 clock=(
     background.color="$PURE_BLACK"
-    update_freq=10
+    # The label shows minutes.
+    update_freq=30
     icon=
     script="$PLUGIN_DIR/clock.sh"
     click_script="open -a Calendar"

@@ -73,6 +73,32 @@ class DesktopTests(Fixture):
             out=self.run_command(['bash',str(memory)],self.env).stdout
             self.assertEqual(self.bar_sets(out)['fixture']['drawing'],expected,free)
 
+    def test_network_rate_uses_real_elapsed_time(self):
+        (self.root/'colors.sh').write_text('BLUE=blue\nGREY=grey\n')
+        self.stub('route','print("   interface: en9")')
+        # Asserting on -n and -I: plain `netstat -ib` resolves every address
+        # and took seconds per run.
+        self.stub('netstat','import sys\nassert sys.argv[1:]==["-ibn","-I","en9"], sys.argv\nprint("Name Mtu Network Address Ipkts Ierrs Ibytes Opkts Oerrs Obytes Coll")\nprint("en9 1500 <Link#1> aa:bb 10 0 62914560 10 0 1024 0")')
+        self.stub('date','print(1000)')
+        cache=self.root/'sketchybar_network_cache'
+        script=REPO/'sketchybar/.config/sketchybar/plugins/network.sh'
+        env=dict(self.env,TMPDIR=str(self.root))
+        def run(previous):
+            if previous is None: cache.unlink(missing_ok=True)
+            else: cache.write_text(previous)
+            return self.bar_sets(self.run_command(['bash',str(script)],env).stdout)['fixture']
+        # 60 MiB in 20 s is 3 MiB/s, whatever the item's update_freq is.
+        loud=run('en9 0 0 980\n')
+        self.assertEqual((loud['drawing'],loud['label']),('on','↓3M ↑51B'))
+        # The same bytes over 100 s is under the 1 MiB/s threshold.
+        self.assertEqual(run('en9 0 0 900\n')['drawing'],'off')
+        # No sample, an old cache without a timestamp, or another interface.
+        for previous in [None,'en9 0 0\n','en0 0 0 980\n','en9 0 0 1000\n']:
+            with self.subTest(previous=previous):
+                quiet=run(previous)
+                self.assertEqual((quiet['drawing'],quiet['label']),('off','...'))
+        self.assertEqual(cache.read_text().split(),['en9','62914560','1024','1000'])
+
     def test_spotify_one_query_and_stopped(self):
         self.stub('pgrep','import sys\nsys.exit(0)')
         count=self.root/'apple-events'

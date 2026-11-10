@@ -45,6 +45,27 @@ Each of those items sets its own `drawing` from its plugin and keeps
 comes back. An item must have exactly one writer of `drawing`, so quiet items
 are not listed in the workspace visibility table.
 
+## Cost
+
+A status bar must not spend the machine to describe it. Every poll is a shell
+plus its commands, so the rule is: **events first, slow ticks second, nothing
+faster than once a minute** unless the label itself needs it (the clock).
+
+| Item | Refresh |
+|------|---------|
+| Workspaces | AeroSpace workspace change, app switch, the move bindings; 120 s safety net |
+| Volume, brightness, front app, AeroSpace mode | Events only |
+| Spotify | `com.spotify.client.PlaybackStateChanged`; 120 s safety net |
+| CPU, memory, network, mic, VPN | 60 s |
+| Docker, battery | 120 s |
+| MacUpdater, GitHub, weather | 300 s, 600 s, 1800 s |
+| Clock | 30 s |
+
+Measured on this rig (user + system time per run × runs per day): about 2,750
+CPU-seconds a day before, about 420 after. To re-measure, time each plugin with
+`/usr/bin/time -l env NAME=<item> bash plugins/<item>.sh` and multiply by
+`86400 / update_freq`.
+
 ## AeroSpace Integration
 
 Receives workspace change events:
