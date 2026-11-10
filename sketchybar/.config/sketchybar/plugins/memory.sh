@@ -16,10 +16,12 @@ MEM_PERCENT=$(printf '%s\n' "$SNAPSHOT" | awk -v page="$PAGE_SIZE" -v total="$TO
     printf "%d", (total-free*page)*100/total
   }')
 if [[ -z "$MEM_PERCENT" ]]; then
-    sketchybar --set "$NAME" icon="󰍛" label="?" icon.color="$GREY"
+    sketchybar --set "$NAME" icon="󰍛" label="?" icon.color="$GREY" drawing=on
     exit 0
 fi
 if (( MEM_PERCENT > 80 )); then COLOR="$RED"
 elif (( MEM_PERCENT > 60 )); then COLOR="$YELLOW"
 else COLOR="$GREEN"; fi
-sketchybar --set "$NAME" icon="󰍛" label="${MEM_PERCENT}%" icon.color="$COLOR"
+# Quiet by default: the item is drawn only while it has something to say.
+if (( MEM_PERCENT > 80 )); then DRAWING=on; else DRAWING=off; fi
+sketchybar --set "$NAME" icon="󰍛" label="${MEM_PERCENT}%" icon.color="$COLOR" drawing="$DRAWING"

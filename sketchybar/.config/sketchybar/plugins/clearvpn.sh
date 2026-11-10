@@ -4,7 +4,7 @@ source "$CONFIG_DIR/colors.sh"
 
 # Check if ClearVPN is running
 if ! pgrep -f "ClearVPN" > /dev/null 2>&1; then
-    sketchybar --set "$NAME" icon="󰦝" label="Off" icon.color="$GREY"
+    sketchybar --set "$NAME" icon="󰦝" label="Off" icon.color="$GREY" drawing=off
     exit 0
 fi
 
@@ -14,8 +14,8 @@ DEFAULT_IFACE=$(route -n get default 2>/dev/null | grep "interface:" | awk '{pri
 
 if [[ "$DEFAULT_IFACE" == utun* ]]; then
     # VPN is connected - traffic routed through tunnel
-    sketchybar --set "$NAME" icon="󰌆" label="VPN" icon.color="$GREEN"
+    sketchybar --set "$NAME" icon="󰌆" label="VPN" icon.color="$GREEN" drawing=on
 else
     # ClearVPN running but not connected
-    sketchybar --set "$NAME" icon="󰦝" label="Off" icon.color="$YELLOW"
+    sketchybar --set "$NAME" icon="󰦝" label="Off" icon.color="$YELLOW" drawing=off
 fi

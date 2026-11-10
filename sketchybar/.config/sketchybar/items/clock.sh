@@ -5,6 +5,7 @@ clock=(
     update_freq=10
     icon=
     script="$PLUGIN_DIR/clock.sh"
+    click_script="open -a Calendar"
 )
 
 sketchybar --add item clock right \

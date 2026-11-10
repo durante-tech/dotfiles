@@ -11,10 +11,10 @@ with_timeout 2s $DOCKER info >/dev/null 2>&1
 info_status=$?
 if timed_out "$info_status"; then
     # Not answering is not the same as stopped: say so and do not claim "Off".
-    sketchybar --set "$NAME" icon="󰡨" label="Busy" icon.color="$GREY"
+    sketchybar --set "$NAME" icon="󰡨" label="Busy" icon.color="$GREY" drawing=on
     exit 0
 elif [ "$info_status" -ne 0 ]; then
-    sketchybar --set "$NAME" icon="󰡨" label="Off" icon.color="$GREY"
+    sketchybar --set "$NAME" icon="󰡨" label="Off" icon.color="$GREY" drawing=off
     exit 0
 fi
 
@@ -23,14 +23,14 @@ fi
 CONTAINER_DATA=$(with_timeout 3s $DOCKER ps --format "{{.ID}}|{{.Status}}" 2>/dev/null)
 
 if [ -z "$CONTAINER_DATA" ]; then
-    sketchybar --set "$NAME" icon="󰡨" label="0" icon.color="$GREY"
+    sketchybar --set "$NAME" icon="󰡨" label="0" icon.color="$GREY" drawing=off
     exit 0
 fi
 
 RUNNING=$(echo "$CONTAINER_DATA" | wc -l | xargs)
 
 if [ "$RUNNING" -eq 0 ]; then
-    sketchybar --set "$NAME" icon="󰡨" label="0" icon.color="$GREY"
+    sketchybar --set "$NAME" icon="󰡨" label="0" icon.color="$GREY" drawing=off
     exit 0
 fi
 
@@ -58,4 +58,4 @@ if [ -n "$MEM_TOTAL" ] && [ "$MEM_TOTAL" -gt 5 ]; then
     LABEL="${LABEL} ${MEM_TOTAL}%"
 fi
 
-sketchybar --set "$NAME" icon="󰡨" label="$LABEL" icon.color="$ICON_COLOR"
+sketchybar --set "$NAME" icon="󰡨" label="$LABEL" icon.color="$ICON_COLOR" drawing=on

@@ -62,9 +62,11 @@ if [ "$PREV_IF" = "$INTERFACE" ]; then
         OUT_LABEL="${DIFF_OUT}B"
     fi
 
-    sketchybar --set "$NAME" icon="󰛳" label="↓${IN_LABEL} ↑${OUT_LABEL}" icon.color="$BLUE"
+    # Quiet by default: the item is drawn only while it has something to say.
+    if [ "$DIFF_IN" -gt 1048576 ] || [ "$DIFF_OUT" -gt 1048576 ]; then DRAWING=on; else DRAWING=off; fi
+    sketchybar --set "$NAME" icon="󰛳" label="↓${IN_LABEL} ↑${OUT_LABEL}" icon.color="$BLUE" drawing="$DRAWING"
 else
-    sketchybar --set "$NAME" icon="󰛳" label="..." icon.color="$GREY"
+    sketchybar --set "$NAME" icon="󰛳" label="..." icon.color="$GREY" drawing=off
 fi
 
 # Save current values (single line, space-separated - faster read). Interface

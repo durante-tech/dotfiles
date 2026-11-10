@@ -14,31 +14,46 @@ Custom macOS status bar with system monitoring and AeroSpace integration.
 
 ## Layout
 
+The bar is **quiet by default**: four things are always there, everything else
+appears only while it has something to say. The macOS menu bar is set to
+auto-hide, so this is the only bar on screen.
+
 ```
-[Workspaces] [App] [Docker]          [CPU] [RAM] [Battery] [Network] [Weather] [Volume] [Spotify] [Time]
-└─ Left ─────────────────┘           └─────────────────── Right ──────────────────────────────────────┘
+[occupied workspaces] [App] [docker?] [vpn?] [updates?]      [spotify?] [muted?] [github?] [net?] [mem?] [cpu?] [weather?] [☀] [Tue 10 · 14:33] [Battery]
+└─ Left ───────────────────────────────────────────────┘      └─────────────────────────────────────── Right ─────────────────────────────────────────┘
 ```
 
 ## Sections
 
-### Left Side
+### Always shown
 | Item | Description |
 |------|-------------|
-| Workspaces | AeroSpace workspace indicators |
+| Workspaces | Only workspaces that hold a window, plus the focused one (`plugins/spaces.sh`). Falls back to all of them if AeroSpace cannot be asked |
 | Active App | Currently focused application |
-| Docker | Container status |
-
-### Right Side
-| Item | Description |
-|------|-------------|
-| CPU | Current usage percentage |
-| Memory | RAM usage |
+| Clock | Weekday, day and time; click opens Calendar |
 | Battery | Charge level and status |
-| Network | Online/offline indicator |
-| Weather | Current conditions |
-| Volume | System volume |
-| Spotify | Now playing |
-| Time | Current time |
+| Brightness mode | Glyph only while Auto is healthy; the full label returns for Manual, HDR, pending and failed states |
+
+### Shown only when relevant
+| Item | Appears when |
+|------|--------------|
+| Docker | The daemon is up and at least one container runs |
+| ClearVPN | The VPN is connected |
+| MacUpdater | Updates are pending |
+| GitHub | Unread notifications > 0 |
+| CPU | Usage above 50% |
+| Memory | Usage above 80% |
+| Network | More than 1 MiB/s in either direction |
+| Microphone | Input is muted or the device is unreadable (macOS shows its own indicator while the mic is live) |
+| Volume | Output is muted (macOS draws its own OSD on change) |
+| Spotify | Something is playing |
+| AeroSpace mode | A non-main binding mode is active |
+| Weather | On workspaces 1, 2 and N (`plugins/workspace_visibility.sh`) |
+
+Each of those items sets its own `drawing` from its plugin and keeps
+`updates=on`; without that a hidden item stops running its script and never
+comes back. An item must have exactly one writer of `drawing`, so quiet items
+are not listed in the workspace visibility table.
 
 ## AeroSpace Integration
 

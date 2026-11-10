@@ -7,7 +7,7 @@ ICON=""
 
 # Bare-icon path: gh not installed or not authenticated → grey icon, no label.
 if ! command -v gh &> /dev/null; then
-    sketchybar --set "$NAME" icon="$ICON" label="" icon.color="$GREY" label.drawing=off
+    sketchybar --set "$NAME" icon="$ICON" label="" icon.color="$GREY" label.drawing=off drawing=off
     exit 0
 fi
 
@@ -22,11 +22,11 @@ COUNT=${COUNT:-0}
 
 if [ "$COUNT" -ge 100 ]; then
     # A full page means "at least 100"; don't render a saturated count as exact.
-    sketchybar --set "$NAME" icon="$ICON" label="100+" icon.color="$ORANGE" label.drawing=on
+    sketchybar --set "$NAME" icon="$ICON" label="100+" icon.color="$ORANGE" label.drawing=on drawing=on
 elif [ "$COUNT" -gt 0 ]; then
-    sketchybar --set "$NAME" icon="$ICON" label="$COUNT" icon.color="$ORANGE" label.drawing=on
+    sketchybar --set "$NAME" icon="$ICON" label="$COUNT" icon.color="$ORANGE" label.drawing=on drawing=on
 else
     # Zero unread — show the icon only, no label (keeps the item compact
     # instead of rendering as a wide PURE_BLACK rectangle).
-    sketchybar --set "$NAME" icon="$ICON" label="" icon.color="$GREY" label.drawing=off
+    sketchybar --set "$NAME" icon="$ICON" label="" icon.color="$GREY" label.drawing=off drawing=off
 fi

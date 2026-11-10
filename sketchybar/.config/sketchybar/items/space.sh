@@ -49,11 +49,16 @@ for i in "${!SPACE_ICONS[@]}"; do
     background.height=20
     icon.font="$FONT:Regular:14.0"
     drawing=on
-    script="$CONFIG_DIR/plugins/aerospace.sh $id"
     click_script="aerospace workspace $id"
   )
 
   sketchybar --add item space.$id left \
-             --set space.$id "${space_item[@]}" \
-             --subscribe space.$id aerospace_workspace_change
+             --set space.$id "${space_item[@]}"
 done
+
+# One invisible item decides which workspaces are drawn (occupied + focused) and
+# which is highlighted. See plugins/spaces.sh for why it also polls.
+sketchybar --add item spaces_sync left \
+           --set spaces_sync drawing=off updates=on update_freq=10 \
+                 script="$CONFIG_DIR/plugins/spaces.sh" \
+           --subscribe spaces_sync aerospace_workspace_change front_app_switched

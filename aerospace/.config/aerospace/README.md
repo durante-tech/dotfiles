@@ -155,7 +155,7 @@ Sketchybar displays workspace indicators at the top of your screen.
 
 **Files:**
 - `~/.config/sketchybar/sketchybarrc` - Main config
-- `~/.config/sketchybar/plugins/aerospace.sh` - Workspace highlight script
+- `~/.config/sketchybar/plugins/spaces.sh` - Draws occupied + focused workspaces and the highlight
 - `~/.config/sketchybar/items/space.sh` - Workspace item definitions
 
 ### JankyBorders (Window Borders)

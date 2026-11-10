@@ -63,7 +63,6 @@ source "$ITEM_DIR/front_app.sh"
 source "$ITEM_DIR/docker.sh"
 source "$ITEM_DIR/macupdater.sh"
 source "$ITEM_DIR/clearvpn.sh"
-source "$ITEM_DIR/calendar.sh"
 
 ##### Right Items #####
 # Source order = right→left visually (first sourced sits rightmost).

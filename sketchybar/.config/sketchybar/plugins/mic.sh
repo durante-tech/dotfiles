@@ -6,6 +6,9 @@
 
 source "$CONFIG_DIR/colors.sh"
 
+# Quiet by default: macOS shows its own indicator while the mic is live, so the
+# bar only speaks up when the input is muted (red) or unreadable (yellow).
+
 # Attempt to get the current input device name
 MIC_NAME=$(SwitchAudioSource -t input -c)
 # I just want the first word, in case it's too long
@@ -22,13 +25,13 @@ MIC_VOLUME=$(osascript -e 'input volume of (get volume settings)')
 # Check if MIC_NAME is not meaningful
 # Remove MIC_NAME from label
 if [[ "$MIC_NAME" != "$VALIDATED_MIC_NAME" || -z "$MIC_NAME" ]]; then
-  sketchybar -m --set mic label="" icon= icon.color=$YELLOW label.color=$YELLOW
+  sketchybar -m --set mic label="" icon= icon.color=$YELLOW label.color=$YELLOW drawing=on
 else
   if [[ $MIC_VOLUME -eq 0 ]]; then
-    sketchybar -m --set mic label="" icon= icon.color=$RED label.color=$RED
+    sketchybar -m --set mic label="" icon= icon.color=$RED label.color=$RED drawing=on
   elif [[ $MIC_VOLUME -gt 0 && $MIC_VOLUME -lt 100 ]]; then
-    sketchybar -m --set mic label="" icon= icon.color=$ORANGE label.color=$ORANGE
+    sketchybar -m --set mic label="" icon= icon.color=$ORANGE label.color=$ORANGE drawing=off
   elif [[ $MIC_VOLUME -eq 100 ]]; then
-    sketchybar -m --set mic label="" icon= icon.color=$WHITE label.color=$WHITE
+    sketchybar -m --set mic label="" icon= icon.color=$WHITE label.color=$WHITE drawing=off
   fi
 fi

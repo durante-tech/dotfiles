@@ -118,6 +118,11 @@ defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
 # Disable the warning when changing file extensions
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 
+# Keep the desktop clear: no file icons (files stay in ~/Desktop) and no
+# desktop widgets. Sketchybar and the wallpaper are the whole desktop.
+defaults write com.apple.finder CreateDesktop -bool false
+defaults write com.apple.WindowManager StandardHideWidgets -bool true
+
 # Show the full POSIX path in Finder title
 defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
 

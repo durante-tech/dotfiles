@@ -1031,12 +1031,25 @@ sketchybar has exactly three positions: `left`, `center`, `right`. There is no
 "left-middle" — an item added there is rejected and never appears, with the
 failure buried in `/opt/homebrew/var/log/sketchybar/sketchybar.err.log`.
 
-**Left** (left→right): workspace indicators (AeroSpace, derived live by `items/space.sh`), aerospace mode, front app, Docker, MacUpdater, ClearVPN, calendar
+The bar is **quiet by default** and is the only bar on screen (the macOS menu
+bar auto-hides). Always shown: occupied + focused workspaces, front app, clock
+(with the date; click opens Calendar), battery, and the brightness-mode glyph.
+Everything else draws itself only while it has something to say — docker
+running, VPN connected, updates pending, GitHub count > 0, CPU > 50%, memory >
+80%, network > 1 MiB/s, mic or volume muted, Spotify playing. See
+`docs/sketchybar/README.md` for the full table.
+
+**Left** (left→right): workspaces (`plugins/spaces.sh`: one invisible `spaces_sync` item draws only occupied + focused), aerospace mode, front app, Docker, MacUpdater, ClearVPN
 **Center**: `workspace_visibility` — an invisible dispatcher (`drawing=off`), not a status item
 **Right**: battery, clock, bd_mode, weather, CPU, memory, network, GitHub notifications, microphone, volume, Spotify — source order in `sketchybarrc` is right→left visually, so battery sits rightmost
 
+A quiet item needs `updates=on` (a hidden item otherwise stops running its
+script and never returns) and exactly one writer of its `drawing`: its own
+plugin, never the workspace table.
+
 Hot-reloads on config change. Receives `aerospace_workspace_change` events;
-`plugins/workspace_visibility.sh` holds the per-workspace show/hide table.
+`plugins/workspace_visibility.sh` holds the per-workspace show/hide table, now only for
+items whose content is always present (weather).
 
 ---
 
