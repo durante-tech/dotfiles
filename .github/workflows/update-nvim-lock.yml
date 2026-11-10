@@ -1,0 +1,89 @@
+---
+name: Update Neovim plugin lock
+
+# Renovate has no manager for lazy.nvim, so this job is what keeps
+# nvim/.config/nvim/lazy-lock.json current: it runs `Lazy update` against the
+# config in this checkout and opens a pull request when the lock moved.
+#
+# The lock is the only file it may change. A plugin update that needs a config
+# change shows up as a red check on that PR (the formatting fixtures load
+# conform at the locked revision), not as a silent edit here.
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'   # Mondays 09:00 UTC
+  workflow_dispatch:
+  # A change to this file is rehearsed on its own pull request: the update
+  # runs for real, the PR step is skipped.
+  pull_request:
+    paths:
+      - .github/workflows/update-nvim-lock.yml
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    name: Lazy update
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write        # push the update branch
+      pull-requests: write   # open the pull request
+      actions: write         # start Dotfiles CI on that branch (see below)
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          # renovate: datasource=github-releases depName=neovim/neovim
+          version: v0.11.5
+
+      - name: Run Lazy update against this checkout
+        env:
+          XDG_CONFIG_HOME: ${{ github.workspace }}/nvim/.config
+          XDG_DATA_HOME: ${{ runner.temp }}/nvim-data
+          XDG_STATE_HOME: ${{ runner.temp }}/nvim-state
+          XDG_CACHE_HOME: ${{ runner.temp }}/nvim-cache
+        run: |
+          # Plugin build steps (native modules, parsers) may fail on a bare
+          # runner; the lock is written from the fetched revisions regardless,
+          # so the exit status is reported and not trusted.
+          nvim --headless "+Lazy! update" +qa || echo "::warning::nvim exited $? during Lazy update"
+          python3 -c 'import json; d=json.load(open("nvim/.config/nvim/lazy-lock.json")); assert d, "empty lock"; print(len(d), "plugins locked")'
+
+      - name: Refuse any change outside the lock
+        run: |
+          changed="$(git status --porcelain)"
+          echo "$changed"
+          if echo "$changed" | grep -v ' nvim/.config/nvim/lazy-lock.json$' | grep -q .; then
+            echo "::error::Lazy update changed files other than lazy-lock.json"
+            exit 1
+          fi
+
+      - name: Open or refresh the pull request
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: chore/nvim-lock-update
+        run: |
+          if git diff --quiet -- nvim/.config/nvim/lazy-lock.json; then
+            echo "Lock already current."
+            exit 0
+          fi
+          count="$(git diff --unified=0 -- nvim/.config/nvim/lazy-lock.json | grep -c '^+  "' || true)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -C "$BRANCH"
+          git add nvim/.config/nvim/lazy-lock.json
+          git commit -m "chore(nvim): update lazy-lock.json ($count plugins)"
+          git push --force-with-lease origin "$BRANCH"
+          if ! gh pr view "$BRANCH" --json number >/dev/null 2>&1; then
+            gh pr create --base "${{ github.event.repository.default_branch }}" --head "$BRANCH" \
+              --title "chore(nvim): update plugin lock" \
+              --body "Weekly \`Lazy update\` run. Only \`lazy-lock.json\` changed. Merge when checks are green; restore plugins locally with \`:Lazy restore\`."
+          fi
+          # A push made with the workflow token does not start other workflows,
+          # so the checks are started explicitly; workflow_dispatch is the one
+          # event that token is allowed to raise.
+          gh workflow run lint.yml --ref "$BRANCH"

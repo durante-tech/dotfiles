@@ -48,6 +48,12 @@ network, service, or agent effects. Fetch separately with `smart-pull.sh`, whose
 normal launcher behavior is retained. `smart-pull.sh --print-prompt` is read-only.
 See `docs/maintenance.md` for exact contracts and reload commands.
 
+Version pins are raised by pull request, never floated: Renovate
+(`renovate.json`) covers GitHub Actions, the site, mise and the tool versions in
+CI; `.github/workflows/update-nvim-lock.yml` refreshes `lazy-lock.json` weekly.
+A pinned version in a workflow file needs a `# renovate:` comment on the line
+above it. See "Staying current" in `docs/maintenance.md`.
+
 ### Supported personalization
 
 `./personalize.sh` is preview-first. `show` explains values and sources; `set KEY

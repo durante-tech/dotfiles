@@ -91,4 +91,30 @@ operations; no wall-clock performance improvement is claimed.
 Manual display choices persist until Auto is explicitly selected. See
 [display controls](/display/) and [luminance calibration](/display/luminance/).
 
+## Staying current
+
+Versions are pinned and a bot raises the pins; nothing installs "whatever is
+newest today". Every bump is a pull request that CI has to pass, so an update
+that breaks something has a commit to point at.
+
+| What | How it stays current |
+|------|----------------------|
+| Homebrew formulae and casks | Unpinned in the `Brewfile`: latest at install, `brew upgrade` afterwards |
+| tmux plugins | Unpinned: `prefix + U` (TPM) |
+| Neovim plugins | `lazy-lock.json`, refreshed every Monday by the `Update Neovim plugin lock` workflow, which opens a pull request |
+| GitHub Actions, the docs site, mise (Node, Python), tool versions in CI | Renovate, configured in `renovate.json` |
+
+Two pins are deliberate and stay put: LinearMouse (`v0.11.2`, see
+`scripts/scripts/install-linearmouse.sh`) and the Python 3.12 line (patch
+releases only). A new Node major waits for approval on Renovate's dependency
+dashboard issue.
+
+A version in a workflow file is picked up by Renovate when the line above it
+carries a `# renovate: datasource=… depName=…` comment. Add that comment when
+pinning something new there.
+
+Renovate needs its GitHub App installed on the repository; `renovate.json` does
+nothing without it. The lock workflow needs **Settings → Actions → General →
+Allow GitHub Actions to create and approve pull requests**.
+
 {/* reference:end */}
