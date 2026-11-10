@@ -276,8 +276,7 @@ fi
 if ! "$SKIP_BREW" || ! "$SKIP_CASKS"; then
     print_header "3. Brewfile Reconciliation"
     if cmd_exists brew && [[ -r "$DOTFILES_DIR/Brewfile" ]]; then
-        dotfiles_bundle_args
-        brew "${BUNDLE_ARGS[@]}" || record_failure "Brewfile provisioning failed"
+        dotfiles_bundle_install || record_failure "Brewfile provisioning failed"
     else
         record_failure "Homebrew or Brewfile is unavailable"
     fi

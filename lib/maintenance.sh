@@ -8,7 +8,9 @@ dotfiles_preview() {
         echo "Provision requested toolchains, global CLIs and the Neovim provider environment."
         if ! "$SKIP_BREW" || ! "$SKIP_CASKS"; then
             dotfiles_bundle_args
-            printf 'brew'; printf ' %q' "${BUNDLE_ARGS[@]}"; printf '\n'
+            printf 'brew'; printf ' %q' "${BUNDLE_ARGS[@]}"
+            if (( ${#BUNDLE_SKIP_TYPES[@]} )); then printf '  # Brewfile on stdin, without: %s' "${BUNDLE_SKIP_TYPES[*]}"; fi
+            printf '\n'
         fi
         if ! "$SKIP_CASKS"; then echo "Install the pinned LinearMouse release if needed."; fi
     fi

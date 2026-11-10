@@ -36,9 +36,35 @@ dotfiles_options() {
     fi
 }
 
+# Homebrew 7 dropped the type switches: `brew bundle install --no-cask` and
+# `--no-formula` both exit "Invalid usage". Its replacement skip variables
+# (HOMEBREW_BUNDLE_*_SKIP) take entry names, not a whole type, so a skipped type
+# is removed from the Brewfile instead and the remainder is piped in on stdin.
 dotfiles_bundle_args() {
-    BUNDLE_ARGS=(bundle install --file="$DOTFILES_DIR/Brewfile")
-    "$SKIP_BREW" && BUNDLE_ARGS+=(--no-formula)
-    "$SKIP_CASKS" && BUNDLE_ARGS+=(--no-cask)
+    BUNDLE_SKIP_TYPES=()
+    "$SKIP_BREW" && BUNDLE_SKIP_TYPES+=(brew)
+    "$SKIP_CASKS" && BUNDLE_SKIP_TYPES+=(cask)
+    if (( ${#BUNDLE_SKIP_TYPES[@]} )); then
+        BUNDLE_ARGS=(bundle install --file=-)
+    else
+        BUNDLE_ARGS=(bundle install --file="$DOTFILES_DIR/Brewfile")
+    fi
     return 0
+}
+
+# Print the Brewfile without the skipped entry types. Every entry in this
+# Brewfile is a single line, which is what makes a line filter sufficient.
+dotfiles_bundle_brewfile() {
+    local types
+    types="$(IFS='|'; printf '%s' "${BUNDLE_SKIP_TYPES[*]}")"
+    sed -E "/^[[:space:]]*(${types})[[:space:]]/d" "$DOTFILES_DIR/Brewfile"
+}
+
+dotfiles_bundle_install() {
+    dotfiles_bundle_args
+    if (( ${#BUNDLE_SKIP_TYPES[@]} )); then
+        dotfiles_bundle_brewfile | brew "${BUNDLE_ARGS[@]}"
+    else
+        brew "${BUNDLE_ARGS[@]}"
+    fi
 }
