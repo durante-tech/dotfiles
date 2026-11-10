@@ -11,7 +11,8 @@ spotify=(
   background.color="$PURE_BLACK"
   padding_right=5
   padding_left=5
-  update_freq=5
+  # Playback changes arrive as the spotify_change event; this is a slow safety net.
+  update_freq=120
   updates=on
   click_script="$PLUGIN_DIR/spotify_click.sh"
   popup.background.color="$POPUP_BACKGROUND_COLOR"
@@ -23,8 +24,11 @@ spotify=(
   popup.y_offset=5
 )
 
+# Spotify posts this distributed notification on play, pause and track change.
+sketchybar --add event spotify_change com.spotify.client.PlaybackStateChanged
 sketchybar --add item spotify right \
-           --set spotify "${spotify[@]}"
+           --set spotify "${spotify[@]}" \
+           --subscribe spotify spotify_change
 
 ##### Popup transport rows (label-only, font-safe; state shown via color) #####
 # Track header — refreshed on open. Click closes the popup.

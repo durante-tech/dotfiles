@@ -11,7 +11,8 @@ github=(
   background.color="$PURE_BLACK"
   padding_right=5
   padding_left=5
-  update_freq=300
+  # One API call per tick.
+  update_freq=600
   updates=on
   click_script="$PLUGIN_DIR/github_click.sh"
   popup.background.color="$POPUP_BACKGROUND_COLOR"

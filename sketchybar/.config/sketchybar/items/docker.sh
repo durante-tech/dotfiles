@@ -11,7 +11,8 @@ docker=(
   background.color="$PURE_BLACK"
   padding_right=5
   padding_left=5
-  update_freq=30
+  # `docker info` is a daemon round trip; containers do not start every 30s.
+  update_freq=120
   updates=on
   click_script="$PLUGIN_DIR/docker_click.sh"
   popup.background.color="$POPUP_BACKGROUND_COLOR"

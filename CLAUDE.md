@@ -1043,6 +1043,10 @@ running, VPN connected, updates pending, GitHub count > 0, CPU > 50%, memory >
 **Center**: `workspace_visibility` — an invisible dispatcher (`drawing=off`), not a status item
 **Right**: battery, clock, bd_mode, weather, CPU, memory, network, GitHub notifications, microphone, volume, Spotify — source order in `sketchybarrc` is right→left visually, so battery sits rightmost
 
+Refresh is events first, slow ticks second, nothing faster than 60 s except
+the clock (30 s); the table and the measured cost are in
+`docs/sketchybar/README.md` § Cost. Do not add a sub-minute `update_freq`.
+
 A quiet item needs `updates=on` (a hidden item otherwise stops running its
 script and never returns) and exactly one writer of its `drawing`: its own
 plugin, never the workspace table.

@@ -7,7 +7,9 @@ INTERFACE=$(route -n get default 2>/dev/null | awk '/interface:/ {print $2}')
 INTERFACE="${INTERFACE:-en0}"
 
 # Single netstat call instead of two (optimized)
-NETSTAT_OUTPUT=$(netstat -ib | grep -E "^$INTERFACE" | head -1)
+# -n: without it netstat resolves every address and took 5 s of wall clock per
+# run here; -I asks for the one interface instead of grepping all of them.
+NETSTAT_OUTPUT=$(netstat -ibn -I "$INTERFACE" 2>/dev/null | sed -n 2p)
 # Count from the END of the row. A link row normally has an Address column
 # (11 fields) but a utun* default route — a full-tunnel VPN — has none (10), so
 # fixed $7/$10 read Opkts and Coll there and the item showed packet counts.
@@ -24,22 +26,25 @@ CACHE_FILE="${TMPDIR:-/tmp}/sketchybar_network_cache"
 
 PREV_IF=""
 if [ -f "$CACHE_FILE" ]; then
-    read -r PREV_IF PREV_IN PREV_OUT < "$CACHE_FILE"
+    read -r PREV_IF PREV_IN PREV_OUT PREV_AT < "$CACHE_FILE"
 
     # Only trust an all-digits pair recorded against the SAME interface.
     # netstat counters are per-interface, so a Wi-Fi -> Ethernet switch would
     # otherwise subtract two unrelated counters and draw a phantom GB/s spike;
     # the digit check keeps anything non-numeric out of the arithmetic above.
-    case "$PREV_IN$PREV_OUT" in
+    case "$PREV_IN$PREV_OUT$PREV_AT" in
         '' | *[!0-9]*) PREV_IF="" ;;
     esac
 fi
 
-if [ "$PREV_IF" = "$INTERFACE" ]; then
-    # Calculate speed in bytes/second — divisor must match the item's
-    # update_freq (15s in items/network.sh); /5 inflated speeds 3x
-    DIFF_IN=$(( (BYTES_IN - PREV_IN) / 15 ))
-    DIFF_OUT=$(( (BYTES_OUT - PREV_OUT) / 15 ))
+# Rate over the time that actually passed, not an assumed tick: a reload or a
+# changed update_freq otherwise misreports the first sample. A cache without a
+# timestamp (written by an older version) counts as no previous sample.
+NOW=$(date +%s)
+ELAPSED=$(( NOW - ${PREV_AT:-NOW} ))
+if [ "$PREV_IF" = "$INTERFACE" ] && [ "$ELAPSED" -gt 0 ]; then
+    DIFF_IN=$(( (BYTES_IN - PREV_IN) / ELAPSED ))
+    DIFF_OUT=$(( (BYTES_OUT - PREV_OUT) / ELAPSED ))
 
     # Ensure non-negative values
     [ "$DIFF_IN" -lt 0 ] && DIFF_IN=0
@@ -71,4 +76,4 @@ fi
 
 # Save current values (single line, space-separated - faster read). Interface
 # first, so the next tick can tell whether the counters are even comparable.
-echo "$INTERFACE $BYTES_IN $BYTES_OUT" > "$CACHE_FILE"
+echo "$INTERFACE $BYTES_IN $BYTES_OUT $NOW" > "$CACHE_FILE"

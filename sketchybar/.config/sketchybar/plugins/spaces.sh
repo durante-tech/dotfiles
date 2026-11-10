@@ -6,7 +6,8 @@
 # Subscribed to: aerospace_workspace_change (fired by aerospace.toml
 # exec-on-workspace-change, carries $FOCUSED_WORKSPACE) and front_app_switched.
 # Neither fires when a window is MOVED to another workspace without following
-# it, so the item also polls on a short update_freq.
+# it, so the move bindings in aerospace.toml.template fire the same event, and
+# a slow update_freq catches what is left (a workspace's last window closing).
 #
 # Fails open: if AeroSpace cannot be asked, every workspace is shown, because a
 # bar with no workspaces looks like a broken bar.
