@@ -23,7 +23,7 @@ DEVICES = [
 class FakeHardware(Hardware):
     def __init__(self):
         self.calls=[];self.fault=None;self.devices=deepcopy(DEVICES)
-        self.values={('2','xdrPreset'):XDR,('2','autoBrightness'):'on',('2','hardwareBrightness'):'1.0',('2','softwareBrightness'):'0.6',
+        self.values={('2','xdrPreset'):XDR,('2','autoBrightness'):'on',('2','hardwareBrightness'):'1.0',('2','softwareBrightness'):'0.6',('2','brightnessUpscaling'):'off',
                      ('60','temperature'):'0.0',('60','hdr'):'off',('60','hardwareBrightness'):'1.0'}
         super().__init__('fake-betterdisplay', runner=self.run, sleep=lambda _:None)
 
@@ -43,6 +43,9 @@ class FakeHardware(Hardware):
         if args[0]=='get':
             return subprocess.CompletedProcess(argv,0,self.values.get((tag,key),'Failed.'),'')
         value=params[key]
+        # BetterDisplay rejects anything above 100% while upscaling is off.
+        if key=='softwareBrightness' and float(value[:-1])>100 and self.values.get((tag,'brightnessUpscaling'))!='on':
+            return subprocess.CompletedProcess(argv,0,'Failed.','')
         self.values[(tag,key)] = str(float(value[:-1])/100) if value.endswith('%') else value
         return subprocess.CompletedProcess(argv,0,'','')
 
@@ -124,6 +127,25 @@ class DisplayControl(Fixture):
         self.assertEqual(state['outcome']['dev'],'failed')
         self.assertEqual(state['outcome']['port'],'dispatched')
         self.assertEqual(state['outcome']['status'],'failed')
+
+    def test_upscaling_is_enabled_only_for_presets_above_100(self):
+        state=self.dispatch('preset',['night'])
+        self.assertEqual(state['outcome']['dev'],'verified')
+        self.assertEqual(self.hardware.values[('2','brightnessUpscaling')],'off')
+        self.assertFalse([c for c in self.hardware.calls if any('brightnessUpscaling' in a for a in c)])
+        state=self.dispatch('preset',['day'])
+        self.assertEqual(state['outcome']['dev'],'verified')
+        self.assertEqual(self.hardware.values[('2','brightnessUpscaling')],'on')
+        self.assertEqual(self.hardware.values[('2','softwareBrightness')],'1.05')
+        self.assertEqual(self.hardware.verify(state,self.controller.identities(state))['errors'],[])
+
+    def test_unavailable_upscaling_names_the_cause(self):
+        self.hardware.fault=lambda a,p:a[0]=='set' and 'brightnessUpscaling' in p
+        state=self.dispatch('preset',['day'])
+        self.assertEqual(state['outcome']['dev'],'failed')
+        self.assertTrue([e for e in state['outcome']['errors'] if 'brightness upscaling is off' in e])
+        result=self.hardware.verify(state,self.controller.identities(state))
+        self.assertIn('brightnessUpscaling: expected on, read off',result['errors'])
 
     def test_nonzero_vcp_errors_are_never_dispatched(self):
         self.hardware.fault=lambda a,p:'--ddc' in a
