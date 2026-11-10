@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# macOS Defaults — Gertel's Preferences
+# macOS Defaults — Maintainer's Preferences
 # Run once on a fresh machine: ./macos/.macos
 #
 # Inspired by Mathias Bynens' .macos

@@ -2,7 +2,7 @@
 
 **This guide is designed for AI agents installing/updating these dotfiles on a user's Mac.**
 
-The repo is the personal dev environment for Lucas Gertel: terminal-first, keyboard-driven macOS setup with Neovim, Tmux, AeroSpace, Sketchybar, and a Catppuccin/Rose-pine theme stack. Includes on-demand Durante-themed wallpaper rotation and 105 brew packages (84 formulae + 21 casks).
+The repo is the personal dev environment of its maintainer: terminal-first, keyboard-driven macOS setup with Neovim, Tmux, AeroSpace, Sketchybar, and a Catppuccin/Rose-pine theme stack. Includes on-demand Durante-themed wallpaper rotation and 105 brew packages (84 formulae + 21 casks).
 
 ---
 
@@ -217,7 +217,7 @@ The repo ships **install.sh** as the canonical installer. Wizard agents should d
 
 ```bash
 if [ ! -d "$HOME/dotfiles/.git" ]; then
-  git clone https://github.com/durante-tech/dotfiles.git "$HOME/dotfiles"
+  git clone <repo-url> "$HOME/dotfiles"
 fi
 cd "$HOME/dotfiles"
 ```
@@ -362,7 +362,7 @@ Update later with: cd ~/dotfiles && ./install.sh --update"
   • Neovim plugins broken: 'nvim +Lazy sync +qa' inside Neovim
 
 Run the verification commands in VERIFY.md to pinpoint what's broken.
-Need help? Open an issue at https://github.com/durante-tech/dotfiles/issues"
+Need help? Open an issue on this repository"
 ```
 
 ---

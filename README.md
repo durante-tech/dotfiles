@@ -1,8 +1,8 @@
 ---
 name: dotfiles
-pack-id: durante-tech-dotfiles-v2.0.0
+pack-id: dotfiles-v2.0.0
 version: 2.0.0
-author: durante-tech (Lucas Gertel)
+author: repository maintainer
 description: macOS terminal-first, keyboard-driven development environment. 20 stowable packages, 84 brew formulae + 21 casks, mise polyglot version manager, on-demand time-banded wallpaper rotation, espanso text expansion. USE WHEN install dotfiles, set up new mac, clone dotfiles, install lucas dotfiles, configure new development machine, restore dotfiles, update dotfiles, repair dotfiles, fresh mac setup, dotfile installation, durante dotfiles, dotfiles new machine, terminal-first setup, install brewfile, mise migration, durante setup.
 type: dotfiles
 role: environment
@@ -19,7 +19,7 @@ keywords: [dotfiles, install dotfiles, set up new mac, clone dotfiles, install l
 
 **macOS terminal-first, keyboard-driven development environment**
 
-[![CI](https://github.com/durante-tech/dotfiles/actions/workflows/lint.yml/badge.svg)](https://github.com/durante-tech/dotfiles/actions/workflows/lint.yml)
+[![CI](../../actions/workflows/lint.yml/badge.svg)](../../actions/workflows/lint.yml)
 ![macOS](https://img.shields.io/badge/macOS-Sequoia-000000?logo=apple&logoColor=white)
 ![Neovim](https://img.shields.io/badge/Neovim-0.12+-57A143?logo=neovim&logoColor=white)
 ![Shell](https://img.shields.io/badge/Shell-Zsh-4EAA25?logo=gnubash&logoColor=white)
@@ -134,11 +134,13 @@ neovim.png, tmux.png and yazi.png, then uncomment this whole block.
 
 ### Fresh Install (New Machine)
 
+`<repo-url>` below is this repository's clone URL (the **Code** button above).
+
 **Option A — AI-assisted wizard (recommended):**
 After cloning, point your AI assistant at the repo and ask it to install. It reads [`INSTALL.md`](INSTALL.md) and walks you through a 5-phase wizard with confirmations at each step.
 
 ```bash
-git clone https://github.com/durante-tech/dotfiles.git ~/dotfiles
+git clone <repo-url> ~/dotfiles
 cd ~/dotfiles
 
 # Then in Claude Code:
@@ -149,7 +151,7 @@ cd ~/dotfiles
 
 ```bash
 # 1. Clone
-git clone https://github.com/durante-tech/dotfiles.git ~/dotfiles
+git clone <repo-url> ~/dotfiles
 cd ~/dotfiles
 
 # 2. Install everything (Homebrew, packages, configs, plugins, LaunchAgents,
@@ -421,11 +423,11 @@ No name, email, or absolute user path lives in the repo — see
 
 ## Credits
 
-- **Pack family:** durante-tech / DOS
-- **Distribution protocol:** [RFC-0011](https://github.com/durante-tech/dos) (Packs Distribution)
+- **Pack family:** maintainer's private pack family
+- **Distribution protocol:** RFC-0011 (Packs Distribution)
 - **Forked from:** [Sin-cy/dotfiles](https://github.com/Sin-cy/dotfiles)
 - **Themes:** Catppuccin Mocha · Rose Pine
-- **AI installation:** wizard pattern after [MakerkitTeam](https://github.com/durante-tech/dos)
+- **AI installation:** wizard pattern after MakerkitTeam
 
 ---
 
@@ -459,7 +461,7 @@ No name, email, or absolute user path lives in the repo — see
 - Ghostty added to Brewfile (was previously a manual install gap)
 - Espanso `:llm` + `:llmf` triggers wired to local `qwen3-coder:30b` Ollama model
 - LaunchAgent plists converted to `__USER__` templates rendered at install time (dev-agnostic)
-- Hardcoded `/Users/lgertel` paths in shell startup (`zsh/.zshrc`), AeroSpace bd-mode chord, and fastfetch logo replaced with `$HOME` + existence guards. Ubersicht widgets and some scripts still read DOS-private `~/Durante/` paths — those gracefully no-op when absent.
+- Hardcoded `/Users/<name>` paths in shell startup (`zsh/.zshrc`), AeroSpace bd-mode chord, and fastfetch logo replaced with `$HOME` + existence guards. Ubersicht widgets and some scripts still read DOS-private `~/Durante/` paths — those gracefully no-op when absent.
 - Drift cleanup: removed nvm/htop/btop/duplicate compinit/duplicate Antigravity PATH
 - Updated `README_NEW_MACOS.md` to use mise instead of nvm
 - New documentation: `docs/zsh/aliases-and-functions.md` (Wallpaper / Charmbracelet / LLM / GitHub Dashboard sections), `docs/tier5-setup.md` (manual steps for Maccy + Atuin)

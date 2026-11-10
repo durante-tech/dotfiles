@@ -15,7 +15,7 @@ If you just want everything installed:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/durante-tech/dotfiles.git ~/dotfiles
+git clone <repo-url> ~/dotfiles
 
 # 2. Run the installer
 cd ~/dotfiles

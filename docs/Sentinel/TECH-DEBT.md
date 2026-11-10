@@ -18,7 +18,7 @@ Findings bucketed by Phase 2d tiers - highest-impact first within each tier.
 - **tooling: BetterDisplay mode-switching uses direct CLI param writes as a documented temporary workaround for broken slot-loads in BD 4.3.0 pre-release.** - Files: scripts/scripts/bd-apply.sh
 
 ### LOW
-- **vcs: Split git author identity: 'Lord Sinquaad' (491 commits) vs 'Lucas Gertel' (174). Consider a .mailmap.** - Files: (git history)
+- **vcs: Split git author identity: 'Lord Sinquaad' (491 commits) vs the maintainer's own name (174). Consider a .mailmap.** - Files: (git history)
 
 ### Resolved since last scan (2026-06-18)
 - **hygiene: .sentinel/ scan scratch is now gitignored** (commit c63aecb) — was a LOW debt item last scan.
@@ -107,7 +107,7 @@ matching only. It did not look at CI, which was red the whole time.
 
 ### Open — LOW
 
-- **vcs: split git author identity** — 'Lord Sinquaad' vs 'Lucas Gertel'. Unchanged
+- **vcs: split git author identity** — 'Lord Sinquaad' vs the maintainer's own name. Unchanged
   since the generated pass above. A `.mailmap` fixes it.
 - **clarity: `bd-apply.sh:631-632` are dead branches.** `cur_port_b`/`cur_port_c` are
   hard-set to `""` on the two lines above, so the `[[ … =~ ^[0-9]+$ ]]` guards always

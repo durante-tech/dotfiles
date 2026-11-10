@@ -327,7 +327,7 @@ jobs:
       # CLAUDE.md declares path agnosticism "enforced" — nothing enforced it.
       # ShellCheck cannot model the rule and is told to skip zsh/ entirely, which
       # is exactly where the one live violation sat: zsh/.zshrc hardcoded
-      # /Users/lgertel in bun's completion guard, so on any other machine the
+      # a literal home path in bun's completion guard, so on any other machine the
       # `[ -s ... ]` test silently failed and completions never loaded — while
       # README.md claimed those paths had already been replaced with $HOME. A
       # grep is the whole enforcement this rule ever needed.

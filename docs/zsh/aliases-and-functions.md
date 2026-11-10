@@ -241,7 +241,7 @@ Each pattern name becomes its own command. There are 240+ patterns.
 ## Wallpaper Management
 
 Tied to the Durante 10-piece gallery + hourly time-banded rotation.
-See [`wallpapers/README.md`](https://github.com/durante-tech/dotfiles/blob/main/wallpapers/README.md) for full layout.
+See `wallpapers/README.md` for full layout.
 
 | Alias | Command |
 |-------|---------|
@@ -270,7 +270,7 @@ GLSL shader as live wallpaper.
 |-------|---------|
 | `ghd` | `gh dash` — interactive PR/issue dashboard |
 
-See [`docs/tier5-setup.md`](https://github.com/durante-tech/dotfiles/blob/main/docs/tier5-setup.md) for config customization.
+See `docs/tier5-setup.md` for config customization.
 
 ## Shell Functions
 

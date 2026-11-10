@@ -54,6 +54,6 @@ existing compatible legacy sessions remain reusable.
 
 No automatic package uninstall or runtime-state deletion is part of an update.
 Legacy `.dos` / `.pi` links are preserved and reported when present. Helm,
-DuranteOS lifecycle work, retired widgets, optional OBS tooling, and parked
+private-toolchain lifecycle work, retired widgets, optional OBS tooling, and parked
 terminal configurations require a separate ownership decision before removal or
 migration. A file's presence alone does not establish that it owns the live tool.

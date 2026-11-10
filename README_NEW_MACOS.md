@@ -12,10 +12,10 @@ Complete installation guide for setting up a new Apple Silicon Mac with these do
 
 ## Quick Start (Automated)
 
-Clone first so the installer can load its shared helpers:
+Clone first so the installer can load its shared helpers (`<repo-url>` is this repository's clone URL):
 
 ```bash
-git clone https://github.com/durante-tech/dotfiles.git ~/dotfiles
+git clone <repo-url> ~/dotfiles
 cd ~/dotfiles
 ./install.sh
 ```
@@ -52,7 +52,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 
 ```bash
 brew install git
-git clone https://github.com/durante-tech/dotfiles.git ~/dotfiles
+git clone <repo-url> ~/dotfiles
 cd ~/dotfiles
 ```
 

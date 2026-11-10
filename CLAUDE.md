@@ -339,7 +339,7 @@ nvim/
 | `cldpy` | `claude -p --dangerously-skip-permissions` |
 | `cldpyo` | `claude -p --dangerously-skip-permissions --model opus` |
 | `cldr` | `claude --resume` |
-| `dosa` | `dos -l -m full --dangerously-skip-permissions` — DuranteOS launcher; only resolves when the private `~/Durante` toolchain is installed |
+| `dosa` | `dos -l -m full --dangerously-skip-permissions` — private launcher; only resolves when the private `~/Durante` toolchain is installed |
 
 **Fabric AI:**
 
@@ -1297,7 +1297,7 @@ chmod +x ~/scripts/*
 
 ## References
 
-- Repository: [durante-tech/dotfiles](https://github.com/durante-tech/dotfiles) (forked from [Sin-cy/dotfiles](https://github.com/Sin-cy/dotfiles))
+- Repository: this checkout's `origin` remote (forked from [Sin-cy/dotfiles](https://github.com/Sin-cy/dotfiles))
 - Main branch: `main`
 - Installation guide: `README_NEW_MACOS.md`
 - Install script: `install.sh`

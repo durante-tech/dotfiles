@@ -16,7 +16,10 @@ FAILURES=0
 # CONFIGURATION
 # =============================================================================
 
-DOTFILES_REPO="https://github.com/durante-tech/dotfiles.git"
+# Clone source for the one case below where DOTFILES_DIR names a target that
+# does not exist yet. Empty means "the remote this checkout came from", and is
+# resolved only there: asking git here would run on every --dry-run too.
+DOTFILES_REPO="${DOTFILES_REPO:-}"
 # Repo root: this checkout, unless the environment names another one. It used
 # to default to $HOME/dotfiles regardless of where the script lived, so from a
 # checkout anywhere else `./update.sh` died on "Missing package manifest:
@@ -252,8 +255,15 @@ fi
 
 if [ ! -d "$DOTFILES_DIR" ]; then
     if [ "$DRY_RUN" = true ]; then
-        print_dry "git clone $DOTFILES_REPO $DOTFILES_DIR"
+        print_dry "git clone ${DOTFILES_REPO:-<origin of this checkout>} $DOTFILES_DIR"
     else
+        if [ -z "$DOTFILES_REPO" ]; then
+            DOTFILES_REPO="$(git -C "$INSTALL_SCRIPT_DIR" remote get-url origin 2>/dev/null || true)"
+        fi
+        if [ -z "$DOTFILES_REPO" ]; then
+            echo "DOTFILES_DIR ($DOTFILES_DIR) does not exist and this checkout has no origin remote to clone from; set DOTFILES_REPO." >&2
+            exit 1
+        fi
         print_step "Cloning dotfiles repository to $DOTFILES_DIR..."
         git clone "$DOTFILES_REPO" "$DOTFILES_DIR"
     fi
