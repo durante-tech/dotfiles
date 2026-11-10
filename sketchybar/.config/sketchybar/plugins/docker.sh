@@ -3,16 +3,24 @@
 source "$CONFIG_DIR/colors.sh"
 
 DOCKER=$(command -v docker || echo "/usr/local/bin/docker")
+# shellcheck source=../timeout.sh
+source "$CONFIG_DIR/timeout.sh"
 
 # Check if Docker is running (with timeout to prevent blocking)
-if ! timeout 2s $DOCKER info >/dev/null 2>&1; then
+with_timeout 2s $DOCKER info >/dev/null 2>&1
+info_status=$?
+if timed_out "$info_status"; then
+    # Not answering is not the same as stopped: say so and do not claim "Off".
+    sketchybar --set "$NAME" icon="󰡨" label="Busy" icon.color="$GREY"
+    exit 0
+elif [ "$info_status" -ne 0 ]; then
     sketchybar --set "$NAME" icon="󰡨" label="Off" icon.color="$GREY"
     exit 0
 fi
 
 # Single docker command to get all info we need (optimized from 4 commands to 1)
 # Format: ID|Status|MemPerc
-CONTAINER_DATA=$(timeout 3s $DOCKER ps --format "{{.ID}}|{{.Status}}" 2>/dev/null)
+CONTAINER_DATA=$(with_timeout 3s $DOCKER ps --format "{{.ID}}|{{.Status}}" 2>/dev/null)
 
 if [ -z "$CONTAINER_DATA" ]; then
     sketchybar --set "$NAME" icon="󰡨" label="0" icon.color="$GREY"
@@ -31,7 +39,7 @@ HEALTHY=$(echo "$CONTAINER_DATA" | grep -c "(healthy)") || HEALTHY=0
 UNHEALTHY=$(echo "$CONTAINER_DATA" | grep -c "(unhealthy)") || UNHEALTHY=0
 
 # Get memory only if containers are running (with timeout)
-MEM_TOTAL=$(timeout 2s $DOCKER stats --no-stream --format "{{.MemPerc}}" 2>/dev/null | awk '{gsub(/%/,""); sum += $1} END {printf "%.0f", sum}')
+MEM_TOTAL=$(with_timeout 2s $DOCKER stats --no-stream --format "{{.MemPerc}}" 2>/dev/null | awk '{gsub(/%/,""); sum += $1} END {printf "%.0f", sum}')
 
 # Build label
 if [ "$UNHEALTHY" -gt 0 ]; then

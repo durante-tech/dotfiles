@@ -55,11 +55,11 @@ Each workspace has a letter, a purpose, and an assigned monitor.
 | `Alt+D` | Development | Laptop | VS Code, Cursor, JetBrains IDEs, Xcode |
 | `Alt+T` | Terminal | Portrait | Ghostty, Alacritty, WezTerm, iTerm2 |
 | `Alt+B` | Browser | Laptop | Chrome, Safari, Firefox, Arc, Zen |
-| `Alt+M` | Messaging | Laptop | Slack, Discord, Telegram, Teams, WhatsApp |
+| `Alt+M` | Messaging | Portrait | Slack, Discord, Telegram, Teams, WhatsApp |
 | `Alt+W` | Email (E) | Laptop | Mail clients |
 | `Alt+O` | Notes (N) | Laptop | Notes apps |
 
-**Note:** Workspaces N (Notes) and E (Email) exist but their `alt-n` / `alt-e` bindings are currently commented out to avoid conflicts with Brazilian accent input. Access them via the Hyper key instead.
+**Note:** Workspaces N (Notes) and E (Email) exist but `alt-n` / `alt-e` are left unbound because they are Brazilian accent dead keys. Use `Alt+O` (N) and `Alt+W` (E), or Hyper+N / Hyper+E.
 
 ### Auto-Assignment Rules
 
@@ -146,11 +146,11 @@ Alt+Shift+R    → Enter resize mode
 | Keys | Action |
 |------|--------|
 | `Alt+Tab` | Switch to last workspace (back-and-forth) |
-| `Alt+Shift+Tab` | Move workspace to next monitor |
+| `Alt+Shift+Tab` | Focus the other monitor (wraps) |
 
 ## Karabiner Hyper Key
 
-CapsLock becomes the Hyper key (`Ctrl+Alt+Shift+Cmd` simultaneously):
+CapsLock becomes the Hyper key: held, it activates a Hyper variable layer (no real `Ctrl+Alt+Shift+Cmd` is sent):
 
 - **Tap** CapsLock → Escape (great for Vim)
 - **Hold** CapsLock → Hyper modifier
@@ -184,14 +184,11 @@ RIGHT:  HOLD Hyper → HOLD O → TAP M → Release all
 
 | Tap | App |
 |-----|-----|
-| `m` | Obsidian |
-| `n` | Notion |
+| `n` | Preferred notes app (`dotfiles-app notes`) |
 | `d` | Discord |
 | `i` | Messages |
 | `p` | Music |
-| `v` | VS Code |
-| `c` | Chrome |
-| `w` | WezTerm |
+| `c` | Preferred browser (`dotfiles-app browser`) |
 
 #### `Hyper+W` → Window Positioning
 
@@ -265,7 +262,7 @@ Some apps are always floating (never tiled):
 SketchyBar shows workspace indicators on the top bar. When you switch workspaces, the indicator updates via `exec-on-workspace-change`:
 
 ```
-[1] [2] [D] [T] [B] [M] [F]
+[1] [2] [A] [B] [D] [E] [M] [N] [T]
          ↑
     Current workspace highlighted
 ```
@@ -303,8 +300,8 @@ Alt+Tab            # Toggle between the two
 ### Workflow 4: Multi-Monitor Layout
 
 ```
-Laptop:   [D] Development  |  [B] Browser  |  [M] Messaging
-Portrait: [T] Terminal      |  [2] Secondary
+Laptop:   [D] Development  |  [B] Browser
+Portrait: [T] Terminal      |  [M] Messaging  |  [2] Secondary
 
 # Move something to the other monitor:
 Alt+Shift+Tab      # Move entire workspace to next monitor
@@ -323,7 +320,7 @@ Alt+Shift+Space    # Back to tiled layout
 
 ### Changing Workspace Assignments
 
-Edit `aerospace/.config/aerospace/aerospace.toml`:
+Edit `aerospace/templates/aerospace.toml.template`, then run `scripts/scripts/render-aerospace.sh && aerospace reload-config` (the generated `aerospace.toml` is gitignored output):
 
 ```toml
 # Change which monitor gets which workspace
@@ -355,8 +352,8 @@ outer.top = 15           # Or per-monitor: [{ monitor."Name" = 50 }, 15]
 
 | Task | Keys |
 |------|------|
-| Switch workspace | `Alt+T/B/D/M/F/1/2` |
-| Move window to workspace | `Alt+Shift+T/B/D/M/F/1/2` |
+| Switch workspace | `Alt+T/B/D/M/A/1/2`, `Alt+W` (E), `Alt+O` (N) |
+| Move window to workspace | `Alt+Shift+T/B/D/M/A/1/2`, `Alt+Shift+W` (E), `Alt+Shift+O` (N) |
 | Focus window | `Alt+H/J/K/L` |
 | Move window | `Alt+Shift+H/J/K/L` |
 | Swap windows | `Alt+Ctrl+H/J/K/L` |

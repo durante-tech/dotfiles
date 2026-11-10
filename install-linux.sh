@@ -22,7 +22,8 @@ set -e
 # -----------------------------------------------------------------------------
 # CONFIG
 # -----------------------------------------------------------------------------
-DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+# This checkout unless the environment names another (see install.sh).
+DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
 PACKAGE_MANIFEST="$DOTFILES_DIR/stow-packages.linux.txt"
 LOCAL_BIN="$HOME/.local/bin"
 TPM_DIR="$HOME/.config/tmux/.tmux/plugins/tpm"
@@ -440,6 +441,7 @@ fi
 MACOS_ONLY_SCRIPTS="
 aerospace-resweep.sh
 bd-apply.sh
+bd-bar-click.sh
 bd-build-slots.sh
 bd-cycle.sh
 bd-hdr-toggle.sh

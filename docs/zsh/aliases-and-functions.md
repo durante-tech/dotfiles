@@ -241,7 +241,7 @@ Each pattern name becomes its own command. There are 240+ patterns.
 ## Wallpaper Management
 
 Tied to the Durante 10-piece gallery + hourly time-banded rotation.
-See [`wallpapers/README.md`](https://github.com/durante-tech/dotfiles/blob/main/wallpapers/README.md) for full layout.
+See `wallpapers/README.md` for full layout.
 
 | Alias | Command |
 |-------|---------|
@@ -264,23 +264,13 @@ GLSL shader as live wallpaper.
 
 `gum` is used directly inside shell scripts (`gum confirm`, `gum choose`, etc.) — no aliases.
 
-## Local LLM (Ollama)
-
-| Alias | Command |
-|-------|---------|
-| `ollama-up` | `brew services run ollama` — start daemon for current session only (no boot persistence) |
-| `ollama-down` | `brew services stop ollama` — stop daemon |
-| `ollama-ls` | `ollama list` — show installed models |
-
-Pair with espanso's `:llm` and `:llmf` triggers (defined in [`espanso/Library/Application Support/espanso/match/base.yml`](https://github.com/durante-tech/dotfiles/blob/main/espanso/Library/Application%20Support/espanso/match/base.yml)) for inline AI completions.
-
 ## GitHub Dashboard
 
 | Alias | Command |
 |-------|---------|
 | `ghd` | `gh dash` — interactive PR/issue dashboard |
 
-See [`docs/tier5-setup.md`](https://github.com/durante-tech/dotfiles/blob/main/docs/tier5-setup.md) for config customization.
+See `docs/tier5-setup.md` for config customization.
 
 ## Shell Functions
 
@@ -303,7 +293,7 @@ ya                       # Open yazi file manager
                          # When you quit, terminal cd's to last visited directory
 ```
 
-Unlike `y` (plain yazi), `ya` tracks the directory you navigated to inside yazi and changes your shell's working directory on exit.
+Unlike `y` (plain yazi), `ya` tracks the directory you navigated to inside yazi and changes your shell's working directory on exit. Yazi's own `ya` CLI subcommands (`pkg`, `pack`, `pub`, `pub-to`, `emit`, `emit-to`, `sub`) are passed through to the real `ya` binary.
 
 ### YouTube Transcript (`yt`)
 

@@ -57,7 +57,7 @@ only the system PATH.
 Retired (absorbed by attention): `mempalace.widget` (session counts),
 `aging-watch.widget` (stuck-work rows), `decisions.widget` (recent decisions).
 
-Removed 2026-08-22 when DuranteOS was retired — all four read data directories
+Removed 2026-08-22 when the private toolchain was retired — all four read data directories
 that no longer exist, so each rendered a permanent empty or error tile:
 `dailybrief.widget` and `today-focus.widget` (read `~/Durante/MEMORY/WORK/`),
 `brief-trigger.widget` (clicked a launchd service that is gone), and

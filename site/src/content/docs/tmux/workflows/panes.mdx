@@ -109,9 +109,8 @@ C-b q                   # Shows numbers briefly
 C-b q 2                 # Jump to pane 2 (while numbers showing)
 ```
 
-**Cycle through panes:**
+**Last pane:**
 ```
-C-b o                   # Next pane (clockwise)
 C-b ;                   # Last pane (toggle)
 ```
 
@@ -121,21 +120,21 @@ C-b ;                   # Last pane (toggle)
 
 **Resize panes (vim-style):**
 ```
-C-b h                   # Resize left (shrink right)
-C-b j                   # Resize down (shrink top)
-C-b k                   # Resize up (shrink bottom)
-C-b l                   # Resize right (shrink left)
+C-b H                   # Resize left (shrink right)
+C-b J                   # Resize down (shrink top)
+C-b K                   # Resize up (shrink bottom)
+C-b L                   # Resize right (shrink left)
 ```
 
 **How it works:**
 - Each press resizes by 5 cells
 - Repeatable (the `-r` flag in config)
-- Hold `C-b` and tap `h` multiple times quickly
+- Press `C-b` once, then tap `H` multiple times quickly
 
 **Example:**
 ```
 +-------+---+
-|       |   |     C-b llll   +-----+-----+
+|       |   |     C-b LLLL   +-----+-----+
 |   A   | B |   ---------->  |  A  |  B  |
 |       |   |                +-----+-----+
 +-------+---+
@@ -145,9 +144,9 @@ C-b l                   # Resize right (shrink left)
 
 **Make all panes equal size:**
 ```
-C-b M-1                 # Even horizontal
-C-b M-2                 # Even vertical
-C-b M-5                 # Tiled layout
+C-b M-4                 # Even horizontal
+C-b M-5                 # Even vertical
+C-b M-3                 # Tiled layout
 ```
 
 Or use built-in layout cycling:
@@ -233,11 +232,11 @@ C-b M-o                 # Swap with marked pane
 
 **Apply layout:**
 ```
-C-b M-1                 # even-horizontal
-C-b M-2                 # even-vertical
-C-b M-3                 # main-horizontal
-C-b M-4                 # main-vertical
-C-b M-5                 # tiled
+C-b M-1                 # main-vertical
+C-b M-2                 # main-horizontal
+C-b M-3                 # tiled
+C-b M-4                 # even-horizontal
+C-b M-5                 # even-vertical
 ```
 
 **Cycle layouts:**
@@ -540,7 +539,7 @@ C-b :set -g mouse on    # Enable
 
 **"Pane is too small"**
 ```
-C-b hjkl                # Resize
+C-b HJKL                # Resize
 C-b m                   # Zoom temporarily
 C-b Space               # Try different layout
 ```
@@ -585,10 +584,9 @@ C-b c                   # New clean window
 | **Navigating** | |
 | `C-h/j/k/l` | Move between panes |
 | `C-b q` | Show pane numbers |
-| `C-b o` | Next pane |
 | `C-b ;` | Last pane |
 | **Resizing** | |
-| `C-b h/j/k/l` | Resize panes |
+| `C-b H/J/K/L` | Resize panes |
 | `C-b Space` | Cycle layouts |
 | `C-b M-1/2/3/4/5` | Apply layout |
 | **Managing** | |

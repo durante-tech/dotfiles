@@ -34,8 +34,8 @@ nvim ~/project1 ~/project2
 <leader>wa        # Add each folder to LSP workspace
 
 # Tab navigation
-gt              # Next tab
-gT              # Previous tab
+<leader>tn       # Next tab (`gt` is type-definition in LSP buffers)
+<leader>tp       # Previous tab
 ```
 
 ### Option 3: Tmux Session
@@ -43,7 +43,7 @@ gT              # Previous tab
 ```bash
 tns              # tmux-sessionizer - fuzzy find projects
 # or
-prefix + Ctrl+f  # From inside tmux
+prefix + f       # From inside tmux
 ```
 
 ---
@@ -61,7 +61,7 @@ prefix + Ctrl+f  # From inside tmux
 
 **`<leader>gf` is your go-to** for "what did I change?" - much faster than the file explorer.
 
-> **Note:** `<leader>gf` is Gitsigns "stage hunk", `<leader>gf` is the Snacks "git changed files" picker.
+> **Note:** `<leader>gs` is Gitsigns "stage hunk", `<leader>gf` is the Snacks "git changed files" picker.
 
 ### Inside Git Status Picker
 
@@ -303,8 +303,8 @@ Claude Code can read LSP diagnostics:
 | ----------------------- | -------------------- |
 | New tab                 | `<leader>to`         |
 | Close tab               | `<leader>tx`         |
-| Next tab                | `gt` or `<leader>tn` |
-| Previous tab            | `gT` or `<leader>tp` |
+| Next tab                | `<leader>tn` (`gt` is type-definition in LSP buffers) |
+| Previous tab            | `<leader>tp` (or `gT`) |
 | Current file in new tab | `<leader>tf`         |
 
 ---
@@ -320,7 +320,7 @@ Claude Code can read LSP diagnostics:
 | Quick terminal        | `prefix + Ctrl+t` |
 | Music player (rmpc)   | `prefix + Ctrl+m` |
 | W3m browser           | `prefix + Ctrl+w` |
-| Session picker        | `prefix + Ctrl+f` |
+| Session picker        | `prefix + f`      |
 | Split vertical        | `prefix + \|`     |
 | Split horizontal      | `prefix + -`      |
 
@@ -328,9 +328,9 @@ Claude Code can read LSP diagnostics:
 
 | Action       | Keys          |
 | ------------ | ------------- |
-| Resize down  | `prefix + H`  |
-| Resize up    | `prefix + J`  |
-| Resize left  | `prefix + K`  |
+| Resize left  | `prefix + H`  |
+| Resize down  | `prefix + J`  |
+| Resize up    | `prefix + K`  |
 | Resize right | `prefix + L`  |
 | Maximize     | `prefix + m`  |
 
@@ -340,7 +340,7 @@ Claude Code can read LSP diagnostics:
 
 | Action         | Keys              |
 | -------------- | ----------------- |
-| New session    | `prefix + N`      |
+| New session    | `prefix + n`      |
 | Session picker | `prefix + f`      |
 | Detach         | `prefix + D`      |
 | List sessions  | `prefix + s`      |
@@ -364,7 +364,7 @@ Custom shell/terminal settings that can break Claude Code's TUI rendering. These
 
 | Setting | Issue | Fix |
 | ------- | ----- | --- |
-| Yellow cursor OSC 12 escapes (`\e]12;...`) | Injected on every prompt draw via `precmd`, `zle-keymap-select`, `zle-line-init`, `zle-line-finish` — corrupts TUI rendering | Removed all hooks. Ghostty's `cursor-color = #ffff00` handles this natively |
+| Yellow cursor OSC 12 escapes (`\e]12;...`) | Injected on every prompt draw via `precmd`, `zle-keymap-select`, `zle-line-init`, `zle-line-finish` — corrupts TUI rendering | Removed all hooks. Ghostty's cursor settings (`cursor-color = cell-foreground`) handle this natively |
 | Starship widget override | `zle -N zle-keymap-select ""` unregistered Starship's handler, replaced with cursor escape emitter | Removed — let Starship manage its own vi-mode indicator |
 | Shift+Enter zsh bindings | `^[^M` and `^[[27;2;13~` bound to `accept-line` — intercepts Claude Code's multi-line sequences | Commented out |
 
@@ -447,9 +447,9 @@ AeroSpace is your tiling window manager. All keybindings use **Alt (⌥)** as th
 | Close window    | `Alt+Shift+C`     | Close current window            |
 | New terminal    | `Alt+Enter`       | Open Ghostty                    |
 | Back & forth    | `Alt+Tab`         | Switch to last workspace        |
-| Move to monitor | `Alt+Shift+Tab`   | Move workspace to next monitor  |
+| Other monitor   | `Alt+Shift+Tab`   | Focus the other monitor (wraps) |
 | Reload config   | `Alt+R`           | Reload AeroSpace config         |
-| Toggle bar      | `Alt+S`           | Toggle SketchyBar visibility    |
+| Toggle bar      | `Ctrl+Shift+\`    | Toggle SketchyBar (Karabiner; or Hyper+S then B) |
 
 ### Resize Mode
 
@@ -474,7 +474,7 @@ AeroSpace is your tiling window manager. All keybindings use **Alt (⌥)** as th
 
 ## Karabiner Hyper Key System
 
-**CapsLock** is your Hyper Key (⌃⌥⇧⌘):
+**CapsLock** is your Hyper Key (a held variable layer; no real ⌃⌥⇧⌘ is sent):
 
 - **Tap** CapsLock → Escape
 - **Hold** CapsLock → Hyper modifier
@@ -512,14 +512,11 @@ Think of it like a **piano chord** - hold the modifier keys, tap the action key.
 **`Hyper+O` → Apps:**
 | Key | App |
 |-----|-----|
-| `m` | Obsidian |
-| `n` | Notion |
+| `n` | Preferred notes app (`dotfiles-app notes`) |
 | `d` | Discord |
 | `i` | Messages |
 | `p` | Music |
-| `v` | VSCode |
-| `c` | Chrome |
-| `w` | WezTerm |
+| `c` | Preferred browser (`dotfiles-app browser`) |
 
 **`Hyper+W` → Window Management:**
 | Key | Action |
@@ -715,7 +712,7 @@ lg                             # Lazygit alias
 
 - `<leader>wa` - Add workspace folder
 - `<leader>wl` - List workspaces
-- `gt/gT` - Switch tabs
+- `<leader>tn` / `<leader>tp` - Switch tabs
 
 **Hyper Key (CapsLock) → AeroSpace Workspaces:**
 

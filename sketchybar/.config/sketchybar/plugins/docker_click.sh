@@ -8,6 +8,8 @@
 source "$CONFIG_DIR/colors.sh"
 
 DOCKER=$(command -v docker || echo "/usr/local/bin/docker")
+# shellcheck source=../timeout.sh
+source "$CONFIG_DIR/timeout.sh"
 
 open_dashboard() {
     open -a 'Docker Desktop' && sleep 0.3 && open docker-desktop://dashboard/containers
@@ -21,13 +23,17 @@ fi
 # Start fresh: drop any prior rows, then toggle the popup.
 args=(--remove '/docker.row\.*/' --set docker popup.drawing=toggle)
 
-if ! timeout 2s "$DOCKER" info >/dev/null 2>&1; then
+with_timeout 2s "$DOCKER" info >/dev/null 2>&1
+info_status=$?
+if [ "$info_status" -ne 0 ]; then
+    not_ready="Docker not running"
+    timed_out "$info_status" && not_ready="Docker not responding"
     args+=(--add item docker.row.0 popup.docker
-           --set docker.row.0 label="Docker not running" label.color="$GREY"
+           --set docker.row.0 label="$not_ready" label.color="$GREY"
                  icon.drawing=off background.drawing=off
                  click_script="sketchybar --set docker popup.drawing=off")
 else
-    DATA=$(timeout 3s "$DOCKER" ps --format "{{.Names}}|{{.Status}}" 2>/dev/null)
+    DATA=$(with_timeout 3s "$DOCKER" ps --format "{{.Names}}|{{.Status}}" 2>/dev/null)
     if [ -z "$DATA" ]; then
         args+=(--add item docker.row.0 popup.docker
                --set docker.row.0 label="No running containers" label.color="$GREY"

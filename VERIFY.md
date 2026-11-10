@@ -237,7 +237,7 @@ readlink "$HOME/Library/Application Support/espanso/match/base.yml" 2>/dev/null 
 
 # All 3 triggers loaded (:dt :ts :sig)
 TRIGGER_COUNT=$(espanso match list 2>/dev/null | grep -c "^:")
-[ "$TRIGGER_COUNT" -ge 5 ] && \
+[ "$TRIGGER_COUNT" -ge 3 ] && \
   echo "OK $TRIGGER_COUNT espanso triggers loaded" || \
   echo "FAIL only $TRIGGER_COUNT triggers"
 ```
@@ -261,19 +261,14 @@ pgrep -x sketchybar &>/dev/null && \
 brew services list | grep sketchybar | grep -q "started\|none" && \
   echo "OK Sketchybar brew service registered" || echo "WARN Sketchybar service state unclear"
 
-# Custom claude indicator item exists
-sketchybar --query claude 2>&1 | grep -q '"name"' && \
-  echo "OK claude bar item registered" || echo "FAIL claude item missing"
-
-# ccusage cache populates (8s timeout — first run)
-[ -x "$HOME/.bun/bin/ccusage" ] && \
-  echo "OK ccusage installed" || echo "FAIL ccusage missing — run: bun install -g ccusage"
+# Workspace items registered
+sketchybar --query bar 2>/dev/null | jq -e '[.items[]? | select(startswith("space."))] | length > 0' >/dev/null && \
+  echo "OK Sketchybar workspace items registered" || echo "FAIL Sketchybar has no space.* workspace items"
 ```
 
 **If Sketchybar fails:**
 - `brew services restart sketchybar` — full restart
 - `sketchybar --reload` — partial reload (config only)
-- `bun install -g ccusage` — install missing usage parser
 
 ---
 
@@ -298,7 +293,7 @@ GALLERY_COUNT=$(ls "$HOME/Pictures/Wallpapers/"[0-9][0-9]-*.jpg 2>/dev/null | wc
 # Last rotation log entry
 [ -f "$HOME/Library/Logs/wallpaper-rotate.log" ] && \
   echo "OK rotation log: $(tail -1 ~/Library/Logs/wallpaper-rotate.log)" || \
-  echo "INFO no log yet (agent fires on next hour boundary)"
+  echo "INFO no log yet — run 'wpn' to rotate once"
 ```
 
 **If wallpaper system fails:**
@@ -348,14 +343,14 @@ After running all checks, report to user:
 
 ```
 "Verification complete:
-  • Critical tools: <N>/26 OK
+  • Critical tools: <N>/23 OK
   • Shell setup: <X>/5 OK
-  • Symlinks: <Y>/9 OK
-  • LaunchAgents: <Z>/4 OK
+  • Symlinks: <Y>/10 OK
+  • LaunchAgents: <Z>/6 OK
   • Tmux: <A>/2 OK
   • Neovim: <B>/3 OK
   • Espanso: <C>/3 OK
-  • Sketchybar: <D>/4 OK
+  • Sketchybar: <D>/3 OK
   • Wallpaper: <E>/4 OK
   • Atuin: <G>/1 OK
   • Shell startup: <Nms>

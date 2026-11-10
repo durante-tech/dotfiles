@@ -401,9 +401,9 @@ Today you:
 - Day 6-7: Practice on real projects
 
 **Resources for Tomorrow:**
-- [Daily Cheatsheet](daily-cheatsheet.md) - Keep this open!
-- [Editing Workflows](workflows/editing.md) - Deep dive
-- [Navigation Workflows](workflows/navigation.md) - Master movement
+- [Daily Cheatsheet](../neovim/daily-cheatsheet.md) - Keep this open!
+- [Editing Workflows](../neovim/workflows/editing.md) - Deep dive
+- [Navigation Workflows](../neovim/workflows/navigation.md) - Master movement
 
 ## Common First Day Questions
 
@@ -417,7 +417,7 @@ A: Normal for day 1! Speed comes in week 2-3. Focus on correctness first.
 A: Try to avoid it! Keyboard-only builds muscle memory faster.
 
 **Q: "What if I forget a key?"**
-A: Keep [Daily Cheatsheet](daily-cheatsheet.md) open on second monitor or printed.
+A: Keep [Daily Cheatsheet](../neovim/daily-cheatsheet.md) open on second monitor or printed.
 
 **Q: "Can I use my old editor for urgent work?"**
 A: Yes! Use Neovim for learning, fallback for deadlines. You'll transition naturally.
@@ -438,4 +438,4 @@ You completed day 1! That's the hardest part. Every day gets easier and faster.
 
 **Final Tip:** Don't try to learn everything at once. Master one workflow per day. Slow progress is still progress!
 
-**See you tomorrow! Check out [Daily Cheatsheet](daily-cheatsheet.md) before bed to review.**
+**See you tomorrow! Check out [Daily Cheatsheet](../neovim/daily-cheatsheet.md) before bed to review.**

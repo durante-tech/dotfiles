@@ -18,21 +18,21 @@ search_with_zoxide() {
         while IFS= read -r zdir; do
             found=$(fd --type f -I -H -E .git -E .git-crypt -E .cache -E .backup -E .vscode "$1" "$zdir" 2>/dev/null)
             if [ -n "$found" ]; then
-                lines="$lines$found\n"
+                lines="${lines}${found}"$'\n'
             fi
         done < <(zoxide query -l)
-        lines="${lines%?}"  #trim trailing newline
+        lines="${lines%$'\n'}"  # trim the one trailing newline
 
         if [ -z "$lines" ]; then
             echo "No matches found." >&2
             return
         fi
 
-        line_count="$(echo "$lines" | wc -l | xargs)"
+        line_count="$(printf '%s\n' "$lines" | wc -l | xargs)"
         if [ "$line_count" -eq 1 ]; then
             file="$lines"
         else
-            file="$(echo -e "$lines" | fzf --query="$1" --height=70% --preview='bat -n --color=always --line-range :500 {}' --no-sort)"
+            file="$(printf '%s\n' "$lines" | fzf --query="$1" --height=70% --preview='bat -n --color=always --line-range :500 {}' --no-sort)"
         fi
 
         if [ -n "$file" ]; then

@@ -108,7 +108,7 @@ Ctrl+b then c
 
 **Switch between windows:**
 ```
-Ctrl+b then n  # Next window
+Ctrl+b then w  # Window list (pick one; `n` is New session here)
 Ctrl+b then p  # Previous window
 Ctrl+b then 1-9  # Go to window number (your config starts at 1, not 0)
 ```
@@ -257,7 +257,7 @@ tmux attach -t myapp
 | **Windows** | |
 | `c` | Create window |
 | `,` | Rename window |
-| `n` | Next window |
+| `w` | Window list |
 | `p` | Previous window |
 | `1-9` | Go to window number (starts at 1) |
 | **Panes** | |
@@ -265,7 +265,7 @@ tmux attach -t myapp
 | `-` | Split horizontal |
 | `m` | Maximize pane |
 | `x` | Close pane |
-| `h/j/k/l` | Resize panes |
+| `H/J/K/L` | Resize panes |
 | **Other** | |
 | `v` | Copy mode |
 | `r` | Reload config |

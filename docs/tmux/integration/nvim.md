@@ -46,7 +46,7 @@ set -g @plugin "christoomey/vim-tmux-navigator"
 
 **Neovim side** (you need this plugin in your Neovim config):
 ```lua
--- lua/sethy/plugins/vim-tmux-navigator.lua
+-- already declared in lua/sethy/plugins/init.lua
 return {
   "christoomey/vim-tmux-navigator",
   lazy = false,
@@ -610,12 +610,12 @@ nvim
 
 **Nested tmux:**
 - **Local prefix:** `C-b`
-- **Remote prefix:** `C-b b` (send prefix to inner tmux)
+- **Remote prefix:** `C-b C-b` (send prefix to inner tmux)
 
 **Example:**
 ```
 C-b c                   # New window in LOCAL tmux
-C-b b c                 # New window in REMOTE tmux
+C-b C-b c               # New window in REMOTE tmux
 ```
 
 ### Workflow 4: Learning New Codebase

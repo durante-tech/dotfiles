@@ -108,7 +108,7 @@ C-b f                # Sessionizer - find projects
 ```bash
 C-b |                # Split vertically
 C-b -                # Split horizontally
-C-b h/j/k/l          # Resize panes (vim-style)
+C-b H/J/K/L          # Resize panes (vim-style, capital letters)
 C-b m                # Maximize pane (zoom)
 C-b x                # Close pane
 ```
@@ -117,7 +117,7 @@ C-b x                # Close pane
 ```bash
 C-b c                # Create window
 C-b ,                # Rename window
-C-b n                # Next window
+C-b w                # Window list (pick one)
 C-b p                # Previous window
 C-b 1-9              # Go to window 1-9 (starts at 1!)
 ```
@@ -155,7 +155,7 @@ C-b o               # Switch between them (SessionX)
 C-b |               # Split vertically
 # Left: run nvim
 # Right: run tests
-C-b h/l             # Resize as needed
+C-b H/L             # Resize as needed
 ```
 
 ### "My SSH connection dropped!"
@@ -203,9 +203,9 @@ PREFIX: Ctrl+b (C-b)
 SESSIONS:              PANES:                 WINDOWS:
 C-b D  Detach          C-b |  Split vert     C-b c  New
 C-b o  SessionX        C-b -  Split horiz    C-b ,  Rename
-C-b f  Sessionizer     C-b m  Maximize       C-b n  Next
+C-b f  Sessionizer     C-b m  Maximize       C-b w  List
 C-b n  New session     C-b x  Close          C-b p  Previous
-                       C-b hjkl Resize        C-b 1-9 Go to
+                       C-b HJKL Resize        C-b 1-9 Go to
 
 COPY:                  FLOATING:              OTHER:
 C-b v  Copy mode       C-b C-g  Lazygit      C-b r  Reload config

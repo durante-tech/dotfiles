@@ -12,10 +12,10 @@ Complete installation guide for setting up a new Apple Silicon Mac with these do
 
 ## Quick Start (Automated)
 
-Clone first so the installer can load its shared helpers:
+Clone first so the installer can load its shared helpers (`<repo-url>` is this repository's clone URL):
 
 ```bash
-git clone https://github.com/durante-tech/dotfiles.git ~/dotfiles
+git clone <repo-url> ~/dotfiles
 cd ~/dotfiles
 ./install.sh
 ```
@@ -52,7 +52,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 
 ```bash
 brew install git
-git clone https://github.com/durante-tech/dotfiles.git ~/dotfiles
+git clone <repo-url> ~/dotfiles
 cd ~/dotfiles
 ```
 
@@ -103,8 +103,8 @@ source ~/.zprofile
 # Just run:
 mise install            # installs versions pinned in the global config
 
-# Or pin a specific version manually:
-mise use --global node@latest python@3.12
+# To change versions, edit mise/.config/mise/config.toml in the repo, then `mise install`.
+# (`mise use --global` writes through the stow symlink into that tracked file.)
 ```
 
 ### 3. Install Tmux Plugin Manager
@@ -162,7 +162,7 @@ Mason will automatically install LSP servers on first launch. Wait for installat
 
 ### CLI Tools
 - **Core Utils**: coreutils, bat, fd, ripgrep, tree, fzf, zoxide
-- **Development**: neovim, git, lazygit, tmux, node, mise, fnm, pyenv, lua, sqlite
+- **Development**: neovim, git, lazygit, tmux, node, mise, lua, sqlite
 - **Shell**: zsh-autosuggestions, zsh-syntax-highlighting, starship
 
 ### GUI Applications (via Homebrew Cask)
@@ -173,8 +173,6 @@ Mason will automatically install LSP servers on first launch. Wait for installat
 
 ### Language/Version Managers
 - **mise**: Polyglot version manager (primary — replaces fnm + pyenv + nvm)
-- **fnm**: Fast Node manager (kept as fallback during mise rollout)
-- **pyenv**: Python version manager (kept as fallback)
 - **Bun**: Alternative JavaScript runtime
 - **Deno**: JavaScript/TypeScript runtime
 - **UV**: Python package manager
@@ -229,17 +227,16 @@ The install script automatically configures:
 - System Settings → Trackpad → Scroll & Zoom → Enable "Natural scrolling"
 
 #### 2. Keyboard
-- System Settings → Keyboard → Keyboard Shortcuts → Modifier Keys → Remap Caps Lock to Control
+- Leave Caps Lock at its macOS default — Karabiner remaps it (hold = Hyper layer, tap = Escape)
 
 #### 3. 1Password SSH Agent (if using 1Password)
 - Enable 1Password SSH Agent in 1Password Settings
-- The dotfiles are already configured to use it (`.zprofile` line 23)
+- The dotfiles are already configured to use it (`zsh/.zprofile`, `SSH_AUTH_SOCK`)
 
 #### 4. Permissions
 Grant permissions when prompted for:
 - Raycast (Accessibility)
 - AeroSpace (Accessibility)
-- WezTerm (Full Disk Access if needed)
 
 ---
 
@@ -292,7 +289,7 @@ in `.zshrc`. If `which node` returns nothing:
 ```bash
 mise doctor              # diagnose mise setup
 mise install             # install versions pinned in config
-mise use --global node@latest python@3.12   # pin globally if config absent
+# edit mise/.config/mise/config.toml, then `mise install` (not `mise use --global`: it edits the tracked repo file)
 ```
 
 ### Issue: Neovim LSP not working
@@ -301,13 +298,13 @@ mise use --global node@latest python@3.12   # pin globally if config absent
 ```vim
 :Mason
 ```
-Install missing servers manually or run `:MasonInstallAll`
+Install missing servers manually, or restart Neovim (mason.lua `ensure_installed` runs on launch)
 
 ### Issue: Tmux plugins not loading
 
 **Solution**:
 1. Make sure TPM is installed: `ls ~/.config/tmux/.tmux/plugins/tpm`
-2. In tmux, press `prefix + I` (Ctrl+a, then Shift+i)
+2. In tmux, press `prefix + I` (Ctrl+b, then Shift+i)
 
 ### Issue: Stow conflicts
 
@@ -319,13 +316,6 @@ mv ~/.zshrc ~/dotfiles_backup/
 # Then re-run stow
 cd ~/dotfiles
 stow -t ~ zsh nvim tmux starship aerospace
-```
-
-### Issue: Scripts not executable
-
-**Solution**:
-```bash
-chmod +x ~/scripts/*
 ```
 
 ---

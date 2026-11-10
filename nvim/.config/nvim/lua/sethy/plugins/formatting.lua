@@ -13,7 +13,9 @@ return {
             sh = { "shfmt" },
             bash = { "shfmt" },
             toml = { "taplo" },
-            sql = { "sql-formatter" },
+            -- conform's id is sql_formatter; "sql-formatter" is only the Mason package
+            -- name, and as an id it is an unknown formatter that never runs.
+            sql = { "sql_formatter" },
             c = { "clang-format" },
             cpp = { "clang-format" },
         }

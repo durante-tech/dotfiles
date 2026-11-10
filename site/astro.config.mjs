@@ -6,18 +6,23 @@ import react from '@astrojs/react';
 
 import sitemap from '@astrojs/sitemap';
 
+// The repository this site documents. GitHub Actions and Vercel both export
+// the slug at build time; without it the GitHub link and edit links are left
+// out, and nothing else changes.
+const slug = process.env.GITHUB_REPOSITORY
+    ?? (process.env.VERCEL_GIT_REPO_OWNER && process.env.VERCEL_GIT_REPO_SLUG
+        ? `${process.env.VERCEL_GIT_REPO_OWNER}/${process.env.VERCEL_GIT_REPO_SLUG}`
+        : undefined);
+const repoUrl = slug ? `https://github.com/${slug}` : undefined;
+
 // https://astro.build/config
 export default defineConfig({
     site: 'https://dotfiles-mastery.vercel.app',
     integrations: [starlight({
         title: 'Dotfiles Mastery',
         description: 'A structured learning path from fresh macOS to keyboard-driven productivity.',
-        social: [
-            { icon: 'github', label: 'GitHub', href: 'https://github.com/durante-tech/dotfiles' },
-        ],
-        editLink: {
-            baseUrl: 'https://github.com/durante-tech/dotfiles/edit/main/site/',
-        },
+        social: repoUrl ? [{ icon: 'github', label: 'GitHub', href: repoUrl }] : [],
+        ...(repoUrl ? { editLink: { baseUrl: `${repoUrl}/edit/main/site/` } } : {}),
         components: {
             Sidebar: './src/components/overrides/CustomSidebar.astro',
             Head: './src/components/overrides/CustomHead.astro',

@@ -8,8 +8,12 @@ INTERFACE="${INTERFACE:-en0}"
 
 # Single netstat call instead of two (optimized)
 NETSTAT_OUTPUT=$(netstat -ib | grep -E "^$INTERFACE" | head -1)
-BYTES_IN=$(echo "$NETSTAT_OUTPUT" | awk '{print $7}')
-BYTES_OUT=$(echo "$NETSTAT_OUTPUT" | awk '{print $10}')
+# Count from the END of the row. A link row normally has an Address column
+# (11 fields) but a utun* default route — a full-tunnel VPN — has none (10), so
+# fixed $7/$10 read Opkts and Coll there and the item showed packet counts.
+# Ibytes is always 4 fields before the last (Coll), Obytes always 1 before it.
+BYTES_IN=$(echo "$NETSTAT_OUTPUT" | awk '{print $(NF-4)}')
+BYTES_OUT=$(echo "$NETSTAT_OUTPUT" | awk '{print $(NF-1)}')
 
 # Cache file for previous values. Kept under TMPDIR (per-user, private under
 # launchd) rather than world-writable /tmp: the cached values are fed straight

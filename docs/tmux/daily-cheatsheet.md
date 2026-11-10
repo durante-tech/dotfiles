@@ -12,7 +12,7 @@ Quick reference for the most common tmux operations. Print this or keep it open!
 | Split horizontal | `C-b -` | Top and bottom |
 | Switch projects | `C-b o` | SessionX fuzzy finder |
 | New window | `C-b c` | Like a new tab |
-| Next/prev window | `C-b n/p` | Navigate tabs |
+| Prev window / window list | `C-b p` / `C-b w` | Navigate tabs (`C-b n` = New session here) |
 | **Detach** | `C-b D` | **Capital D!** Leave running |
 | **Config menu** | `C-b d` | **Lowercase!** Edit dotfiles |
 | Maximize pane | `C-b m` | Zoom toggle |
@@ -54,7 +54,7 @@ Quick reference for the most common tmux operations. Print this or keep it open!
 ### Navigation
 | Keys | Action |
 |------|--------|
-| `C-b n` | Next window |
+| `C-b w` | Window list |
 | `C-b p` | Previous window |
 | `C-b l` | Last window (toggle) |
 | `C-b 1-9` | Go to window 1-9 (starts at 1!) |
@@ -81,10 +81,10 @@ Quick reference for the most common tmux operations. Print this or keep it open!
 ### Resizing
 | Keys | Action |
 |------|--------|
-| `C-b h` | Resize left |
-| `C-b j` | Resize down |
-| `C-b k` | Resize up |
-| `C-b l` | Resize right |
+| `C-b H` | Resize left |
+| `C-b J` | Resize down |
+| `C-b K` | Resize up |
+| `C-b L` | Resize right |
 | `C-b z` | Toggle zoom (alias: `C-b m`) |
 
 ### Managing
@@ -209,7 +209,7 @@ C-b 1/2            # Switch between them
 C-b |              # Split vertical
 C-b -              # Split horizontal (right pane)
 C-h/j/k/l          # Navigate
-C-b h/j/k/l        # Resize
+C-b H/J/K/L        # Resize
 C-b m              # Zoom one pane
 ```
 
@@ -261,10 +261,10 @@ PREFIX: Ctrl+b
 SESSIONS              WINDOWS              PANES
 C-b D  Detach         C-b c  New           C-b |  Split vert
 C-b d  Config menu    C-b ,  Rename        C-b -  Split horiz
-C-b o  SessionX       C-b n  Next          C-b m  Maximize
+C-b o  SessionX       C-b w  Windows       C-b m  Maximize
 C-b f  Sessionizer    C-b p  Previous      C-b x  Close
 C-b n  New session    C-b 1-9 Go to #      C-h/j/k/l Navigate
-C-b $  Rename sess                         C-b h/j/k/l Resize
+C-b $  Rename sess                         C-b H/J/K/L Resize
 
 COPY MODE             FLOATING             SYSTEM
 C-b v  Enter          C-b C-g Lazygit      C-b r  Reload
@@ -287,7 +287,7 @@ Click+drag: copy
 - [ ] Use `C-b |` and `C-b -` for splits
 - [ ] Use `C-h/j/k/l` for navigation
 - [ ] Detach (`C-b d`) and reattach (`tmux attach`)
-- [ ] Create windows (`C-b c`) and switch (`C-b n/p`)
+- [ ] Create windows (`C-b c`) and switch (`C-b p`, `C-b w`, `C-b 1-9`)
 
 **Week 2:**
 - [ ] Use named sessions (`tmux new -s name`)

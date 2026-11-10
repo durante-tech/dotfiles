@@ -22,7 +22,7 @@ If you just want everything installed:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/durante-tech/dotfiles.git ~/dotfiles
+git clone <repo-url> ~/dotfiles
 
 # 2. Run the installer
 cd ~/dotfiles
@@ -51,7 +51,7 @@ The macOS package manager. Installs to `/opt/homebrew` (Apple Silicon) or `/usr/
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-### Step 3: Homebrew Formulae (79 packages)
+### Step 3: Homebrew Formulae (84 packages)
 
 Installs all CLI tools in categories:
 
@@ -60,7 +60,7 @@ Installs all CLI tools in categories:
 | **Shell** | zsh-autosuggestions, zsh-syntax-highlighting, stow, starship, atuin, zoxide, fzf | Shell plugins and prompt |
 | **File tools** | bat, fd, ripgrep, eza, tree, jq, yazi, broot, w3m | Modern file operations |
 | **Development** | git, lazygit, git-delta, neovim, tmux, tree-sitter, prettier | Core dev tools |
-| **Languages** | node, fnm, pyenv, go, deno, sqlite, lua, luarocks | Language runtimes |
+| **Languages** | node, mise, go, deno, sqlite, lua, luarocks | Language runtimes |
 | **Modern CLI** | procs, bottom, curlie, dust, duf, onefetch, fx, navi, tldr, direnv | Rust/Go replacements |
 | **Image/PDF** | pngpaste, imagemagick, poppler, ghostscript | For Neovim plugins |
 | **Window mgmt** | borders, sketchybar | macOS UI |
@@ -76,9 +76,8 @@ Installs all CLI tools in categories:
 | Ghostty | Primary terminal emulator |
 | Kitty | Backup terminal |
 | AeroSpace | Tiling window manager |
-| KeyCastr | Show keystrokes on screen |
 | BetterDisplay | External monitor management |
-| LinearMouse | Mouse customization |
+| LinearMouse | Mouse customization (pinned v0.11.2, installed by `scripts/scripts/install-linearmouse.sh`) |
 | Nerd Fonts | JetBrainsMono, Hack, SF Pro |
 
 ### Step 5: Non-Homebrew Tools
@@ -92,8 +91,9 @@ Clones this repository and creates symlinks with GNU Stow:
 
 ```bash
 # Stows all packages:
-# aerospace, atuin, ghostty, karabiner, kitty, mpd, nvim, rmpc,
-# scripts, sketchybar, starship, tmux, w3m, yazi, zed, zsh
+# aerospace, atuin, espanso, fastfetch, ghostty, karabiner, kitty, linearmouse,
+# mise, mpd, nvim, rmpc, scripts, sketchybar, starship, tmux, w3m, wallpapers,
+# yazi, zsh  (the list in stow-packages.txt)
 ```
 
 Each package directory mirrors `$HOME` structure. Stow creates symlinks so configs appear in the right place. See [GNU Stow Guide](/getting-started/gnu-stow/) for details.
@@ -112,7 +112,7 @@ git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/.tmux/plugins/tpm
 nvim --headless "+Lazy! sync" +qa
 ```
 
-Installs ~40 plugins automatically.
+Installs 70 plugins (lazy-lock.json) automatically.
 
 ### Step 9: macOS Defaults
 
@@ -163,7 +163,7 @@ nvim
 | JavaScript/TypeScript | `ts_ls` |
 | Go | `gopls` |
 | Lua | `lua_ls` |
-| HTML | `emmet_ls` |
+| HTML | `emmet_language_server` |
 | CSS | `css-lsp` |
 
 ### 4. Grant macOS Permissions
@@ -183,9 +183,8 @@ If you use 1Password for SSH keys, the config already points to the right socket
 ### 6. Set Up Node.js
 
 ```bash
-# FNM is already installed, install a Node version:
-fnm install --lts
-fnm default lts-latest
+# mise installs the Node + Python versions pinned in mise/.config/mise/config.toml:
+mise install
 
 # Verify
 node --version

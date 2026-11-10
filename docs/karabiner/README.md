@@ -4,13 +4,12 @@ Keyboard remapping with Hyperkey system for global shortcuts.
 
 ## The Hyperkey
 
-**CapsLock** is remapped to a "Hyperkey" (Ctrl+Shift+Cmd+Alt simultaneously).
+**CapsLock** is remapped to a "Hyperkey": held, it activates a Hyper variable layer (no real Ctrl+Shift+Cmd+Alt is emitted).
 
 | Input | Output |
 |-------|--------|
 | CapsLock (tap) | Escape |
-| CapsLock (hold) | Hyper (Ctrl+Shift+Cmd+Alt) |
-| Hyper+Q | Control |
+| CapsLock (hold) | Hyper layer (variable, not a modifier chord) |
 
 ## Why Hyperkey?
 
@@ -25,11 +24,12 @@ Configure app shortcuts with Hyper+letter combinations:
 
 | Key | Typical Mapping |
 |-----|-----------------|
-| `Hyper+T` | Terminal |
-| `Hyper+B` | Browser |
-| `Hyper+C` | Code editor |
-| `Hyper+S` | Slack |
-| `Hyper+M` | Music |
+| `Hyper+T` / `B` / `D` / `A` / `M` / `1` / `2` | AeroSpace workspace T / B / D / A / M / 1 / 2 (sends `Alt+key`) |
+| `Hyper+N` | Notes (`dotfiles-workspace notes`) |
+| `Hyper+E` | AeroSpace workspace E (Email) |
+| `Hyper+X` | Raycast AI Chat |
+| `Hyper+,` / `Hyper+.` | Raycast Focus session / Raycast Notes |
+| Hold `Hyper+O`, tap `n` / `d` / `i` / `p` / `c` (releasing `O` first cancels the layer) | Preferred notes app / Discord / Messages / Music / preferred browser |
 
 ## Sub-Layers
 

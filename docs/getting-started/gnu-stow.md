@@ -80,9 +80,13 @@ ls -la ~/.config/nvim
 |---------|--------|-------------------|
 | `aerospace` | `~/.config/aerospace/` | Window manager |
 | `atuin` | `~/.config/atuin/` | Shell history |
+| `espanso` | `~/Library/Application Support/espanso/` | Text expander |
+| `fastfetch` | `~/.config/fastfetch/` | System info banner |
 | `ghostty` | `~/.config/ghostty/` | Terminal emulator |
 | `karabiner` | `~/.config/karabiner/` | Keyboard remapping |
 | `kitty` | `~/.config/kitty/` | Backup terminal |
+| `linearmouse` | `~/.config/linearmouse/` | Pointer/scroll config |
+| `mise` | `~/.config/mise/` | Node + Python versions |
 | `mpd` | `~/.config/mpd/` | Music daemon |
 | `nvim` | `~/.config/nvim/` | Editor |
 | `rmpc` | `~/.config/rmpc/` | Music player TUI |
@@ -91,8 +95,8 @@ ls -la ~/.config/nvim
 | `starship` | `~/.config/starship/` | Shell prompt |
 | `tmux` | `~/.config/tmux/` | Terminal multiplexer |
 | `w3m` | `~/.w3m/` | Terminal browser |
+| `wallpapers` | (shaders + gallery README) | Plash shaders |
 | `yazi` | `~/.config/yazi/` | File manager |
-| `zed` | `~/.config/zed/` | Experimental editor |
 | `zsh` | `~/.zshrc`, `~/.zprofile` | Shell config |
 
 ## Common Operations
@@ -158,7 +162,7 @@ To create your own dotfiles based on this system:
 
 ```bash
 # 1. Fork on GitHub (or clone and change remote)
-git clone https://github.com/durante-tech/dotfiles.git ~/dotfiles
+git clone <repo-url> ~/dotfiles
 cd ~/dotfiles
 git remote set-url origin git@github.com:YOUR_USER/dotfiles.git
 

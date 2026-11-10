@@ -58,8 +58,8 @@ C-b :new-window -c ~/other-project               # Different directory
 
 **Next/previous window:**
 ```
-C-b n                   # Next window (number increases)
 C-b p                   # Previous window (number decreases)
+C-b w                   # Window list (no next-window binding: C-b n is New session)
 ```
 
 **How it works:**
@@ -240,7 +240,7 @@ set -g base-index 1
 C-b r
 ```
 
-**Your config likely starts at 0** (check your tmux.conf)
+**Your config starts at 1** (`set -g base-index 1` in tmux.conf)
 
 ### Window Reordering
 
@@ -675,7 +675,7 @@ Window 3: 📊 logs
 | **Creating** | |
 | `C-b c` | Create window |
 | **Navigating** | |
-| `C-b n` | Next window |
+| `C-b w` | Window list |
 | `C-b p` | Previous window |
 | `C-b 1-9` | Go to window N (starts at 1!) |
 | `C-b '` | Prompt for window number |
@@ -748,7 +748,7 @@ set -g base-index 1     # Start at 1 instead of 0
 C-b r                   # Reload config
 ```
 
-**"Want to switch faster than C-b n/p"**
+**"Want to switch faster than C-b p/w"**
 ```
 # Use direct numbers: C-b 1, C-b 2, C-b 3
 # Or SessionX: C-b o

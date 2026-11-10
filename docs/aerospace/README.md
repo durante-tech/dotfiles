@@ -62,8 +62,8 @@ Workspaces are pinned to monitors:
 
 | Workspace | Monitor |
 |-----------|---------|
-| 1, A, B, D, E, M, N | Built-in Retina Display |
-| 2, T | PORTRAIT-MONITOR |
+| 1, A, B, D, E, N | Built-in Retina Display |
+| 2, M, T | PORTRAIT-MONITOR |
 
 ## Auto-Assignments
 
@@ -90,6 +90,6 @@ Apps automatically move to workspaces:
 aerospace/templates/aerospace.toml.template
 ```
 
-Edit the template and run `scripts/scripts/render-aerospace.sh`, then
+Edit the template and run `scripts/scripts/render-aerospace.sh` from this checkout (it renders the checkout it lives in unless `DOTFILES_DIR` says otherwise), then
 `aerospace reload-config`. There are nine persistent workspaces: 1, 2, A, B,
 D, E, M, N, and T. `Alt+Shift+Tab` focuses the next monitor.

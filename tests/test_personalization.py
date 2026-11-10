@@ -14,7 +14,7 @@ sys.path.insert(0, str(REPO/'scripts/scripts/lib'))
 from dotfiles_preferences.envfile import PreferenceError, project, literal_assignments, BEGIN, END
 from dotfiles_preferences.model import Preferences, FIELDS
 from dotfiles_preferences.render import aerospace, parse_toml
-from dotfiles_preferences.storage import Plan, restore, atomic
+from dotfiles_preferences.storage import Plan, restore, atomic, check_paths
 from dotfiles_preferences.apps import discover, launch, workspace, require_selected
 
 
@@ -120,6 +120,38 @@ CUSTOM='quotes " and ; $(not-an-execution)'
         self.assertEqual(finder['if']['app-id'],'com.apple.finder');self.assertEqual(finder['run'],'layout floating')
         self.assertIn("'"+str(self.repo/'scripts/scripts/dotfiles-app')+"' terminal --new",document['mode']['main']['binding']['alt-enter'])
         self.assertNotIn('@DOTFILES_WS_',text)
+
+    def test_every_assignment_in_one_statement_is_read(self):
+        values,dynamic=literal_assignments('export FOO=1 DOTFILES_MONITOR_BUILTIN=Panel\n')
+        self.assertEqual(values,{'FOO':'1','DOTFILES_MONITOR_BUILTIN':'Panel'});self.assertEqual(dynamic,set())
+        values,dynamic=literal_assignments('A=1 B="$(date)"\n')
+        self.assertEqual(values,{'A':'1'});self.assertEqual(dynamic,{'B'})
+        # An environment prefix on a command is not an assignment.
+        values,dynamic=literal_assignments('A=1 some-command\n')
+        self.assertEqual(values,{});self.assertEqual(dynamic,{'A'})
+
+    def test_symlinked_repository_root_is_allowed_but_not_symlinks_below_it(self):
+        link=self.root/'link';link.symlink_to(self.repo,target_is_directory=True)
+        linked=Preferences(link,self.config,self.root/'home')
+        target=link/'aerospace/.config/aerospace/aerospace.toml'
+        check_paths(linked,[target])
+        real=self.root/'elsewhere';real.mkdir()
+        (link/'aerospace/.config').symlink_to(real,target_is_directory=True)
+        with self.assertRaises(PreferenceError):check_paths(linked,[target])
+
+    def test_validator_that_cannot_run_is_not_reported_as_invalid_toml(self):
+        # Only the Bun fallback (Python < 3.11) can fail to run.
+        if sys.version_info >= (3, 11):self.skipTest('tomllib is used directly')
+        refusing=self.stub('bun','import sys\nsys.stderr.write("wrapper refused\\n")\nsys.exit(127)\n')
+        with patch('dotfiles_preferences.render.shutil.which',return_value=str(refusing)):
+            with self.assertRaises(PreferenceError) as raised:parse_toml('a = 1\n')
+        self.assertIn('could not run Bun',str(raised.exception))
+        self.assertIn('wrapper refused',str(raised.exception))
+        self.assertNotIn('not valid TOML',str(raised.exception))
+
+    def test_invalid_toml_is_still_reported_as_invalid(self):
+        with self.assertRaises(PreferenceError) as raised:parse_toml('a = = 1\n')
+        self.assertIn('not valid TOML',str(raised.exception))
 
     def test_monitor_patterns_are_serialized_as_data(self):
         pattern='^Display "Quoted" \\(2\\) | O\'Brien$'

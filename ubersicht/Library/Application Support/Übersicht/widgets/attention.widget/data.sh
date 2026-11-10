@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# attention.widget/data.sh — DuranteOS operator action queue ("what needs me now").
+# attention.widget/data.sh — operator action queue ("what needs me now").
 # Row builders: checks-failing (gh), decision-pending (fleet-decisions.jsonl),
 # work-stuck (work.json, absorbs aging-watch thresholds), dlq (.pending/.quarantine),
 # ci-green-queued (gh, informational — deploy line owns merges), corrections.
@@ -12,11 +12,10 @@ from datetime import datetime, timezone
 
 HOME = Path.home()
 GH = "/opt/homebrew/bin/gh"  # MUST be absolute — Übersicht PATH lacks homebrew
-REPOS = [
-    ("durante-tech/dos", "dos"),
-    ("durante-tech/cc-durante-studio", "cc"),
-    ("durante-tech/dos-studio", "studio"),
-]
+# Watched repositories come from the environment, never from this file:
+#   ATTENTION_WIDGET_REPOS="owner/repo:label owner/other:label2"
+REPOS = [tuple(entry.split(":", 1)) if ":" in entry else (entry, entry.split("/")[-1])
+         for entry in os.environ.get("ATTENTION_WIDGET_REPOS", "").split()]
 FAILING = {"FAILURE", "TIMED_OUT", "CANCELLED", "ACTION_REQUIRED", "ERROR", "STARTUP_FAILURE"}
 CACHE = HOME / ".claude" / "MEMORY" / "STATE" / "attention-widget-cache.json"
 FLEET_DECISIONS = HOME / "Durante" / "MEMORY" / "STATE" / "fleet-decisions.jsonl"

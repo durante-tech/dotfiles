@@ -1,4 +1,4 @@
-// attention.widget — DuranteOS operator action queue ("what needs me now").
+// attention.widget — operator action queue ("what needs me now").
 // Data source: data.sh emits JSON (state, rows[], total_count, hidden, gh_state, gh_age, now).
 // Visual language: matches dailybrief.widget. Catppuccin Mocha · red accent (attention).
 // CSS in className uses standard CSS (semicolons + braces) — Übersicht parser

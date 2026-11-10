@@ -17,6 +17,11 @@ set -e
 # An `if` rather than `[ -r ... ] && . ...`: under `set -e` the && form exits
 # non-zero when the file is absent, which would abort the script on a machine
 # that has simply never run personalize.sh.
+#
+# What the caller selected is recorded FIRST: the checkout install.sh passed in,
+# else the one this script lives in. Sourcing personal.env may then replace
+# DOTFILES_DIR, and check_runtime_root needs both sides to see a stale value.
+DOTFILES_SELECTED_ROOT="${DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
 if [ -r "$HOME/.config/dotfiles/personal.env" ]; then
     # shellcheck disable=SC1091  # user-generated, not in the repo
     . "$HOME/.config/dotfiles/personal.env"
@@ -279,8 +284,12 @@ configure_environment() {
         print_info "TPM already installed"
     else
         echo "Installing TPM (Tmux Plugin Manager)..."
-        git clone https://github.com/tmux-plugins/tpm "$HOME/.config/tmux/.tmux/plugins/tpm" 2>/dev/null || true
-        print_success "TPM installed - press prefix + I in tmux to install plugins"
+        if git clone https://github.com/tmux-plugins/tpm "$HOME/.config/tmux/.tmux/plugins/tpm"; then
+            print_success "TPM installed - press prefix + I in tmux to install plugins"
+        else
+            print_warning "TPM clone failed - tmux plugins are not installed"
+            failed=1
+        fi
     fi
 
     # Python venv for nvim's python3 provider (Molten/Jupyter — pynvim).
@@ -807,6 +816,8 @@ verify_config() {
         print_info "No ~/.config/dotfiles/personal.env - run ./personalize.sh for machine-specific values"
     fi
 
+    check_runtime_root || issues=$((issues + 1))
+
     # "All checks passed!" used to print even with warnings on screen, because
     # only hard errors increment $issues. Saying it passed while a warning is
     # visible is the same false-success pattern this triage has been removing.
@@ -819,6 +830,29 @@ verify_config() {
     fi
 
     return $issues
+}
+
+# Deployed scripts, aliases and LaunchAgents cannot derive the repo from their
+# own location (they run through stow symlinks and launchd), so they use
+# DOTFILES_DIR from personal.env, else ~/dotfiles. If that is not the checkout
+# being deployed, everything deploys cleanly and then runs against another tree.
+#
+# Compared by VALUE, read in a clean shell, against what the caller selected
+# BEFORE personal.env was sourced: an assignment that still names an older
+# checkout is exactly the case to catch, and after sourcing it both sides of a
+# naive comparison would be that same stale value.
+check_runtime_root() {
+    local selected="${DOTFILES_SELECTED_ROOT:-$DOTFILES_DIR}" runtime_root="$HOME/dotfiles"
+    if [[ -r "$HOME/.config/dotfiles/personal.env" ]]; then
+        # shellcheck disable=SC2016  # expanded by the child shell, on purpose
+        runtime_root="$(env -u DOTFILES_DIR /bin/bash -c '. "$1" >/dev/null 2>&1; printf %s "${DOTFILES_DIR:-$HOME/dotfiles}"' _ "$HOME/.config/dotfiles/personal.env")"
+    fi
+    if [[ "$(cd "$runtime_root" 2>/dev/null && pwd -P)" != "$(cd "$selected" 2>/dev/null && pwd -P)" ]]; then
+        print_error "Deploying $selected, but deployed scripts will use $runtime_root"
+        echo "  Set in ~/.config/dotfiles/personal.env:  export DOTFILES_DIR=\"$selected\""
+        return 1
+    fi
+    return 0
 }
 
 # ============================================================================

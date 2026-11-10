@@ -16,11 +16,18 @@ FAILURES=0
 # CONFIGURATION
 # =============================================================================
 
-DOTFILES_REPO="https://github.com/durante-tech/dotfiles.git"
-# Clone target / repo root; env var overrides for non-default locations
-# (the configured installation target may differ from this source checkout, so it cannot derive
-# the path from its own location like setup.sh/personalize.sh do).
-DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+# Clone source for the one case below where DOTFILES_DIR names a target that
+# does not exist yet. Empty means "the remote this checkout came from", and is
+# resolved only there: asking git here would run on every --dry-run too.
+DOTFILES_REPO="${DOTFILES_REPO:-}"
+# Repo root: this checkout, unless the environment names another one. It used
+# to default to $HOME/dotfiles regardless of where the script lived, so from a
+# checkout anywhere else `./update.sh` died on "Missing package manifest:
+# ~/dotfiles/stow-packages.txt" and a full install cloned a SECOND copy into
+# ~/dotfiles and deployed that. install.sh cannot run without lib/ beside it
+# (checked below), so it is always inside a checkout — the same derivation
+# setup.sh and personalize.sh use.
+DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
 # TPM lives at a NON-DEFAULT path. tmux.conf relocates it via
 #   set-environment -g TMUX_PLUGIN_MANAGER_PATH ~/.config/tmux/.tmux/plugins
 # and sources it from there on the last line (`run '.../tpm/tpm'`). Cloning to
@@ -127,7 +134,8 @@ Options:
     --skip-macos        Skip macOS defaults configuration
     --force-stow        Pass stow --adopt. RARELY NEEDED: conflicts are backed
                         up automatically. --adopt moves the machine's files INTO
-                        the repo, overwriting tracked config.
+                        the repo, overwriting tracked config. No effect on a
+                        plain --update, which refuses conflicts instead.
     --verbose, -v       Show verbose output (including skipped packages)
 
 Examples:
@@ -247,8 +255,15 @@ fi
 
 if [ ! -d "$DOTFILES_DIR" ]; then
     if [ "$DRY_RUN" = true ]; then
-        print_dry "git clone $DOTFILES_REPO $DOTFILES_DIR"
+        print_dry "git clone ${DOTFILES_REPO:-<origin of this checkout>} $DOTFILES_DIR"
     else
+        if [ -z "$DOTFILES_REPO" ]; then
+            DOTFILES_REPO="$(git -C "$INSTALL_SCRIPT_DIR" remote get-url origin 2>/dev/null || true)"
+        fi
+        if [ -z "$DOTFILES_REPO" ]; then
+            echo "DOTFILES_DIR ($DOTFILES_DIR) does not exist and this checkout has no origin remote to clone from; set DOTFILES_REPO." >&2
+            exit 1
+        fi
         print_step "Cloning dotfiles repository to $DOTFILES_DIR..."
         git clone "$DOTFILES_REPO" "$DOTFILES_DIR"
     fi
@@ -848,6 +863,12 @@ if [ "$ALL_OK" = true ]; then
     print_success "All critical tools installed!"
 else
     print_warn "Some tools missing - check errors above"
+fi
+
+# `--update --with-tools` runs this pipeline instead of dotfiles_update, and so
+# skipped the configuration check every plain update ends with.
+if "$UPDATE_ONLY" && [ "$DRY_RUN" = false ]; then
+    "$DOTFILES_DIR/setup.sh" --check || record_failure "Configuration check reported problems"
 fi
 
 # =============================================================================

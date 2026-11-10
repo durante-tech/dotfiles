@@ -36,8 +36,8 @@ cd ~/projects/myapp && nvim
 
 | Command | What It Does | Example |
 |---------|--------------|---------|
-| `<leader>pf` | Find files by name | Space-f-f, type "user" |
-| `<leader>ps` | Search text in files | Space-f-g, type "function" |
+| `<leader>pf` | Find files by name | Space-p-f, type "user" |
+| `<leader>ps` | Search text in files | Space-p-s, type "function" |
 | `i` | Enter INSERT mode | Press i, start typing |
 | `:w` | Save file | Type :w, press Enter |
 | `:q` | Quit | Type :q, press Enter |
@@ -248,8 +248,8 @@ Complete these to build muscle memory:
 
 Now that you've got the basics:
 
-1. **Keep the [Daily Cheatsheet](daily-cheatsheet.md) open** for reference
-2. **Read [Editing Workflows](workflows/editing.md)** to learn efficient editing
+1. **Keep the [Daily Cheatsheet](../neovim/daily-cheatsheet.md) open** for reference
+2. **Read [Editing Workflows](../neovim/workflows/editing.md)** to learn efficient editing
 3. **Practice 30 minutes daily** - muscle memory is everything
 4. **Add one new keybinding per day** - don't overwhelm yourself
 
@@ -261,6 +261,6 @@ Focus on **accuracy** over speed. Speed comes naturally with practice.
 
 ---
 
-**Stuck?** Check [Troubleshooting](troubleshooting.md) or review [Keybindings Reference](keybindings.md).
+**Stuck?** Check [Troubleshooting](../neovim/troubleshooting.md) or review [Keybindings Reference](../neovim/keybindings.md).
 
-**Ready for more?** Continue to [Daily Cheatsheet](daily-cheatsheet.md).
+**Ready for more?** Continue to [Daily Cheatsheet](../neovim/daily-cheatsheet.md).

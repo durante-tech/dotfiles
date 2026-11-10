@@ -53,7 +53,9 @@ return {
                 },
                 options = {
                     permanent_delete = false,
-                    use_as_default_explorer = true,
+                    -- snacks explorer owns directory buffers (replace_netrw); two
+                    -- plugins hijacking them raced at startup.
+                    use_as_default_explorer = false,
                 },
             })
 
@@ -72,7 +74,7 @@ return {
                 end)
             end
             -- Mini.files available via <leader>em (for "mini")
-            -- Primary file explorer is now Neo-tree (<leader>ee)
+            -- Primary file explorer is the snacks explorer (<leader>ee)
             vim.keymap.set("n", "<leader>em", open_mini_files_left, { desc = "Mini.files explorer" })
             vim.keymap.set("n", "<leader>eM", function()
                 MiniFiles.open(vim.api.nvim_buf_get_name(0), false)

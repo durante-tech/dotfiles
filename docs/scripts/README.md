@@ -19,7 +19,7 @@ tmux-sessionizer       # Direct call
 2. Select a project
 3. Creates or attaches to tmux session named after project
 
-**Keybinding:** `Ctrl+b > F` in tmux
+**Keybinding:** `Ctrl+b f` in tmux
 
 ### fzf-git.sh
 
@@ -58,7 +58,7 @@ Jump to directory with zoxide, then open in Neovim.
 
 1. Create script in `scripts/scripts/`
 2. Make executable: `chmod +x scripts/scripts/myscript`
-3. Available immediately (directory is in PATH)
+3. Link it with `stow -t ~ scripts` (`~/scripts` is on PATH, but new files are not linked until stowed)
 
 ## File Location
 
