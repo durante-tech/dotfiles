@@ -18,26 +18,39 @@ on:
 
 jobs:
   shell-regressions:
-    name: Shell regression fixtures (Python ${{ matrix.python }})
-    runs-on: ubuntu-latest
+    name: Shell regression fixtures (${{ matrix.label }})
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        # 3.9 is what macOS ships as /usr/bin/python3 and what every wrapper
-        # here execs. It has no tomllib, so it is the only leg that exercises
-        # the Bun TOML fallback; on the runner default alone that path, and the
-        # tests guarding it, never ran in CI.
-        python: ['3.9', '3.12']
+        include:
+          - os: ubuntu-latest
+            label: Linux
+          # macOS ships Python 3.9 as /usr/bin/python3, and that is what every
+          # wrapper here execs on the machines this repo targets. It has no
+          # tomllib, so this is the only leg that exercises the Bun TOML
+          # fallback; on Linux alone that path, and the tests guarding it, never
+          # ran in CI. It is a macOS leg rather than setup-python 3.9 because
+          # no 3.9 build exists for the current ubuntu-latest image (26.04).
+          - os: macos-latest
+            label: macOS system Python
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python }}
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: '1.3.14'
-      - name: Install fixture tools
+      - name: Install fixture tools (Linux)
+        if: runner.os == 'Linux'
         run: sudo apt-get update -qq && sudo apt-get install -y -qq zsh stow jq
+      - name: Install fixture tools and select the system Python (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install stow jq
+          mkdir -p "$RUNNER_TEMP/system-python"
+          ln -s /usr/bin/python3 "$RUNNER_TEMP/system-python/python3"
+          echo "$RUNNER_TEMP/system-python" >> "$GITHUB_PATH"
+      - name: Report the Python under test
+        run: python3 --version
       - name: Check Zsh syntax
         run: zsh -n zsh/.zshrc && zsh -n zsh/.zprofile
       - name: Run isolated regression fixtures
