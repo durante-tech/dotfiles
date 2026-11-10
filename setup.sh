@@ -17,6 +17,11 @@ set -e
 # An `if` rather than `[ -r ... ] && . ...`: under `set -e` the && form exits
 # non-zero when the file is absent, which would abort the script on a machine
 # that has simply never run personalize.sh.
+#
+# What the caller selected is recorded FIRST: the checkout install.sh passed in,
+# else the one this script lives in. Sourcing personal.env may then replace
+# DOTFILES_DIR, and check_runtime_root needs both sides to see a stale value.
+DOTFILES_SELECTED_ROOT="${DOTFILES_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
 if [ -r "$HOME/.config/dotfiles/personal.env" ]; then
     # shellcheck disable=SC1091  # user-generated, not in the repo
     . "$HOME/.config/dotfiles/personal.env"
@@ -811,25 +816,7 @@ verify_config() {
         print_info "No ~/.config/dotfiles/personal.env - run ./personalize.sh for machine-specific values"
     fi
 
-    # Deployed scripts, aliases and LaunchAgents cannot derive the repo from
-    # their own location (they run through stow symlinks and launchd), so they
-    # fall back to ~/dotfiles unless personal.env says otherwise. A checkout
-    # anywhere else deploys cleanly and then fails at runtime, one script at a
-    # time, with nothing pointing back here.
-    #
-    # Compared by VALUE, in a clean shell: the mere presence of an assignment
-    # proves nothing when it still names an older checkout. A failure, not a
-    # warning: every deployed script would be running against the wrong tree.
-    local runtime_root="$HOME/dotfiles"
-    if [[ -r "$HOME/.config/dotfiles/personal.env" ]]; then
-        # shellcheck disable=SC2016  # expanded by the child shell, on purpose
-        runtime_root="$(env -u DOTFILES_DIR /bin/bash -c '. "$1" >/dev/null 2>&1; printf %s "${DOTFILES_DIR:-$HOME/dotfiles}"' _ "$HOME/.config/dotfiles/personal.env")"
-    fi
-    if [[ "$(cd "$runtime_root" 2>/dev/null && pwd -P)" != "$(cd "$DOTFILES_DIR" && pwd -P)" ]]; then
-        print_error "Deploying $DOTFILES_DIR, but deployed scripts will use $runtime_root"
-        echo "  Set in ~/.config/dotfiles/personal.env:  export DOTFILES_DIR=\"$DOTFILES_DIR\""
-        issues=$((issues + 1))
-    fi
+    check_runtime_root || issues=$((issues + 1))
 
     # "All checks passed!" used to print even with warnings on screen, because
     # only hard errors increment $issues. Saying it passed while a warning is
@@ -843,6 +830,29 @@ verify_config() {
     fi
 
     return $issues
+}
+
+# Deployed scripts, aliases and LaunchAgents cannot derive the repo from their
+# own location (they run through stow symlinks and launchd), so they use
+# DOTFILES_DIR from personal.env, else ~/dotfiles. If that is not the checkout
+# being deployed, everything deploys cleanly and then runs against another tree.
+#
+# Compared by VALUE, read in a clean shell, against what the caller selected
+# BEFORE personal.env was sourced: an assignment that still names an older
+# checkout is exactly the case to catch, and after sourcing it both sides of a
+# naive comparison would be that same stale value.
+check_runtime_root() {
+    local selected="${DOTFILES_SELECTED_ROOT:-$DOTFILES_DIR}" runtime_root="$HOME/dotfiles"
+    if [[ -r "$HOME/.config/dotfiles/personal.env" ]]; then
+        # shellcheck disable=SC2016  # expanded by the child shell, on purpose
+        runtime_root="$(env -u DOTFILES_DIR /bin/bash -c '. "$1" >/dev/null 2>&1; printf %s "${DOTFILES_DIR:-$HOME/dotfiles}"' _ "$HOME/.config/dotfiles/personal.env")"
+    fi
+    if [[ "$(cd "$runtime_root" 2>/dev/null && pwd -P)" != "$(cd "$selected" 2>/dev/null && pwd -P)" ]]; then
+        print_error "Deploying $selected, but deployed scripts will use $runtime_root"
+        echo "  Set in ~/.config/dotfiles/personal.env:  export DOTFILES_DIR=\"$selected\""
+        return 1
+    fi
+    return 0
 }
 
 # ============================================================================

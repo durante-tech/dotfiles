@@ -132,10 +132,19 @@ if [ -n "$DAILY_PICK" ]; then
   POOL+=("$DAILY_PICK" "$DAILY_PICK")
 fi
 
+# Drop anything that is not a file: an unmatched glob above stays literal, and
+# was otherwise sorted into LAND and handed to the wallpaper tool. The
+# ${X[@]+...} form is what lets an empty array through `set -u` on bash 3.2.
+EXISTING=()
+for f in ${POOL[@]+"${POOL[@]}"}; do
+  [ -e "$f" ] && EXISTING+=("$f")
+done
+POOL=(${EXISTING[@]+"${EXISTING[@]}"})
+
 # Split pool by orientation.
 LAND=()
 PORT=()
-for f in "${POOL[@]}"; do
+for f in ${POOL[@]+"${POOL[@]}"}; do
   if is_portrait "$f"; then PORT+=("$f"); else LAND+=("$f"); fi
 done
 

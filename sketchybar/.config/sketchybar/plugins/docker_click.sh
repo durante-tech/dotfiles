@@ -23,9 +23,13 @@ fi
 # Start fresh: drop any prior rows, then toggle the popup.
 args=(--remove '/docker.row\.*/' --set docker popup.drawing=toggle)
 
-if ! with_timeout 2s "$DOCKER" info >/dev/null 2>&1; then
+with_timeout 2s "$DOCKER" info >/dev/null 2>&1
+info_status=$?
+if [ "$info_status" -ne 0 ]; then
+    not_ready="Docker not running"
+    timed_out "$info_status" && not_ready="Docker not responding"
     args+=(--add item docker.row.0 popup.docker
-           --set docker.row.0 label="Docker not running" label.color="$GREY"
+           --set docker.row.0 label="$not_ready" label.color="$GREY"
                  icon.drawing=off background.drawing=off
                  click_script="sketchybar --set docker popup.drawing=off")
 else

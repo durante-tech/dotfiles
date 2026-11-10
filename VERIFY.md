@@ -262,7 +262,7 @@ brew services list | grep sketchybar | grep -q "started\|none" && \
   echo "OK Sketchybar brew service registered" || echo "WARN Sketchybar service state unclear"
 
 # Workspace items registered
-sketchybar --query bar 2>&1 | grep -q '"space\.' && \
+sketchybar --query bar 2>/dev/null | jq -e '[.items[]? | select(startswith("space."))] | length > 0' >/dev/null && \
   echo "OK Sketchybar workspace items registered" || echo "FAIL Sketchybar has no space.* workspace items"
 ```
 

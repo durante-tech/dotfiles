@@ -230,7 +230,7 @@ cd "$DOTFILES_DIR"
 Pick the right flag based on user's Phase 2 answers:
 
 ```bash
-cd "$HOME/dotfiles"
+cd "${DOTFILES_DIR:-$HOME/dotfiles}" || exit 1
 
 # Fresh install — full pipeline
 ./install.sh

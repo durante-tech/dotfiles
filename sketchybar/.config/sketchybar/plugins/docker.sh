@@ -7,7 +7,13 @@ DOCKER=$(command -v docker || echo "/usr/local/bin/docker")
 source "$CONFIG_DIR/timeout.sh"
 
 # Check if Docker is running (with timeout to prevent blocking)
-if ! with_timeout 2s $DOCKER info >/dev/null 2>&1; then
+with_timeout 2s $DOCKER info >/dev/null 2>&1
+info_status=$?
+if timed_out "$info_status"; then
+    # Not answering is not the same as stopped: say so and do not claim "Off".
+    sketchybar --set "$NAME" icon="󰡨" label="Busy" icon.color="$GREY"
+    exit 0
+elif [ "$info_status" -ne 0 ]; then
     sketchybar --set "$NAME" icon="󰡨" label="Off" icon.color="$GREY"
     exit 0
 fi
