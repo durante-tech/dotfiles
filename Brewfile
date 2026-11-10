@@ -141,8 +141,9 @@ brew "starship"
 brew "stow"
 # Change macOS audio source from the command-line
 brew "switchaudio-osx"
-# Simplified and community-driven man pages
-brew "tldr"
+# Official tldr client (Rust); provides the `tldr` command. The old `tldr`
+# formula was removed from homebrew-core, which failed the whole bundle.
+brew "tlrc"
 # Terminal multiplexer
 brew "tmux"
 # Display directories as trees (with optional color/HTML output)
