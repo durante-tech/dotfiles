@@ -2,6 +2,7 @@ import itertools
 import json
 import os
 import shutil
+import subprocess
 from support import Fixture, REPO, shell_function
 
 
@@ -23,8 +24,41 @@ class Maintenance(Fixture):
                         self.assertEqual(result.returncode, 0, result.stderr)
                         lines = result.stdout.splitlines()
                         self.assertEqual(lines[:3], [str(x).lower() for x in [expected_tools,expected_brew,expected_casks]])
-                        self.assertEqual('--no-formula' in lines, expected_brew)
-                        self.assertEqual('--no-cask' in lines, expected_casks)
+                        # Homebrew 7 rejects both type switches outright.
+                        self.assertFalse([line for line in lines if line.startswith('--no-')])
+                        self.assertEqual('--file=-' in lines, expected_brew or expected_casks)
+
+    def test_skipped_types_are_filtered_out_of_the_brewfile(self):
+        brewfile = 'tap "example/tap"\nbrew "stow"\n# cask "commented"\ncask "ghostty"\ngo "example.com/tool"\nbrew "caskroom-helper"\n'
+        self.root.joinpath('Brewfile').write_text(brewfile)
+        log = self.root/'brew-call'
+        self.stub('brew', "import json,sys\nfrom pathlib import Path\nstdin = '' if '--file=-' not in sys.argv else sys.stdin.read()\nPath("+repr(str(log))+").write_text(json.dumps([sys.argv[1:], stdin]))\n")
+        code = 'source "$1"; shift; dotfiles_options "$@" || exit $?; dotfiles_bundle_install'
+        cases = {
+            (): (None, None),
+            ('--skip-casks',): (['cask "ghostty"'], ['brew "stow"', 'brew "caskroom-helper"']),
+            ('--skip-brew',): (['brew "stow"', 'brew "caskroom-helper"'], ['cask "ghostty"']),
+        }
+        for args, (removed, kept) in cases.items():
+            with self.subTest(args=args):
+                result = self.run_command(['/bin/bash', '-c', code, 'fixture', str(REPO/'lib/install-options.sh'), *args], {'DOTFILES_DIR': str(self.root)}, stdin=subprocess.DEVNULL)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                argv, stdin = json.loads(log.read_text())
+                self.assertFalse([arg for arg in argv if arg.startswith('--no-')])
+                if removed is None:
+                    self.assertEqual(argv, ['bundle', 'install', f'--file={self.root}/Brewfile'])
+                    continue
+                self.assertEqual(argv, ['bundle', 'install', '--file=-'])
+                for line in removed: self.assertNotIn(line, stdin.splitlines())
+                for line in kept + ['tap "example/tap"', 'go "example.com/tool"', '# cask "commented"']:
+                    self.assertIn(line, stdin.splitlines())
+
+    def test_bundle_failure_survives_the_filter_pipe(self):
+        self.root.joinpath('Brewfile').write_text('brew "stow"\ncask "ghostty"\n')
+        self.stub('brew', "raise SystemExit(7)\n")
+        code = 'source "$1"; dotfiles_options --skip-casks; dotfiles_bundle_install'
+        result = self.run_command(['/bin/bash', '-c', code, 'fixture', str(REPO/'lib/install-options.sh')], {'DOTFILES_DIR': str(self.root)})
+        self.assertEqual(result.returncode, 7)
 
     def test_dry_run_never_calls_effectful_tools(self):
         self.root.joinpath('stow-packages.txt').write_text('zsh\ntmux\n')
