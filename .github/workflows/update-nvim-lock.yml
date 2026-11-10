@@ -77,7 +77,14 @@ jobs:
           git switch -C "$BRANCH"
           git add nvim/.config/nvim/lazy-lock.json
           git commit -m "chore(nvim): update lazy-lock.json ($count plugins)"
-          git push --force-with-lease origin "$BRANCH"
+          # An explicit lease on the SHA the remote holds right now. A bare
+          # --force-with-lease compares against a remote-tracking ref, and the
+          # checkout fetched only the triggering branch: with last week's PR
+          # still open there is no such ref, so git expected the branch not to
+          # exist and rejected the refresh as "stale info". An empty SHA is
+          # git's spelling of "must not exist yet".
+          remote_sha="$(git ls-remote --heads origin "$BRANCH" | cut -f1)"
+          git push --force-with-lease="$BRANCH:$remote_sha" origin "$BRANCH"
           if ! gh pr view "$BRANCH" --json number >/dev/null 2>&1; then
             gh pr create --base "${{ github.event.repository.default_branch }}" --head "$BRANCH" \
               --title "chore(nvim): update plugin lock" \
