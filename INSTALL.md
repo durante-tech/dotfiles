@@ -279,6 +279,16 @@ These cannot be automated — surface them clearly:
 - AeroSpace (for window management)
 - Karabiner-Elements (for key remapping)
 
+**1Password SSH agent** (the app is installed, but only the user can sign in):
+
+1. Open 1Password and sign in.
+2. Settings → Developer → turn on **Use the SSH Agent**.
+3. Same screen → turn on **Integrate with 1Password CLI** (lets `op` unlock with Touch ID).
+4. Open a new terminal and run `ssh-add -l` — it should list the keys.
+
+`zsh/.zprofile` exports `SSH_AUTH_SOCK` only when the agent's socket exists, so
+until step 2 is done git over SSH has no keys and nothing reports why.
+
 **Atuin sync registration** (interactive password):
 
 ```bash
@@ -344,7 +354,8 @@ Manual steps remaining (5 min total):
      Espanso, Maccy, AeroSpace
   2. atuin register -u YOU -e you@email.com (then atuin key — save in 1Password)
   3. Install Plash from Mac App Store (for shader wallpapers)
-  4. Restart your terminal (or: source ~/.zprofile && source ~/.zshrc)
+  4. 1Password: sign in, then Settings → Developer → Use the SSH Agent
+  5. Restart your terminal (or: source ~/.zprofile && source ~/.zshrc)
 
 Customization: edit ~/.zshrc.local (gitignored) for machine-specific overrides.
 Update later with: cd ~/dotfiles && ./install.sh --update"
