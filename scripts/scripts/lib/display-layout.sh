@@ -57,6 +57,12 @@
 # string of displayplacer per-screen specs:
 #   DOTFILES_DISPLAY_LAYOUT='id:AAAA res:... origin:(0,0) degree:0
 #   id:BBBB res:... origin:(...) degree:90'
+#
+# To change only the built-in's scaled size, set DOTFILES_DISPLAY_BUILTIN_RES
+# (e.g. 2056x1329, the panel's "More Space" mode). It replaces 1728x1117 in every
+# profile that uses it (daily, hires, both portrait profiles, bare-laptop solo);
+# --stream and --native keep their own sizes because theirs are the point of the
+# profile. External origins follow the new width so the edges still touch.
 
 set -u
 [ -f "$HOME/.config/dotfiles/personal.env" ] && source "$HOME/.config/dotfiles/personal.env"
@@ -117,8 +123,13 @@ if [[ "$PROFILE" == native ]]; then
 elif [[ "$PROFILE" == stream ]]; then
   BUILTIN_RES=1728x1080
 else
-  BUILTIN_RES=1728x1117
+  BUILTIN_RES="${DOTFILES_DISPLAY_BUILTIN_RES:-1728x1117}"
+  if [[ ! "$BUILTIN_RES" =~ ^[1-9][0-9]{2,4}x[1-9][0-9]{2,4}$ ]]; then
+    echo "DOTFILES_DISPLAY_BUILTIN_RES must look like 2056x1329, got: $BUILTIN_RES" >&2
+    exit 2
+  fi
 fi
+BUILTIN_W="${BUILTIN_RES%x*}"
 
 # External Dell 4K resolution + origin per profile. daily/stream run true
 # integer-2x (1920x1080 logical, backing == native 3840x2160 — sharpest). --hires
@@ -147,13 +158,14 @@ EXT_DEGREE=0
 if [[ "$PROFILE" == native ]]; then
   EXT_RES=3840x2160; EXT_ORIGIN='(3456,37)'
 elif [[ "$PROFILE" == hires ]]; then
-  EXT_RES=2560x1440; EXT_ORIGIN='(1728,37)'
+  EXT_RES=2560x1440; EXT_ORIGIN="($BUILTIN_W,37)"
 elif [[ "$PROFILE" == portrait ]]; then
-  EXT_RES=1080x1920; EXT_ORIGIN='(324,-1920)'; EXT_DEGREE=90
+  # Centred above the built-in: (1728-1080)/2 = 324 at the default width.
+  EXT_RES=1080x1920; EXT_ORIGIN="($(( (BUILTIN_W - 1080) / 2 )),-1920)"; EXT_DEGREE=90
 elif [[ "$PROFILE" == portrait-hires ]]; then
-  EXT_RES=1440x2560; EXT_ORIGIN='(1728,-765)'; EXT_DEGREE=90
+  EXT_RES=1440x2560; EXT_ORIGIN="($BUILTIN_W,-765)"; EXT_DEGREE=90
 else
-  EXT_RES=1920x1080; EXT_ORIGIN='(1728,37)'
+  EXT_RES=1920x1080; EXT_ORIGIN="($BUILTIN_W,37)"
 fi
 
 # displayplacer is needed to DETECT screen ids below as well as to apply, so the
@@ -210,7 +222,7 @@ if [[ "$PROFILE" == solo ]]; then
     SOLO_ID="$(awk '/Persistent screen id:/{print $4; exit}' <<< "$SOLO_LIST")"
     if grep -q 'MacBook built in screen' <<< "$SOLO_LIST"; then
       # Bare laptop: canonical built-in true-2x, keep ProMotion.
-      SOLO_RES="1728x1117"; SOLO_HZ=120
+      SOLO_RES="$BUILTIN_RES"; SOLO_HZ=120
     else
       SOLO_RES="${DOTFILES_DISPLAY_SOLO_RES:-2560x1440}"; SOLO_HZ=60
     fi

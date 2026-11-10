@@ -70,6 +70,33 @@ else:
         self.assertEqual(self.profile.read_text(),'daily\n')
         self.assertEqual(list(self.cache.glob('.bd-profile.*')),[])
 
+    def test_builtin_resolution_override_moves_external_origins(self):
+        def plan(profile, **extra):
+            result=self.run_command(['bash',str(self.script),profile,'--dry-run'],dict(self.env,**extra))
+            self.assertEqual(result.returncode,0,result.stderr)
+            return result.stdout
+        default=plan('--daily')
+        self.assertIn('id:AAAA res:1728x1117 hz:120',default)
+        self.assertIn('origin:(1728,37)',default)
+        self.assertIn('origin:(324,-1920)',plan('--portrait'))
+        override={'DOTFILES_DISPLAY_BUILTIN_RES':'2056x1329'}
+        for profile,origin in [('--daily','(2056,37)'),('--hires','(2056,37)'),
+                               ('--portrait','(488,-1920)'),('--portrait-hires','(2056,-765)')]:
+            with self.subTest(profile=profile):
+                out=plan(profile,**override)
+                self.assertIn('id:AAAA res:2056x1329 hz:120',out)
+                self.assertIn('origin:'+origin,out)
+        # Stream and native exist for their own built-in sizes.
+        self.assertIn('id:AAAA res:1728x1080',plan('--stream',**override))
+        self.assertIn('id:AAAA res:3456x2234',plan('--native',**override))
+
+    def test_invalid_builtin_resolution_fails_before_any_display_command(self):
+        for value in ['2056','2056x','big', '2056x1329; rm -rf x']:
+            with self.subTest(value=value):
+                result=self.run_command(['bash',str(self.script),'--daily','--force'],dict(self.env,DOTFILES_DISPLAY_BUILTIN_RES=value))
+                self.assertEqual(result.returncode,2)
+                self.assertFalse(self.log.exists())
+
     def test_unknown_arguments_fail_before_any_display_command(self):
         result=self.run_command(['bash',str(self.script),'--portraitt'],self.env)
         self.assertEqual(result.returncode,2)
