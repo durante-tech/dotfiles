@@ -122,6 +122,19 @@ class Hardware:
             self.sleep(0.5)
         raise ControlError(error)
 
+    def upscaling(self, tag, software):
+        # A fresh BetterDisplay install ships brightness upscaling off, and
+        # then rejects every softwareBrightness above 100% with a bare
+        # "Failed.". Presets at or below 100% never need it, so it is only
+        # requested, and only reported, when the target does.
+        if software <= 100:
+            return
+        try:
+            self.ensure(tag, 'brightnessUpscaling', 'on', 'on')
+        except ControlError as error:
+            raise ControlError(f'brightness upscaling is off and could not be enabled, so {software:g}% '
+                               f'is unreachable (a BetterDisplay Pro feature): {error}') from error
+
     def vcp(self, tag, feature, value):
         error = ''
         for attempt in range(3):
@@ -154,6 +167,7 @@ class Hardware:
             attempt('dev', lambda: self.ensure(tag, 'autoBrightness', 'off', 'off'))
             attempt('dev', lambda: self.ensure(tag, 'xdrPreset', base['xdr'], base['xdr'], settle=1))
             attempt('dev', lambda: self.ensure(tag, 'hardwareBrightness', f"{base['hardware']:g}%", base['hardware']/100, numeric=True))
+            attempt('dev', lambda: self.upscaling(tag, base['dev']))
             attempt('dev', lambda: self.ensure(tag, 'softwareBrightness', f"{base['dev']:g}%", base['dev']/100, numeric=True))
             attempt('dev', lambda: self.ensure(tag, 'autoBrightness', 'off', 'off'))
         if port:
@@ -188,6 +202,8 @@ class Hardware:
                       (tag, 'hardwareBrightness', state['base']['hardware']/100, True),
                       (tag, 'autoBrightness', 'off', False),
                       (tag, 'softwareBrightness', state['base']['dev']/100, True)]
+            if state['base']['dev'] > 100:
+                values.insert(3, (tag, 'brightnessUpscaling', 'on', False))
         if devices['port']:
             tag = devices['port']['tag']
             values.append((tag, 'temperature', self.temperature/100, True))

@@ -220,7 +220,15 @@ def main(argv=None):
                         version = metadata.get('CFBundleShortVersionString')
                     except (OSError, ValueError):
                         version = 'unavailable'
+                    upscaling = 'no built-in display'
+                    if devices['dev']:
+                        try:
+                            upscaling = hardware.get(devices['dev']['tag'], 'brightnessUpscaling')
+                        except ControlError:
+                            upscaling = 'unavailable'
                     print(json.dumps({'devices': devices, 'app_version': version,
+                                      # Off blocks every preset above 100%.
+                                      'brightness_upscaling': upscaling,
                                       'cli_processes': lingering_cli_processes(),
                                       'homebrew_versions': [p.name for p in Path('/opt/homebrew/Caskroom/betterdisplay').glob('[0-9]*')]},
                                      ensure_ascii=False, indent=2))

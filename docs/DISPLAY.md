@@ -113,6 +113,12 @@ controller survives a tag-ID change. `DOTFILES_BD_DEV_SERIAL` and
 or mismatched identities fail before any write. Legacy numeric tag overrides are
 not used as identity authority. No 'first external display' guess is made.
 
+Presets above 100% built-in software brightness need BetterDisplay's brightness
+upscaling, a Pro feature that a fresh install ships **off**; with it off the app
+rejects the write with a bare `Failed.`. The controller turns it on when, and
+only when, the requested value is above 100%, and names it in the error if it
+cannot. `doctor` reports its state as `brightness_upscaling`.
+
 `bd-apply.sh doctor` reports identities and installed app metadata; `verify`
 compares readable values with the saved intent. Neither claims physical DDC
 readback. Never use `betterdisplaycli version` as a diagnostic; read bundle metadata.
